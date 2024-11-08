@@ -15,17 +15,17 @@ const LoginPage = () => {
   const [isInputFilled, setIsInputFilled] = useState(false);
 
   const handleLogin = () => {
-    // Mettre à jour l'état de connexion dans localStorage
+    // Update login status in localStorage
     localStorage.setItem("isLogin", "true");
 
-    // Émettre un événement personnalisé 'loginStatusChanged' pour informer Header
+    // Emit a custom event 'loginStatusChanged' to inform Header
     window.dispatchEvent(new CustomEvent("loginStatusChanged"));
 
-    // Rediriger vers la page d'accueil une fois connecté
+    // Redirect to the homepage once logged in
     router.push("/home");
   };
 
-  // Vérifier si les champs de connexion sont remplis
+  // Check if the login fields are filled
   useEffect(() => {
     setIsInputFilled(email !== "" && password !== "");
   }, [email, password]);
@@ -36,19 +36,17 @@ const LoginPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-1 items-start">
           <h1 className="text-2xl outfit-regular text-white">
-            Ravis de te revoir !
+            Happy to see you again!
           </h1>
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Remplissez les champs ci-dessous ou connectez-vous avec Google.
+            Fill in the fields below or log in with Google.
           </p>
         </div>
 
         {/* Google Auth */}
         <div className="w-full flex items-center justify-start">
           <Button
-            onClick={() =>
-              toast.warning("Fonctionnalité pas encore disponible.")
-            }
+            onClick={() => toast.warning("Feature not yet available.")}
             variant={"outline"}
             className="w-full rounded-full outfit-regular text-md text-black bg-white py-3 hover:border-none hover:bg-white hover:bg-opacity-75 transition-all"
           >
@@ -58,14 +56,14 @@ const LoginPage = () => {
               height={20}
               alt="Google Logo"
             />
-            Se connecter avec Google
+            Sign in with Google
           </Button>
         </div>
 
         {/* Divider */}
         <div className="flex items-center w-full">
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
-          <span className="mx-2 text-gray-400">ou</span>
+          <span className="mx-2 text-gray-400">or</span>
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
         </div>
 
@@ -73,7 +71,7 @@ const LoginPage = () => {
         <div className="w-full flex flex-col items-start gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="email">
-              Mail
+              Email
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -86,7 +84,7 @@ const LoginPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="password">
-              Mot de passe
+              Password
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -105,18 +103,18 @@ const LoginPage = () => {
           onClick={handleLogin}
           disabled={!isInputFilled}
         >
-          Connexion
+          Login
         </Button>
 
         {/* Footer */}
         <div className="flex items-center justify-center w-full">
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Vous n'avez pas de compte ?{" "}
+            Don't have an account?{" "}
             <span
               className="transition-all text-primary-500 cursor-pointer hover:underline"
               onClick={() => router.push("/auth/register")}
             >
-              Inscrivez-vous
+              Sign up
             </span>
           </p>
         </div>

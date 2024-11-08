@@ -28,7 +28,7 @@ export const Header = () => {
     window.location.pathname
   );
 
-  // Fonction pour charger l'état de connexion depuis le localStorage
+  // Function to load the login status from localStorage
   const updateLoginStatus = () => {
     const storedLoginStatus = localStorage.getItem("isLogin");
     const loginStatus = storedLoginStatus === "true";
@@ -38,14 +38,14 @@ export const Header = () => {
   };
 
   useEffect(() => {
-    // Charger l'état initial de connexion
+    // Load initial login status
     updateLoginStatus();
 
-    // Écoute de l'événement personnalisé 'loginStatusChanged' pour les mises à jour de connexion
+    // Listen to the custom 'loginStatusChanged' event for login updates
     const handleLoginStatusChange = () => updateLoginStatus();
     window.addEventListener("loginStatusChanged", handleLoginStatusChange);
 
-    // Nettoyage de l'écouteur lors du démontage du composant
+    // Cleanup listener when the component unmounts
     return () => {
       window.removeEventListener("loginStatusChanged", handleLoginStatusChange);
     };
@@ -56,10 +56,10 @@ export const Header = () => {
     setIsLogin(newLoginStatus);
     localStorage.setItem("isLogin", JSON.stringify(newLoginStatus));
 
-    // Déclencher l'événement personnalisé pour informer d'un changement de connexion
+    // Trigger the custom event to inform of a login change
     window.dispatchEvent(new CustomEvent("loginStatusChanged"));
 
-    // Redirection et mise à jour du lien sélectionné
+    // Redirect and update the selected link
     const newLink = newLoginStatus ? loginLinks.Accueil : guestLinks.Solution;
     setSelectedLink(newLink);
     router.push(newLink);
@@ -75,7 +75,7 @@ export const Header = () => {
               key={name}
               href={url}
               onClick={(e) => {
-                e.preventDefault(); // Empêcher le rechargement
+                e.preventDefault(); // Prevent page reload
                 setSelectedLink(url);
                 router.push(url);
               }}

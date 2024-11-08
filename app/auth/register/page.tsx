@@ -17,17 +17,17 @@ const RegisterPage = () => {
   const [isInputFilled, setIsInputFilled] = useState(false);
 
   const handleLogin = () => {
-    // Mettre à jour l'état de connexion dans localStorage
+    // Update the login status in localStorage
     localStorage.setItem("isLogin", "true");
 
-    // Émettre un événement personnalisé 'loginStatusChanged' pour informer Header
+    // Emit a custom 'loginStatusChanged' event to inform Header
     window.dispatchEvent(new CustomEvent("loginStatusChanged"));
 
-    // Rediriger vers la page d'accueil une fois connecté
+    // Redirect to the home page once logged in
     router.push("/home");
   };
 
-  // Vérifier si les champs de connexion sont remplis
+  // Check if the login fields are filled
   useEffect(() => {
     setIsInputFilled(
       email !== "" && password !== "" && firstName !== "" && name !== ""
@@ -40,19 +40,17 @@ const RegisterPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-1 items-start">
           <h1 className="text-2xl outfit-regular text-white">
-            Bienvenue sur Edukai !
+            Welcome to Edukai!
           </h1>
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Remplissez les champs ci-dessous ou inscrivez-vous avec Google.
+            Fill in the fields below or sign up with Google.
           </p>
         </div>
 
         {/* Google Auth */}
         <div className="w-full flex items-center justify-start">
           <Button
-            onClick={() =>
-              toast.warning("Fonctionnalité pas encore disponible.")
-            }
+            onClick={() => toast.warning("Feature not yet available.")}
             variant={"outline"}
             className="w-full rounded-full outfit-regular text-md text-black bg-white py-3 hover:border-none hover:bg-white hover:bg-opacity-75 transition-all"
           >
@@ -62,14 +60,14 @@ const RegisterPage = () => {
               height={20}
               alt="Google Logo"
             />
-            S'inscrire avec Google
+            Sign up with Google
           </Button>
         </div>
 
         {/* Divider */}
         <div className="flex items-center w-full">
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
-          <span className="mx-2 text-gray-400">ou</span>
+          <span className="mx-2 text-gray-400">or</span>
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
         </div>
 
@@ -77,7 +75,7 @@ const RegisterPage = () => {
         <div className="w-full flex flex-col items-start gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="firstname">
-              Prénom
+              First Name
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -90,20 +88,20 @@ const RegisterPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="firstname">
-              Nom
+              Last Name
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
               type="text"
               id="name"
-              placeholder="John"
+              placeholder="Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="email">
-              Mail
+              Email
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -116,7 +114,7 @@ const RegisterPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="password">
-              Mot de passe
+              Password
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -135,18 +133,18 @@ const RegisterPage = () => {
           onClick={handleLogin}
           disabled={!isInputFilled}
         >
-          Inscription
+          Sign Up
         </Button>
 
         {/* Footer */}
         <div className="flex items-center justify-center w-full">
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Vous avez déjà un compte ?{" "}
+            Already have an account?{" "}
             <span
-              className="rtansition-all text-primary-500 cursor-pointer hover:underline"
+              className="transition-all text-primary-500 cursor-pointer hover:underline"
               onClick={() => router.push("/auth/login")}
             >
-              Connectez-vous
+              Log in
             </span>
           </p>
         </div>
