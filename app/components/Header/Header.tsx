@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const loginLinks = {
   Accueil: "/home",
@@ -27,6 +27,21 @@ export const Header = () => {
   const [selectedLink, setSelectedLink] = useState<string>(
     window.location.pathname
   );
+  const [underlinePosition, setUnderlinePosition] = useState<number>(0);
+  const [underlineWidth, setUnderlineWidth] = useState<number>(0);
+  const linkRefs = useRef<{ [key: string]: HTMLAnchorElement | null }>({});
+  const linksContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Function to update the underline position and width based on the selected link
+  const updateUnderline = (url: string) => {
+    const selectedRef = linkRefs.current[url];
+    if (selectedRef && linksContainerRef.current) {
+      const containerRect = linksContainerRef.current.getBoundingClientRect();
+      const selectedRect = selectedRef.getBoundingClientRect();
+      setUnderlinePosition(selectedRect.left - containerRect.left);
+      setUnderlineWidth(selectedRect.width);
+    }
+  };
 
   // Function to load the login status from localStorage
   const updateLoginStatus = () => {
@@ -35,6 +50,7 @@ export const Header = () => {
     setIsLogin(loginStatus);
     setLinksToShow(loginStatus ? loginLinks : guestLinks);
     setSelectedLink(loginStatus ? loginLinks.Accueil : guestLinks.Solution);
+    updateUnderline(selectedLink); // Update underline on load
   };
 
   useEffect(() => {
@@ -62,6 +78,7 @@ export const Header = () => {
     // Redirect and update the selected link
     const newLink = newLoginStatus ? loginLinks.Accueil : guestLinks.Solution;
     setSelectedLink(newLink);
+    updateUnderline(newLink); // Update underline on toggle
     router.push(newLink);
   };
 
@@ -69,11 +86,25 @@ export const Header = () => {
     if (isLogin) {
       router.push(loginLinks.Accueil);
       setSelectedLink(loginLinks.Accueil);
+      updateUnderline(loginLinks.Accueil); // Update underline on home click
       return;
     }
     router.push(guestLinks.Solution);
     setSelectedLink(guestLinks.Solution);
+    updateUnderline(guestLinks.Solution); // Update underline on home click
   };
+
+  useEffect(() => {
+    updateUnderline(selectedLink); // Initial position of the underline
+
+    // Listen for window resize to adjust underline position
+    const handleResize = () => updateUnderline(selectedLink);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [selectedLink]);
 
   return (
     <div className="relative flex items-center justify-between w-full py-[2%] px-4">
@@ -83,26 +114,39 @@ export const Header = () => {
       >
         Edukai
       </h2>
-      <div className="absolute left-1/2 transform -translate-x-1/2">
-        <div className="flex items-center gap-5">
+      <div
+        ref={linksContainerRef}
+        className="absolute left-1/2 transform -translate-x-1/2"
+      >
+        <div className="relative flex items-center gap-5">
           {Object.entries(linksToShow).map(([name, url]) => (
             <a
               key={name}
               href={url}
+              ref={(el) => {
+                linkRefs.current[url] = el;
+              }}
               onClick={(e) => {
-                e.preventDefault(); // Prevent page reload
+                e.preventDefault();
                 setSelectedLink(url);
+                updateUnderline(url);
                 router.push(url);
               }}
-              className={`relative transition-all text-md text-white hover:text-primary-500 outfit-regular ${
-                selectedLink === url
-                  ? "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-[-4px] after:w-[75%] after:h-[2px] after:bg-primary-500 after:rounded-full"
-                  : ""
+              className={`relative text-md text-white hover:text-primary-500 outfit-regular ${
+                selectedLink === url ? "text-primary-500" : ""
               }`}
             >
               {name.replace("_", " ")}
             </a>
           ))}
+          {/* Underline element */}
+          <span
+            className="absolute bottom-[-4px] h-[2.5px] bg-primary-500 rounded-full transition-transform duration-300 ease-in-out"
+            style={{
+              transform: `translateX(${underlinePosition}px)`,
+              width: `${underlineWidth * 0.75}px`,
+            }}
+          ></span>
         </div>
       </div>
       <Button
@@ -113,6 +157,7 @@ export const Header = () => {
             : () => {
                 router.push("/auth/login");
                 setSelectedLink("/auth/login");
+                updateUnderline("/auth/login"); // Update underline on login click
               }
         }
       >
