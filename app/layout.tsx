@@ -1,6 +1,6 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Toaster } from "sonner";
 import { Header } from "./components/Header/Header";
 import "./globals.css";
 
@@ -28,18 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] h-full w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] h-screen w-full flex flex-col`}
       >
         <div className="flex items-center justify-center">
           <Header />
         </div>
-        <div>
-          <Toaster
-            richColors
-            position="top-center"
-            expand={false}
-            className="w-full text-xl"
-          />
+        <div className="flex-1 flex items-center justify-center">
+          <Toaster />
           {children}
         </div>
       </body>
