@@ -14,10 +14,9 @@ const loginLinks = {
 const guestLinks = {
   Solution: "/",
   Prix: "/pricing",
-  Partenaires: "/partners",
+  Partenaires: "/partner",
   Blog: "/blog",
   Support: "/support",
-  Connection: "/login",
 };
 
 export const Header = () => {
