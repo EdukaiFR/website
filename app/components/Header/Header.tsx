@@ -24,9 +24,14 @@ export const Header = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [linksToShow, setLinksToShow] =
     useState<Record<string, string>>(guestLinks);
-  const [selectedLink, setSelectedLink] = useState<string>(
-    window.location.pathname
-  );
+
+  // Initialize selectedLink with an empty string
+  const [selectedLink, setSelectedLink] = useState<string>("");
+
+  // Use useEffect to safely access window object after the component mounts
+  useEffect(() => {
+    setSelectedLink(window.location.pathname);
+  }, []);
 
   useEffect(() => {
     if (isLogin) {
