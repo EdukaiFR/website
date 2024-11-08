@@ -36,7 +36,7 @@ const LoginPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-1 items-start">
           <h1 className="text-2xl outfit-regular text-white">
-            Ravi de te revoir !
+            Ravis de te revoir !
           </h1>
           <p className="text-xs outfit-light text-white text-opacity-75">
             Remplissez les champs ci-dessous ou connectez-vous avec Google.

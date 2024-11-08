@@ -10,7 +10,7 @@ export default function Home() {
           <Image src={"/icons/stars.svg"} width={20} height={20} alt="Stars" />
           Dès Juillet 2025
         </Badge>
-        <h3 className="text-8xl text-white">Révises Mieux,</h3>
+        <h3 className="text-8xl text-white">Révise Mieux,</h3>
         <h3 className="text-8xl text-primary-500">Pas Plus</h3>
         <p className="text-white text-md text-center max-w-[500px] outfit-regular mt-[2%]">
           Des fiches de révision et des quiz interactifs pour booster votre
