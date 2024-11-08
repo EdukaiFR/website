@@ -65,9 +65,24 @@ export const Header = () => {
     router.push(newLink);
   };
 
+  const navigateToHome = () => {
+    if (isLogin) {
+      router.push(loginLinks.Accueil);
+      setSelectedLink(loginLinks.Accueil);
+      return;
+    }
+    router.push(guestLinks.Solution);
+    setSelectedLink(guestLinks.Solution);
+  };
+
   return (
     <div className="relative flex items-center justify-between w-full py-[2%] px-4">
-      <h2 className="text-xl text-primary-500 outfit-bold">Edukai</h2>
+      <h2
+        className="text-xl text-primary-500 outfit-bold cursor-pointer"
+        onClick={navigateToHome}
+      >
+        Edukai
+      </h2>
       <div className="absolute left-1/2 transform -translate-x-1/2">
         <div className="flex items-center gap-5">
           {Object.entries(linksToShow).map(([name, url]) => (
