@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="w-full h-full mt-[7.5%] flex flex-col gap-6 items-center justify-center">
+    <div className="w-full h-full pb-[3%] flex flex-col gap-6 items-center justify-center">
       <div className="flex flex-col items-center justify-center text-center outfit-regular">
         <Badge className="flex items-center justify-center gap-4 outfit-regular text-xs text-primary-500 px-[3%] py-[1%] rounded-full border-1 border-primary-500 bg-primary-500 bg-opacity-25">
           <Image src={"/icons/stars.svg"} width={20} height={20} alt="Stars" />
