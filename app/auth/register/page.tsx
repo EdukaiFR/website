@@ -40,10 +40,10 @@ const RegisterPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-1 items-start">
           <h1 className="text-2xl outfit-regular text-white">
-            Welcome to Edukai!
+            Bienvenue sur Edukai !
           </h1>
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Fill in the fields below or sign up with Google.
+            Remplis les champs ci-dessous pour t'inscrire.
           </p>
         </div>
 
@@ -60,14 +60,14 @@ const RegisterPage = () => {
               height={20}
               alt="Google Logo"
             />
-            Sign up with Google
+            S'inscrire avec Google
           </Button>
         </div>
 
         {/* Divider */}
         <div className="flex items-center w-full">
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
-          <span className="mx-2 text-gray-400">or</span>
+          <span className="mx-2 text-gray-400">ou</span>
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
         </div>
 
@@ -75,7 +75,7 @@ const RegisterPage = () => {
         <div className="w-full flex flex-col items-start gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="firstname">
-              First Name
+              Prénom
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -88,7 +88,7 @@ const RegisterPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="firstname">
-              Last Name
+              Nom
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -101,7 +101,7 @@ const RegisterPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="email">
-              Email
+              Mail
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -114,7 +114,7 @@ const RegisterPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="password">
-              Password
+              Mot de passe
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -133,18 +133,18 @@ const RegisterPage = () => {
           onClick={handleLogin}
           disabled={!isInputFilled}
         >
-          Sign Up
+          S'inscire
         </Button>
 
         {/* Footer */}
         <div className="flex items-center justify-center w-full">
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Already have an account?{" "}
+            Tu as déjà un compte ?{" "}
             <span
               className="transition-all text-primary-500 cursor-pointer hover:underline"
               onClick={() => router.push("/auth/login")}
             >
-              Log in
+              Connecte-toi
             </span>
           </p>
         </div>

@@ -36,10 +36,10 @@ const LoginPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-1 items-start">
           <h1 className="text-2xl outfit-regular text-white">
-            Happy to see you again!
+            Ravis de te revoir !
           </h1>
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Fill in the fields below or log in with Google.
+            Rempli les champs ci-dessous ou connecte-toi avec Google.
           </p>
         </div>
 
@@ -56,14 +56,14 @@ const LoginPage = () => {
               height={20}
               alt="Google Logo"
             />
-            Sign in with Google
+            Se connecter avec Google
           </Button>
         </div>
 
         {/* Divider */}
         <div className="flex items-center w-full">
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
-          <span className="mx-2 text-gray-400">or</span>
+          <span className="mx-2 text-gray-400">ou</span>
           <hr className="flex-grow border-t border-gray-300 border-opacity-50" />
         </div>
 
@@ -71,7 +71,7 @@ const LoginPage = () => {
         <div className="w-full flex flex-col items-start gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="email">
-              Email
+              Mail
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -84,7 +84,7 @@ const LoginPage = () => {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-white outfit-light" htmlFor="password">
-              Password
+              Mot de passe
             </Label>
             <Input
               className="rounded-full px-[5%] py-[2.5%] outfit-regular text-white text-lg"
@@ -103,18 +103,18 @@ const LoginPage = () => {
           onClick={handleLogin}
           disabled={!isInputFilled}
         >
-          Login
+          Connexion
         </Button>
 
         {/* Footer */}
         <div className="flex items-center justify-center w-full">
           <p className="text-xs outfit-light text-white text-opacity-75">
-            Don't have an account?{" "}
+            Tu n'as pas de compte ?{" "}
             <span
               className="transition-all text-primary-500 cursor-pointer hover:underline"
               onClick={() => router.push("/auth/register")}
             >
-              Sign up
+              Inscris-toi
             </span>
           </p>
         </div>
