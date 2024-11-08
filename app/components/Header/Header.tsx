@@ -24,33 +24,45 @@ export const Header = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [linksToShow, setLinksToShow] =
     useState<Record<string, string>>(guestLinks);
-  const [selectedLink, setSelectedLink] = useState<string>("");
+  const [selectedLink, setSelectedLink] = useState<string>(
+    window.location.pathname
+  );
 
-  // Charger l'état de connexion depuis localStorage au montage du composant
-  useEffect(() => {
+  // Fonction pour charger l'état de connexion depuis le localStorage
+  const updateLoginStatus = () => {
     const storedLoginStatus = localStorage.getItem("isLogin");
-    if (storedLoginStatus) {
-      const parsedLoginStatus = JSON.parse(storedLoginStatus);
-      setIsLogin(parsedLoginStatus);
-      setLinksToShow(parsedLoginStatus ? loginLinks : guestLinks);
-      setSelectedLink(
-        parsedLoginStatus ? loginLinks.Accueil : guestLinks.Solution
-      );
-    }
+    const loginStatus = storedLoginStatus === "true";
+    setIsLogin(loginStatus);
+    setLinksToShow(loginStatus ? loginLinks : guestLinks);
+    setSelectedLink(loginStatus ? loginLinks.Accueil : guestLinks.Solution);
+  };
+
+  useEffect(() => {
+    // Charger l'état initial de connexion
+    updateLoginStatus();
+
+    // Écoute de l'événement personnalisé 'loginStatusChanged' pour les mises à jour de connexion
+    const handleLoginStatusChange = () => updateLoginStatus();
+    window.addEventListener("loginStatusChanged", handleLoginStatusChange);
+
+    // Nettoyage de l'écouteur lors du démontage du composant
+    return () => {
+      window.removeEventListener("loginStatusChanged", handleLoginStatusChange);
+    };
   }, []);
 
-  // Mettre à jour localStorage et les liens affichés seulement quand isLogin change
   const handleLoginToggle = () => {
     const newLoginStatus = !isLogin;
     setIsLogin(newLoginStatus);
     localStorage.setItem("isLogin", JSON.stringify(newLoginStatus));
-    setLinksToShow(newLoginStatus ? loginLinks : guestLinks);
-    setSelectedLink(newLoginStatus ? loginLinks.Accueil : guestLinks.Solution);
-    if (newLoginStatus) {
-      router.push(loginLinks.Accueil);
-    } else if (!newLoginStatus) {
-      router.push(guestLinks.Solution);
-    }
+
+    // Déclencher l'événement personnalisé pour informer d'un changement de connexion
+    window.dispatchEvent(new CustomEvent("loginStatusChanged"));
+
+    // Redirection et mise à jour du lien sélectionné
+    const newLink = newLoginStatus ? loginLinks.Accueil : guestLinks.Solution;
+    setSelectedLink(newLink);
+    router.push(newLink);
   };
 
   return (
@@ -80,7 +92,14 @@ export const Header = () => {
       </div>
       <Button
         className="rounded-full outfit-regular text-sm text-white px-[2.5%] py-[1%] ml-auto"
-        onClick={handleLoginToggle}
+        onClick={
+          isLogin
+            ? handleLoginToggle
+            : () => {
+                router.push("/auth/login");
+                setSelectedLink("/auth/login");
+              }
+        }
       >
         {isLogin ? "Se déconnecter" : "Se connecter"}
       </Button>
