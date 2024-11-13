@@ -12,10 +12,13 @@ on:
       - main
     types:
       - closed
+  workflow_dispatch: {}
 
 jobs:
   push_to_mirror:
-    if: github.repository == 'EdukaiFR/website' && github.event.pull_request.merged == true
+    if: github.repository == 'EdukaiFR/website' &&
+      (github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
 
