@@ -7,10 +7,15 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
   push_to_mirror:
-    if: github.repository == 'EdukaiFR/website'
+    if: github.repository == 'EdukaiFR/website' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
