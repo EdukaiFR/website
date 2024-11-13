@@ -1,7 +1,7 @@
 name: Mirror Workflow 🪞
 
 env:
-  MIRROR_URL: "git@github.com:EpitechPromo2026/G-EIP-700-STG-7-1-eip-khalid.belkassmi-el-hafi.git"
+  MIRROR_URL: "EpitechPromo2026/G-EIP-700-STG-7-1-eip-khalid.belkassmi-el-hafi.git"
 
 on:
   push:
