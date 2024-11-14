@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const loginLinks = {
@@ -21,6 +21,7 @@ const guestLinks = {
 
 export const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [linksToShow, setLinksToShow] =
     useState<Record<string, string>>(guestLinks);
@@ -105,6 +106,11 @@ export const Header = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [selectedLink]);
+
+  useEffect(() => {
+    console.log("Actual pathname:", pathname);
+    updateUnderline(pathname); // Update underline position when pathname changes
+  }, [pathname]);
 
   return (
     <div className="relative flex items-center justify-between w-full py-[2%] px-4">
