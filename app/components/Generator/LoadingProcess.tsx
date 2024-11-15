@@ -35,10 +35,10 @@ export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
         <>
           {/* Header */}
           <div className="flex flex-col items-center justify-center gap-2">
-            <h3 className="outfit-regular text-xl text-white">
+            <h3 className="outfit-regular text-lg lg:text-xl text-white">
               Génération en cours...
             </h3>
-            <p className="text-white text-opacity-75 text-md outfit-regular">
+            <p className="text-white text-opacity-75 text-xs lg:text-md outfit-regular">
               Merci de patienter quelques instants
             </p>
           </div>
@@ -52,11 +52,11 @@ export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
         <>
           {/* Header */}
           <div className="flex flex-col items-center justify-center gap-2">
-            <h3 className="outfit-regular text-xl text-white">
+            <h3 className="outfit-regular text-md lg:text-xl text-white text-center lg:text-left">
               <span className="text-accent">Félicitations</span>, la génération
               est terminée !
             </h3>
-            <p className="text-white text-opacity-75 text-md outfit-regular">
+            <p className="text-white text-opacity-75 text-xs lg:text-md text-center lg:text-left outfit-regular">
               vous retrouverez ce cours dans l’onglet “Mes cours”.
             </p>
           </div>

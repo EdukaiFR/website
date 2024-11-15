@@ -108,16 +108,16 @@ export default function Generator() {
 
   return (
     <div className="flex items-center justify-center w-full h-full mb-10">
-      <div className="border-2 border-[#FFFFFF] border-opacity-15 rounded-[20px] p-[30px] flex flex-col gap-5">
+      <div className="border-2 border-[#FFFFFF] border-opacity-15 rounded-[20px] p-[10px] lg:p-[30px] flex flex-col gap-5">
         {!isGenerating ? (
           <>
             {/* Header */}
-            <div className="flex flex-col items-center justify-center gap-2">
-              <h3 className="outfit-regular text-xl text-white">
+            <div className="flex flex-col items-center justify-center gap-1 lg:gap-2">
+              <h3 className="outfit-regular text-xl text-white text-center lg:text-start">
                 Bienvenue dans le{" "}
                 <span className="text-accent-500">Générateur</span>
               </h3>
-              <p className="text-white text-opacity-75 text-md outfit-regular">
+              <p className="text-white text-opacity-75 text-xs lg:text-md outfit-regular">
                 Veuillez sélectionner une des deux options
               </p>
             </div>
@@ -125,7 +125,7 @@ export default function Generator() {
             {/* Import Option */}
             <div className="transition-all flex flex-col gap-4 items-center justify-center w-full mt-6">
               <div
-                className={`transition-all w-full flex flex-row items-center gap-[60px] p-4 border-2 rounded-lg cursor-not-allowed ${
+                className={`transition-all w-full flex flex-col lg:flex-row items-center gap-[20px] lg:gap-[60px] p-4 border-2 rounded-lg cursor-not-allowed ${
                   formFields.option === "pictures"
                     ? "border-primary-500 border-opacity-100"
                     : "border-[#FFFFFF] border-opacity-50"
@@ -140,23 +140,25 @@ export default function Generator() {
                   }`}
                 />
                 <div className="transition-all flex flex-col gap-1 text-white outfit-regular text-left">
-                  <p className="text-lg">Prendre une / des photo(s)</p>
-                  <p className="text-md text-white text-opacity-75">
+                  <p className="text-sm lg:text-lg text-center lg:text-start">
+                    Prendre une / des photo(s)
+                  </p>
+                  <p className="text-xs lg:text-md text-white text-opacity-75 text-center lg:text-start">
                     Prends des photos de ton cours, peu importe la taille de ton
                     cours !
                   </p>
                 </div>
                 {formFields.option === "pictures" ? (
-                  <div className="ml-auto transition-all w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+                  <div className="lg:ml-auto transition-all w-6 h-6 bg-primary-500 rounded-full flex items-center lg:justify-center">
                     <div className="transition-all w-3 h-3 bg-[#FFFFFF] rounded-full" />
                   </div>
                 ) : (
-                  <div className="ml-auto transition-all w-6 h-6 border-2 border-[#FFFFFF] border-opacity-50 rounded-full" />
+                  <div className="lg:ml-auto transition-all w-6 h-6 border-2 border-[#FFFFFF] border-opacity-50 rounded-full" />
                 )}
               </div>
 
               <div
-                className={`w-full flex flex-row items-center gap-[60px] p-4 border-2 rounded-lg cursor-pointer ${
+                className={`w-full flex flex-col lg:flex-row items-center gap-[20px] lg:gap-[60px] p-4 border-2 rounded-lg cursor-pointer ${
                   formFields.option === "files"
                     ? "border-primary-500 border-opacity-100"
                     : "border-[#FFFFFF] border-opacity-50"
@@ -172,17 +174,19 @@ export default function Generator() {
                   }`}
                 />
                 <div className="flex flex-col gap-1 text-white outfit-regular text-left">
-                  <p className="text-lg">Importer tes fichiers</p>
-                  <p className="text-md text-white text-opacity-75">
+                  <p className="text-sm lg:text-lg text-center lg:text-start">
+                    Importer tes fichiers
+                  </p>
+                  <p className="text-xs lg:text-md text-white text-opacity-75 text-center lg:text-start">
                     Importe un ou des fichiers pour analyser le contenu.
                   </p>
                 </div>
                 {formFields.option === "files" ? (
-                  <div className="ml-auto w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+                  <div className="lg:ml-auto w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
                     <div className="w-3 h-3 bg-[#FFFFFF] rounded-full" />
                   </div>
                 ) : (
-                  <div className="ml-auto transition-all w-6 h-6 border-2 border-[#FFFFFF] border-opacity-50 rounded-full" />
+                  <div className="lg:ml-auto transition-all w-6 h-6 border-2 border-[#FFFFFF] border-opacity-50 rounded-full" />
                 )}
               </div>
             </div>
@@ -190,11 +194,14 @@ export default function Generator() {
             {/* File Section */}
             <div className="flex flex-col gap-2 outfit-regular text-white">
               <div className="grid w-full items-center gap-1.5">
-                <Label className="text-white text-opacity-50" htmlFor="picture">
+                <Label
+                  className="text-white text-opacity-50 text-sm lg:text-lg"
+                  htmlFor="picture"
+                >
                   Fichiers
                 </Label>
                 <Input
-                  className="text-white w-full text-lg outfit-regular"
+                  className="text-white w-full text-sm lg:text-lg outfit-regular"
                   multiple
                   id="picture"
                   type="file"
@@ -205,7 +212,7 @@ export default function Generator() {
                 {formFields.files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between gap-2 px-8 py-4 rounded-lg border-2 border-white border-opacity-50"
+                    className="flex items-center justify-between gap-2 px-4 py-2 lg:px-8 lg:py-4 rounded-lg border-2 border-white border-opacity-50"
                   >
                     <Image
                       src={getFileTypeIcon(file.name.split(".").pop() || "")}
@@ -213,11 +220,11 @@ export default function Generator() {
                       height={40}
                       alt="file-icon"
                     />
-                    <div className="flex flex-col gap-1 items-start justify-start w-96 mr-auto ml-4">
-                      <p className="text-white max-w-full truncate overflow-hidden whitespace-nowrap">
+                    <div className="flex flex-col gap-1 items-start justify-start w-32 lg:w-96 mr-auto ml-2 lg:ml-4">
+                      <p className="text-white max-w-full truncate overflow-hidden whitespace-nowrap text-sm lg:text-lg">
                         {file.name.split(".").slice(0, -1).join(".")}
                       </p>
-                      <div className="flex items-center gap-2 text-sm opacity-50 text-white outfit-regular">
+                      <div className="flex items-center gap-0 lg:gap-2 text-xs lg:text-sm opacity-50 text-white outfit-regular">
                         <p>{file.name.split(".").pop()}</p>
                         <p className="w-24 text-right">
                           {formatFileSize(file.size)}
@@ -247,13 +254,13 @@ export default function Generator() {
             <div className="flex flex-col gap-2">
               <div className="grid w-full items-center gap-1.5">
                 <Label
-                  className="text-white outfit-light text-opacity-50"
+                  className="text-white text-sm lg:text-lg outfit-light text-opacity-50"
                   htmlFor="text"
                 >
                   Title
                 </Label>
                 <Input
-                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-lg"
+                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-sm lg:text-lg"
                   type="text"
                   id="text"
                   placeholder="Comprendre les équations"
@@ -263,13 +270,13 @@ export default function Generator() {
               </div>
               <div className="grid w-full items-center gap-1.5">
                 <Label
-                  className="text-white outfit-light text-opacity-50"
+                  className="text-white outfit-light text-opacity-50 text-sm lg:text-lg"
                   htmlFor="subject"
                 >
                   Matière
                 </Label>
                 <Input
-                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-lg"
+                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-sm lg:text-lg"
                   type="text"
                   id="subject"
                   placeholder="Mathématiques"
@@ -279,13 +286,13 @@ export default function Generator() {
               </div>
               <div className="grid w-full items-center gap-1.5">
                 <Label
-                  className="text-white outfit-light text-opacity-50"
+                  className="text-white outfit-light text-opacity-50 text-sm lg:text-lg"
                   htmlFor="level"
                 >
                   Niveau d'étude
                 </Label>
                 <Input
-                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-lg"
+                  className="rounded-full px-[5%] py-[3.5%] outfit-regular text-white text-sm lg:text-lg"
                   type="text"
                   id="level"
                   placeholder="Sixième"
