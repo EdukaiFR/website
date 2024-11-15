@@ -245,7 +245,21 @@ export const Header = () => {
                   ))}
                 </nav>
 
-                <div className="flex items-end justify-center gap-3 mb-auto mt-5">
+                <div className="flex flex-col items-center justify-center gap-5 mt-auto mb-20">
+                  <Button
+                    className="rounded-full outfit-regular text-sm text-white px-[10%] py-[5%]"
+                    onClick={
+                      isLogin
+                        ? handleLoginToggle
+                        : () => {
+                            router.push("/auth/login");
+                            setSelectedLink("/auth/login");
+                            updateUnderline("/auth/login"); // Update underline on login click
+                          }
+                    }
+                  >
+                    {isLogin ? "Se déconnecter" : "Se connecter"}
+                  </Button>
                   <Badge className="flex items-center justify-center gap-2 outfit-regular text-xs text-primary-500 px-3 py-1 rounded-full border border-primary-500 bg-primary-500 bg-opacity-25 hover:bg-primary-500 hover:bg-opacity-25 whitespace-nowrap">
                     <Image
                       src={"/icons/stars.svg"}
