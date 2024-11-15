@@ -255,6 +255,7 @@ export const Header = () => {
                             router.push("/auth/login");
                             setSelectedLink("/auth/login");
                             updateUnderline("/auth/login"); // Update underline on login click
+                            toggleMenu();
                           }
                     }
                   >
