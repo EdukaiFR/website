@@ -28,14 +28,18 @@ export const Header = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [linksToShow, setLinksToShow] =
     useState<Record<string, string>>(guestLinks);
-  const [selectedLink, setSelectedLink] = useState<string>(
-    window.location.pathname
-  );
+  const [selectedLink, setSelectedLink] = useState<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [underlinePosition, setUnderlinePosition] = useState<number>(0);
   const [underlineWidth, setUnderlineWidth] = useState<number>(0);
   const linkRefs = useRef<{ [key: string]: HTMLAnchorElement | null }>({});
   const linksContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSelectedLink(window.location.pathname);
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
