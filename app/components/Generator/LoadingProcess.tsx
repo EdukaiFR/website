@@ -80,7 +80,7 @@ export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
           <Button
             onClick={(e) => {
               e.preventDefault();
-              router.push("/myCourses");
+              router.push("/myCourses/12");
             }}
             className="mt-4 rounded-full text-white outfit-regular"
           >
