@@ -1,6 +1,10 @@
 "use client";
 
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
+import {
+  InsightsCardAccent,
+  InsightsCardPrimary,
+} from "@/app/components/MyCourse/[id]/InsightsCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -162,6 +166,40 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       <FileSection files={files} ctaUpdate={updateFile} />
 
       {/* Insights + Exams */}
+      <div className="flex items-center justify-between w-full max-w-[96.5%] ml-[3.5%] mb-5">
+        {/* Insights */}
+        <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full max-w-[40%]">
+          {/* Header */}
+          <div className="flex flex-col items-start gap-1 w-full">
+            <p className="text-md text-white outfit-regular">
+              Statistiques sur le Quizz
+            </p>
+            <p className="text-sm text-white text-opacity-75 outfit-regular">
+              Ton objectif de réussite est de{" "}
+              <span className="text-accent text-opacity-75">
+                {course.insights.winRateGoal}%
+              </span>
+            </p>
+          </div>
+
+          {/* Cards */}
+          <div className="flex items-center justify-start gap-4 w-full">
+            <InsightsCardAccent
+              title="Ton taux de réussite"
+              value={course.insights.winRate.score}
+              unit="%"
+              base="sur 3 essais"
+            />
+            <InsightsCardPrimary
+              title="Taux de réussite moyen"
+              value={course.insights.averageWinRate.score}
+              unit="%"
+              base={`sur ${course.insights.averageWinRate.nbPersons} personnes`}
+            />
+          </div>
+        </div>
+        {/* Exams */}
+      </div>
     </div>
   );
 }
