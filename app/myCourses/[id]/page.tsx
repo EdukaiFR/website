@@ -1,5 +1,6 @@
 "use client";
 
+import { ExamCard } from "@/app/components/MyCourse/[id]/ExamCard";
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
 import {
   InsightsCardAccent,
@@ -166,7 +167,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       <FileSection files={files} ctaUpdate={updateFile} />
 
       {/* Insights + Exams */}
-      <div className="flex items-center justify-between w-full max-w-[96.5%] ml-[3.5%] mb-5">
+      <div className="flex items-center justify-between gap-4 w-full max-w-[96.5%] ml-[3.5%] mb-5">
         {/* Insights */}
         <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full max-w-[40%]">
           {/* Header */}
@@ -199,6 +200,30 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </div>
         </div>
         {/* Exams */}
+        <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
+          {/* Header */}
+          <div className="flex flex-col items-start gap-1 w-full">
+            <p className="text-md text-white outfit-regular">Examen Prévu</p>
+            <p className="text-sm text-white text-opacity-75 outfit-regular">
+              Tu as{" "}
+              <span className="text-accent text-opacity-75">
+                {course.exams.length}
+              </span>{" "}
+              examens prévus pour ce cours
+            </p>
+          </div>
+
+          {/* Cards */}
+          <div className="flex items-center justify-between gap-4 w-full">
+            {course.exams.map((exam) => (
+              <ExamCard
+                key={exam.id}
+                title={exam.title}
+                value={exam.daysLeft}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
