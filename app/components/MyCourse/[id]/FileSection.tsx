@@ -84,15 +84,15 @@ export const FileSection = ({ files, ctaUpdate }: FileSectionProps) => {
   }, [fullscreenImageIndex]);
 
   return (
-    <div className="w-full max-w-[96.5%] rounded-lg bg-primary-500 bg-opacity-25 flex flex-col items-start gap-4 p-5 ml-[3.5%] mt-4">
+    <div className="w-full max-w-[96.5%] rounded-lg bg-primary-500 bg-opacity-25 flex flex-col items-center lg:items-start gap-4 p-5 ml-[2%] lg:ml-[3.5%] mt-4">
       {/* Header */}
-      <p className="text-white outfit-regular text-md">
+      <p className="text-white outfit-regular text-md text-center lg:text-left">
         Tu as envoyé <span className="text-accent">{files.length}</span>{" "}
         fichiers
       </p>
 
       {/* Files Preview + CTA Add */}
-      <div className="flex items-center justify-start gap-3 flex-wrap w-full">
+      <div className="flex items-center justify-center lg:justify-start gap-3 flex-wrap w-full">
         {files.map((file, index) => (
           <div
             key={index}

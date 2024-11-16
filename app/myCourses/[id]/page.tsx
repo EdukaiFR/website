@@ -95,7 +95,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       {/* Header */}
       <div className="flex flex-col gap-3 items-start w-full">
         {/* Go Back, Title & CTA */}
-        <div className="w-full flex items-center gap-4 text-white outfit-refular">
+        <div className="w-full flex flex-wrap items-center gap-2 lg:gap-4 text-white outfit-refular">
           {/* Go back */}
           <Button
             variant={"ghost"}
@@ -107,13 +107,13 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </Button>
 
           {/* Title */}
-          <h1 className="text-3xl">{course.title}</h1>
+          <h1 className="text-xl lg:text-3xl">{course.title}</h1>
 
           {/* CTA */}
           <Button
             variant={"outline"}
             size={"lg"}
-            className="px-[3%] ml-auto bg-transparent border-2 border-white text-white outfit-regular text-sm rounded-full hover:bg-white hover:bg-opacity-10"
+            className="px-[3%] ml-auto bg-transparent border-2 border-white text-white outfit-regular text-sm rounded-full hover:bg-white hover:bg-opacity-10 w-full lg:w-auto"
             onClick={() => setIsResumeFilesVisible(!isResumeFilesVisible)}
           >
             {isResumeFilesVisible ? <EyeOff size={24} /> : <Eye size={24} />}
@@ -121,7 +121,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </Button>
           <Button
             size={"lg"}
-            className="px-[3%] text-white rounded-full text-sm outfit-regular"
+            className="px-[3%] text-white rounded-full text-sm outfit-regular w-full lg:w-auto"
             onClick={() => console.log("Je dois lancer le quizz")}
           >
             <BicepsFlexed size={24} />
@@ -130,8 +130,8 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Course informations */}
-        <div className="flex items-center justify-start gap-3 ml-[3.5%]">
-          <p className="text-white text-opacity-75 text-sm outfit-regular">
+        <div className="flex items-center justify-start gap-3 ml-[2%] lg:ml-[3.5%]">
+          <p className="text-white text-opacity-75 text-xs lg:text-sm outfit-regular">
             Créer par:{" "}
             <span className="underline-offset-4">{course.creator}</span>
           </p>
@@ -145,7 +145,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Nb questions & Nb resume files */}
-        <div className="flex items-center justify-start gap-8 ml-[3.5%]">
+        <div className="flex items-center justify-start gap-8 ml-[2%] lg:ml-[3.5%]">
           {/* Quizz */}
           <div className="flex items-center justify-start gap-3">
             <Brain className="text-primary-500" size={24} />
@@ -167,11 +167,11 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       <FileSection files={files} ctaUpdate={updateFile} />
 
       {/* Insights + Exams */}
-      <div className="flex items-center justify-between gap-4 w-full max-w-[96.5%] ml-[3.5%] mb-5">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
         {/* Insights */}
-        <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full max-w-[40%]">
+        <div className="p-3 flex flex-col items-center lg:items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full lg:max-w-[40%]">
           {/* Header */}
-          <div className="flex flex-col items-start gap-1 w-full">
+          <div className="flex flex-col items-center lg:items-start gap-1 w-full">
             <p className="text-md text-white outfit-regular">
               Statistiques sur le Quizz
             </p>
@@ -184,7 +184,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Cards */}
-          <div className="flex items-center justify-start gap-4 w-full">
+          <div className="flex flex-col lg:flex-row items-center justify-start gap-4 w-full">
             <InsightsCardAccent
               title="Ton taux de réussite"
               value={course.insights.winRate.score}
@@ -204,7 +204,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           {/* Header */}
           <div className="flex flex-col items-start gap-1 w-full">
             <p className="text-md text-white outfit-regular">Examen Prévu</p>
-            <p className="text-sm text-white text-opacity-75 outfit-regular">
+            <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
               Tu as{" "}
               <span className="text-accent text-opacity-75">
                 {course.exams.length}
@@ -214,7 +214,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Cards */}
-          <div className="flex items-center justify-between gap-4 w-full">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
             {course.exams.map((exam) => (
               <ExamCard
                 key={exam.id}
