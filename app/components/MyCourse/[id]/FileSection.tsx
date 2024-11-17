@@ -178,23 +178,6 @@ export const FileSection = ({ files, ctaUpdate }: FileSectionProps) => {
                 }}
               />
             </div>
-
-            {/* <input
-              type="file"
-              className="mt-5 rounded-full bg-transparant border-2 border-white text-white outfit-regular text-sm p-2 w-full"
-              multiple
-              onChange={(e) => {
-                const newFiles = e.target.files
-                  ? Array.from(e.target.files).map((file) => ({
-                      href: URL.createObjectURL(file),
-                      name: file.name,
-                    }))
-                  : [];
-
-                ctaUpdate([...files, ...newFiles]);
-                setIsAddingFiles(false);
-              }}
-            /> */}
           </div>
         </div>
       )}

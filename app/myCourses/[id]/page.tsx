@@ -442,7 +442,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       {!isQuestionsVisible && !isResumeFilesVisible && (
         <>
           {/* Files Section */}
-          <FileSection files={files} ctaUpdate={updateFile} />
+          <FileSection files={files} ctaUpdate={setFiles} />
 
           {/* Insights + Exams */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
