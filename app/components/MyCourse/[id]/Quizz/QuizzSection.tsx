@@ -46,7 +46,7 @@ export const QuizzSection = ({
   const currentQuestionData = questions[currentQuestion];
 
   return (
-    <div className="p-5 rounded-lg w-[50%] border-2 border-white border-opacity-25 flex flex-col gap-5 items-center justify-center">
+    <div className="p-5 rounded-lg w-full lg:w-[50%] border-2 border-white border-opacity-25 flex flex-col gap-5 items-center justify-center">
       {/* Header */}
       {!isQuizzCompleted && (
         <div className="flex flex-col gap-1 items-center justify-center w-full">
@@ -66,7 +66,7 @@ export const QuizzSection = ({
         <div className="flex flex-col items-start w-full gap-4">
           {/* Question */}
           {currentQuestion <= questions.length - 1 && !isQuizzCompleted && (
-            <p className="text-white text-lg outfit-regular">
+            <p className="text-white text-md lg:text-lg outfit-regular">
               {currentQuestionData.question}
             </p>
           )}
@@ -137,7 +137,7 @@ export const QuizzSection = ({
                     </p>
                     {/* Explanation */}
                     {isAnswered && answer.isCorrect && answer.explanation && (
-                      <p className="text-sm text-white text-opacity-75 outfit-regular mt-4">
+                      <p className="text-sm text-[#01D539] text-opacity-50 outfit-regular mt-4">
                         {answer.explanation}
                       </p>
                     )}
