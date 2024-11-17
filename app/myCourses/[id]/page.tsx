@@ -6,6 +6,7 @@ import {
   InsightsCardAccent,
   InsightsCardPrimary,
 } from "@/app/components/MyCourse/[id]/InsightsCard";
+import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +14,11 @@ import {
   BicepsFlexed,
   BookCheck,
   Brain,
+  CircleStop,
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fictive Data for the course
 const course = {
@@ -39,8 +41,245 @@ const course = {
     },
   ], // files of the course
   quiz: {
-    nbQuestions: 62,
-  }, // quiz of the course
+    nbQuestions: 10,
+    questions: [
+      {
+        question: "Quand a eu lieu la Seconde Guerre mondiale ?",
+        answers: [
+          {
+            answer: "1939 - 1945",
+            isCorrect: true,
+            explanation:
+              "La guerre a débuté avec l'invasion de la Pologne en 1939 et s'est terminée en 1945 avec la capitulation de l'Allemagne et du Japon.",
+          },
+          {
+            answer: "1914 - 1918",
+            isCorrect: false,
+          },
+          {
+            answer: "1945 - 1950",
+            isCorrect: false,
+          },
+          {
+            answer: "1940 - 1945",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question:
+          "Quel événement a marqué le début de la Seconde Guerre mondiale ?",
+        answers: [
+          {
+            answer: "L'invasion de la Pologne par l'Allemagne",
+            isCorrect: true,
+            explanation:
+              "L'Allemagne nazie a envahi la Pologne le 1er septembre 1939, ce qui a conduit la France et le Royaume-Uni à déclarer la guerre à l'Allemagne.",
+          },
+          {
+            answer: "L'attaque de Pearl Harbor",
+            isCorrect: false,
+          },
+          {
+            answer: "La bataille de Stalingrad",
+            isCorrect: false,
+          },
+          {
+            answer: "La capitulation de la France",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question: "Quelle alliance réunissait les forces de l'Axe ?",
+        answers: [
+          {
+            answer: "Allemagne, Italie, Japon",
+            isCorrect: true,
+            explanation:
+              "L'Allemagne, l'Italie et le Japon ont formé l'Axe, une alliance militaire pour dominer l'Europe et l'Asie.",
+          },
+          {
+            answer: "France, Royaume-Uni, URSS",
+            isCorrect: false,
+          },
+          {
+            answer: "États-Unis, Royaume-Uni, Chine",
+            isCorrect: false,
+          },
+          {
+            answer: "Allemagne, URSS, Italie",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question:
+          "Quel pays a rejoint les Alliés après l'attaque de Pearl Harbor ?",
+        answers: [
+          {
+            answer: "Les États-Unis",
+            isCorrect: true,
+            explanation:
+              "Les États-Unis ont rejoint les Alliés après que le Japon a attaqué leur base navale de Pearl Harbor le 7 décembre 1941.",
+          },
+          {
+            answer: "Le Japon",
+            isCorrect: false,
+          },
+          {
+            answer: "L'Allemagne",
+            isCorrect: false,
+          },
+          {
+            answer: "L'Italie",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question:
+          "Quelle conférence a décidé du partage de l'Allemagne après la guerre ?",
+        answers: [
+          {
+            answer: "La conférence de Yalta",
+            isCorrect: true,
+            explanation:
+              "En février 1945, les Alliés se sont réunis à Yalta pour organiser le partage de l'Allemagne en zones d'occupation.",
+          },
+          {
+            answer: "La conférence de Potsdam",
+            isCorrect: false,
+          },
+          {
+            answer: "La conférence de Téhéran",
+            isCorrect: false,
+          },
+          {
+            answer: "La conférence de Munich",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question:
+          "Quelle bataille est considérée comme le tournant de la guerre en Europe ?",
+        answers: [
+          {
+            answer: "La bataille de Stalingrad",
+            isCorrect: true,
+            explanation:
+              "La défaite allemande à Stalingrad en 1943 a marqué le début du recul des forces nazies en Europe de l'Est.",
+          },
+          {
+            answer: "La bataille d'Angleterre",
+            isCorrect: false,
+          },
+          {
+            answer: "Le débarquement de Normandie",
+            isCorrect: false,
+          },
+          {
+            answer: "La bataille de Midway",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question: "Quelle ville a été la cible de la première bombe atomique ?",
+        answers: [
+          {
+            answer: "Hiroshima",
+            isCorrect: true,
+            explanation:
+              "Le 6 août 1945, les États-Unis ont largué une bombe atomique sur Hiroshima, marquant une étape clé vers la fin de la guerre.",
+          },
+          {
+            answer: "Nagasaki",
+            isCorrect: false,
+          },
+          {
+            answer: "Tokyo",
+            isCorrect: false,
+          },
+          {
+            answer: "Osaka",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question: "Quel était le chef du gouvernement de Vichy en France ?",
+        answers: [
+          {
+            answer: "Philippe Pétain",
+            isCorrect: true,
+            explanation:
+              "Philippe Pétain dirigeait le régime de Vichy, un gouvernement collaborateur avec l'Allemagne nazie en France.",
+          },
+          {
+            answer: "Charles de Gaulle",
+            isCorrect: false,
+          },
+          {
+            answer: "Léon Blum",
+            isCorrect: false,
+          },
+          {
+            answer: "Jean Moulin",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question: "Quel événement a précipité la capitulation du Japon ?",
+        answers: [
+          {
+            answer: "Les bombes atomiques sur Hiroshima et Nagasaki",
+            isCorrect: true,
+            explanation:
+              "Les bombes atomiques larguées sur Hiroshima et Nagasaki ont conduit le Japon à capituler en août 1945.",
+          },
+          {
+            answer: "La bataille d'Okinawa",
+            isCorrect: false,
+          },
+          {
+            answer: "L'invasion de la Mandchourie par l'URSS",
+            isCorrect: false,
+          },
+          {
+            answer: "Le débarquement des Alliés aux Philippines",
+            isCorrect: false,
+          },
+        ],
+      },
+      {
+        question:
+          "Quel traité a mis fin à la Seconde Guerre mondiale en Europe ?",
+        answers: [
+          {
+            answer: "L'acte de capitulation de l'Allemagne",
+            isCorrect: true,
+            explanation:
+              "Le 8 mai 1945, l'Allemagne a signé un acte de capitulation sans condition, marquant la fin de la guerre en Europe.",
+          },
+          {
+            answer: "Le traité de Versailles",
+            isCorrect: false,
+          },
+          {
+            answer: "Le pacte de non-agression germano-soviétique",
+            isCorrect: false,
+          },
+          {
+            answer: "Le traité de Yalta",
+            isCorrect: false,
+          },
+        ],
+      },
+    ],
+  },
   resumeFiles: {
     nbFiles: 3,
     files: [],
@@ -84,11 +323,24 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
 
   const [isResumeFilesVisible, setIsResumeFilesVisible] =
     useState<boolean>(false);
+  const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
 
   const updateFile = (updatedFiles: any[]) => {
     setFiles(updatedFiles); // Met à jour les fichiers dynamiquement
   };
+
+  useEffect(() => {
+    if (isQuestionsVisible && isResumeFilesVisible) {
+      setIsResumeFilesVisible(false);
+    }
+  }, [isQuestionsVisible]);
+
+  useEffect(() => {
+    if (isQuestionsVisible && isResumeFilesVisible) {
+      setIsQuestionsVisible(false);
+    }
+  }, [isResumeFilesVisible]);
 
   return (
     <div className="w-full flex flex-col gap-2 items-start justify-start mb-auto mt-[4%]">
@@ -122,10 +374,14 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           <Button
             size={"lg"}
             className="px-[3%] text-white rounded-full text-sm outfit-regular w-full lg:w-auto"
-            onClick={() => console.log("Je dois lancer le quizz")}
+            onClick={() => setIsQuestionsVisible(!isQuestionsVisible)}
           >
-            <BicepsFlexed size={24} />
-            Lancer un quiz
+            {isQuestionsVisible ? (
+              <CircleStop size={24} />
+            ) : (
+              <BicepsFlexed size={24} />
+            )}
+            {isQuestionsVisible ? "Arrêter le quiz" : "Lancer un quiz"}
           </Button>
         </div>
 
@@ -163,68 +419,88 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Files Section */}
-      <FileSection files={files} ctaUpdate={updateFile} />
+      {/* Default display */}
+      {!isQuestionsVisible && !isResumeFilesVisible && (
+        <>
+          {/* Files Section */}
+          <FileSection files={files} ctaUpdate={updateFile} />
 
-      {/* Insights + Exams */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
-        {/* Insights */}
-        <div className="p-3 flex flex-col items-center lg:items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full lg:max-w-[40%]">
-          {/* Header */}
-          <div className="flex flex-col items-center lg:items-start gap-1 w-full">
-            <p className="text-md text-white outfit-regular">
-              Statistiques sur le Quizz
-            </p>
-            <p className="text-sm text-white text-opacity-75 outfit-regular">
-              Ton objectif de réussite est de{" "}
-              <span className="text-accent text-opacity-75">
-                {course.insights.winRateGoal}%
-              </span>
-            </p>
-          </div>
+          {/* Insights + Exams */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
+            {/* Insights */}
+            <div className="p-3 flex flex-col items-center lg:items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full lg:max-w-[40%]">
+              {/* Header */}
+              <div className="flex flex-col items-center lg:items-start gap-1 w-full">
+                <p className="text-md text-white outfit-regular">
+                  Statistiques sur le Quizz
+                </p>
+                <p className="text-sm text-white text-opacity-75 outfit-regular">
+                  Ton objectif de réussite est de{" "}
+                  <span className="text-accent text-opacity-75">
+                    {course.insights.winRateGoal}%
+                  </span>
+                </p>
+              </div>
 
-          {/* Cards */}
-          <div className="flex flex-col lg:flex-row items-center justify-start gap-4 w-full">
-            <InsightsCardAccent
-              title="Ton taux de réussite"
-              value={course.insights.winRate.score}
-              unit="%"
-              base="sur 3 essais"
-            />
-            <InsightsCardPrimary
-              title="Taux de réussite moyen"
-              value={course.insights.averageWinRate.score}
-              unit="%"
-              base={`sur ${course.insights.averageWinRate.nbPersons} personnes`}
-            />
+              {/* Cards */}
+              <div className="flex flex-col lg:flex-row items-center justify-start gap-4 w-full">
+                <InsightsCardAccent
+                  title="Ton taux de réussite"
+                  value={course.insights.winRate.score}
+                  unit="%"
+                  base="sur 3 essais"
+                />
+                <InsightsCardPrimary
+                  title="Taux de réussite moyen"
+                  value={course.insights.averageWinRate.score}
+                  unit="%"
+                  base={`sur ${course.insights.averageWinRate.nbPersons} personnes`}
+                />
+              </div>
+            </div>
+            {/* Exams */}
+            <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
+              {/* Header */}
+              <div className="flex flex-col items-start gap-1 w-full">
+                <p className="text-md text-white outfit-regular">
+                  Examen Prévu
+                </p>
+                <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
+                  Tu as{" "}
+                  <span className="text-accent text-opacity-75">
+                    {course.exams.length}
+                  </span>{" "}
+                  examens prévus pour ce cours
+                </p>
+              </div>
+
+              {/* Cards */}
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+                {course.exams.map((exam) => (
+                  <ExamCard
+                    key={exam.id}
+                    title={exam.title}
+                    value={exam.daysLeft}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
+        </>
+      )}
+
+      {/* ResumeFiles Display */}
+      {isResumeFilesVisible && <></>}
+
+      {/* Questions Display */}
+      {isQuestionsVisible && (
+        <div className="w-full flex items-center justify-center mb-5">
+          <QuizzSection
+            questions={course.quiz.questions}
+            setIsQuizzVisible={setIsQuestionsVisible}
+          />
         </div>
-        {/* Exams */}
-        <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
-          {/* Header */}
-          <div className="flex flex-col items-start gap-1 w-full">
-            <p className="text-md text-white outfit-regular">Examen Prévu</p>
-            <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
-              Tu as{" "}
-              <span className="text-accent text-opacity-75">
-                {course.exams.length}
-              </span>{" "}
-              examens prévus pour ce cours
-            </p>
-          </div>
-
-          {/* Cards */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
-            {course.exams.map((exam) => (
-              <ExamCard
-                key={exam.id}
-                title={exam.title}
-                value={exam.daysLeft}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
