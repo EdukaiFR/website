@@ -22,6 +22,14 @@ export const QuizzSection = ({
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [isQuizzCompleted, setIsQuizzCompleted] = useState<boolean>(false);
 
+  const playAgain = () => {
+    setGoodAnswers(0);
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setIsQuizzCompleted(false);
+  };
+
   const handleAnswer = (isCorrect: boolean) => {
     setIsAnswered(true);
     if (isCorrect) {
@@ -211,12 +219,22 @@ export const QuizzSection = ({
             {questions.length}.
           </p>
 
-          <Button
-            onClick={() => setIsQuizzVisible(false)}
-            className="text-md mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
-          >
-            Fermer le quiz
-          </Button>
+          <div className="flex flex-col gap-2 items-center justify-center w-full">
+            <Button
+              onClick={() => playAgain()}
+              className="w-full text-md mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
+            >
+              Relancer le quiz
+            </Button>
+            <Button
+              variant={"outline"}
+              size={"lg"}
+              className="w-full px-[3%] ml-auto bg-transparent border-2 border-white text-white outfit-regular text-sm rounded-full hover:bg-white hover:bg-opacity-10"
+              onClick={() => setIsQuizzVisible(false)}
+            >
+              Fermer le quiz
+            </Button>
+          </div>
         </div>
       )}
     </div>
