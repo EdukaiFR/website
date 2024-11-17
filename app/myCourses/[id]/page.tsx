@@ -7,6 +7,7 @@ import {
   InsightsCardPrimary,
 } from "@/app/components/MyCourse/[id]/InsightsCard";
 import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
+import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -282,7 +283,20 @@ const course = {
   },
   resumeFiles: {
     nbFiles: 3,
-    files: [],
+    files: [
+      {
+        name: "Fiche 3",
+        url: "/icons/filesType/resumeFiles/image 2.png",
+      },
+      {
+        name: "Fiche 2",
+        url: "/icons/filesType/resumeFiles/image-1.png",
+      },
+      {
+        name: "Fiche 1",
+        url: "/icons/filesType/resumeFiles/image.png",
+      },
+    ],
   }, // resume files of the course
   creator: "Toi", // creator of the course
   creationDate: new Date(), // creation date of the course
@@ -325,9 +339,14 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
     useState<boolean>(false);
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
+  const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
 
   const updateFile = (updatedFiles: any[]) => {
-    setFiles(updatedFiles); // Met à jour les fichiers dynamiquement
+    setResumeFiles(updatedFiles);
+  };
+
+  const updateResumeFile = (updatedFiles: any[]) => {
+    setFiles(updatedFiles);
   };
 
   useEffect(() => {
@@ -490,7 +509,14 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       )}
 
       {/* ResumeFiles Display */}
-      {isResumeFilesVisible && <></>}
+      {isResumeFilesVisible && (
+        <div className="w-full flex items-center justify-center mb-5">
+          <ResumeSection
+            resumeFiles={resumeFiles}
+            updateResumeFile={updateFile}
+          />
+        </div>
+      )}
 
       {/* Questions Display */}
       {isQuestionsVisible && (
