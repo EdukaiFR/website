@@ -88,7 +88,7 @@ export const FileSection = ({ files, ctaUpdate }: FileSectionProps) => {
       {/* Header */}
       <p className="text-white outfit-regular text-md text-center lg:text-left">
         Tu as envoyé <span className="text-accent">{files.length}</span>{" "}
-        fichiers
+        {files.length === 1 ? 'fichier' : 'fichiers' }
       </p>
 
       {/* Files Preview + CTA Add */}
