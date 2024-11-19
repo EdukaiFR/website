@@ -407,7 +407,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
         {/* Course informations */}
         <div className="flex items-center justify-start gap-3 ml-[2%] lg:ml-[3.5%]">
           <p className="text-white text-opacity-75 text-xs lg:text-sm outfit-regular">
-            Créer par:{" "}
+            Créé par: {" "}
             <span className="underline-offset-4">{course.creator}</span>
           </p>
 
