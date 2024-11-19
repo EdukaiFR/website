@@ -432,7 +432,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           <div className="flex items-center justify-start gap-3">
             <BookCheck className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
-              {course.resumeFiles.nbFiles } {course.resumeFiles.nbFiles === 1 ?  'fiche' : 'fiches' }
+              {course.resumeFiles.nbFiles} {course.resumeFiles.nbFiles === 1 ?  'fiche' : 'fiches' }
             </p>
           </div>
         </div>

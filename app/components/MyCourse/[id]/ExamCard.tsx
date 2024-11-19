@@ -11,7 +11,7 @@ export const ExamCard = ({ title, value }: ExamCardProps) => {
       </p>
       <div className="flex items-center justify-center gap-5 w-full">
         <p className="text-5xl outfit-regular">{value}</p>
-        <p className="text-sm text-white text-opacity-75">jours restant</p>
+        <p className="text-sm text-white text-opacity-75">{value === 1 ? 'jour restant' : 'jours restants'}</p>
       </div>
     </div>
   );
