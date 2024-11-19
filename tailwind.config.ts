@@ -51,6 +51,19 @@ const config: Config = {
           800: "#4D2F07",
           900: "#2E1F05",
         },
+        destructive: {
+          DEFAULT: "#FF3131",
+          50: "#FFF0F0",
+          100: "#FFD9D9",
+          200: "#FFAFAF",
+          300: "#FF8585",
+          400: "#FF5B5B",
+          500: "#FF3131",
+          600: "#FF0D0D",
+          700: "#990A0A",
+          800: "#4D0707",
+          900: "#2E0505",
+        },
         // card: {
         // 	DEFAULT: 'hsl(var(--card))',
         // 	foreground: 'hsl(var(--card-foreground))'
