@@ -7,6 +7,7 @@ import { Camera, FileUp, Trash2, WandSparkles } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { LoadingProcess } from "../components/Generator/LoadingProcess";
+import { TextRecognizer } from "@/components/recognition/textRecognizer";
 
 type Options = "pictures" | "files";
 
@@ -36,6 +37,7 @@ export default function Generator() {
   });
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
 
   function getFileTypeIcon(extension: string): string {
     const urlStart = "/icons/filesType/";
@@ -95,6 +97,24 @@ export default function Generator() {
       level: level,
     }));
   };
+
+  const handleRecognizedText = (text: string) => {
+    setRecognizedTexts((prevTexts) => {
+      if (!prevTexts.includes(text)) {
+        return [...prevTexts, text];
+      }
+      return prevTexts;
+    });
+    console.log(recognizedTexts);
+  };
+
+  const handleDelete = (index: number) => {
+    setFormFields((prevFields) => ({
+      ...prevFields,
+      files: prevFields.files.filter((_, i) => i !== index),
+    }))
+    setRecognizedTexts((prevTexts) => prevTexts.filter((_, i) => i !== index));
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -232,16 +252,14 @@ export default function Generator() {
                       </div>
                     </div>
 
+                    {/* Text Recognition */}
+                    <TextRecognizer key={index} selectedImage={file} onTextRecognized={handleRecognizedText} />
+
                     <Button
                       variant={"ghost"}
                       size={"icon"}
                       className="transition-all px-2 py-2 hover:bg-destructive-200 hover:bg-opacity-25 rounded-full text-destructive-400  border-none hover:border-2 hover:border-white border-opacity-25 scale-125 !shadow-none hover:text-destructive hover:rotate-12 hover:scale-150"
-                      onClick={() =>
-                        setFormFields((prevFields) => ({
-                          ...prevFields,
-                          files: prevFields.files.filter((_, i) => i !== index),
-                        }))
-                      }
+                      onClick={() => handleDelete(index)}
                     >
                       <Trash2 size={30} />
                     </Button>
