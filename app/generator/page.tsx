@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 import { LoadingProcess } from "../components/Generator/LoadingProcess";
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 
+import { useQuizService } from "@/services";
+import { useQuizGenerator } from "../hooks";
+
 type Options = "pictures" | "files";
 
 type GeneratorForm = {
@@ -36,8 +39,11 @@ export default function Generator() {
     files: [],
   });
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
+
+  const quizService = useQuizService();
+  const { quizData, isGenerating, error, setGeneratingState,
+      generateQuiz } = useQuizGenerator(quizService);
 
   function getFileTypeIcon(extension: string): string {
     const urlStart = "/icons/filesType/";
@@ -69,6 +75,12 @@ export default function Generator() {
       setIsInputFilled(false);
     }
   }, [formFields]);
+
+  const handleGenerate = () => {
+    if (recognizedTexts.length > 0) {
+      generateQuiz(recognizedTexts);
+    }
+  }
 
   const handleOptionChange = (option: Options) => {
     setFormFields((prevFields) => ({
@@ -322,7 +334,7 @@ export default function Generator() {
 
             {/* Submit Button */}
             <Button
-              onClick={() => setIsGenerating(true)}
+              onClick={handleGenerate}
               disabled={!isInputFilled || isGenerating}
               className="mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
             >
@@ -331,7 +343,7 @@ export default function Generator() {
             </Button>
           </>
         ) : (
-          <LoadingProcess formFields={formFields} endFct={setIsGenerating} />
+          <LoadingProcess formFields={formFields} endFct={setGeneratingState} />
         )}
       </div>
     </div>
