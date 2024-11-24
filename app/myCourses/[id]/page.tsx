@@ -8,6 +8,7 @@ import {
 } from "@/app/components/MyCourse/[id]/InsightsCard";
 import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
+import { useQuizGenerator } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -331,6 +332,8 @@ const course = {
   ], // exams of the course
 };
 
+import { tempData } from "@/app/hooks";
+
 export default function myCoursesPage({ params }: { params: { id: string } }) {
   const { id } = params;
   console.log(id);
@@ -340,6 +343,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
+  const [quiz, setQuiz] = useState(tempData);
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
@@ -407,7 +411,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
         {/* Course informations */}
         <div className="flex items-center justify-start gap-3 ml-[2%] lg:ml-[3.5%]">
           <p className="text-white text-opacity-75 text-xs lg:text-sm outfit-regular">
-            Créé par: {" "}
+            Créé par:{" "}
             <span className="underline-offset-4">{course.creator}</span>
           </p>
 
@@ -432,7 +436,8 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           <div className="flex items-center justify-start gap-3">
             <BookCheck className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
-              {course.resumeFiles.nbFiles} {course.resumeFiles.nbFiles === 1 ?  'fiche' : 'fiches' }
+              {course.resumeFiles.nbFiles}{" "}
+              {course.resumeFiles.nbFiles === 1 ? "fiche" : "fiches"}
             </p>
           </div>
         </div>
@@ -522,7 +527,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
           <QuizzSection
-            questions={course.quiz.questions}
+            questions={tempData.message}
             setIsQuizzVisible={setIsQuestionsVisible}
           />
         </div>
