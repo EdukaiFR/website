@@ -181,14 +181,21 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
               {/* Header */}
               <div className="flex flex-col items-start gap-1 w-full">
                 <p className="text-md text-white outfit-regular">
-                  Examen Prévu
+                  Examens Prévus
                 </p>
                 <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
                   Tu as{" "}
                   <span className="text-accent text-opacity-75">
-                    {course.exams.length}
-                  </span>{" "}
-                  examens prévus pour ce cours
+                    {course.exams.length === 0 ? 'aucun' : course.exams.length}
+                  </span>
+                  {" "}
+                  {course.exams.length === 0
+                    ? 'examen prévu'
+                    : course.exams.length > 1
+                    ? 'examens prévus'
+                    : 'examen prévu'
+                  }
+                  {" "} pour ce cours
                 </p>
               </div>
 
