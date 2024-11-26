@@ -7,7 +7,9 @@ import { useState } from "react";
 export type QuizzSectionProps = {
   questions: {
     question: string;
-    answers: { answer: string; isCorrect: boolean; explanation?: string }[];
+    choices: string[];
+    answer: string;
+    explanation: string;
   }[];
   setIsQuizzVisible: (value: boolean) => void;
 };
@@ -21,6 +23,7 @@ export const QuizzSection = ({
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [isQuizzCompleted, setIsQuizzCompleted] = useState<boolean>(false);
+  const [lastQuestion, setLastQuestion] = useState<boolean>(false);
 
   const playAgain = () => {
     setGoodAnswers(0);
@@ -74,35 +77,35 @@ export const QuizzSection = ({
           {/* Possible Answers */}
           <div className="flex flex-col gap-2 w-full">
             {!isQuizzCompleted &&
-              currentQuestionData.answers.map((answer, index) => (
+              currentQuestionData.choices.map((answer, index) => (
                 <div
                   key={index}
                   className={`p-5 rounded-lg cursor-pointer border-2 flex items-center justify-between w-full outfit-regular ${
-                    selectedAnswer === answer.answer && !isAnswered
+                    selectedAnswer === answer && !isAnswered
                       ? "border-2 border-primary border-opacity-50"
                       : ""
                   } ${
-                    selectedAnswer === answer.answer &&
+                    selectedAnswer === answer &&
                     isAnswered &&
-                    answer.isCorrect
+                    answer === questions[currentQuestion].answer
                       ? "border-2 border-[#01D539] bg-[#01D539] bg-opacity-15"
                       : ""
                   } ${
-                    selectedAnswer === answer.answer &&
+                    selectedAnswer === answer &&
                     isAnswered &&
-                    !answer.isCorrect
+                    answer !== questions[currentQuestion].answer
                       ? "border-2 border-[#D50101] bg-[#D50101] bg-opacity-15"
                       : ""
                   } ${
                     isAnswered &&
-                    answer.isCorrect &&
-                    selectedAnswer !== answer.answer
+                    answer === questions[currentQuestion].answer &&
+                    selectedAnswer !== answer
                       ? "border-2 border-[#01D539] bg-[#01D539] bg-opacity-15"
                       : ""
                   }`}
                   onClick={() => {
                     if (!isAnswered) {
-                      setSelectedAnswer(answer.answer);
+                      setSelectedAnswer(answer);
                     }
                   }}
                 >
@@ -110,42 +113,44 @@ export const QuizzSection = ({
                   <div className="flex flex-col items-start gap-1">
                     <p
                       className={`text-sm ${
-                        selectedAnswer === answer.answer && !isAnswered
+                        selectedAnswer === answer && !isAnswered
                           ? " text-primary"
                           : " text-white text-opacity-75"
                       } ${
                         isAnswered &&
-                        answer.isCorrect &&
-                        selectedAnswer === answer.answer
+                        answer === questions[currentQuestion].answer &&
+                        selectedAnswer === answer
                           ? " text-[#01D539]"
                           : ""
                       } ${
                         isAnswered &&
-                        !answer.isCorrect &&
-                        selectedAnswer === answer.answer
+                        answer !== questions[currentQuestion].answer &&
+                        selectedAnswer === answer
                           ? " text-[#D50101]"
                           : ""
                       } outfit-regular ${
                         isAnswered &&
-                        answer.isCorrect &&
-                        selectedAnswer !== answer.answer
+                        answer === questions[currentQuestion].answer &&
+                        selectedAnswer !== answer
                           ? " text-[#01D539]"
                           : ""
                       }`}
                     >
-                      {answer.answer}
+                      {answer}
                     </p>
                     {/* Explanation */}
-                    {isAnswered && answer.isCorrect && answer.explanation && (
-                      <p className="text-sm text-[#01D539] text-opacity-50 outfit-regular mt-4">
-                        {answer.explanation}
-                      </p>
-                    )}
+                    {isAnswered &&
+                      answer === questions[currentQuestion].answer &&
+                      questions[currentQuestion].explanation && (
+                        <p className="text-sm text-[#01D539] text-opacity-50 outfit-regular mt-4">
+                          {questions[currentQuestion].explanation}
+                        </p>
+                      )}
                   </div>
                   {/* Checkbox */}
                   {!isAnswered && (
                     <div className="lg:ml-auto transition-all w-6 h-6 rounded-full flex items-center justify-center">
-                      {answer.answer === selectedAnswer ? (
+                      {answer === selectedAnswer ? (
                         <div className="w-3 h-3 bg-primary-500 rounded-full transition-all" />
                       ) : (
                         <div className="w-6 h-6 border-2 border-white border-opacity-50 rounded-full transition-all" />
@@ -165,15 +170,22 @@ export const QuizzSection = ({
               </Button>
             )}
             {/* Confirm the answer */}
-            {!isAnswered && currentQuestion <= questions.length - 1 && (
+            {!isAnswered && currentQuestion <= questions.length + 1 && (
               <Button
                 disabled={!selectedAnswer}
                 onClick={() => {
                   if (selectedAnswer) {
-                    const selected = currentQuestionData.answers.find(
-                      (a) => a.answer === selectedAnswer
+                    const selected = currentQuestionData.choices.find(
+                      (answer: string) => answer === selectedAnswer
                     );
-                    if (selected) handleAnswer(selected.isCorrect);
+                    if (selected)
+                      handleAnswer(
+                        selected === questions[currentQuestion].answer
+                      );
+                    // Si on est a la dernière question alors mettre isQuizzCompleted à true
+                    if (currentQuestion === questions.length) {
+                      setIsQuizzCompleted(true);
+                    }
                   }
                 }}
                 className="text-md mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"

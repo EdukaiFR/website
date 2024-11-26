@@ -7,6 +7,10 @@ import { Camera, FileUp, Trash2, WandSparkles } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { LoadingProcess } from "../components/Generator/LoadingProcess";
+import { TextRecognizer } from "@/components/recognition/textRecognizer";
+
+import { useQuizService } from "@/services";
+import { useQuizGenerator } from "../hooks";
 
 type Options = "pictures" | "files";
 
@@ -35,7 +39,11 @@ export default function Generator() {
     files: [],
   });
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
+
+  const quizService = useQuizService();
+  const { quizData, isGenerating, error, setGeneratingState,
+      generateQuiz } = useQuizGenerator(quizService);
 
   function getFileTypeIcon(extension: string): string {
     const urlStart = "/icons/filesType/";
@@ -68,6 +76,12 @@ export default function Generator() {
     }
   }, [formFields]);
 
+  const handleGenerate = () => {
+    if (recognizedTexts.length > 0) {
+      generateQuiz(recognizedTexts);
+    }
+  }
+
   const handleOptionChange = (option: Options) => {
     setFormFields((prevFields) => ({
       ...prevFields,
@@ -95,6 +109,24 @@ export default function Generator() {
       level: level,
     }));
   };
+
+  const handleRecognizedText = (text: string) => {
+    setRecognizedTexts((prevTexts) => {
+      if (!prevTexts.includes(text)) {
+        return [...prevTexts, text];
+      }
+      return prevTexts;
+    });
+    console.log(recognizedTexts);
+  };
+
+  const handleDelete = (index: number) => {
+    setFormFields((prevFields) => ({
+      ...prevFields,
+      files: prevFields.files.filter((_, i) => i !== index),
+    }))
+    setRecognizedTexts((prevTexts) => prevTexts.filter((_, i) => i !== index));
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -232,16 +264,14 @@ export default function Generator() {
                       </div>
                     </div>
 
+                    {/* Text Recognition */}
+                    <TextRecognizer key={index} selectedImage={file} onTextRecognized={handleRecognizedText} />
+
                     <Button
                       variant={"ghost"}
                       size={"icon"}
                       className="transition-all px-2 py-2 hover:bg-destructive-200 hover:bg-opacity-25 rounded-full text-destructive-400  border-none hover:border-2 hover:border-white border-opacity-25 scale-125 !shadow-none hover:text-destructive hover:rotate-12 hover:scale-150"
-                      onClick={() =>
-                        setFormFields((prevFields) => ({
-                          ...prevFields,
-                          files: prevFields.files.filter((_, i) => i !== index),
-                        }))
-                      }
+                      onClick={() => handleDelete(index)}
                     >
                       <Trash2 size={30} />
                     </Button>
@@ -304,7 +334,7 @@ export default function Generator() {
 
             {/* Submit Button */}
             <Button
-              onClick={() => setIsGenerating(true)}
+              onClick={handleGenerate}
               disabled={!isInputFilled || isGenerating}
               className="mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
             >
@@ -313,7 +343,7 @@ export default function Generator() {
             </Button>
           </>
         ) : (
-          <LoadingProcess formFields={formFields} endFct={setIsGenerating} />
+          <LoadingProcess formFields={formFields} endFct={setGeneratingState} />
         )}
       </div>
     </div>
