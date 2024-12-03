@@ -120,7 +120,6 @@ export const Header = () => {
   }, [selectedLink]);
 
   useEffect(() => {
-    console.log("Actual pathname:", pathname);
     updateUnderline(pathname); // Update underline position when pathname changes
   }, [pathname]);
 
