@@ -142,7 +142,6 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
             />
 
             {/* Date */}
-            {/* Date Input */}
             <FormField
               control={form.control}
               name="date"

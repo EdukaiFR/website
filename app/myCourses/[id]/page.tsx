@@ -30,7 +30,6 @@ import { tempData } from "@/app/hooks";
 
 export default function myCoursesPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  console.log(id);
 
   const [isResumeFilesVisible, setIsResumeFilesVisible] =
     useState<boolean>(false);
@@ -71,7 +70,6 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
             variant={"ghost"}
             size={"icon"}
             className="transition-all px-2 py-2 hover:bg-primary-200 hover:bg-opacity-25 rounded-full border-none scale-125 !shadow-none hover:rotate-6 hover:scale-125"
-            onClick={() => console.log("Go back to the previous page")}
           >
             <ArrowLeft className="w-64 h-64" />
           </Button>
@@ -205,7 +203,12 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
               {/* Cards */}
               <div className="flex flex-col lg:flex-row lg:flex-wrap items-center justify-between gap-4 w-full">
                 {exams.map((exam, index) => (
-                  <ExamCard exam={exam} key={index} />
+                  <ExamCard
+                    exam={exam}
+                    key={index}
+                    ctaSetExam={setExams}
+                    examsList={exams}
+                  />
                 ))}
               </div>
             </div>
