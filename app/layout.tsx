@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -28,15 +29,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] min-h-screen w-full flex flex-col relative`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] min-h-screen w-full flex flex-col relative outfit-regular`}
       >
-        <div className="flex items-center justify-center">
-          <Header />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <Toaster />
-          {children}
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex items-center justify-center">
+            <Header />
+          </div>
+          <div className="flex-1 flex items-center justify-center">
+            <Toaster />
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
