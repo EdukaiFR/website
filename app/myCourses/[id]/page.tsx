@@ -199,13 +199,13 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
                   </p>
                 </div>
 
-                <CreateExam ctaAddExam={setExams} />
+                <CreateExam examList={exams} ctaAddExam={setExams} />
               </div>
 
               {/* Cards */}
               <div className="flex flex-col lg:flex-row lg:flex-wrap items-center justify-between gap-4 w-full">
-                {exams.map((exam) => (
-                  <ExamCard exam={exam} />
+                {exams.map((exam, index) => (
+                  <ExamCard exam={exam} key={index} />
                 ))}
               </div>
             </div>

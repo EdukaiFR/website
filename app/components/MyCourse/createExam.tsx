@@ -41,10 +41,11 @@ const formSchema = z.object({
 });
 
 export type createExamProps = {
+  examList: any[];
   ctaAddExam: (exam: any) => void;
 };
 
-export const CreateExam = ({ ctaAddExam }: createExamProps) => {
+export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   // Initialize the form using react-hook-form and zod
@@ -57,20 +58,21 @@ export const CreateExam = ({ ctaAddExam }: createExamProps) => {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (data: any) => {
-    console.log("Data from zod form", data);
-    // Store the new exam in the state (not mandatory)
+    const maxId =
+      examList.length > 0 ? Math.max(...examList.map((exam) => exam.id)) : -1;
     const newExam = {
+      id: maxId + 1,
       title: data.title,
       description: data.description,
-      date: data.date,
+      date: new Date(data.date),
     };
-    // call ctaAddExam to add the exam after the prev value
-    ctaAddExam((prev: any) => [...prev, newExam]);
-    // Close the dialog
+    const sortedList = [...examList, newExam].sort((a: any, b: any) => {
+      return a.date.getTime() - b.date.getTime();
+    });
+
+    ctaAddExam(sortedList);
     setIsDialogOpen(false);
-    // Reset the form
     form.reset();
   };
 
