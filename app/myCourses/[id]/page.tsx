@@ -8,7 +8,7 @@ import {
 } from "@/app/components/MyCourse/[id]/InsightsCard";
 import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
-import { useQuizGenerator } from "@/app/hooks";
+import { CreateExam } from "@/app/components/MyCourse/createExam";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +38,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
   const [quiz, setQuiz] = useState(tempData);
+  const [exams, setExams] = useState<any[]>([]);
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
@@ -144,7 +145,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           <FileSection files={files} ctaUpdate={setFiles} />
 
           {/* Insights + Exams */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
             {/* Insights */}
             <div className="p-3 flex flex-col items-center lg:items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full lg:max-w-[40%]">
               {/* Header */}
@@ -179,34 +180,32 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
             {/* Exams */}
             <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
               {/* Header */}
-              <div className="flex flex-col items-start gap-1 w-full">
-                <p className="text-md text-white outfit-regular">
-                  Examens Prévus
-                </p>
-                <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
-                  Tu as{" "}
-                  <span className="text-accent text-opacity-75">
-                    {course.exams.length === 0 ? 'aucun' : course.exams.length}
-                  </span>
-                  {" "}
-                  {course.exams.length === 0
-                    ? 'examen prévu'
-                    : course.exams.length > 1
-                    ? 'examens prévus'
-                    : 'examen prévu'
-                  }
-                  {" "} pour ce cours
-                </p>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex flex-col items-start gap-1 w-full">
+                  <p className="text-md text-white outfit-regular">
+                    Examens Prévus
+                  </p>
+                  <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
+                    Tu {exams.length === 0 && "n'"}as{" "}
+                    <span className="text-accent text-opacity-75">
+                      {exams.length === 0 ? "aucun" : exams.length}
+                    </span>{" "}
+                    {exams.length === 0
+                      ? "examen prévu"
+                      : exams.length > 1
+                      ? "examens prévus"
+                      : "examen prévu"}{" "}
+                    pour ce cours.
+                  </p>
+                </div>
+
+                <CreateExam ctaAddExam={setExams} />
               </div>
 
               {/* Cards */}
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
-                {course.exams.map((exam) => (
-                  <ExamCard
-                    key={exam.id}
-                    title={exam.title}
-                    value={exam.daysLeft}
-                  />
+              <div className="flex flex-col lg:flex-row lg:flex-wrap items-center justify-between gap-4 w-full">
+                {exams.map((exam) => (
+                  <ExamCard exam={exam} />
                 ))}
               </div>
             </div>
