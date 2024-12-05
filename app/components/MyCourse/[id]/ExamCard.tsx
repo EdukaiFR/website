@@ -86,6 +86,13 @@ export const ExamCard = (props: ExamCardProps) => {
     setIsSheetOpen(false);
   };
 
+  // Handle delete exam
+  const handleDelete = () => {
+    const updatedExamsList = examsList.filter((exam) => exam.id !== id);
+    ctaSetExam(updatedExamsList);
+    setIsSheetOpen(false);
+  };
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -221,7 +228,11 @@ export const ExamCard = (props: ExamCardProps) => {
                   {/* Conteneur pour "Supprimer" et "Ajouter" */}
                   <div className="flex items-center justify-between w-full gap-2">
                     {/* Supprimer button */}
-                    <Button className="w-full" variant={"destructive"}>
+                    <Button
+                      className="w-full"
+                      variant={"destructive"}
+                      onClick={handleDelete}
+                    >
                       Supprimer
                     </Button>
 
