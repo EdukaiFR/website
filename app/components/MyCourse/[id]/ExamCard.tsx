@@ -96,13 +96,6 @@ export const ExamCard = (props: ExamCardProps) => {
     });
   };
 
-  // Handle delete exam
-  const handleDelete = () => {
-    const updatedExamsList = examsList.filter((exam) => exam.id !== id);
-    ctaSetExam(updatedExamsList);
-    setIsSheetOpen(false);
-  };
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
