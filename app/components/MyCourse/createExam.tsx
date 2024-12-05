@@ -27,6 +27,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { getDaysLeft } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Plus } from "lucide-react";
 import { useState } from "react";
@@ -47,6 +49,7 @@ export type createExamProps = {
 
 export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const { toast } = useToast();
 
   // Initialize the form using react-hook-form and zod
   const form = useForm({
@@ -59,6 +62,15 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
   });
 
   const onSubmit = async (data: any) => {
+    const daysLeft = getDaysLeft(data.date);
+    if (daysLeft <= 0) {
+      toast({
+        title: "La date de l'examen ne peut pas être aujourd'hui ou avant.",
+        description: "Veuillez choisir une date ultérieure.",
+      });
+      console.log("La date de l'examen ne peut pas être aujourd'hui ou avant.");
+      return;
+    }
     const maxId =
       examList.length > 0 ? Math.max(...examList.map((exam) => exam.id)) : -1;
     const newExam = {
@@ -74,6 +86,10 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
     ctaAddExam(sortedList);
     setIsDialogOpen(false);
     form.reset();
+    toast({
+      title: "New exam added",
+      description: "for the date ",
+    });
   };
 
   return (

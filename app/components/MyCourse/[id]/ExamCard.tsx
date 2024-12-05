@@ -25,11 +25,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Pencil } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { getDaysLeft } from "@/lib/utils";
 
 export type ExamCardProps = {
   exam: {
@@ -49,18 +51,12 @@ const formSchema = z.object({
   date: z.date({ required_error: "Date is required." }),
 });
 
-// Create a function that take a date in parameter and return the number of days left before this date
-const getDaysLeft = (date: Date) => {
-  const today = new Date();
-  const timeDiff = date.getTime() - today.getTime();
-  return Math.ceil(timeDiff / (1000 * 3600 * 24));
-};
-
 export const ExamCard = (props: ExamCardProps) => {
   const { title, description, date, id } = props.exam;
   const { ctaSetExam, examsList } = props;
   const daysLeft = getDaysLeft(date);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const { toast } = useToast();
 
   const onSubmit = async (data: any) => {
     // Update all field values of the exam with the id in props
@@ -84,6 +80,9 @@ export const ExamCard = (props: ExamCardProps) => {
     // Update the exams list in the parent component
     ctaSetExam(sortedList);
     setIsSheetOpen(false);
+    toast({
+      title: "Examen " + updatedExam.title + " modifié",
+    });
   };
 
   // Handle delete exam
@@ -91,6 +90,10 @@ export const ExamCard = (props: ExamCardProps) => {
     const updatedExamsList = examsList.filter((exam) => exam.id !== id);
     ctaSetExam(updatedExamsList);
     setIsSheetOpen(false);
+    toast({
+      variant: "destructive",
+      title: "Examen " + title + " supprimé",
+    });
   };
 
   const form = useForm({
