@@ -178,7 +178,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
             {/* Exams */}
             <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
               {/* Header */}
-              <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between w-full">
                 <div className="flex flex-col items-start gap-1 w-full">
                   <p className="text-md text-white outfit-regular">
                     Examens Prévus
@@ -197,7 +197,9 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
                   </p>
                 </div>
 
-                <CreateExam examList={exams} ctaAddExam={setExams} />
+                <div className="mt-2 lg:mt-0 w-full">
+                  <CreateExam examList={exams} ctaAddExam={setExams} />
+                </div>
               </div>
 
               {/* Cards */}

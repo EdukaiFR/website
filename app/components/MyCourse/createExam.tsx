@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -87,8 +86,8 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
     setIsDialogOpen(false);
     form.reset();
     toast({
-      title: "New exam added",
-      description: "for the date ",
+      title: "Nouvel examen ajouté",
+      description: "Pour la date " + newExam.date.toLocaleDateString(),
     });
   };
 
@@ -99,13 +98,13 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
           onClick={() => setIsDialogOpen(true)}
           variant={"outline"}
           size={"lg"}
-          className="ml-auto mr-auto outfit-regular text-sm px-4 py-2 text-white border-2 border-white rounded-full bg-transparent hover:bg-white hover:bg-opacity-10"
+          className="ml-auto mr-auto outfit-regular text-sm px-4 py-2 text-white border-2 border-white rounded-full bg-transparent hover:bg-white hover:bg-opacity-10 w-full lg:w-auto"
         >
           <Plus size={30} />
           Ajouter
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[350px] lg:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Ajouter un examen</DialogTitle>
           <DialogDescription className="text-white text-opacity-50">
@@ -192,8 +191,8 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-4 mb-0">
-              <DialogClose asChild>
+            <DialogFooter className="mt-4 mb-0 flex flex-col items-center w-full">
+              <div className="flex items-center justify-between w-full gap-2">
                 <Button
                   variant="outline"
                   className="mr-auto hover:bg-white hover:bg-opacity-10 transition-all"
@@ -201,8 +200,8 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
                 >
                   Cancel
                 </Button>
-              </DialogClose>
-              <Button type="submit">Ajouter</Button>
+                <Button type="submit">Ajouter</Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>
