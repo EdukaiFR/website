@@ -98,7 +98,7 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
           onClick={() => setIsDialogOpen(true)}
           variant={"outline"}
           size={"lg"}
-          className="ml-auto mr-auto outfit-regular text-sm px-4 py-2 text-white border-2 border-white rounded-full bg-transparent hover:bg-white hover:bg-opacity-10 w-full lg:w-auto"
+          className="outfit-regular text-sm px-4 py-2 text-white border-2 border-white rounded-full bg-transparent hover:bg-white hover:bg-opacity-10 w-full lg:w-auto lg:ml-auto"
         >
           <Plus size={30} />
           Ajouter
