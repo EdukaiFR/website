@@ -197,7 +197,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
                   </p>
                 </div>
 
-                <div className="mt-2 lg:mt-0 ml-auto">
+                <div className="mt-2 lg:mt-0 ml-auto w-full lg:w-auto">
                   {" "}
                   {/* Add ml-auto here */}
                   <CreateExam examList={exams} ctaAddExam={setExams} />
