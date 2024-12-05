@@ -234,7 +234,7 @@ export default function myCoursesPage() {
                   <p className="text-md text-white outfit-regular">
                     Examens Prévus
                   </p>
-                  <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
+                  <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular mr-auto w-full">
                     Tu {exams.length === 0 && "n'"}as{" "}
                     <span className="text-accent text-opacity-75">
                       {exams.length === 0 ? "aucun" : exams.length}
@@ -248,7 +248,9 @@ export default function myCoursesPage() {
                   </p>
                 </div>
 
-                <div className="mt-2 lg:mt-0 w-full">
+                <div className="mt-2 lg:mt-0 ml-auto">
+                  {" "}
+                  {/* Add ml-auto here */}
                   <CreateExam examList={exams} ctaAddExam={setExams} />
                 </div>
               </div>
