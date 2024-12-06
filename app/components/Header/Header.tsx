@@ -64,6 +64,9 @@ export const Header = () => {
     setLinksToShow(loginStatus ? loginLinks : guestLinks);
     setSelectedLink(loginStatus ? loginLinks.Accueil : guestLinks.Solution);
     updateUnderline(selectedLink); // Update underline on load
+    if (loginStatus) {
+      router.push(loginLinks.Accueil);
+    }
   };
 
   useEffect(() => {
