@@ -41,7 +41,7 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
 2. **Choisissez une méthode d'installation & démarrage :**
 
-    **Option 1: Via Docker 🐳**
+    **Option 1: Via Docker 🐳 (recommandée)**
 
     1. Construire l'image
         ```bash
