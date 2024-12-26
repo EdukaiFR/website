@@ -46,7 +46,7 @@ export default function Generator() {
       generateQuiz } = useQuizGenerator(quizService);
 
   function getFileIconPath(extension: string): string {
-    const urlStart = "/icons/filesType/";
+    const urlStart = "/icons/fileTypes/";
 
     const extensionMap: {[key: string]: string} = {
       pdf: "pdf",
