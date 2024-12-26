@@ -45,22 +45,22 @@ export default function Generator() {
   const { quizData, isGenerating, error, setGeneratingState,
       generateQuiz } = useQuizGenerator(quizService);
 
-  function getFileTypeIcon(extension: string): string {
+  function getFileIconPath(extension: string): string {
     const urlStart = "/icons/filesType/";
-    switch (extension) {
-      case "pdf":
-        return urlStart + "pdf" + ".png";
-      case "doc":
-      case "docx":
-        return urlStart + "doc" + ".png";
-      case "jpg":
-      case "jpeg":
-        return urlStart + "jpg" + ".png";
-      case "png":
-        return urlStart + "png" + ".png";
-      default:
-        return urlStart + "default" + ".png";
-    }
+
+    const extensionMap: {[key: string]: string} = {
+      pdf: "pdf",
+      doc: "doc",
+      docx: "doc",
+      jpg: "jpg",
+      jpeg: "jpg",
+      png: "png",
+    };
+
+    const iconName = extensionMap[extension] || "default";
+    const filepath = `${urlStart}${iconName}.png`;
+
+    return filepath;
   }
 
   useEffect(() => {
@@ -247,7 +247,7 @@ export default function Generator() {
                     className="flex items-center justify-between gap-2 px-4 py-2 lg:px-8 lg:py-4 rounded-lg border-2 border-white border-opacity-50"
                   >
                     <Image
-                      src={getFileTypeIcon(file.name.split(".").pop() || "")}
+                      src={getFileIconPath(file.name.split(".").pop() || "")}
                       width={40}
                       height={40}
                       alt="file-icon"
