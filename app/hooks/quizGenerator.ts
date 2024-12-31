@@ -1,4 +1,4 @@
-import { QuizService } from "@/services";
+import type { QuizService } from "@/services";
 import { useState } from "react";
 import testData from "../json/testData/quizResponse.json";
 
@@ -14,8 +14,10 @@ export function useQuizGenerator(quizService: QuizService) {
     setError(null);
 
     try {
-      const quiz = await quizService.generateQuiz(recognizedTexts);
-      setQuizData(quiz);
+      // const quiz = await quizService.generateQuiz(recognizedTexts);
+      // setQuizData(quiz);
+      setQuizData(testData);
+      return true;
     } catch (error) {
       console.error("Error generating quiz: ", error);
       setError("Failed to generate quiz. Please try again.");
