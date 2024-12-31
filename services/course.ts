@@ -4,6 +4,7 @@ import 'dotenv/config';
 export interface CourseService {
     createCourse: (title: string, subject: string, level: string) => Promise<any>;
     getCourseById: (courseId: string) => Promise<any>;
+    addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
 }
 
 export function useCourseService() {
@@ -33,7 +34,19 @@ export function useCourseService() {
         }
     }
 
-    return { createCourse, getCourseById };
+    const addQuizToCourse = async (courseId: string, quizId: string) => {
+        try {
+            const response = await axios.post(`${apiUrl}/courses/${courseId}/addQuiz`,
+                { quizId: quizId },
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred adding the quiz ${quizId} to the course ${courseId}`, error);
+        }
+    }
+
+    return { createCourse, getCourseById, addQuizToCourse };
 }
 
 

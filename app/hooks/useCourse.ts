@@ -21,7 +21,9 @@ export function useCourse(courseService: CourseService) {
         try {
             setIsLoading(true);
             const course = await courseService.createCourse(title, subject, level);
-            setCourseId(course.id);
+            const newCourseId = course.id;
+            setCourseId(newCourseId);
+            return newCourseId;
         } catch (error) {
             console.error("Error creating course: ", error);
             setError("Failed to create course. Please try again.");
@@ -41,5 +43,16 @@ export function useCourse(courseService: CourseService) {
         }
     }
 
-    return { courseId, isCreating, courseData, courseError, createCourse, loadCourse };
+    const addQuizToCourse = async (courseId: string, quizId: string) => {
+        try {
+            await courseService.addQuizToCourse(courseId, quizId);
+        } catch (error) {
+            console.error(`Error adding quiz ${quizId} to course ${courseId} `, error);
+            setError("Failed to associate quiz to course. Please try again.");
+            return null;
+        }
+    }
+
+    return { courseId, isCreating, courseData, courseError,
+        createCourse, loadCourse, addQuizToCourse };
 }

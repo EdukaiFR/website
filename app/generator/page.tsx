@@ -44,13 +44,13 @@ export default function Generator() {
 
   // Quiz generation
   const quizService = useQuizService();
-  const { quizData, isGenerating,
+  const { quizId, isGenerating,
       generateQuiz } = useQuizGenerator(quizService);
 
   // Course creation
   const courseService = useCourseService();
   const { courseId, isCreating, courseError,
-      createCourse } = useCourse(courseService);
+      createCourse, addQuizToCourse } = useCourse(courseService);
 
   function getFileIconPath(extension: string): string {
     const urlStart = "/icons/fileTypes/";
@@ -86,10 +86,11 @@ export default function Generator() {
   const handleGenerate = async () => {
     if (recognizedTexts.length > 0) {
       setGenerationLaunched(true);
+      const generation = await generateQuiz(recognizedTexts);
 
-      const generationSuccess = await generateQuiz(recognizedTexts);
-      if (generationSuccess) {
-        await createCourse(formFields);
+      if (generation?.success) {
+        const courseId = await createCourse(formFields);
+        await addQuizToCourse(courseId, generation.newQuizId);
       } else {
         // TODO: display message here once we implement toasts.
         console.error('Failed to generate quiz, aborted course creation.')
