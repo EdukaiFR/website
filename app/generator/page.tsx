@@ -10,7 +10,7 @@ import { LoadingProcess } from "../components/Generator/LoadingProcess";
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 
 import { useQuizService, useCourseService } from "@/services";
-import { useQuizGenerator, useCourse } from "../hooks";
+import { useQuiz, useCourse } from "../hooks";
 
 type Options = "pictures" | "files";
 
@@ -45,7 +45,7 @@ export default function Generator() {
   // Quiz generation
   const quizService = useQuizService();
   const { quizId, isGenerating,
-      generateQuiz } = useQuizGenerator(quizService);
+      generateQuiz } = useQuiz(quizService);
 
   // Course creation
   const courseService = useCourseService();

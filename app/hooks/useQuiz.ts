@@ -4,7 +4,8 @@ import testData from "../json/testData/quizResponse.json";
 
 export const tempData = testData; // Temporary test data for the quiz
 
-export function useQuizGenerator(quizService: QuizService) {
+export function useQuiz(quizService: QuizService) {
+  const [quizData, setQuizData] = useState({});
   const [quizId, setQuizId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,5 +31,17 @@ export function useQuizGenerator(quizService: QuizService) {
     setIsGenerating(state);
   };
 
-  return { quizId, isGenerating, error, setGeneratingState, generateQuiz };
+  const loadQuiz = async (quizId: string) => {
+    try {
+      const quizResponse = await quizService.getQuizById(quizId);
+      setQuizData(quizResponse.item.quiz);
+    } catch (error) {
+      console.error(`Error getting quiz ${quizId} `, error);
+      setError("Failed to load quiz. Please try again.");
+      return null;
+    }
+  }
+
+  return { quizData, quizId, isGenerating, error, setGeneratingState,
+    generateQuiz, loadQuiz };
 }

@@ -9,7 +9,7 @@ import {
 } from "@/app/components/MyCourse/[id]/InsightsCard";
 import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
-import { useQuizGenerator } from "@/app/hooks";
+import { useQuiz } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { useCourseService } from "@/services";
+import { useCourseService, useQuizService } from "@/services";
 import { useCourse } from "@/app/hooks";
 
 // Temporary test data for the course
@@ -31,6 +31,13 @@ import course from "@/app/json/testData/course.json";
 
 // Temporary test data for the quiz
 import { tempData } from "@/app/hooks";
+
+type Quiz = {
+  question: string;
+  choices: string[];
+  answer: string;
+  explanation: string;
+}[];
 
 export default function myCoursesPage() {
   const params = useParams();
@@ -41,17 +48,29 @@ export default function myCoursesPage() {
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
-  const [quiz, setQuiz] = useState(tempData);
-  // const [courseData, setCourseData] = useState<CourseData | null>(null);
 
   const courseService = useCourseService();
   const { courseData, loadCourse } = useCourse(courseService);
+
+  const quizService = useQuizService();
+  const { quizData, loadQuiz } = useQuiz(quizService);
 
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
     }
   }, [courseId]);
+
+  useEffect(() => {
+    fetchQuiz()
+  }, [courseData]);
+
+  // For now we handle only the first quiz of the course
+  const fetchQuiz = async () => {
+    if (courseData && courseData.quizzes.length > 0) {
+      await loadQuiz(courseData.quizzes[0]);
+    }
+  }
 
   const generatorRedirect = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -248,7 +267,7 @@ export default function myCoursesPage() {
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
           <QuizzSection
-            questions={tempData.message}
+            quiz={quizData as Quiz}
             setIsQuizzVisible={setIsQuestionsVisible}
           />
         </div>
