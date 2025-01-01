@@ -13,7 +13,7 @@ export function useQuizService(): QuizService {
         try {
             const textString = recognizedText.join('\n');
 
-            const response = await axios.post(`${apiUrl}/ai/generate-qcm`,
+            const response = await axios.post(`${apiUrl}/ai/generate-quiz`,
                 {textString});
 
             return response.data;
