@@ -6,6 +6,7 @@ interface CourseData {
     title: string;
     subject: string;
     level: string;
+    quizzes: string[];
     resumeFiles: [];
 }
 
@@ -38,7 +39,7 @@ export function useCourse(courseService: CourseService) {
             setCourseData(response.item);
         } catch (error) {
             console.error(`Error getting course ${courseId} `, error);
-            setError("Failed to create course. Please try again.");
+            setError("Failed to load course. Please try again.");
             return null;
         }
     }

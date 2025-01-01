@@ -7,7 +7,7 @@ import {
   InsightsCardAccent,
   InsightsCardPrimary,
 } from "@/app/components/MyCourse/[id]/InsightsCard";
-import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
+import { QuizSection } from "@/app/components/MyCourse/[id]/Quiz/QuizSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
 import { useQuiz } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
@@ -266,9 +266,9 @@ export default function myCoursesPage() {
       {/* Questions Display */}
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
-          <QuizzSection
+          <QuizSection
             quiz={quizData as Quiz}
-            setIsQuizzVisible={setIsQuestionsVisible}
+            setIsQuizVisible={setIsQuestionsVisible}
           />
         </div>
       )}

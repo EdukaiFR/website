@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
-export type QuizzSectionProps = {
-  questions: {
+export type QuizSectionProps = {
+  quiz: {
     question: string;
     choices: string[];
     answer: string;
     explanation: string;
   }[];
-  setIsQuizzVisible: (value: boolean) => void;
+  setIsQuizVisible: (value: boolean) => void;
 };
 
-export const QuizzSection = ({
-  questions,
-  setIsQuizzVisible,
-}: QuizzSectionProps) => {
+export const QuizSection = ({
+  quiz,
+  setIsQuizVisible,
+}: QuizSectionProps) => {
   const [goodAnswers, setGoodAnswers] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export const QuizzSection = ({
     setCurrentQuestion(currentQuestion + 1);
   };
 
-  const currentQuestionData = questions[currentQuestion];
+  const currentQuestionData = quiz[currentQuestion];
 
   return (
     <div className="p-5 rounded-lg w-full lg:w-[50%] border-2 border-white border-opacity-25 flex flex-col gap-5 items-center justify-center">
@@ -57,9 +57,9 @@ export const QuizzSection = ({
             Quiz
           </h2>
           <p className="text-sm text-white text-opacity-75 outfit-regular">
-            {currentQuestion > questions.length - 1
-              ? `Question ${currentQuestion} / ${questions.length}`
-              : `Question ${currentQuestion + 1} / ${questions.length}`}
+            {currentQuestion > quiz.length - 1
+              ? `Question ${currentQuestion} / ${quiz.length}`
+              : `Question ${currentQuestion + 1} / ${quiz.length}`}
           </p>
         </div>
       )}
@@ -68,7 +68,7 @@ export const QuizzSection = ({
       {!isQuizzCompleted && (
         <div className="flex flex-col items-start w-full gap-4">
           {/* Question */}
-          {currentQuestion <= questions.length - 1 && !isQuizzCompleted && (
+          {currentQuestion <= quiz.length - 1 && !isQuizzCompleted && (
             <p className="text-white text-md lg:text-lg outfit-regular">
               {currentQuestionData.question}
             </p>
@@ -87,18 +87,18 @@ export const QuizzSection = ({
                   } ${
                     selectedAnswer === answer &&
                     isAnswered &&
-                    answer === questions[currentQuestion].answer
+                    answer === quiz[currentQuestion].answer
                       ? "border-2 border-[#01D539] bg-[#01D539] bg-opacity-15"
                       : ""
                   } ${
                     selectedAnswer === answer &&
                     isAnswered &&
-                    answer !== questions[currentQuestion].answer
+                    answer !== quiz[currentQuestion].answer
                       ? "border-2 border-[#D50101] bg-[#D50101] bg-opacity-15"
                       : ""
                   } ${
                     isAnswered &&
-                    answer === questions[currentQuestion].answer &&
+                    answer === quiz[currentQuestion].answer &&
                     selectedAnswer !== answer
                       ? "border-2 border-[#01D539] bg-[#01D539] bg-opacity-15"
                       : ""
@@ -118,19 +118,19 @@ export const QuizzSection = ({
                           : " text-white text-opacity-75"
                       } ${
                         isAnswered &&
-                        answer === questions[currentQuestion].answer &&
+                        answer === quiz[currentQuestion].answer &&
                         selectedAnswer === answer
                           ? " text-[#01D539]"
                           : ""
                       } ${
                         isAnswered &&
-                        answer !== questions[currentQuestion].answer &&
+                        answer !== quiz[currentQuestion].answer &&
                         selectedAnswer === answer
                           ? " text-[#D50101]"
                           : ""
                       } outfit-regular ${
                         isAnswered &&
-                        answer === questions[currentQuestion].answer &&
+                        answer === quiz[currentQuestion].answer &&
                         selectedAnswer !== answer
                           ? " text-[#01D539]"
                           : ""
@@ -140,10 +140,10 @@ export const QuizzSection = ({
                     </p>
                     {/* Explanation */}
                     {isAnswered &&
-                      answer === questions[currentQuestion].answer &&
-                      questions[currentQuestion].explanation && (
+                      answer === quiz[currentQuestion].answer &&
+                      quiz[currentQuestion].explanation && (
                         <p className="text-sm text-[#01D539] text-opacity-50 outfit-regular mt-4">
-                          {questions[currentQuestion].explanation}
+                          {quiz[currentQuestion].explanation}
                         </p>
                       )}
                   </div>
@@ -160,7 +160,7 @@ export const QuizzSection = ({
                 </div>
               ))}
             {/* Go to the next question */}
-            {isAnswered && currentQuestion < questions.length - 1 && (
+            {isAnswered && currentQuestion < quiz.length - 1 && (
               <Button
                 onClick={() => nextQuestion()}
                 className="text-md mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
@@ -170,7 +170,7 @@ export const QuizzSection = ({
               </Button>
             )}
             {/* Confirm the answer */}
-            {!isAnswered && currentQuestion <= questions.length + 1 && (
+            {!isAnswered && currentQuestion <= quiz.length + 1 && (
               <Button
                 disabled={!selectedAnswer}
                 onClick={() => {
@@ -180,10 +180,10 @@ export const QuizzSection = ({
                     );
                     if (selected)
                       handleAnswer(
-                        selected === questions[currentQuestion].answer
+                        selected === quiz[currentQuestion].answer
                       );
                     // Si on est a la dernière question alors mettre isQuizzCompleted à true
-                    if (currentQuestion === questions.length) {
+                    if (currentQuestion === quiz.length) {
                       setIsQuizzCompleted(true);
                     }
                   }
@@ -195,7 +195,7 @@ export const QuizzSection = ({
               </Button>
             )}
             {/* Finished the quiz */}
-            {currentQuestion >= questions.length - 1 &&
+            {currentQuestion >= quiz.length - 1 &&
               isAnswered &&
               !isQuizzCompleted && (
                 <Button
@@ -221,14 +221,14 @@ export const QuizzSection = ({
             <span className="text-xl">
               {
                 // Calculate the percentage of good answers
-                Math.round((goodAnswers / questions.length) * 100)
+                Math.round((goodAnswers / quiz.length) * 100)
               }
               %
             </span>
           </p>
           <p className="text-sm text-white outfit-regular">
-            Vous avez répondu correctement à {goodAnswers} question(s) sur{" "}
-            {questions.length}.
+            Vous avez répondu correctement à {goodAnswers} question(s)
+            sur{" "} {quiz.length}.
           </p>
 
           <div className="flex flex-col gap-2 items-center justify-center w-full">
@@ -242,7 +242,7 @@ export const QuizzSection = ({
               variant={"outline"}
               size={"lg"}
               className="w-full px-[3%] ml-auto bg-transparent border-2 border-white text-white outfit-regular text-sm rounded-full hover:bg-white hover:bg-opacity-10"
-              onClick={() => setIsQuizzVisible(false)}
+              onClick={() => setIsQuizVisible(false)}
             >
               Fermer le quiz
             </Button>
