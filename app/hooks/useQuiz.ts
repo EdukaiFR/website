@@ -4,8 +4,15 @@ import testData from "../json/testData/quizResponse.json";
 
 export const tempData = testData; // Temporary test data for the quiz
 
+type Quiz = {
+  question: string;
+  choices: string[];
+  answer: string;
+  explanation: string;
+}[];
+
 export function useQuiz(quizService: QuizService) {
-  const [quizData, setQuizData] = useState({});
+  const [quizData, setQuizData] = useState<Quiz>([]);
   const [quizId, setQuizId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -32,13 +32,6 @@ import course from "@/app/json/testData/course.json";
 // Temporary test data for the quiz
 import { tempData } from "@/app/hooks";
 
-type Quiz = {
-  question: string;
-  choices: string[];
-  answer: string;
-  explanation: string;
-}[];
-
 export default function myCoursesPage() {
   const params = useParams();
   const courseId = params?.id?.toString() || '';
@@ -162,7 +155,7 @@ export default function myCoursesPage() {
           <div className="flex items-center justify-start gap-3">
             <Brain className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
-              {tempData.message.length} questions
+              {quizData ? quizData.length : 0} questions
             </p>
           </div>
           {/* Resume Files */}
@@ -267,7 +260,7 @@ export default function myCoursesPage() {
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
           <QuizSection
-            quiz={quizData as Quiz}
+            quiz={quizData}
             setIsQuizVisible={setIsQuestionsVisible}
           />
         </div>
