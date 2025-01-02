@@ -131,6 +131,7 @@ export default function myCoursesPage() {
             size={"lg"}
             className="px-[3%] text-white rounded-full text-sm outfit-regular w-full lg:w-auto"
             onClick={() => setIsQuestionsVisible(!isQuestionsVisible)}
+            disabled={!courseData?.quizzes.length}
           >
             {isQuestionsVisible ? (
               <CircleStop size={24} />
