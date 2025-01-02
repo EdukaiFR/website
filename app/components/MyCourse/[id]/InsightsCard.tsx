@@ -2,7 +2,7 @@ export type InsightsCardProps = {
   title: string;
   value: number;
   unit: string;
-  base: string;
+  base: number;
 };
 
 export const InsightsCardAccent = ({
@@ -21,7 +21,7 @@ export const InsightsCardAccent = ({
           {value}
           {unit}
         </p>
-        <p className="text-sm text-accent text-opacity-75">{base}</p>
+        <p className="text-sm text-accent text-opacity-75">sur {base} essais</p>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ export const InsightsCardPrimary = ({
           {value}
           {unit}
         </p>
-        <p className="text-sm text-primary text-opacity-75">{base}</p>
+        <p className="text-sm text-primary text-opacity-75">sur {base} personnes</p>
       </div>
     </div>
   );

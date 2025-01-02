@@ -1,4 +1,4 @@
-import type { QuizService } from "@/services";
+import type { InsightsService, QuizService } from "@/services";
 import { useState } from "react";
 import testData from "../json/testData/quizResponse.json";
 
@@ -11,11 +11,19 @@ type Quiz = {
   explanation: string;
 }[];
 
-export function useQuiz(quizService: QuizService) {
+type Insights = {
+  averageScore: number;
+  insightsCount: number;
+};
+
+export function useQuiz(quizService: QuizService, insightsService: InsightsService) {
   const [quizData, setQuizData] = useState<Quiz>([]);
   const [quizId, setQuizId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [insightsData, setInsightsData] = useState<Insights>({
+    averageScore: 0, insightsCount: 0
+  });
 
   async function generateQuiz(recognizedTexts: string[]) {
     setIsGenerating(true);
@@ -42,6 +50,7 @@ export function useQuiz(quizService: QuizService) {
     try {
       const quizResponse = await quizService.getQuizById(quizId);
       setQuizData(quizResponse.item.quiz);
+      return quizResponse.item;
     } catch (error) {
       console.error(`Error getting quiz ${quizId} `, error);
       setError("Failed to load quiz. Please try again.");
@@ -49,6 +58,17 @@ export function useQuiz(quizService: QuizService) {
     }
   }
 
-  return { quizData, quizId, isGenerating, error, setGeneratingState,
-    generateQuiz, loadQuiz };
+  const getQuizInsights = async (quizId: string) => {
+    try {
+      const insights = await insightsService.getQuizInsights(quizId);
+      setInsightsData(insights);
+    } catch (error) {
+      console.error(`Error getting quiz ${quizId} `, error);
+      setError("Failed to load quiz. Please try again.");
+      return null;
+    }
+  }
+
+  return { quizData, quizId, insightsData, isGenerating, error, setGeneratingState,
+    generateQuiz, loadQuiz, getQuizInsights };
 }

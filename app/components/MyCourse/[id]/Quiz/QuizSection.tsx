@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Check, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useInsightsService } from "@/services";
 
 export type QuizSectionProps = {
+  quizId: string;
   quiz: {
     question: string;
     choices: string[];
@@ -15,6 +17,7 @@ export type QuizSectionProps = {
 };
 
 export const QuizSection = ({
+  quizId,
   quiz,
   setIsQuizVisible,
 }: QuizSectionProps) => {
@@ -24,6 +27,19 @@ export const QuizSection = ({
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [isQuizzCompleted, setIsQuizzCompleted] = useState<boolean>(false);
   const [lastQuestion, setLastQuestion] = useState<boolean>(false);
+
+  const insightService = useInsightsService();
+
+  // Automatically create insight once the user answers all questions
+  useEffect(() => {
+    if (currentQuestion >= quiz.length - 1 && isAnswered) {
+      createInsight();
+    }
+  }, [currentQuestion, isAnswered]);
+
+  const createInsight = async () => {
+    await insightService.createInsight(quizId, finalScore);
+  }
 
   const playAgain = () => {
     setGoodAnswers(0);
@@ -47,6 +63,7 @@ export const QuizSection = ({
   };
 
   const currentQuestionData = quiz[currentQuestion];
+  const finalScore = Math.round((goodAnswers / quiz.length) * 100);
 
   return (
     <div className="p-5 rounded-lg w-full lg:w-[50%] border-2 border-white border-opacity-25 flex flex-col gap-5 items-center justify-center">
@@ -219,11 +236,7 @@ export const QuizSection = ({
           <p className="text-primary text-lg outfit-regular">
             Votre score est de{" "}
             <span className="text-xl">
-              {
-                // Calculate the percentage of good answers
-                Math.round((goodAnswers / quiz.length) * 100)
-              }
-              %
+                {finalScore} %
             </span>
           </p>
           <p className="text-sm text-white outfit-regular">

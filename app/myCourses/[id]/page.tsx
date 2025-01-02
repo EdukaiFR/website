@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { useCourseService, useQuizService } from "@/services";
+import { useCourseService, useInsightsService, useQuizService } from "@/services";
 import { useCourse } from "@/app/hooks";
 
 // Temporary test data for the course
@@ -41,12 +41,14 @@ export default function myCoursesPage() {
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
+  const [quizId, setQuizId] = useState('');
 
   const courseService = useCourseService();
   const { courseData, loadCourse } = useCourse(courseService);
 
   const quizService = useQuizService();
-  const { quizData, loadQuiz } = useQuiz(quizService);
+  const insightsService = useInsightsService();
+  const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(quizService, insightsService);
 
   useEffect(() => {
     if (courseId) {
@@ -56,12 +58,17 @@ export default function myCoursesPage() {
 
   useEffect(() => {
     fetchQuiz()
-  }, [courseData]);
+  }, [courseData, isQuestionsVisible]);
 
   // For now we handle only the first quiz of the course
   const fetchQuiz = async () => {
     if (courseData && courseData.quizzes.length > 0) {
-      await loadQuiz(courseData.quizzes[0]);
+      const quizId = courseData.quizzes[0];
+      setQuizId(quizId);
+      const quizResponse = await loadQuiz(quizId);
+      if (quizResponse.insights.length > 0) {
+        await getQuizInsights(quizId);
+      }
     }
   }
 
@@ -196,15 +203,15 @@ export default function myCoursesPage() {
               <div className="flex flex-col lg:flex-row items-center justify-start gap-4 w-full">
                 <InsightsCardAccent
                   title="Ton taux de réussite"
-                  value={course.insights.winRate.score}
+                  value={insightsData ? insightsData.averageScore : 0}
                   unit="%"
-                  base="sur 3 essais"
+                  base={insightsData ? insightsData.insightsCount : 0}
                 />
                 <InsightsCardPrimary
                   title="Taux de réussite moyen"
                   value={course.insights.averageWinRate.score}
                   unit="%"
-                  base={`sur ${course.insights.averageWinRate.nbPersons} personnes`}
+                  base={course.insights.averageWinRate.nbPersons}
                 />
               </div>
             </div>
@@ -260,6 +267,7 @@ export default function myCoursesPage() {
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
           <QuizSection
+            quizId={quizId}
             quiz={quizData}
             setIsQuizVisible={setIsQuestionsVisible}
           />
