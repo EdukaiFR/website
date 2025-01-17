@@ -3,31 +3,34 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, BookCheck, Brain, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Options = "pictures" | "files";
 
-type GeneratorForm = {
-  option: Options;
-  title: string;
-  subject: string;
-  level: string;
-  files: File[];
-};
-
 export type LoadingProcessProps = {
-  formFields: GeneratorForm;
-  endFct: (boolean: boolean) => void;
+  courseId: string,
+  isGenerating: boolean,
+  isCreating: boolean
 };
 
-export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
+export const LoadingProcess = ({ courseId, isGenerating, isCreating }: LoadingProcessProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  // simulate loading process with 5 secondes timeout
-  setTimeout(() => {
-    setIsLoading(false);
-  }, 3000);
+  useEffect(() => {
+    setIsLoading(isCreating || isGenerating);
+  }, [isCreating, isGenerating]);
+
+  const getLoadingMessage = () => {
+    if (isGenerating) return "Génération du quiz en cours";
+    if (isCreating) return "Nous créons votre cours...";
+    return "Génération en cours...";
+  }
+
+  const courseRedirect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push(`/myCourses/${courseId}`);
+  }
 
   return (
     <>
@@ -39,7 +42,7 @@ export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
               Génération en cours...
             </h3>
             <p className="text-white text-opacity-75 text-xs lg:text-md outfit-regular">
-              Merci de patienter quelques instants
+              {getLoadingMessage()}
             </p>
           </div>
 
@@ -76,12 +79,9 @@ export const LoadingProcess = ({ formFields, endFct }: LoadingProcessProps) => {
             </div>
           </div>
 
-          {/* Naviguate to "myCourses" */}
+          {/* Navigate to the generated course */}
           <Button
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/myCourses/12");
-            }}
+            onClick={courseRedirect}
             className="mt-4 rounded-full text-white outfit-regular"
           >
             Voir mes cours

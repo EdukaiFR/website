@@ -6,15 +6,15 @@
     "files": [
       {
         "name": "Course 1.svg",
-        "href": "/icons/filesType/exemple.svg"
+        "href": "/icons/fileTypes/exemple.svg"
       },
       {
         "name": "Course 2.svg",
-        "href": "/icons/filesType/exemple.svg"
+        "href": "/icons/fileTypes/exemple.svg"
       },
       {
         "name": "Course 3.svg",
-        "href": "/icons/filesType/exemple.svg"
+        "href": "/icons/fileTypes/exemple.svg"
       }
     ],
     "resumeFiles": {
@@ -22,15 +22,15 @@
       "files": [
         {
           "name": "Fiche 3",
-          "url": "/icons/filesType/resumeFiles/image 2.png"
+          "url": "/icons/fileTypes/resumeFiles/image 2.png"
         },
         {
           "name": "Fiche 2",
-          "url": "/icons/filesType/resumeFiles/image-1.png"
+          "url": "/icons/fileTypes/resumeFiles/image-1.png"
         },
         {
           "name": "Fiche 1",
-          "url": "/icons/filesType/resumeFiles/image.png"
+          "url": "/icons/fileTypes/resumeFiles/image.png"
         }
       ]
     },

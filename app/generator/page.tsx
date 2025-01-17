@@ -9,12 +9,12 @@ import { useEffect, useState } from "react";
 import { LoadingProcess } from "../components/Generator/LoadingProcess";
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 
-import { useQuizService } from "@/services";
-import { useQuizGenerator } from "../hooks";
+import { useQuizService, useCourseService } from "@/services";
+import { useQuiz, useCourse } from "../hooks";
 
 type Options = "pictures" | "files";
 
-type GeneratorForm = {
+export type GeneratorForm = {
   option: Options;
   title: string;
   subject: string;
@@ -40,27 +40,34 @@ export default function Generator() {
   });
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
   const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
+  const [isGenerationLaunched, setGenerationLaunched] = useState<boolean>(false);
 
+  // Quiz generation
   const quizService = useQuizService();
-  const { quizData, isGenerating, error, setGeneratingState,
-      generateQuiz } = useQuizGenerator(quizService);
+  const { quizId, isGenerating,
+      generateQuiz } = useQuiz(quizService);
 
-  function getFileTypeIcon(extension: string): string {
-    const urlStart = "/icons/filesType/";
-    switch (extension) {
-      case "pdf":
-        return urlStart + "pdf" + ".png";
-      case "doc":
-      case "docx":
-        return urlStart + "doc" + ".png";
-      case "jpg":
-      case "jpeg":
-        return urlStart + "jpg" + ".png";
-      case "png":
-        return urlStart + "png" + ".png";
-      default:
-        return urlStart + "default" + ".png";
-    }
+  // Course creation
+  const courseService = useCourseService();
+  const { courseId, isCreating, courseError,
+      createCourse, addQuizToCourse } = useCourse(courseService);
+
+  function getFileIconPath(extension: string): string {
+    const urlStart = "/icons/fileTypes/";
+
+    const extensionMap: {[key: string]: string} = {
+      pdf: "pdf",
+      doc: "doc",
+      docx: "doc",
+      jpg: "jpg",
+      jpeg: "jpg",
+      png: "png",
+    };
+
+    const iconName = extensionMap[extension] || "default";
+    const filepath = `${urlStart}${iconName}.png`;
+
+    return filepath;
   }
 
   useEffect(() => {
@@ -76,9 +83,18 @@ export default function Generator() {
     }
   }, [formFields]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (recognizedTexts.length > 0) {
-      generateQuiz(recognizedTexts);
+      setGenerationLaunched(true);
+      const generation = await generateQuiz(recognizedTexts);
+
+      if (generation?.success) {
+        const courseId = await createCourse(formFields);
+        await addQuizToCourse(courseId, generation.newQuizId);
+      } else {
+        // TODO: display message here once we implement toasts.
+        console.error('Failed to generate quiz, aborted course creation.')
+      }
     }
   }
 
@@ -141,7 +157,13 @@ export default function Generator() {
   return (
     <div className="flex items-center justify-center w-full h-full mb-10">
       <div className="border-2 border-[#FFFFFF] border-opacity-15 rounded-[20px] p-[10px] lg:p-[30px] flex flex-col gap-5">
-        {!isGenerating ? (
+        {isGenerationLaunched ? (
+          <LoadingProcess
+            courseId={courseId}
+            isGenerating={isGenerating}
+            isCreating={isCreating}
+          />
+        ) : (
           <>
             {/* Header */}
             <div className="flex flex-col items-center justify-center gap-1 lg:gap-2">
@@ -247,7 +269,7 @@ export default function Generator() {
                     className="flex items-center justify-between gap-2 px-4 py-2 lg:px-8 lg:py-4 rounded-lg border-2 border-white border-opacity-50"
                   >
                     <Image
-                      src={getFileTypeIcon(file.name.split(".").pop() || "")}
+                      src={getFileIconPath(file.name.split(".").pop() || "")}
                       width={40}
                       height={40}
                       alt="file-icon"
@@ -335,15 +357,13 @@ export default function Generator() {
             {/* Submit Button */}
             <Button
               onClick={handleGenerate}
-              disabled={!isInputFilled || isGenerating}
+              disabled={!isInputFilled}
               className="mt-5 flex items-center justify-center gap-5 rounded-full w-full text-white outfit-regular text-md py-[3%] h-full"
             >
               <WandSparkles size={"lg"} />
               Lancer la génération !
             </Button>
           </>
-        ) : (
-          <LoadingProcess formFields={formFields} endFct={setGeneratingState} />
         )}
       </div>
     </div>
