@@ -1,2 +1,3 @@
-export * from "./quizGenerator";
+export * from "./useQuiz";
+export * from "./useCourse";
 

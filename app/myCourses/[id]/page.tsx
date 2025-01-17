@@ -1,14 +1,16 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
 import { ExamCard } from "@/app/components/MyCourse/[id]/ExamCard";
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
 import {
   InsightsCardAccent,
   InsightsCardPrimary,
 } from "@/app/components/MyCourse/[id]/InsightsCard";
-import { QuizzSection } from "@/app/components/MyCourse/[id]/Quizz/QuizzSection";
+import { QuizSection } from "@/app/components/MyCourse/[id]/Quiz/QuizSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
 import { CreateExam } from "@/app/components/MyCourse/createExam";
+import { useQuiz } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,22 +24,68 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import {
+  useCourseService,
+  useInsightsService,
+  useQuizService,
+} from "@/services";
+import { useCourse } from "@/app/hooks";
+
 // Temporary test data for the course
 import course from "@/app/json/testData/course.json";
 
 // Temporary test data for the quiz
 import { tempData } from "@/app/hooks";
 
-export default function myCoursesPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function myCoursesPage() {
+  const params = useParams();
+  const courseId = params?.id?.toString() || "";
+  const router = useRouter();
 
   const [isResumeFilesVisible, setIsResumeFilesVisible] =
     useState<boolean>(false);
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
-  const [quiz, setQuiz] = useState(tempData);
+  const [quizId, setQuizId] = useState("");
   const [exams, setExams] = useState<any[]>([]);
+
+  const courseService = useCourseService();
+  const { courseData, loadCourse } = useCourse(courseService);
+
+  const quizService = useQuizService();
+  const insightsService = useInsightsService();
+  const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
+    quizService,
+    insightsService
+  );
+
+  useEffect(() => {
+    if (courseId) {
+      loadCourse(courseId);
+    }
+  }, [courseId]);
+
+  useEffect(() => {
+    fetchQuiz();
+  }, [courseData, isQuestionsVisible]);
+
+  // For now we handle only the first quiz of the course
+  const fetchQuiz = async () => {
+    if (courseData && courseData.quizzes.length > 0) {
+      const quizId = courseData.quizzes[0];
+      setQuizId(quizId);
+      const quizResponse = await loadQuiz(quizId);
+      if (quizResponse.insights.length > 0) {
+        await getQuizInsights(quizId);
+      }
+    }
+  };
+
+  const generatorRedirect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push("/generator");
+  };
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
@@ -70,12 +118,13 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
             variant={"ghost"}
             size={"icon"}
             className="transition-all px-2 py-2 hover:bg-primary-200 hover:bg-opacity-25 rounded-full border-none scale-125 !shadow-none hover:rotate-6 hover:scale-125"
+            onClick={generatorRedirect}
           >
             <ArrowLeft className="w-64 h-64" />
           </Button>
 
           {/* Title */}
-          <h1 className="text-xl lg:text-3xl">{course.title}</h1>
+          <h1 className="text-xl lg:text-3xl">{courseData?.title}</h1>
 
           {/* CTA */}
           <Button
@@ -91,6 +140,7 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
             size={"lg"}
             className="px-[3%] text-white rounded-full text-sm outfit-regular w-full lg:w-auto"
             onClick={() => setIsQuestionsVisible(!isQuestionsVisible)}
+            disabled={!courseData?.quizzes.length}
           >
             {isQuestionsVisible ? (
               <CircleStop size={24} />
@@ -109,10 +159,10 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           </p>
 
           <Badge className="ml-6 flex items-center justify-center gap-2 outfit-regular text-sm text-primary-500 px-3 py-1 rounded-full bg-primary-500 bg-opacity-25 hover:bg-primary-500 hover:bg-opacity-25 whitespace-nowrap">
-            {course.level}
+            {courseData?.level}
           </Badge>
           <Badge className="flex items-center justify-center gap-2 outfit-regular text-sm text-accent-500 px-3 py-1 rounded-full bg-accent-500 bg-opacity-25 hover:bg-accent-500 hover:bg-opacity-25 whitespace-nowrap">
-            {course.subject}
+            {courseData?.subject}
           </Badge>
         </div>
 
@@ -122,15 +172,17 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
           <div className="flex items-center justify-start gap-3">
             <Brain className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
-              {tempData.message.length} questions
+              {quizData ? quizData.length : 0} questions
             </p>
           </div>
           {/* Resume Files */}
           <div className="flex items-center justify-start gap-3">
             <BookCheck className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
-              {course.resumeFiles.nbFiles}{" "}
-              {course.resumeFiles.nbFiles === 1 ? "fiche" : "fiches"}
+              {courseData?.resumeFiles.length}{" "}
+              {(courseData?.resumeFiles?.length as number) === 1
+                ? "fiche"
+                : "fiches"}
             </p>
           </div>
         </div>
@@ -163,15 +215,15 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
               <div className="flex flex-col lg:flex-row items-center justify-start gap-4 w-full">
                 <InsightsCardAccent
                   title="Ton taux de réussite"
-                  value={course.insights.winRate.score}
+                  value={insightsData ? insightsData.averageScore : 0}
                   unit="%"
-                  base="sur 3 essais"
+                  base={insightsData ? insightsData.insightsCount : 0}
                 />
                 <InsightsCardPrimary
                   title="Taux de réussite moyen"
                   value={course.insights.averageWinRate.score}
                   unit="%"
-                  base={`sur ${course.insights.averageWinRate.nbPersons} personnes`}
+                  base={course.insights.averageWinRate.nbPersons}
                 />
               </div>
             </div>
@@ -233,9 +285,10 @@ export default function myCoursesPage({ params }: { params: { id: string } }) {
       {/* Questions Display */}
       {isQuestionsVisible && (
         <div className="w-full flex items-center justify-center mb-5">
-          <QuizzSection
-            questions={tempData.message}
-            setIsQuizzVisible={setIsQuestionsVisible}
+          <QuizSection
+            quizId={quizId}
+            quiz={quizData}
+            setIsQuizVisible={setIsQuestionsVisible}
           />
         </div>
       )}

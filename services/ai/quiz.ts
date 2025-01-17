@@ -3,6 +3,7 @@ import 'dotenv/config';
 
 export interface QuizService {
     generateQuiz: (recognizedText: string[]) => Promise<any>;
+    getQuizById: (quizId: string) => Promise<any>;
 }
 
 export function useQuizService(): QuizService {
@@ -13,7 +14,7 @@ export function useQuizService(): QuizService {
         try {
             const textString = recognizedText.join('\n');
 
-            const response = await axios.post(`${apiUrl}/ai/generate-qcm`,
+            const response = await axios.post(`${apiUrl}/ai/generate-quiz`,
                 {textString});
 
             return response.data;
@@ -22,5 +23,16 @@ export function useQuizService(): QuizService {
         }
     }
 
-    return { generateQuiz };
+    const getQuizById = async (quizId: string) => {
+        try {
+            const response = await axios.get(`${apiUrl}/quizzes/${quizId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred getting the Quiz ${quizId}`, error);
+        }
+    }
+
+    return { generateQuiz, getQuizById };
 }
