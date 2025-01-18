@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import { ExamCard } from "@/app/components/MyCourse/[id]/ExamCard";
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
 import {
@@ -22,20 +21,20 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useCourse } from "@/app/hooks";
 import {
   useCourseService,
   useInsightsService,
   useQuizService,
 } from "@/services";
-import { useCourse } from "@/app/hooks";
 
 // Temporary test data for the course
 import course from "@/app/json/testData/course.json";
 
 // Temporary test data for the quiz
-import { tempData } from "@/app/hooks";
 
 export default function myCoursesPage() {
   const params = useParams();
