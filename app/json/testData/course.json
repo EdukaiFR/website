@@ -1,0 +1,68 @@
+{
+    "id": 1,
+    "title": "Seconde Guerre Mondiale",
+    "subject": "Histoire",
+    "level": "Terminal",
+    "files": [
+      {
+        "name": "Course 1.svg",
+        "href": "/icons/fileTypes/exemple.svg"
+      },
+      {
+        "name": "Course 2.svg",
+        "href": "/icons/fileTypes/exemple.svg"
+      },
+      {
+        "name": "Course 3.svg",
+        "href": "/icons/fileTypes/exemple.svg"
+      }
+    ],
+    "resumeFiles": {
+      "nbFiles": 3,
+      "files": [
+        {
+          "name": "Fiche 3",
+          "url": "/icons/fileTypes/resumeFiles/image 2.png"
+        },
+        {
+          "name": "Fiche 2",
+          "url": "/icons/fileTypes/resumeFiles/image-1.png"
+        },
+        {
+          "name": "Fiche 1",
+          "url": "/icons/fileTypes/resumeFiles/image.png"
+        }
+      ]
+    },
+    "creator": "Toi",
+    "creationDate": "2024-10-05T14:48:00.000Z",
+    "isPublished": false,
+    "insights": {
+      "winRateGoal": 95,
+      "averageWinRate": {
+        "score": 74,
+        "nbPersons": 12
+      },
+      "winRate": {
+        "score": 82,
+        "nbTry": 3
+      }
+    },
+    "exams": [
+      {
+        "id": 0,
+        "title": "Contrôle",
+        "daysLeft": 13
+      },
+      {
+        "id": 1,
+        "title": "Bac blanc",
+        "daysLeft": 25
+      },
+      {
+        "id": 2,
+        "title": "Bac",
+        "daysLeft": 61
+      }
+    ]
+}

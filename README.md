@@ -18,7 +18,7 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 - **Création de fiches de révision personnalisées** : recevez des fiches de synthèse pour faciliter la révision.
 - **Prise en charge de divers formats** : importez vos cours sous forme de PDF, image, fichier Word, texte, etc.
 - **Expérience utilisateur fluide** : grâce à une interface intuitive et responsive.
-  
+
 ## 📸 Aperçu
 
 ![DARK  My Lessons - Open one - Quizz Multiplayer - Create - Play 3](https://github.com/user-attachments/assets/e9236864-dcd3-40cb-9f84-b2dd37247aa2)
@@ -30,28 +30,53 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
 1. **Clonez le projet :**
    ```bash
-   git clone https://github.com/votre-compte/Edukai.git
-   cd Edukai
+    # via SSH
+    git clone git@github.com:EdukaiFR/website.git
+
+    # OU via HTTPS
+    git clone https://github.com/EdukaiFR/website.git
+
+    cd website
    ```
 
-2. **Installez les dépendances :**
-   ```bash
-   npm install
-   ```
-   
-3. **Démarrez l'application en local :**
-   ```bash
-   npm run dev
-   ```
-   
-4. **Accédez à l'application :**
-   Rendez-vous sur http://localhost:3000 pour utiliser Edukai en local.<br>
+2. **Choisissez une méthode d'installation & démarrage :**
+
+    **Option 1: Via Docker 🐳 (recommandée)**
+
+    1. Construire l'image
+        ```bash
+        docker build -t edukai-website .
+        ```
+    2. Lancer le conteneur
+        ```bash
+        docker run -it -p 3000:3000 edukai-website
+        ```
+
+    **Option 2: Installation & démarrage locaux**
+    1. Installer les dependances
+        ```bash
+        npm install
+        ```
+    2. **Lancer l'application:**
+
+        Mode **dev** :
+        ```bash
+        npm run dev
+        ```
+        Mode **production** :
+        ```bash
+        npm run build && npm run start
+        ```
+
+3. **Accédez à l'application :**
+
+   L'application est lancée sur le port 3000 de votre machine (```http://localhost:3000```).<br>
 
 ## 👥 Équipe
 
-- **Tristan Hourtoulle** - Frontend Developer
-- **Khalid Belkassmi el Hafi** - Développeur
-- **Lucas Rossignon** - Développeur
+- **Tristan Hourtoulle** - Développeur Frontend
+- **Khalid Belkassmi E.H.** - Développeur Backend & IA
+- **Lucas Rossignon** - Développeur Mobile
 
 Nous sommes tous motivés par le même objectif : aider les étudiants à apprendre plus efficacement.
 
