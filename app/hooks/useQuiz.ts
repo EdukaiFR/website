@@ -16,7 +16,7 @@ type Insights = {
   insightsCount: number;
 };
 
-export function useQuiz(quizService: QuizService, insightsService: InsightsService) {
+export function useQuiz(quizService: QuizService, insightsService?: InsightsService) {
   const [quizData, setQuizData] = useState<Quiz>([]);
   const [quizId, setQuizId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -60,7 +60,7 @@ export function useQuiz(quizService: QuizService, insightsService: InsightsServi
 
   const getQuizInsights = async (quizId: string) => {
     try {
-      const insights = await insightsService.getQuizInsights(quizId);
+      const insights = await insightsService?.getQuizInsights(quizId);
       setInsightsData(insights);
     } catch (error) {
       console.error(`Error getting quiz ${quizId} `, error);
