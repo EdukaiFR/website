@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
 import { ExamCard } from "@/app/components/MyCourse/[id]/ExamCard";
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
 import {
@@ -9,6 +8,7 @@ import {
 } from "@/app/components/MyCourse/[id]/InsightsCard";
 import { QuizSection } from "@/app/components/MyCourse/[id]/Quiz/QuizSection";
 import { ResumeSection } from "@/app/components/MyCourse/[id]/Resume/ResumeSection";
+import { CreateExam } from "@/app/components/MyCourse/createExam";
 import { useQuiz } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,34 +21,42 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useCourseService, useInsightsService, useQuizService } from "@/services";
 import { useCourse } from "@/app/hooks";
+import {
+  useCourseService,
+  useInsightsService,
+  useQuizService,
+} from "@/services";
 
 // Temporary test data for the course
 import course from "@/app/json/testData/course.json";
 
 // Temporary test data for the quiz
-import { tempData } from "@/app/hooks";
 
 export default function myCoursesPage() {
   const params = useParams();
-  const courseId = params?.id?.toString() || '';
+  const courseId = params?.id?.toString() || "";
   const router = useRouter();
 
-  const [isResumeFilesVisible, setIsResumeFilesVisible] = useState<boolean>(false);
+  const [isResumeFilesVisible, setIsResumeFilesVisible] =
+    useState<boolean>(false);
   const [isQuestionsVisible, setIsQuestionsVisible] = useState<boolean>(false);
   const [files, setFiles] = useState(course.files);
   const [resumeFiles, setResumeFiles] = useState(course.resumeFiles.files);
-  const [quizId, setQuizId] = useState('');
+  const [quizId, setQuizId] = useState("");
 
   const courseService = useCourseService();
   const { courseData, loadCourse } = useCourse(courseService);
 
   const quizService = useQuizService();
   const insightsService = useInsightsService();
-  const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(quizService, insightsService);
+  const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
+    quizService,
+    insightsService
+  );
 
   useEffect(() => {
     if (courseId) {
@@ -57,7 +65,7 @@ export default function myCoursesPage() {
   }, [courseId]);
 
   useEffect(() => {
-    fetchQuiz()
+    fetchQuiz();
   }, [courseData, isQuestionsVisible]);
 
   // For now we handle only the first quiz of the course
@@ -70,12 +78,13 @@ export default function myCoursesPage() {
         await getQuizInsights(quizId);
       }
     }
-  }
+  };
 
   const generatorRedirect = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push('/generator');
-  }
+    router.push("/generator");
+  };
+  const [exams, setExams] = useState<any[]>([]);
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
@@ -96,7 +105,6 @@ export default function myCoursesPage() {
       setIsQuestionsVisible(false);
     }
   }, [isResumeFilesVisible]);
-
 
   return (
     <div className="w-full flex flex-col gap-2 items-start justify-start mb-auto mt-[4%]">
@@ -171,8 +179,10 @@ export default function myCoursesPage() {
             <BookCheck className="text-primary-500" size={24} />
             <p className="text-white text-opacity-75 outfit-regular text-sm">
               {courseData?.resumeFiles.length}{" "}
-              {(courseData?.resumeFiles?.length as number) === 1 ? "fiche" : "fiches"}
-              </p>
+              {(courseData?.resumeFiles?.length as number) === 1
+                ? "fiche"
+                : "fiches"}
+            </p>
           </div>
         </div>
       </div>
@@ -184,7 +194,7 @@ export default function myCoursesPage() {
           <FileSection files={files} ctaUpdate={setFiles} />
 
           {/* Insights + Exams */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-4 w-full max-w-[96.5%] ml-[2%] lg:ml-[3.5%] mb-5">
             {/* Insights */}
             <div className="p-3 flex flex-col items-center lg:items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full lg:max-w-[40%]">
               {/* Header */}
@@ -219,33 +229,40 @@ export default function myCoursesPage() {
             {/* Exams */}
             <div className="p-3 flex flex-col items-start gap-4 bg-primary bg-opacity-25 rounded-lg w-full">
               {/* Header */}
-              <div className="flex flex-col items-start gap-1 w-full">
-                <p className="text-md text-white outfit-regular">
-                  Examens Prévus
-                </p>
-                <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular">
-                  Tu as{" "}
-                  <span className="text-accent text-opacity-75">
-                    {course.exams.length === 0 ? 'aucun' : course.exams.length}
-                  </span>
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between w-full">
+                <div className="flex flex-col items-start gap-1 w-full">
+                  <p className="text-md text-white outfit-regular">
+                    Examens Prévus
+                  </p>
+                  <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular mr-auto w-full">
+                    Tu {exams.length === 0 && "n'"}as{" "}
+                    <span className="text-accent text-opacity-75">
+                      {exams.length === 0 ? "aucun" : exams.length}
+                    </span>{" "}
+                    {exams.length === 0
+                      ? "examen prévu"
+                      : exams.length > 1
+                      ? "examens prévus"
+                      : "examen prévu"}{" "}
+                    pour ce cours.
+                  </p>
+                </div>
+
+                <div className="mt-2 lg:mt-0 ml-auto w-full lg:w-auto">
                   {" "}
-                  {course.exams.length === 0
-                    ? 'examen prévu'
-                    : course.exams.length > 1
-                    ? 'examens prévus'
-                    : 'examen prévu'
-                  }
-                  {" "} pour ce cours
-                </p>
+                  {/* Add ml-auto here */}
+                  <CreateExam examList={exams} ctaAddExam={setExams} />
+                </div>
               </div>
 
               {/* Cards */}
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
-                {course.exams.map((exam) => (
+              <div className="flex flex-col lg:flex-row lg:flex-wrap items-center justify-between gap-4 w-full">
+                {exams.map((exam, index) => (
                   <ExamCard
-                    key={exam.id}
-                    title={exam.title}
-                    value={exam.daysLeft}
+                    exam={exam}
+                    key={index}
+                    ctaSetExam={setExams}
+                    examsList={exams}
                   />
                 ))}
               </div>
