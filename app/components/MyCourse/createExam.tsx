@@ -67,7 +67,6 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
         title: "La date de l'examen ne peut pas être aujourd'hui ou avant.",
         description: "Veuillez choisir une date ultérieure.",
       });
-      console.log("La date de l'examen ne peut pas être aujourd'hui ou avant.");
       return;
     }
     const maxId =
