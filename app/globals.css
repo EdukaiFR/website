@@ -122,3 +122,12 @@ body {
   font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
 }
+
+/* Hover & selected style for sidebarLinks */
+.sidebar-link-selected {
+  @apply flex items-center gap-4 px-4 py-2 rounded-lg bg-[#2D6BCF] bg-opacity-25;
+}
+
+.text-primary {
+  color: #2d6bcf;
+}
