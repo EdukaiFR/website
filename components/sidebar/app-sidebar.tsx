@@ -13,20 +13,30 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ModeToggle } from "../mode-toggle";
+import { usePathname } from "next/navigation"; // Hook pour obtenir l'URL actuelle
+import { useEffect, useState } from "react";
 import { useLinks } from "./links";
+import { NavUser } from "./nav-user";
 
 export function AppSidebar() {
-  const router = useRouter();
   const { upLinks, downLinks } = useLinks();
-  const [isCollapsibleOpen, setIsCollapsibleOpen] = useState<boolean>(false);
+  const pathname = usePathname(); // Récupère l'URL actuelle
+  const [selectedLink, setSelectedLink] = useState<string>(pathname || "/");
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Met à jour le lien sélectionné si l'URL change
+  useEffect(() => {
+    setSelectedLink(pathname);
+  }, [pathname]);
 
   return (
-    <Sidebar collapsible="icon" className="bg-[hsl(var(--sidebar-background))]">
+    <Sidebar
+      collapsible="icon"
+      className="bg-[hsl(var(--sidebar-background))]"
+      // Détecte les changements de mode
+    >
       <SidebarHeader>
-        <div className="flex justify-center py-4">
+        <div className="flex justify-center items-center py-4 gap-4">
           <Image
             src="/EdukaiLogo.svg"
             alt="Logo Edukai"
@@ -47,12 +57,12 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <Link
                         href={href}
-                        className="flex items-center gap-3 p-2 rounded-md hover:bg-[hsl(var(--sidebar-accent))]"
+                        className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
+                          selectedLink === href && "sidebar-link-selected"
+                        }`}
                       >
-                        <Icon className="w-6 h-6 text-[hsl(var(--sidebar-foreground))]" />
-                        <span className="text-medium text-[hsl(var(--sidebar-foreground))] text-base">
-                          {label}
-                        </span>
+                        <Icon className="w-6 h-6" />
+                        <span className="text-medium text-base">{label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -72,12 +82,12 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <Link
                         href={href}
-                        className="flex items-center gap-3 p-2 rounded-md hover:bg-[hsl(var(--sidebar-accent))]"
+                        className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
+                          selectedLink === href && "sidebar-link-selected"
+                        }`}
                       >
-                        <Icon className="w-6 h-6 text-[hsl(var(--sidebar-foreground))]" />
-                        <span className="text-medium text-[hsl(var(--sidebar-foreground))] text-base">
-                          {label}
-                        </span>
+                        <Icon className="w-6 h-6" />
+                        <span className="text-medium text-base">{label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -89,7 +99,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="flex justify-center py-4">
-        <ModeToggle />
+        {/* <ModeToggle /> */}
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
