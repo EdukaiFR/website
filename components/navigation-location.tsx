@@ -41,7 +41,7 @@ export function HeaderBreadcrumb() {
                   {index === 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className=" text-md text-medium">
+                      <BreadcrumbPage className=" text-md text-medium cursor-not-allowed">
                         {formattedSegment}
                       </BreadcrumbPage>
                     ) : (
@@ -54,7 +54,9 @@ export function HeaderBreadcrumb() {
                     )}
                   </BreadcrumbItem>
                   {/* Séparateur placé en dehors de <li>, sauf pour le dernier élément */}
-                  {!isLast && <BreadcrumbSeparator />}
+                  {!isLast && (
+                    <BreadcrumbSeparator className="text-medium mt-0.5" />
+                  )}
                 </React.Fragment>
               );
             })}
