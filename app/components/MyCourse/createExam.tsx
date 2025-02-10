@@ -42,11 +42,13 @@ const formSchema = z.object({
 });
 
 export type createExamProps = {
+  courseId: string;
   examList: any[];
-  ctaAddExam: (exam: any) => void;
+  onUpdateExams: (newExamList: any[]) => void;
+  createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
 };
 
-export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
+export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: createExamProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const { toast } = useToast();
 
@@ -69,23 +71,27 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
       });
       return;
     }
-    const maxId =
-      examList.length > 0 ? Math.max(...examList.map((exam) => exam.id)) : -1;
+
     const newExam = {
-      id: maxId + 1,
       title: data.title,
       description: data.description,
       date: new Date(data.date),
     };
-    const sortedList = [...examList, newExam].sort((a: any, b: any) => {
-      return a.date.getTime() - b.date.getTime();
-    });
 
-    ctaAddExam(sortedList);
+    const updatedList = [...examList, newExam];
+
+    const creationResponse = await createExam(courseId, newExam.title, newExam.description, newExam.date);
+
+    if (creationResponse) {
+      onUpdateExams(updatedList);
+    }
+
+    // Close the modal and reset form values
     setIsDialogOpen(false);
     form.reset();
+
     toast({
-      title: "Nouvel examen ajouté",
+      title: creationResponse?.message || "",
       description: "Pour la date " + newExam.date.toLocaleDateString(),
     });
   };

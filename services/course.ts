@@ -5,6 +5,8 @@ export interface CourseService {
     createCourse: (title: string, subject: string, level: string) => Promise<any>;
     getCourseById: (courseId: string) => Promise<any>;
     addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
+    createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
+    getExamById: (examId: string) => Promise<any>;
 }
 
 export function useCourseService() {
@@ -46,7 +48,37 @@ export function useCourseService() {
         }
     }
 
-    return { createCourse, getCourseById, addQuizToCourse };
+    const createExam = async (
+        courseId: string,
+        title: string,
+        description: string,
+        date: Date
+    ): Promise<{ message: string } | null> => {
+        try {
+            const response = await axios.post(`${apiUrl}/courses/${courseId}/exams`,
+                { title, description, date},
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred creating an exam for the course ${courseId}`, error);
+            return null;
+        }
+    }
+
+    const getExamById = async ( examId: string ) => {
+        try {
+            const response = await axios.get(`${apiUrl}/exams/${examId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred getting exam ${examId}`, error);
+        }
+    }
+
+
+    return { createCourse, getCourseById, addQuizToCourse, createExam, getExamById };
 }
 
 

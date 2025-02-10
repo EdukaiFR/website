@@ -49,7 +49,7 @@ export default function myCoursesPage() {
   const [quizId, setQuizId] = useState("");
 
   const courseService = useCourseService();
-  const { courseData, loadCourse } = useCourse(courseService);
+  const { courseData, examsData, loadCourse, createExam, getExams } = useCourse(courseService);
 
   const quizService = useQuizService();
   const insightsService = useInsightsService();
@@ -66,7 +66,16 @@ export default function myCoursesPage() {
 
   useEffect(() => {
     fetchQuiz();
+    if (courseData?.exams) {
+      getExams(courseData.exams);
+    }
   }, [courseData, isQuestionsVisible]);
+
+  useEffect(() => {
+    if (examsData) {
+      setUpdatedExams(examsData);
+    }
+  }, [examsData]);
 
   // For now we handle only the first quiz of the course
   const fetchQuiz = async () => {
@@ -84,7 +93,12 @@ export default function myCoursesPage() {
     e.preventDefault();
     router.push("/generator");
   };
-  const [exams, setExams] = useState<any[]>([]);
+
+  const [updatedExams, setUpdatedExams] = useState<any[]>([]);
+
+  const handleUpdateExams = (newExamList : any[]) => {
+      setUpdatedExams(newExamList);
+  }
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
@@ -235,13 +249,13 @@ export default function myCoursesPage() {
                     Examens Prévus
                   </p>
                   <p className="text-xs lg:text-sm text-white text-opacity-75 outfit-regular mr-auto w-full">
-                    Tu {exams.length === 0 && "n'"}as{" "}
+                    Tu {updatedExams.length === 0 && "n'"}as{" "}
                     <span className="text-accent text-opacity-75">
-                      {exams.length === 0 ? "aucun" : exams.length}
+                      {updatedExams.length === 0 ? "aucun" : updatedExams.length}
                     </span>{" "}
-                    {exams.length === 0
+                    {updatedExams.length === 0
                       ? "examen prévu"
-                      : exams.length > 1
+                      : updatedExams.length > 1
                       ? "examens prévus"
                       : "examen prévu"}{" "}
                     pour ce cours.
@@ -251,18 +265,23 @@ export default function myCoursesPage() {
                 <div className="mt-2 lg:mt-0 ml-auto w-full lg:w-auto">
                   {" "}
                   {/* Add ml-auto here */}
-                  <CreateExam examList={exams} ctaAddExam={setExams} />
+                  <CreateExam
+                    courseId={courseId}
+                    examList={examsData}
+                    onUpdateExams={handleUpdateExams}
+                    createExam={createExam}
+                  />
                 </div>
               </div>
 
               {/* Cards */}
               <div className="flex flex-col lg:flex-row lg:flex-wrap items-center justify-between gap-4 w-full">
-                {exams.map((exam, index) => (
+                {updatedExams?.map((exam, index) => (
                   <ExamCard
                     exam={exam}
                     key={index}
-                    ctaSetExam={setExams}
-                    examsList={exams}
+                    ctaSetExam={handleUpdateExams} // TODO: handle update via api call
+                    examsList={updatedExams}
                   />
                 ))}
               </div>

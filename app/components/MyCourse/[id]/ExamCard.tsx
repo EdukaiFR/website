@@ -35,7 +35,7 @@ import { z } from "zod";
 
 export type ExamCardProps = {
   exam: {
-    id: number;
+    id: string;
     title: string;
     description?: string;
     date: Date;
