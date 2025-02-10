@@ -1,6 +1,7 @@
 import { HeaderBreadcrumb } from "@/components/navigation-location";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -29,6 +30,7 @@ export default async function RootLayout({
             <SidebarInset className="">
               <SidebarInset>
                 <HeaderBreadcrumb />
+                <Separator className="mb-4" />
                 {children}
               </SidebarInset>
             </SidebarInset>

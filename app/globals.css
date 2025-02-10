@@ -121,6 +121,14 @@ body {
 .text-medium {
   font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
+  color: #3678ff;
+}
+
+.text-medium-muted {
+  font-family: "Satoshi-Medium", sans-serif;
+  font-weight: 500;
+  color: #3678ff;
+  opacity: 0.75;
 }
 
 /* Hover & selected style for sidebarLinks */

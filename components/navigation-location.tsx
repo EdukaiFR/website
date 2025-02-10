@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -18,17 +17,15 @@ export function HeaderBreadcrumb() {
   const segments = pathname.split("/").filter((segment) => segment); // Divise le chemin en segments
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 mb-4">
+    <header className="flex h-12 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
+        <SidebarTrigger className="mt-0.5 -ml-1 text-medium-muted hover:text-[#3678FF]" />
 
         {/* Breadcrumbs dynamiques */}
-        <Breadcrumb>
+        <Breadcrumb className="">
           <BreadcrumbList>
-            {/* Premier élément : "Platform" */}
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/">Platform</BreadcrumbLink>
+            <BreadcrumbItem className="hidden md:block text-md text-medium-muted hover:text-medium">
+              <BreadcrumbLink href="/">Edukai</BreadcrumbLink>
             </BreadcrumbItem>
 
             {/* Affichage des segments */}
@@ -44,9 +41,14 @@ export function HeaderBreadcrumb() {
                   {index === 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage>{formattedSegment}</BreadcrumbPage>
+                      <BreadcrumbPage className=" text-md text-medium">
+                        {formattedSegment}
+                      </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={href} className="cursor-pointer">
+                      <BreadcrumbLink
+                        href={href}
+                        className="cursor-pointer text-md text-medium-muted hover:text-medium"
+                      >
                         {formattedSegment}
                       </BreadcrumbLink>
                     )}
