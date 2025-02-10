@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="/public/logo/Logo - Kaiboard - White.svg" alt="Kaiboard Logo" width="200"/>
+</p>
 
-## Getting Started
+<h1 align="center">Kaiboard 🌍✨</h1>
+<p align="center">
+  Une plateforme intuitive pour gérer vos projets collaboratifs avec efficacité et simplicité.
+</p>
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Fonctionnalités principales
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 📅 **Planification des réunions** :
+  - Créez des réunions et invitez des collaborateurs en tenant compte des fuseaux horaires.
+- ✅ **Suivi des tâches** :
+  - Organisez et suivez vos tâches avec une interface claire et épurée.
+- 📁 **Gestion des projets** :
+  - Gardez une vue d'ensemble de tous vos projets et de leur progression.
+- ⚙️ **Paramètres personnalisés** :
+  - Adaptez l'expérience utilisateur à vos besoins.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Stack technologique
 
-## Learn More
+- **Frontend** : [Next.js](https://nextjs.org/) + [Tailwind CSS](https://tailwindcss.com/)
+- **Backend** : [Supabase](https://supabase.com/)
+- **Hébergement** : [Vercel](https://vercel.com/)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🌟 Aperçu (Work In Progress)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> Le site est actuellement en développement. Voici un aperçu d'une page :
 
-## Deploy on Vercel
+<p align="center">
+  <img src="/public/image.png" alt="Kaiboard Preview" width="800"/>
+</p>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚧 Statut du projet
+
+Kaiboard est en cours de développement. Nous travaillons activement à l'intégration des fonctionnalités principales et à l'optimisation de l'expérience utilisateur.
+
+---
+
+## 🏗️ Comment contribuer ?
+
+1. **Forkez ce dépôt** 🍴
+2. Clonez le projet :
+   ```bash
+   git clone https://github.com/<ton_organisation>/kaiboard.git
+   ```
+3. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+4. Lancez l'application en local :
+   ```bash
+   npm run dev
+   ```
+5. Proposez vos modifications via une **pull request** 📥
+
+---
+
+## 📞 Contact
+
+Vous avez des questions ou des idées ? Contactez-moi directement :
+
+- **Email** : tristan.hourtoulle@epitech.eu
+- **GitHub** : [Votre Organisation](https://github.com/<ton_organisation>)
+
+---
+
+<p align="center">Développé avec ❤️ par Tristan Hourtoulle.</p>
