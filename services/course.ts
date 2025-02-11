@@ -7,7 +7,7 @@ export interface CourseService {
     addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
     createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
     getExamById: (examId: string) => Promise<any>;
-    deleteExamById: (examId: string,) => Promise<{ message: string } | null>;
+    deleteExamById: (examId: string, courseId: string ) => Promise<{ message: string } | null>;
     updateExamById: (examId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
 }
 
@@ -100,11 +100,11 @@ export function useCourseService() {
         }
     }
 
-    const deleteExamById = async ( examId: string ) :
+    const deleteExamById = async ( examId: string, courseId: string ) :
         Promise<{ message: string } | null > =>
     {
         try {
-            const response = await axios.delete(`${apiUrl}/exams/${examId}`,
+            const response = await axios.delete(`${apiUrl}/exams/${examId}/${courseId}`,
                 { withCredentials: true }
             );
             return response.data;

@@ -281,6 +281,7 @@ export default function myCoursesPage() {
                   <ExamCard
                     exam={exam}
                     key={index}
+                    courseId={courseId}
                     examList={examsData}
                     onUpdateExams={handleUpdateExams}
                     updateExam={updateExamById}

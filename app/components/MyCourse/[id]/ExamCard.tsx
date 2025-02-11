@@ -43,6 +43,7 @@ type Exam = {
 type ExamCardProps = {
   exam: Exam;
   examList: any[];
+  courseId: string;
   onUpdateExams: (newExamList: Exam[]) => void;
   updateExam: (
     examId: string,
@@ -51,7 +52,8 @@ type ExamCardProps = {
     date: Date
   ) => Promise<{ message: string } | null>;
   deleteExam: (
-    examId: string
+    examId: string,
+    courseId: string
   ) => Promise<{ message: string } | null>;
 };
 
@@ -64,7 +66,7 @@ const formSchema = z.object({
 
 export const ExamCard = (props: ExamCardProps) => {
   const { title, description, date } = props.exam;
-  const { updateExam, deleteExam, onUpdateExams, exam, examList } = props;
+  const { updateExam, deleteExam, onUpdateExams, exam, examList, courseId } = props;
 
   const daysLeft = getDaysLeft(date);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
@@ -106,7 +108,7 @@ export const ExamCard = (props: ExamCardProps) => {
   // Handle exam deletion
   const handleDelete = async (examId: string) => {
 
-    const deletionResponse = await deleteExam(examId);
+    const deletionResponse = await deleteExam(examId, courseId);
     const updatedList = examList.filter((exam) => exam._id !== examId);
 
     if (deletionResponse) {

@@ -125,9 +125,9 @@ export function useCourse(courseService: CourseService) {
         }
     }
 
-    const deleteExamById = async (examId: string) => {
+    const deleteExamById = async (examId: string, courseId: string) => {
         try {
-            const response = await courseService.deleteExamById(examId);
+            const response = await courseService.deleteExamById(examId, courseId);
             return response;
         } catch (error) {
             console.error(`Error deleting exam with id ${examId}: `, error);
