@@ -136,7 +136,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
         <DialogHeader>
           <DialogTitle>Ajouter un examen</DialogTitle>
           <DialogDescription className="text-white text-opacity-50">
-            Ajoutes un examen pour connaître le temps qu'il te restes pour
+            Ajoute un examen pour connaître le temps qu'il te reste pour
             apprendre ce cours.
           </DialogDescription>
         </DialogHeader>
@@ -226,7 +226,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
                   className="mr-auto hover:bg-white hover:bg-opacity-10 transition-all"
                   onClick={() => setIsDialogOpen(false)}
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button type="submit" disabled={!isFormValid}>Ajouter</Button>
               </div>
