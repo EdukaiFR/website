@@ -47,7 +47,7 @@ export const examFormSchema = z.object({
   date: z.date({ required_error: "La date est requise." }),
 });
 
-export type createExamProps = {
+type createExamProps = {
   courseId: string;
   examList: any[];
   onUpdateExams: (updatedExam: Exam | null, deletedExamId?: string) => void;
