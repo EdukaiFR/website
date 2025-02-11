@@ -62,6 +62,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
     },
   });
 
+  // Handle exam creation
   const onSubmit = async (data: any) => {
     const daysLeft = getDaysLeft(data.date);
     if (daysLeft <= 0) {
@@ -80,7 +81,12 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
 
     const updatedList = [...examList, newExam];
 
-    const creationResponse = await createExam(courseId, newExam.title, newExam.description, newExam.date);
+    const creationResponse = await createExam(
+      courseId,
+      newExam.title,
+      newExam.description,
+      newExam.date
+    );
 
     if (creationResponse) {
       onUpdateExams(updatedList);
@@ -90,10 +96,12 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
     setIsDialogOpen(false);
     form.reset();
 
+    // Toast with server's response message
     toast({
       title: creationResponse?.message || "",
       description: "Pour la date " + newExam.date.toLocaleDateString(),
     });
+
   };
 
   return (

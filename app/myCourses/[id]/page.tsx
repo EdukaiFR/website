@@ -49,7 +49,8 @@ export default function myCoursesPage() {
   const [quizId, setQuizId] = useState("");
 
   const courseService = useCourseService();
-  const { courseData, examsData, loadCourse, createExam, getExams } = useCourse(courseService);
+  const { courseData, examsData, loadCourse, createExam, getExams,
+      updateExamById, deleteExamById } = useCourse(courseService);
 
   const quizService = useQuizService();
   const insightsService = useInsightsService();
@@ -280,8 +281,10 @@ export default function myCoursesPage() {
                   <ExamCard
                     exam={exam}
                     key={index}
-                    ctaSetExam={handleUpdateExams} // TODO: handle update via api call
-                    examsList={updatedExams}
+                    examList={examsData}
+                    onUpdateExams={handleUpdateExams}
+                    updateExam={updateExamById}
+                    deleteExam={deleteExamById}
                   />
                 ))}
               </div>

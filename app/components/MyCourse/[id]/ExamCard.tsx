@@ -33,15 +33,26 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export type ExamCardProps = {
-  exam: {
-    id: string;
-    title: string;
-    description?: string;
-    date: Date;
-  };
-  ctaSetExam: (examList: any[]) => void;
-  examsList: any[];
+type Exam = {
+  _id: string;
+  title: string;
+  description?: string;
+  date: Date;
+};
+
+type ExamCardProps = {
+  exam: Exam;
+  examList: any[];
+  onUpdateExams: (newExamList: Exam[]) => void;
+  updateExam: (
+    examId: string,
+    title: string,
+    description: string,
+    date: Date
+  ) => Promise<{ message: string } | null>;
+  deleteExam: (
+    examId: string
+  ) => Promise<{ message: string } | null>;
 };
 
 // Validation schema for all form inputs
@@ -52,48 +63,62 @@ const formSchema = z.object({
 });
 
 export const ExamCard = (props: ExamCardProps) => {
-  const { title, description, date, id } = props.exam;
-  const { ctaSetExam, examsList } = props;
+  const { title, description, date } = props.exam;
+  const { updateExam, deleteExam, onUpdateExams, exam, examList } = props;
+
   const daysLeft = getDaysLeft(date);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
   const { toast } = useToast();
 
+  // Handle exam update
   const onSubmit = async (data: any) => {
-    // Update all field values of the exam with the id in props
+
     const updatedExam = {
-      id: id,
+      _id: exam._id,
       title: data.title,
       description: data.description,
       date: new Date(data.date),
     };
 
     // Update the exam list
-    const updatedExamsList = examsList.map((exam) =>
-      exam.id === id ? updatedExam : exam
+    const updatedExamsList = examList.map((exam) =>
+      exam._id === props.exam._id ? updatedExam : exam
     );
 
-    // Sort the exams by date
-    const sortedList = updatedExamsList.sort((a: any, b: any) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    // Update the exams list in the parent component
+    onUpdateExams(updatedExamsList);
+    const updateResponse = await updateExam(
+      exam._id,
+      updatedExam.title,
+      updatedExam.description,
+      updatedExam.date
+    );
+
+    setIsSheetOpen(false);
+
+    // Toast with server's response message
+    toast({
+      title: updateResponse?.message || ""
     });
 
-    // Update the exams list in the parent component
-    ctaSetExam(sortedList);
-    setIsSheetOpen(false);
-    toast({
-      title: "Examen " + updatedExam.title + " modifié",
-    });
   };
 
-  // Handle delete exam
-  const handleDelete = () => {
-    const updatedExamsList = examsList.filter((exam) => exam.id !== id);
-    ctaSetExam(updatedExamsList);
+  // Handle exam deletion
+  const handleDelete = async (examId: string) => {
+
+    const deletionResponse = await deleteExam(examId);
+    const updatedList = examList.filter((exam) => exam._id !== examId);
+
+    if (deletionResponse) {
+      onUpdateExams(updatedList);
+    }
+
     setIsSheetOpen(false);
     toast({
       variant: "destructive",
-      title: "Examen " + title + " supprimé",
+      title: deletionResponse?.message || "",
     });
+
   };
 
   const form = useForm({
@@ -228,20 +253,20 @@ export const ExamCard = (props: ExamCardProps) => {
                 </div>
                 {/* Submit button to edit */}
                 <SheetFooter className="flex flex-col items-center w-full gap-4">
-                  {/* Conteneur pour "Supprimer" et "Ajouter" */}
+                  {/* Conteneur pour "Supprimer" et "Modifier" */}
                   <div className="flex items-center justify-between w-full gap-2">
                     {/* Supprimer button */}
                     <Button
                       className="w-full"
                       variant={"destructive"}
-                      onClick={handleDelete}
+                      onClick={() => handleDelete(exam._id)}
                     >
                       Supprimer
                     </Button>
 
-                    {/* Ajouter button */}
+                    {/* Modifier button */}
                     <Button className="w-full" type="submit">
-                      Ajouter
+                        Modifier
                     </Button>
                   </div>
                 </SheetFooter>

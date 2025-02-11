@@ -7,12 +7,15 @@ export interface CourseService {
     addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
     createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
     getExamById: (examId: string) => Promise<any>;
+    deleteExamById: (examId: string,) => Promise<{ message: string } | null>;
+    updateExamById: (examId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
 }
 
 export function useCourseService() {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+    // Course \\
     const createCourse = async (title: string, subject: string, level: string) => {
         try {
             const response = await axios.post(`${apiUrl}/courses/create`,
@@ -36,6 +39,7 @@ export function useCourseService() {
         }
     }
 
+    // Course's Quizs \\
     const addQuizToCourse = async (courseId: string, quizId: string) => {
         try {
             const response = await axios.post(`${apiUrl}/courses/${courseId}/addQuiz`,
@@ -48,6 +52,7 @@ export function useCourseService() {
         }
     }
 
+    // Course's Exams \\
     const createExam = async (
         courseId: string,
         title: string,
@@ -56,7 +61,7 @@ export function useCourseService() {
     ): Promise<{ message: string } | null> => {
         try {
             const response = await axios.post(`${apiUrl}/courses/${courseId}/exams`,
-                { title, description, date},
+                { title, description, date },
                 { withCredentials: true }
             );
             return response.data;
@@ -77,8 +82,40 @@ export function useCourseService() {
         }
     }
 
+    const updateExamById = async (
+        examId: string,
+        title: string,
+        description: string,
+        date: Date
+    ) : Promise<{ message: string } | null > => {
+        try {
+            const response = await axios.put(`${apiUrl}/exams/${examId}`,
+                { title, description, date },
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred updating exam ${examId}`, error);
+            return null;
+        }
+    }
 
-    return { createCourse, getCourseById, addQuizToCourse, createExam, getExamById };
+    const deleteExamById = async ( examId: string ) :
+        Promise<{ message: string } | null > =>
+    {
+        try {
+            const response = await axios.delete(`${apiUrl}/exams/${examId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(`An error ocurred deleting exam ${examId}`, error);
+            return null;
+        }
+    }
+
+    return { createCourse, getCourseById, addQuizToCourse, createExam,
+        getExamById, updateExamById, deleteExamById };
 }
 
 
