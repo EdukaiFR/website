@@ -45,7 +45,7 @@ export type createExamProps = {
   courseId: string;
   examList: any[];
   onUpdateExams: (newExamList: any[]) => void;
-  createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
+  createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ id: string, message: string } | null>;
 };
 
 export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: createExamProps) => {
@@ -74,6 +74,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
     }
 
     const newExam = {
+      _id: "",
       title: data.title,
       description: data.description,
       date: new Date(data.date),
@@ -89,6 +90,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
     );
 
     if (creationResponse) {
+      newExam._id = creationResponse.id;
       onUpdateExams(updatedList);
     }
 

@@ -282,7 +282,7 @@ export default function myCoursesPage() {
                     exam={exam}
                     key={index}
                     courseId={courseId}
-                    examList={examsData}
+                    examList={updatedExams}
                     onUpdateExams={handleUpdateExams}
                     updateExam={updateExamById}
                     deleteExam={deleteExamById}

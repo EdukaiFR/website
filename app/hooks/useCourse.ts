@@ -70,11 +70,13 @@ export function useCourse(courseService: CourseService) {
         title: string,
         description: string,
         date: Date
-    ) : Promise<{ message: string } | null> => {
+    ) : Promise<{ id: string, message: string } | null> => {
         try {
             const response = await courseService.createExam(courseId, title, description, date);
-            return response?.message ? { message: response.message } : null;
+            return response ? { id: response.id, message: response.message } : null;
         } catch (error) {
+            const response = await courseService.createExam(courseId, title, description, date);
+            return response ? { message: response.message, id: response.id } : null;
             console.error("Error creating exam: ", error);
             setError(`Failed to create an exam for the course ${courseId}. Please try again.`);
             return null;

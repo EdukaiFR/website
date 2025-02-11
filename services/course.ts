@@ -5,7 +5,7 @@ export interface CourseService {
     createCourse: (title: string, subject: string, level: string) => Promise<any>;
     getCourseById: (courseId: string) => Promise<any>;
     addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
-    createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
+    createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ id: string, message: string } | null>;
     getExamById: (examId: string) => Promise<any>;
     deleteExamById: (examId: string, courseId: string ) => Promise<{ message: string } | null>;
     updateExamById: (examId: string, title: string, description: string, date: Date) => Promise<{ message: string } | null>;
@@ -58,7 +58,7 @@ export function useCourseService() {
         title: string,
         description: string,
         date: Date
-    ): Promise<{ message: string } | null> => {
+    ): Promise<{ id: string, message: string } | null> => {
         try {
             const response = await axios.post(`${apiUrl}/courses/${courseId}/exams`,
                 { title, description, date },
