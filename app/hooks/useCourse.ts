@@ -80,14 +80,19 @@ export function useCourse(courseService: CourseService) {
         try {
             const response = await Promise.all(
                 courseExamsIds.map(async (examId) => {
-                    const exam = await courseService.getExamById(examId);
-                    return exam.item;
+                    try {
+                        const exam = await courseService.getExamById(examId);
+                        return exam.item;
+                    } catch (error) {
+                        console.error(`Error fetching exam with id ${examId}:`, error)
+                        return null;
+                    }
                 })
             );
 
-            const examsData = response.sort((a, b) => {
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            });
+            const examsData = response
+                .filter((exam) => exam !== null)
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
             setExamsData(examsData);
 
