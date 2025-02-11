@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -37,9 +38,13 @@ import type { Exam } from "../types/exam";
 
 // Validation schema for all form inputs
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required." }),
-  description: z.string().optional(),
-  date: z.date({ required_error: "Date is required." }),
+  title: z.string()
+    .min(1, { message: "Le titre est requis." })
+    .max(50, { message: "Le titre peut avoir un maximum de 50 caractères." }),
+  description: z.string()
+    .max(200, {message: "La description peut avoir un maximum de 200 caractères."})
+    .optional(),
+  date: z.date({ required_error: "La date est requise." }),
 });
 
 export type createExamProps = {
@@ -51,6 +56,8 @@ export type createExamProps = {
 
 export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: createExamProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
   const { toast } = useToast();
 
   // Initialize the form using react-hook-form and zod
@@ -61,7 +68,14 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
       description: "",
       date: new Date(),
     },
+    mode: 'onChange'
   });
+
+  const { formState } = form;
+
+  useEffect(() => {
+    setIsFormValid(formState.isValid);
+  }, [formState.isValid]);
 
   // Handle exam creation
   const onSubmit = async (data: any) => {
@@ -214,7 +228,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Ajouter</Button>
+                <Button type="submit" disabled={!isFormValid}>Ajouter</Button>
               </div>
             </DialogFooter>
           </form>
