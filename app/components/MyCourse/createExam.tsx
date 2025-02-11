@@ -37,7 +37,7 @@ import { z } from "zod";
 import type { Exam } from "../types/exam";
 
 // Validation schema for all form inputs
-const formSchema = z.object({
+export const examFormSchema = z.object({
   title: z.string()
     .min(1, { message: "Le titre est requis." })
     .max(50, { message: "Le titre peut avoir un maximum de 50 caractères." }),
@@ -62,7 +62,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
 
   // Initialize the form using react-hook-form and zod
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(examFormSchema),
     defaultValues: {
       title: "",
       description: "",
