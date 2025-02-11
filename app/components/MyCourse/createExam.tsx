@@ -33,6 +33,7 @@ import { CalendarIcon, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Exam } from "../types/exam";
 
 // Validation schema for all form inputs
 const formSchema = z.object({
@@ -44,7 +45,7 @@ const formSchema = z.object({
 export type createExamProps = {
   courseId: string;
   examList: any[];
-  onUpdateExams: (newExamList: any[]) => void;
+  onUpdateExams: (updatedExam: Exam | null, deletedExamId?: string) => void;
   createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ id: string, message: string } | null>;
 };
 
@@ -80,8 +81,6 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
       date: new Date(data.date),
     };
 
-    const updatedList = [...examList, newExam];
-
     const creationResponse = await createExam(
       courseId,
       newExam.title,
@@ -91,7 +90,7 @@ export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: cr
 
     if (creationResponse) {
       newExam._id = creationResponse.id;
-      onUpdateExams(updatedList);
+      onUpdateExams(newExam);
     }
 
     // Close the modal and reset form values

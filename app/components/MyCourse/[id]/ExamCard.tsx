@@ -1,3 +1,4 @@
+import type { Exam } from "../../types/exam";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,18 +34,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-type Exam = {
-  _id: string;
-  title: string;
-  description?: string;
-  date: Date;
-};
-
 type ExamCardProps = {
   exam: Exam;
   examList: any[];
   courseId: string;
-  onUpdateExams: (newExamList: Exam[]) => void;
+  onUpdateExams: (updatedExam: Exam | null, deletedExamId?: string) => void;
   updateExam: (
     examId: string,
     title: string,
@@ -82,19 +76,16 @@ export const ExamCard = (props: ExamCardProps) => {
       date: new Date(data.date),
     };
 
-    // Update the exam list
-    const updatedExamsList = examList.map((exam) =>
-      exam._id === props.exam._id ? updatedExam : exam
-    );
-
-    // Update the exams list in the parent component
-    onUpdateExams(updatedExamsList);
     const updateResponse = await updateExam(
       exam._id,
       updatedExam.title,
       updatedExam.description,
       updatedExam.date
     );
+
+    if (updateResponse) {
+      onUpdateExams(updatedExam);
+    }
 
     setIsSheetOpen(false);
 
@@ -109,10 +100,9 @@ export const ExamCard = (props: ExamCardProps) => {
   const handleDelete = async (examId: string) => {
 
     const deletionResponse = await deleteExam(examId, courseId);
-    const updatedList = examList.filter((exam) => exam._id !== examId);
 
     if (deletionResponse) {
-      onUpdateExams(updatedList);
+      onUpdateExams(null, examId);
     }
 
     setIsSheetOpen(false);

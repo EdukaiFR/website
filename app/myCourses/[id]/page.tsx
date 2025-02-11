@@ -1,5 +1,6 @@
 "use client";
 
+import type { Exam } from "@/app/components/types/exam";
 import { ExamCard } from "@/app/components/MyCourse/[id]/ExamCard";
 import { FileSection } from "@/app/components/MyCourse/[id]/FileSection";
 import {
@@ -33,8 +34,6 @@ import {
 
 // Temporary test data for the course
 import course from "@/app/json/testData/course.json";
-
-// Temporary test data for the quiz
 
 export default function myCoursesPage() {
   const params = useParams();
@@ -97,9 +96,26 @@ export default function myCoursesPage() {
 
   const [updatedExams, setUpdatedExams] = useState<any[]>([]);
 
-  const handleUpdateExams = (newExamList : any[]) => {
-      setUpdatedExams(newExamList);
-  }
+  const handleUpdateExams = (updatedExam: Exam | null, deletedExamId?: string) => {
+    if (deletedExamId) {
+      // Handle deletion: Remove the deleted exam from the list
+      setUpdatedExams((prevExams) => prevExams.filter((exam) => exam._id !== deletedExamId));
+    } else if (updatedExam) {
+      // Handle update / add
+      setUpdatedExams((prevExams) => {
+        const index = prevExams.findIndex((exam) => exam._id === updatedExam._id);
+        if (index !== -1) {
+          // Update existing exam
+          return prevExams.map((exam) =>
+            exam._id === updatedExam._id ? updatedExam : exam
+          );
+        } else {
+          // Add new exam if it doesn't exist
+          return [...prevExams, updatedExam];
+        }
+      });
+    }
+  };
 
   const updateFile = (updatedFiles: any[]) => {
     setResumeFiles(updatedFiles);
