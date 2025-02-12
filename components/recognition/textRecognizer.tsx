@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Tesseract from "tesseract.js";
 
 const TextRecognizer = ({
   selectedImage,
   onTextRecognized,
+  setIsRecognizing,
 }: {
   selectedImage: File | null;
   onTextRecognized: (text: string) => void;
+  setIsRecognizing: (isRecognizing: boolean) => void;
 }) => {
   const [processing, setProcessing] = useState(false);
 
@@ -14,6 +16,8 @@ const TextRecognizer = ({
     const recognizeText = async () => {
       if (selectedImage) {
         setProcessing(true);
+        setIsRecognizing(true);
+
         try {
           console.log("Recognizing text...");
           const result = await Tesseract.recognize(selectedImage, "fra", {
@@ -24,11 +28,13 @@ const TextRecognizer = ({
           console.error("Error recognizing text:", error);
         } finally {
           setProcessing(false);
+          setIsRecognizing(false);
         }
       }
     };
+
     recognizeText();
-  }, [selectedImage, onTextRecognized]);
+  }, [selectedImage]);
 
   return (
     <div>{processing ? <p>Analyse en cours...</p> : <p>Importé !</p>}</div>
