@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,33 +34,50 @@ import { CalendarIcon, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Exam } from "../types/exam";
 
 // Validation schema for all form inputs
-const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required." }),
-  description: z.string().optional(),
-  date: z.date({ required_error: "Date is required." }),
+export const examFormSchema = z.object({
+  title: z.string()
+    .min(1, { message: "Le titre est requis." })
+    .max(50, { message: "Le titre peut avoir un maximum de 50 caractères." }),
+  description: z.string()
+    .max(200, {message: "La description peut avoir un maximum de 200 caractères."})
+    .optional(),
+  date: z.date({ required_error: "La date est requise." }),
 });
 
-export type createExamProps = {
+type createExamProps = {
+  courseId: string;
   examList: any[];
-  ctaAddExam: (exam: any) => void;
+  onUpdateExams: (updatedExam: Exam | null, deletedExamId?: string) => void;
+  createExam: (courseId: string, title: string, description: string, date: Date) => Promise<{ id: string, message: string } | null>;
 };
 
-export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
+export const CreateExam = ({ courseId, examList, onUpdateExams, createExam }: createExamProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
   const { toast } = useToast();
 
   // Initialize the form using react-hook-form and zod
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(examFormSchema),
     defaultValues: {
       title: "",
       description: "",
       date: new Date(),
     },
+    mode: 'onChange'
   });
 
+  const { formState } = form;
+
+  useEffect(() => {
+    setIsFormValid(formState.isValid);
+  }, [formState.isValid]);
+
+  // Handle exam creation
   const onSubmit = async (data: any) => {
     const daysLeft = getDaysLeft(data.date);
     if (daysLeft <= 0) {
@@ -69,25 +87,36 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
       });
       return;
     }
-    const maxId =
-      examList.length > 0 ? Math.max(...examList.map((exam) => exam.id)) : -1;
+
     const newExam = {
-      id: maxId + 1,
+      _id: "",
       title: data.title,
       description: data.description,
       date: new Date(data.date),
     };
-    const sortedList = [...examList, newExam].sort((a: any, b: any) => {
-      return a.date.getTime() - b.date.getTime();
-    });
 
-    ctaAddExam(sortedList);
+    const creationResponse = await createExam(
+      courseId,
+      newExam.title,
+      newExam.description,
+      newExam.date
+    );
+
+    if (creationResponse) {
+      newExam._id = creationResponse.id;
+      onUpdateExams(newExam);
+    }
+
+    // Close the modal and reset form values
     setIsDialogOpen(false);
     form.reset();
+
+    // Toast with server's response message
     toast({
-      title: "Nouvel examen ajouté",
+      title: creationResponse?.message || "",
       description: "Pour la date " + newExam.date.toLocaleDateString(),
     });
+
   };
 
   return (
@@ -107,7 +136,7 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
         <DialogHeader>
           <DialogTitle>Ajouter un examen</DialogTitle>
           <DialogDescription className="text-white text-opacity-50">
-            Ajoutes un examen pour connaître le temps qu'il te restes pour
+            Ajoute un examen pour connaître le temps qu'il te reste pour
             apprendre ce cours.
           </DialogDescription>
         </DialogHeader>
@@ -197,9 +226,9 @@ export const CreateExam = ({ examList, ctaAddExam }: createExamProps) => {
                   className="mr-auto hover:bg-white hover:bg-opacity-10 transition-all"
                   onClick={() => setIsDialogOpen(false)}
                 >
-                  Cancel
+                  Annuler
                 </Button>
-                <Button type="submit">Ajouter</Button>
+                <Button type="submit" disabled={!isFormValid}>Ajouter</Button>
               </div>
             </DialogFooter>
           </form>

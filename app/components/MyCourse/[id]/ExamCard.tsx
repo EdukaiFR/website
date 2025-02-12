@@ -1,3 +1,5 @@
+import type { Exam } from "../../types/exam";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,79 +33,96 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Pencil } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { examFormSchema } from "../createExam";
 
-export type ExamCardProps = {
-  exam: {
-    id: number;
-    title: string;
-    description?: string;
-    date: Date;
-  };
-  ctaSetExam: (examList: any[]) => void;
-  examsList: any[];
+type ExamCardProps = {
+  exam: Exam;
+  examList: any[];
+  courseId: string;
+  onUpdateExams: (updatedExam: Exam | null, deletedExamId?: string) => void;
+  updateExam: (
+    examId: string,
+    title: string,
+    description: string,
+    date: Date
+  ) => Promise<{ message: string } | null>;
+  deleteExam: (
+    examId: string,
+    courseId: string
+  ) => Promise<{ message: string } | null>;
 };
 
-// Validation schema for all form inputs
-const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required." }),
-  description: z.string().optional(),
-  date: z.date({ required_error: "Date is required." }),
-});
-
 export const ExamCard = (props: ExamCardProps) => {
-  const { title, description, date, id } = props.exam;
-  const { ctaSetExam, examsList } = props;
+  const { title, description, date } = props.exam;
+  const { updateExam, deleteExam, onUpdateExams, exam, examList, courseId } = props;
+
   const daysLeft = getDaysLeft(date);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
   const { toast } = useToast();
 
+  const form = useForm({
+    resolver: zodResolver(examFormSchema),
+    defaultValues: {
+      title: title,
+      description: description || "",
+      date: new Date(date),
+    }
+  });
+
+  const { formState } = form;
+
+  useEffect(() => {
+    setIsFormValid(formState.isValid);
+  }, [formState.isValid]);
+
+  // Handle exam update
   const onSubmit = async (data: any) => {
-    // Update all field values of the exam with the id in props
+
     const updatedExam = {
-      id: id,
+      _id: exam._id,
       title: data.title,
       description: data.description,
       date: new Date(data.date),
     };
 
-    // Update the exam list
-    const updatedExamsList = examsList.map((exam) =>
-      exam.id === id ? updatedExam : exam
+    const updateResponse = await updateExam(
+      exam._id,
+      updatedExam.title,
+      updatedExam.description,
+      updatedExam.date
     );
 
-    // Sort the exams by date
-    const sortedList = updatedExamsList.sort((a: any, b: any) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    if (updateResponse) {
+      onUpdateExams(updatedExam);
+    }
+
+    setIsSheetOpen(false);
+
+    // Toast with server's response message
+    toast({
+      title: updateResponse?.message || ""
     });
 
-    // Update the exams list in the parent component
-    ctaSetExam(sortedList);
-    setIsSheetOpen(false);
-    toast({
-      title: "Examen " + updatedExam.title + " modifié",
-    });
   };
 
-  // Handle delete exam
-  const handleDelete = () => {
-    const updatedExamsList = examsList.filter((exam) => exam.id !== id);
-    ctaSetExam(updatedExamsList);
+  // Handle exam deletion
+  const handleDelete = async (examId: string) => {
+
+    const deletionResponse = await deleteExam(examId, courseId);
+
+    if (deletionResponse) {
+      onUpdateExams(null, examId);
+    }
+
     setIsSheetOpen(false);
     toast({
       variant: "destructive",
-      title: "Examen " + title + " supprimé",
+      title: deletionResponse?.message || "",
     });
-  };
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: title,
-      description: description || "",
-      date: new Date(date),
-    },
-  });
+  };
 
   return (
     <div className="cursor-pointer transition-all p-5 bg-white bg-opacity-25 text-white outfit-regular rounded-lg border-2 border-white flex flex-col items-start gap-3 w-full max-w-xs min-w-xs lg:min-w-[48.5%] lg:max-w-[48.5%]">
@@ -143,10 +162,10 @@ export const ExamCard = (props: ExamCardProps) => {
                   name="title"
                   render={({ field }: { field: any }) => (
                     <FormItem className="w-full">
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>Titre</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Type your title here"
+                          placeholder="Quel est le titre de l'examen ?"
                           className="w-full"
                           {...field}
                         />
@@ -165,7 +184,7 @@ export const ExamCard = (props: ExamCardProps) => {
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Type your description here."
+                          placeholder="Décrivez l'examen en quelques mots (optionnel)"
                           className="w-full"
                           {...field}
                         />
@@ -228,20 +247,20 @@ export const ExamCard = (props: ExamCardProps) => {
                 </div>
                 {/* Submit button to edit */}
                 <SheetFooter className="flex flex-col items-center w-full gap-4">
-                  {/* Conteneur pour "Supprimer" et "Ajouter" */}
+                  {/* Conteneur pour "Supprimer" et "Modifier" */}
                   <div className="flex items-center justify-between w-full gap-2">
                     {/* Supprimer button */}
                     <Button
                       className="w-full"
                       variant={"destructive"}
-                      onClick={handleDelete}
+                      onClick={() => handleDelete(exam._id)}
                     >
                       Supprimer
                     </Button>
 
-                    {/* Ajouter button */}
-                    <Button className="w-full" type="submit">
-                      Ajouter
+                    {/* Modifier button */}
+                    <Button className="w-full" type="submit" disabled={!isFormValid}>
+                        Modifier
                     </Button>
                   </div>
                 </SheetFooter>
