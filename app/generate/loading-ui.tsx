@@ -8,10 +8,10 @@ export type LoadingUiProps = {
 };
 
 const steps = [
-  { label: "Étape 1" },
-  { label: "Étape 2" },
-  { label: "Étape 3" },
-  { label: "Étape 4" },
+  { label: "Analyse" },
+  { label: "Identification" },
+  { label: "Création" },
+  { label: "Finalisation" },
 ];
 
 export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
