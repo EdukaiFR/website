@@ -17,7 +17,7 @@ import { useCourseService, useQuizService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { CircleX, CloudUpload, FileText, WandSparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { LoadingUi } from "./loading-ui";
@@ -58,6 +58,7 @@ export default function Generate() {
 
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
   const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
+  const [isRecognizing, setIsRecognizing] = useState<boolean>(false);
   const [isGenerationLaunched, setGenerationLaunched] =
     useState<boolean>(false);
   const [generationStep, setGenerationStep] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -154,6 +155,16 @@ export default function Generate() {
       }
     }
   };
+
+  // Add useEffect when a field in form is changed to check if all fields are filled
+  useEffect(() => {
+    const { title, subject, level, files } = form.getValues();
+    if (title && subject && level && files.length > 0) {
+      setIsInputFilled(true);
+    } else {
+      setIsInputFilled(false);
+    }
+  }, [form.watch()]);
 
   return (
     <div className="flex flex-col gap-6 px-6 min-h-[calc(100vh-5rem)] w-full">
@@ -307,6 +318,7 @@ export default function Generate() {
                                 key={index}
                                 selectedImage={file}
                                 onTextRecognized={handleRecognizedText}
+                                setIsRecognizing={setIsRecognizing}
                               />
                             </div>
                           </div>
@@ -336,6 +348,7 @@ export default function Generate() {
               />
 
               <Button
+                disabled={!isInputFilled || isRecognizing}
                 type="submit"
                 className="bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-md hover:opacity-95 mb-4"
               >
