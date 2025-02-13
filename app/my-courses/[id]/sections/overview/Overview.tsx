@@ -1,5 +1,6 @@
 import { Exam } from "./Card/Exam";
 import { LastQuiz } from "./Card/LastQuiz";
+import { ResumeFiles } from "./Card/ResumeFiles";
 import { Skills } from "./Card/Skills";
 import { Tips } from "./Card/Tips";
 
@@ -16,7 +17,26 @@ const examsValue = [
     title: "Bac blanc",
     description: "Réviser tous les chapitres",
     date: new Date(2025, 2, 27), // 27 mars 2025 (mars = 2)
-  }
+  },
+];
+
+// TempValue for resumeFiles
+const resumeFilesValue = [
+  {
+    id: 1,
+    src: "/temp/Fiche-RevisionFrancaisPro.png",
+    alt: "Fiche de révision",
+  },
+  {
+    id: 2,
+    src: "/temp/Fiche-RevisionFrancaisPro.png",
+    alt: "Fiche de révision 2",
+  },
+  {
+    id: 3,
+    src: "/temp/Fiche-RevisionFrancaisPro.png",
+    alt: "Fiche de révision 3",
+  },
 ];
 
 export type OverviewProps = {
@@ -52,7 +72,9 @@ export const Overview = ({ course_id, overview }: OverviewProps) => {
             <Exam exams={examsValue} />
           </div>{" "}
           {/* Examen prévu */}
-          <div className="w-1/2 bg-white rounded-lg p-4 flex-grow"></div>{" "}
+          <div className="w-1/2 flex-grow">
+            <ResumeFiles resume_files={resumeFilesValue} />
+          </div>{" "}
           {/* Fiches de révision */}
         </div>
       </div>
