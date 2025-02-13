@@ -2,7 +2,7 @@ import type { CourseService } from "@/services";
 import type { GeneratorForm } from "@/app/generate/page";
 import { useState } from "react";
 
-interface CourseData {
+export interface CourseData {
   title: string;
   subject: string;
   level: string;

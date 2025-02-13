@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, Check } from "lucide-react";
+import Link from "next/link";
 
 export type LoadingUiProps = {
   step: 0 | 1 | 2 | 3 | 4;
@@ -56,13 +56,14 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
         ))}
       </div>
       {step >= 4 && (
-        <Button
-          className="text-sm bg-[#3678FF] px-[5%] rounded-lg"
+        <Link
+          href={`/my-courses/${idCourse}`}
+          className="text-sm bg-[#3678FF] rounded-lg text-white flex items-center justify-center gap-3 px-12 py-2"
           onClick={() => {}}
         >
           Accéder à mon cours
           <ArrowRight className="ml-2" size={16} />
-        </Button>
+        </Link>
       )}
     </div>
   );

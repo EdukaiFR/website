@@ -4,7 +4,7 @@ import testData from "../json/testData/quizResponse.json";
 
 export const tempData = testData; // Temporary test data for the quiz
 
-type Quiz = {
+export type Quiz = {
   question: string;
   choices: string[];
   answer: string;
@@ -16,13 +16,17 @@ type Insights = {
   insightsCount: number;
 };
 
-export function useQuiz(quizService: QuizService, insightsService?: InsightsService) {
+export function useQuiz(
+  quizService: QuizService,
+  insightsService?: InsightsService
+) {
   const [quizData, setQuizData] = useState<Quiz>([]);
-  const [quizId, setQuizId] = useState('');
+  const [quizId, setQuizId] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [insightsData, setInsightsData] = useState<Insights>({
-    averageScore: 0, insightsCount: 0
+    averageScore: 0,
+    insightsCount: 0,
   });
 
   async function generateQuiz(recognizedTexts: string[]) {
@@ -56,7 +60,7 @@ export function useQuiz(quizService: QuizService, insightsService?: InsightsServ
       setError("Failed to load quiz. Please try again.");
       return null;
     }
-  }
+  };
 
   const getQuizInsights = async (quizId: string) => {
     try {
@@ -67,8 +71,17 @@ export function useQuiz(quizService: QuizService, insightsService?: InsightsServ
       setError("Failed to load quiz. Please try again.");
       return null;
     }
-  }
+  };
 
-  return { quizData, quizId, insightsData, isGenerating, error, setGeneratingState,
-    generateQuiz, loadQuiz, getQuizInsights };
+  return {
+    quizData,
+    quizId,
+    insightsData,
+    isGenerating,
+    error,
+    setGeneratingState,
+    generateQuiz,
+    loadQuiz,
+    getQuizInsights,
+  };
 }
