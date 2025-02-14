@@ -1,5 +1,6 @@
 import { Exam } from "./Card/Exam";
 import { LastQuiz } from "./Card/LastQuiz";
+import { Ranking } from "./Card/Ranking";
 import { ResumeFiles } from "./Card/ResumeFiles";
 import { Skills } from "./Card/Skills";
 import { Tips } from "./Card/Tips";
@@ -36,6 +37,31 @@ const resumeFilesValue = [
     id: 3,
     src: "/temp/Fiche-RevisionFrancaisPro.png",
     alt: "Fiche de révision 3",
+  },
+];
+
+// TempValue for rankins
+const rankings = [
+  {
+    user: {
+      firstname: "Tristan",
+      lastname: "H",
+    },
+    score: 1236,
+  },
+  {
+    user: {
+      firstname: "Khalid",
+      lastname: "B",
+    },
+    score: 1135,
+  },
+  {
+    user: {
+      firstname: "Lucas",
+      lastname: "R",
+    },
+    score: 1024,
   },
 ];
 
@@ -85,7 +111,9 @@ export const Overview = ({ course_id, overview }: OverviewProps) => {
           <Tips tips={["Astuce 1", "Astuce 2"]} />
         </div>{" "}
         {/* Astuce */}
-        <div className="w-full h-3/4 bg-white rounded-lg p-4"></div>{" "}
+        <div className="w-full h-3/4">
+          <Ranking ranking={rankings} />
+        </div>{" "}
         {/* Classement */}
       </div>
     </div>
