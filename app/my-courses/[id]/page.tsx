@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+// Mocks value // TODO: delete when it's link to DB
+import { resumeFilesValue } from "@/public/mocks/default-value";
 
 // Import components
 import { Exams } from "./sections/exams/Exams";
@@ -116,7 +117,10 @@ export default function MyCourses() {
         <Overview overview={null} course_id={course.id.toString()} />
       )}
       {selectedTab === "resumeFiles" && (
-        <ResumeFiles course_id={course.id.toString()} resumeFiles={null} />
+        <ResumeFiles
+          course_id={course.id.toString()}
+          resumeFiles={resumeFilesValue}
+        />
       )}
       {selectedTab === "exams" && (
         <Exams course_id={course.id.toString()} exams={null} />

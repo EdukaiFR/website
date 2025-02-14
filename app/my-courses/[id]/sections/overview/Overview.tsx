@@ -4,66 +4,11 @@ import { Ranking } from "./Card/Ranking";
 import { ResumeFiles } from "./Card/ResumeFiles";
 import { Skills } from "./Card/Skills";
 import { Tips } from "./Card/Tips";
-
-// TempValue for exam
-const examsValue = [
-  {
-    examId: 1,
-    title: "Contrôle",
-    description: "Réviser tout le premier chapitre",
-    date: new Date(2025, 1, 25), // 25 février 2025 (février = 1)
-  },
-  {
-    examId: 2,
-    title: "Bac blanc",
-    description: "Réviser tous les chapitres",
-    date: new Date(2025, 2, 27), // 27 mars 2025 (mars = 2)
-  },
-];
-
-// TempValue for resumeFiles
-const resumeFilesValue = [
-  {
-    id: 1,
-    src: "/temp/Fiche-RevisionFrancaisPro.png",
-    alt: "Fiche de révision",
-  },
-  {
-    id: 2,
-    src: "/temp/Fiche-RevisionFrancaisPro.png",
-    alt: "Fiche de révision 2",
-  },
-  {
-    id: 3,
-    src: "/temp/Fiche-RevisionFrancaisPro.png",
-    alt: "Fiche de révision 3",
-  },
-];
-
-// TempValue for rankins
-const rankings = [
-  {
-    user: {
-      firstname: "Tristan",
-      lastname: "H",
-    },
-    score: 1236,
-  },
-  {
-    user: {
-      firstname: "Khalid",
-      lastname: "B",
-    },
-    score: 1135,
-  },
-  {
-    user: {
-      firstname: "Lucas",
-      lastname: "R",
-    },
-    score: 1024,
-  },
-];
+import {
+  examsValue,
+  resumeFilesValue,
+  rankings,
+} from "@/public/mocks/default-value";
 
 export type OverviewProps = {
   course_id: string;
