@@ -13,6 +13,8 @@ export type ResumeFile = {
   origin: string;
 };
 
+// Create a function
+
 export const columns: ColumnDef<ResumeFile>[] = [
   {
     accessorKey: "alt",
