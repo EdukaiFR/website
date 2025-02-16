@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { Check, CircleX, CloudUpload, FileText, Plus } from "lucide-react";
@@ -165,43 +166,48 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
                   <FormMessage />
 
                   {/* File Preview */}
-                  <div className="mt-4 space-y-2">
-                    {selectedFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-start p-2 border rounded-md bg-white"
-                      >
-                        <FileText
-                          size={32}
-                          strokeWidth={1.5}
-                          className="text-medium mr-4"
-                        />
-                        <div className="flex flex-col items-start gap-0">
-                          <span className="text-sm">{file.name}</span>
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs text-gray-500">
-                              {Math.round(file.size / 1024)} KB
-                            </span>
-                          </div>
-                        </div>
-
-                        <Button
-                          variant={"ghost"}
-                          size={"icon"}
-                          className="transition-all p-2 text-destructive/75 hover:text-destructive ml-auto"
-                          onClick={() => {
-                            const updatedFiles = selectedFiles.filter(
-                              (_, i) => i !== index
-                            );
-                            setSelectedFiles(updatedFiles);
-                            form.setValue("files", updatedFiles); // Met à jour Zod form
-                          }}
+                  <ScrollArea
+                    className="h-[200px] w-full rounded-md p-4 border"
+                    hidden={selectedFiles.length === 0}
+                  >
+                    <div className="flex flex-col items-start gap-1 w-full">
+                      {selectedFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-start p-2 border rounded-md bg-white w-full"
                         >
-                          <CircleX size={16} strokeWidth={1.5} />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                          <FileText
+                            size={32}
+                            strokeWidth={1.5}
+                            className="text-medium mr-4"
+                          />
+                          <div className="flex flex-col items-start gap-0">
+                            <span className="text-sm">{file.name}</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-gray-500">
+                                {Math.round(file.size / 1024)} KB
+                              </span>
+                            </div>
+                          </div>
+
+                          <Button
+                            variant={"ghost"}
+                            size={"icon"}
+                            className="transition-all p-2 text-destructive/75 hover:text-destructive ml-auto"
+                            onClick={() => {
+                              const updatedFiles = selectedFiles.filter(
+                                (_, i) => i !== index
+                              );
+                              setSelectedFiles(updatedFiles);
+                              form.setValue("files", updatedFiles); // Met à jour Zod form
+                            }}
+                          >
+                            <CircleX size={16} strokeWidth={1.5} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </FormItem>
               )}
             />
