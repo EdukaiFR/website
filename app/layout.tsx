@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
+import { cookies } from "next/headers"; // Pour récupérer les cookies server-side
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,21 +14,24 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  // Récupération de l'état de la sidebar depuis les cookies
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+
   return (
     <html lang="en">
-      <body className={`w-full min-h-screen font-satoshi`}>
+      <body className="w-full min-h-screen font-satoshi">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={true}>
+          {/* Passage de l'état de la sidebar depuis le cookie */}
+          <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
-            <SidebarInset className="">
+            <SidebarInset>
               <SidebarInset>
                 <HeaderBreadcrumb />
                 <Separator className="mb-4" />
