@@ -11,10 +11,21 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useLinks } from "./sidebar/links";
 
 export function HeaderBreadcrumb() {
   const pathname = usePathname(); // Obtenir le chemin actuel
   const segments = pathname.split("/").filter((segment) => segment); // Divise le chemin en segments
+  const { upLinks, downLinks } = useLinks();
+
+  function convertFormattedSegmentIntoLabelFromLinks(formattedSegment: string) {
+    const { upLinks, downLinks } = useLinks();
+    const allLinks = [...upLinks, ...downLinks];
+    const matchingLink = allLinks.find(
+      (link) => link.href.toLowerCase() === `/${formattedSegment.toLowerCase()}`
+    );
+    return matchingLink ? matchingLink.label : formattedSegment;
+  }
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -34,26 +45,26 @@ export function HeaderBreadcrumb() {
               const href = "/" + segments.slice(0, index + 1).join("/");
               const formattedSegment =
                 segment.charAt(0).toUpperCase() + segment.slice(1);
+              const label =
+                convertFormattedSegmentIntoLabelFromLinks(formattedSegment);
 
               return (
                 <React.Fragment key={href}>
-                  {/* Ajouter un séparateur avant le premier segment si c'est un nombre */}
                   {index === 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className=" text-md text-medium cursor-not-allowed">
-                        {formattedSegment}
+                      <BreadcrumbPage className="text-md text-medium cursor-not-allowed">
+                        {label}
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink
                         href={href}
                         className="cursor-pointer text-md text-medium-muted hover:text-medium"
                       >
-                        {formattedSegment}
+                        {label}
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
-                  {/* Séparateur placé en dehors de <li>, sauf pour le dernier élément */}
                   {!isLast && (
                     <BreadcrumbSeparator className="text-medium mt-0.5" />
                   )}
