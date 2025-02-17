@@ -8,6 +8,17 @@ import {
   Sparkles,
 } from "lucide-react";
 
+/*
+  => Type for Links
+  [
+    {
+      href: string, (link to redirect)
+      label: string (public name to display in french instead of english TODO: use i18-next for translation)
+      Icon: lucide-react (icon to display)
+    },
+  ]
+*/
+
 export function useLinks() {
   const upLinks = [
     {
