@@ -15,7 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // Hook pour obtenir l'URL actuelle
 import { useEffect, useState } from "react";
-import { useLinks } from "./links";
+import { useLinks } from "../../hooks/use-links";
 import { NavUser } from "./nav-user";
 
 export function AppSidebar() {

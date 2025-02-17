@@ -11,7 +11,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { useLinks } from "./sidebar/links";
+import { useLinks } from "../hooks/use-links";
 
 export function HeaderBreadcrumb() {
   const pathname = usePathname(); // Obtenir le chemin actuel
