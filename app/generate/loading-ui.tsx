@@ -16,7 +16,7 @@ const steps = [
 
 export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white shadow-md rounded-lg my-auto">
+    <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white shadow-md rounded-lg my-auto w-full lg:w-1/2 mx-auto">
       <h2 className="text-2xl font-semibold text-black">
         {step < 4 ? "Génération..." : "Génération terminée !"}
       </h2>
