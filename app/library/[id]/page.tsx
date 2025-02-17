@@ -25,6 +25,7 @@ import course from "@/json/testData/course.json";
 import { useEffect, useState } from "react";
 import { Header } from "./Header";
 import { NavBar as NavBarComp } from "./NavBar";
+import { Quiz } from "./sections/quiz/Quiz";
 import { SimilarCourses } from "./sections/similar-courses/SimilarCourses";
 
 export default function MyCourses() {
@@ -99,18 +100,25 @@ export default function MyCourses() {
     }
   };
 
+  // Loader (TODO: implement better UI for that (component?))
   if (!courseData || !quizData) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="flex flex-col gap-6 px-6 min-h-[calc(100vh-5rem)] w-full">
-      <Header courseData={courseData} quizData={quizData} />
-      <NavBarComp
-        setSelectedTab={setSelectedTab}
-        tabs={navBar}
+      <Header
+        courseData={courseData}
         selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
       />
+      {selectedTab !== "quiz" && (
+        <NavBarComp
+          setSelectedTab={setSelectedTab}
+          tabs={navBar}
+          selectedTab={selectedTab}
+        />
+      )}
 
       {/* Display the good section depands on selectedTab */}
       {selectedTab === "overview" && (
@@ -136,6 +144,9 @@ export default function MyCourses() {
           course_id={course.id.toString()}
           similarCourses={null}
         />
+      )}
+      {selectedTab === "quiz" && (
+        <Quiz course_id={course.id.toString()} quiz_data={quizData} />
       )}
     </div>
   );
