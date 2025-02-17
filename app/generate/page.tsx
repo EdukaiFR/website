@@ -95,7 +95,6 @@ export default function Generate() {
       }
       return prevTexts;
     });
-    console.log(recognizedTexts);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -117,7 +116,6 @@ export default function Generate() {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("Form submitted with data:", data);
       // Format the zod form data into generator form data
       const formFields: GeneratorForm = {
         option: "files",
@@ -147,7 +145,6 @@ export default function Generate() {
           if (generationStep === 4) {
             clearInterval(interval);
           }
-          console.log("Value of generationStep: ", generationStep);
         }, 1000);
       } else {
         // TODO: display message here once we implement toasts.

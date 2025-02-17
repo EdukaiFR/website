@@ -47,8 +47,6 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  console.log("sorting", table.getState().sorting);
-
   return (
     <div className="flex flex-col pb-2 w-full">
       <div className="rounded-md border relative">

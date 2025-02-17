@@ -25,8 +25,6 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
   const [isFinish, setIsFinish] = useState<boolean>(false);
 
-  console.log("Quiz_data: ", quiz_data);
-
   const handleSubmitQuestion = () => {
     try {
       setProcessingSubmit(!processingSubmit);
@@ -50,7 +48,6 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       if (questionIndex >= quiz_data.length) {
         // end game
         setIsFinish(true);
-        console.log("FIN");
         return;
       }
       setAnswer(quiz_data[questionIndex].answer);

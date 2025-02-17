@@ -18,7 +18,6 @@ export const Exam = ({ exams }: ExamProps) => {
   const handleAddExam = async () => {
     try {
       // Add exam logic
-      console.log("Add exam process start");
     } catch (error: any) {
       console.error("Add exam error: ", error.message);
     }

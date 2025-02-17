@@ -32,7 +32,6 @@ export default function MyCourses() {
   // Get the course ID from the URL
   const params = useParams();
   const courseId = params?.id?.toString() || "";
-  console.log(courseId);
 
   // State
   const [quizId, setQuizId] = useState<string>("");

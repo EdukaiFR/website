@@ -19,7 +19,6 @@ const TextRecognizer = ({
         setIsRecognizing(true);
 
         try {
-          console.log("Recognizing text...");
           const result = await Tesseract.recognize(selectedImage, "fra", {
             logger: (m) => console.log(m),
           });
