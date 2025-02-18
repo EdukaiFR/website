@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
@@ -48,41 +49,44 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col pb-2 w-full">
-      <div className="rounded-md border relative">
-        <Table className="p-4">
-          <TableHeader table={table} />
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+    <ScrollArea className="w-[18rem] md:w-[20rem] lg:w-full overflow-x-hidden">
+      <div className="flex flex-col pb-2 w-full">
+        <div className="rounded-md border relative w-full min-w-[800px]">
+          <Table className="p-4 min-w-[800px]">
+            <TableHeader table={table} />
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <TableFooter table={table} />
       </div>
-      <TableFooter table={table} />
-    </div>
+      <ScrollBar className="flex lg:hidden" orientation="horizontal" />
+    </ScrollArea>
   );
 }

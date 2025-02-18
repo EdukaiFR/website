@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -31,20 +32,43 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
   }, [searchParams, setSelectedTab]);
 
   return (
-    <div className="w-full flex items-center justify-start gap-3 outfit-regular text-medium-white">
-      {tabs.map((tab) => (
-        <Button
-          key={tab.tab}
-          onClick={() => handleTabChange(tab.tab)}
-          className={`transition-all ${
-            selectedTab === tab.tab
-              ? "bg-[#3678FF] text-white hover:bg-[#3678FF]/80"
-              : "bg-[#E3E3E7] bg-opacity-15 text-[#1A202C] text-opacity-75 hover:bg-[#1A202C]/10 text-medium-black"
-          } px-5 rounded-full text-sm`}
-        >
-          {tab.label}
-        </Button>
-      ))}
-    </div>
+    <>
+      {/* Large screen view */}
+      <div className="w-full hidden lg:flex items-center justify-start gap-3 outfit-regular text-medium-white">
+        {tabs.map((tab) => (
+          <Button
+            key={tab.tab}
+            onClick={() => handleTabChange(tab.tab)}
+            className={`transition-all ${
+              selectedTab === tab.tab
+                ? "bg-[#3678FF] text-white hover:bg-[#3678FF]/80"
+                : "bg-[#E3E3E7] bg-opacity-15 text-[#1A202C] text-opacity-75 hover:bg-[#1A202C]/10 text-medium-black"
+            } px-5 rounded-full text-sm`}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Mobile or smaller screen */}
+      <ScrollArea className="lg:hidden w-full max-w-[19rem] whitespace-nowrap">
+        <div className="py-2 w-full flex items-center justify-start gap-3 outfit-regular text-medium-white">
+          {tabs.map((tab) => (
+            <Button
+              key={tab.tab}
+              onClick={() => handleTabChange(tab.tab)}
+              className={`transition-all ${
+                selectedTab === tab.tab
+                  ? "bg-[#3678FF] text-white hover:bg-[#3678FF]/80"
+                  : "bg-[#E3E3E7] bg-opacity-15 text-[#1A202C] text-opacity-75 hover:bg-[#1A202C]/10 text-medium-black"
+              } px-5 rounded-full text-sm`}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </>
   );
 };

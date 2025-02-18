@@ -36,7 +36,13 @@ const TextRecognizer = ({
   }, [selectedImage]);
 
   return (
-    <div>{processing ? <p>Analyse en cours...</p> : <p>Importé !</p>}</div>
+    <div>
+      {processing ? (
+        <p className="text-xs text-gray-500">Analyse en cours...</p>
+      ) : (
+        <p className="text-xs text-gray-500">Importé !</p>
+      )}
+    </div>
   );
 };
 

@@ -25,18 +25,12 @@ export const PossibleAnswers = ({
   return (
     <div className="flex flex-col items-start w-full gap-2">
       {answers.map((answer, index) => {
-        console.log("answer: ", answer);
-        console.log("correct_answer: ", correct_answer);
-        console.log("selectedAnswer: ", selectedAnswer);
-
-        const isCorrect = normalizeText(selectedAnswer).startsWith(
-          normalizeText(correct_answer) + "."
-        );
+        const isCorrect =
+          normalizeText(selectedAnswer) === normalizeText(correct_answer);
         const isSelected =
           normalizeText(selectedAnswer) === normalizeText(answer);
-        const isCorrectAnswer = normalizeText(answer).startsWith(
-          normalizeText(correct_answer) + "."
-        );
+        const isCorrectAnswer =
+          normalizeText(answer) === normalizeText(correct_answer);
 
         return (
           <Button
@@ -45,28 +39,28 @@ export const PossibleAnswers = ({
               !isAnswer && setSelectedAnswer(answer);
             }}
             variant={"outline"}
-            className={`transition-all w-full text-left justify-start
-        ${
-          isSelected
-            ? "border-[#3678FF] text-[#3678FF]"
-            : "border text-black text-opacity-75"
-        }
-        ${
-          isAnswer && isCorrect && isSelected
-            ? "border-[#28A745] text-[#28A745]"
-            : ""
-        }
-        ${
-          isAnswer && !isCorrect && isSelected
-            ? "border-[#FF6B6B] text-[#FF6B6B]"
-            : ""
-        }
-        ${
-          isAnswer && !isCorrect && isCorrectAnswer
-            ? "border-[#28A745] text-[#28A745]"
-            : ""
-        }
-      `}
+            className={`transition-all w-full text-left justify-start flex items-center min-h-[3rem] text-wrap
+              ${
+                isSelected
+                  ? "border-[#3678FF] text-[#3678FF]"
+                  : "border text-black text-opacity-75"
+              }
+              ${
+                isAnswer && isCorrect && isSelected
+                  ? "border-[#28A745] text-[#28A745]"
+                  : ""
+              }
+              ${
+                isAnswer && !isCorrect && isSelected
+                  ? "border-[#FF6B6B] text-[#FF6B6B]"
+                  : ""
+              }
+              ${
+                isAnswer && !isCorrect && isCorrectAnswer
+                  ? "border-[#28A745] text-[#28A745]"
+                  : ""
+              }
+  `}
             size={"lg"}
           >
             {answer}

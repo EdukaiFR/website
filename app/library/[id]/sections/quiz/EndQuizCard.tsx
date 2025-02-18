@@ -14,12 +14,12 @@ export const EndQuizCard = ({
 }: EndQuizCardProps) => {
   return (
     <div
-      className={`flex flex-col items-start justify-between p-4 border rounded-lg bg-white satoshi-medium gap-2 ${className} w-full max-w-[30%]`}
+      className={`flex flex-col items-start justify-between p-4 border rounded-lg bg-white satoshi-medium gap-2 ${className} w-full lg:max-w-[30%]`}
     >
       <h4 className="text-lg text-[#3C517C]">Quiz terminé !</h4>
       <div className="flex items-end justify-center gap-2 w-full">
-        <p className="text-6xl text-[#3678FF]">{score}%</p>
-        <p className="text-sm text-[#3678FF] text-opacity-75">
+        <p className="text-4xl lg:text-6xl text-[#3678FF]">{score}%</p>
+        <p className="text-xs lg:text-sm text-[#3678FF] text-opacity-75">
           de bonne réponse
         </p>
       </div>

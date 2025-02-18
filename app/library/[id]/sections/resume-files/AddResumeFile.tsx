@@ -54,7 +54,7 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
           Ajouter
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Ajouter une fiche de révision</DialogTitle>
           <DialogDescription>

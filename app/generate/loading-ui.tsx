@@ -17,13 +17,16 @@ const steps = [
 export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white shadow-md rounded-lg my-auto w-full lg:w-1/2 mx-auto">
-      <h2 className="text-2xl font-semibold text-black">
+      <h2 className="text-lg lg:text-2xl font-semibold text-black">
         {step < 4 ? "Génération..." : "Génération terminée !"}
       </h2>
-      <div className="flex items-center gap-4 mt-6">
+      <div className="flex flex-col items-start lg:flex-row lg:items-center gap-1 mt-2 lg:gap-4 lg:mt-6">
         {steps.map((s, index) => (
           <>
-            <div key={index} className="flex flex-col items-center gap-2">
+            <div
+              key={index}
+              className="flex flex-row lg:flex-col items-center justify-start lg:justify-center lg:items-center gap-2 lg:mx-0"
+            >
               <div
                 className={
                   `w-16 h-16 flex items-center justify-center rounded-full bg-white border-[3px] ` +
@@ -47,7 +50,7 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
             {index < 3 && (
               <Separator
                 className={
-                  `w-8 h-[2.5px] mb-5 mx-1 rounded-full ` +
+                  `w-8 h-[2.5px] mb-5 rounded-full hidden lg:flex lg:mx-1 ` +
                   (step > index && " bg-[#3678FF] text-[#3678FF]")
                 }
               />
@@ -57,8 +60,8 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
       </div>
       {step >= 4 && (
         <Link
-          href={`/my-courses/${idCourse}`}
-          className="text-sm bg-[#3678FF] rounded-lg text-white flex items-center justify-center gap-3 px-12 py-2"
+          href={`/library/${idCourse}`}
+          className="text-xs lg:text-sm bg-[#3678FF] rounded-lg text-white flex items-center justify-center gap-1 lg:gap-3 px-6 lg:px-12 py-2"
           onClick={() => {}}
         >
           Accéder à mon cours

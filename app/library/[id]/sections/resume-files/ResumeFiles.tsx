@@ -21,7 +21,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
           size="sm"
         />
         {/* Right Part */}
-        <div className="flex items-center justify-end w-full ml-auto satoshi-medium">
+        <div className="flex items-center justify-end w-full max-w-[16rem] md:max-w-[20rem] lg:max-w-full ml-auto satoshi-medium">
           <AddResumeFile />
         </div>
       </div>

@@ -28,14 +28,14 @@ export function HeaderBreadcrumb() {
   }
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+    <header className="flex h-12 shrink-0 items-center gap-0 lg:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="mt-0.5 -ml-1 text-medium-muted hover:text-[#3678FF]" />
 
         {/* Breadcrumbs dynamiques */}
         <Breadcrumb className="">
           <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block text-md text-medium-muted hover:text-medium">
+            <BreadcrumbItem className="hidden lg:block text-md text-medium-muted hover:text-medium">
               <BreadcrumbLink href="/">Edukai</BreadcrumbLink>
             </BreadcrumbItem>
 
@@ -53,20 +53,20 @@ export function HeaderBreadcrumb() {
                   {index === 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className="text-md text-medium cursor-not-allowed">
+                      <BreadcrumbPage className="text-xs lg:text-md text-medium cursor-not-allowed">
                         {label}
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink
                         href={href}
-                        className="cursor-pointer text-md text-medium-muted hover:text-medium"
+                        className="hidden lg:flex cursor-pointer text-xs lg:text-md text-medium-muted hover:text-medium"
                       >
                         {label}
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
                   {!isLast && (
-                    <BreadcrumbSeparator className="text-medium mt-0.5" />
+                    <BreadcrumbSeparator className="text-medium mt-0.5 hidden lg:flex" />
                   )}
                 </React.Fragment>
               );

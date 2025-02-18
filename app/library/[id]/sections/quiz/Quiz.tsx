@@ -28,9 +28,8 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const handleSubmitQuestion = () => {
     try {
       setProcessingSubmit(!processingSubmit);
-      const isCorrectAnswer = normalizeText(selectedAnswer).startsWith(
-        normalizeText(answer) + "."
-      );
+      const isCorrectAnswer =
+        normalizeText(selectedAnswer) === normalizeText(answer);
       if (isCorrectAnswer) {
         setScore(score + 1);
       }
@@ -67,7 +66,7 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setIsFinish(false);
       setIsAnswer(false);
       setScore(0);
-      setAnswer(quiz_data[0]);
+      setAnswer(quiz_data[0].answer);
       setQuestionIndex(1);
     } catch (error: any) {
       console.error(
@@ -82,7 +81,7 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       {isFinish ? (
         <div className="w-full flex flex-col items-start min-h-[65vh] lg:max-h-[73vh] gap-4">
           {/* Line 1 */}
-          <div className="flex items-center justify-between gap-2 w-full h-[35%]">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between gap-2 w-full lg:h-[35%]">
             <EndQuizCard
               score={getPercentage(score, quiz_data.length)}
               restartFct={restartQuiz}
@@ -97,7 +96,7 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
           </div>
         </div>
       ) : (
-        <div className="border rounded-lg flex flex-col items-start w-full lg:w-2/3 p-4 gap-3 satoshi-medium mx-auto">
+        <div className="border rounded-lg flex flex-col items-start w-[18rem] md:w-[20rem] lg: lg:w-2/3 p-4 gap-3 satoshi-medium mx-auto">
           {/* Header */}
           <div className="flex flex-col items-start gap-0">
             <h4 className="text-xl text-[#3C517C]">Quiz</h4>

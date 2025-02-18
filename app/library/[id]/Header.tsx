@@ -17,13 +17,13 @@ export const Header = ({
   selectedTab,
 }: HeaderProps) => {
   return (
-    <div className="flex flex-col items-start gap-1">
-      <div className="flex items-center justify-between w-full">
-        <h1 className="text-[#1A202C] text-[28px] font-semibold">
+    <div className="flex flex-col items-start gap-3 lg:gap-1">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between w-full">
+        <h1 className="text-[#1A202C] text-[18px] lg:text-[28px] font-semibold">
           {courseData.title}
         </h1>
         {/* CTA */}
-        <div className="flex items-center justify-end gap-4">
+        <div className="w-full flex flew-wrap lg:no-wrap items-center justify-between lg:justify-end gap-4">
           <Button
             onClick={() => {
               if (selectedTab === "quiz") {
@@ -32,7 +32,7 @@ export const Header = ({
                 setSelectedTab("quiz");
               }
             }}
-            className="transition-all bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-lg hover:opacity-80"
+            className="transition-all bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-lg hover:opacity-80 w-full lg:w-auto"
           >
             {selectedTab === "quiz" ? (
               <>
@@ -63,7 +63,7 @@ export const Header = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-start gap-3">
+      <div className="w-full flex flex-wrap items-center justify-between lg:justify-start gap-3">
         <SubjectBadge text={courseData.subject} />
         <LevelBadge text={courseData.level} />
         <OwnerBadge owner={"TristanH"} />

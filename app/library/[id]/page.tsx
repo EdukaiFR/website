@@ -105,7 +105,7 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="flex flex-col gap-6 px-6 min-h-[calc(100vh-5rem)] w-full">
+    <div className="flex flex-col gap-2 lg:gap-6 px-2 lg:px-6 min-h-[calc(100vh-5rem)] w-full">
       <Header
         courseData={courseData}
         selectedTab={selectedTab}
