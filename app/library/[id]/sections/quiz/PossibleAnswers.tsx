@@ -25,12 +25,14 @@ export const PossibleAnswers = ({
   return (
     <div className="flex flex-col items-start w-full gap-2">
       {answers.map((answer, index) => {
-        const isCorrect =
-          normalizeText(selectedAnswer) === normalizeText(correct_answer);
+        const isCorrect = normalizeText(selectedAnswer).startsWith(
+          normalizeText(correct_answer) + "."
+        );
         const isSelected =
           normalizeText(selectedAnswer) === normalizeText(answer);
-        const isCorrectAnswer =
-          normalizeText(answer) === normalizeText(correct_answer);
+        const isCorrectAnswer = normalizeText(answer).startsWith(
+          normalizeText(correct_answer) + "."
+        );
 
         return (
           <Button

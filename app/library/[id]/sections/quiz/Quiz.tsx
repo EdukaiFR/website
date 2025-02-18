@@ -28,8 +28,12 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const handleSubmitQuestion = () => {
     try {
       setProcessingSubmit(!processingSubmit);
-      const isCorrectAnswer =
-        normalizeText(selectedAnswer) === normalizeText(answer);
+      const isCorrectAnswer = normalizeText(selectedAnswer).startsWith(
+        normalizeText(answer) + "."
+      );
+      // const isCorrectAnswer = normalizeText(answer).startsWith(
+      //   normalizeText(correct_answer) + "."
+      // );
       if (isCorrectAnswer) {
         setScore(score + 1);
       }

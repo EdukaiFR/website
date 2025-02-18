@@ -15,3 +15,10 @@ export function getPercentage(correct: number, base: number): number {
   if (base === 0) return 0;
   return (correct / base) * 100;
 }
+
+export function getDaysLeft(date: Date | string) {
+  const today = new Date();
+  const targetDate = new Date(date);
+  const timeDiff = targetDate.getTime() - today.getTime();
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
+}
