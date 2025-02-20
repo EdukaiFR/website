@@ -31,7 +31,7 @@ export const Exam = ({ exams }: ExamProps) => {
     <div className="bg-white rounded-lg p-4 flex flex-col items-start justify-between gap-3 h-full satoshi-medium ">
       <div className="w-full flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
-          <h3 className="text-lg text-[#3C517C]">Examen prévu</h3>
+          <h3 className="text-lg text-[#3C517C]">Examens prévus</h3>
           <CounterBadge counter={exams.length} />
         </div>
         <Button

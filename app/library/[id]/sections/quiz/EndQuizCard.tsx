@@ -20,7 +20,7 @@ export const EndQuizCard = ({
       <div className="flex items-end justify-center gap-2 w-full">
         <p className="text-4xl lg:text-6xl text-[#3678FF]">{score}%</p>
         <p className="text-xs lg:text-sm text-[#3678FF] text-opacity-75">
-          de bonne réponse
+          de bonnes réponses
         </p>
       </div>
       <Button

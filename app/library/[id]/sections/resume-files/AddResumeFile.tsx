@@ -17,8 +17,12 @@ import { Check, Plus } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
+const fileSchema = z.custom<File>((value) => {
+  return value instanceof File;
+}, "Expected a File object");
+
 const formSchema = z.object({
-  files: z.array(z.instanceof(File)).min(1, { message: "Files are required." }),
+  files: z.array(fileSchema).min(1, { message: "Files are required." }),
 });
 
 export type AddResumeFileProps = {};
@@ -58,7 +62,7 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
         <DialogHeader>
           <DialogTitle>Ajouter une fiche de révision</DialogTitle>
           <DialogDescription>
-            Remplis le formulaire ci-dessous par ajouter tes propres fiches de
+            Remplis le formulaire ci-dessous pour ajouter tes propres fiches de
             révision.
           </DialogDescription>
         </DialogHeader>

@@ -15,7 +15,7 @@ export const LastQuiz = ({ last_attemps, className }: LastQuizProps) => {
         </p>
       ) : (
         <p className="text-black text-opacity-50 mx-auto my-auto text-sm">
-          C'était ton premier quiz, lances en d'autres pour suivre ta
+          C'était ton premier quiz, lance-en d'autres pour suivre ta
           progression
         </p>
       )}
