@@ -1,47 +1,44 @@
+import { HeaderBreadcrumb } from "@/components/navigation-location";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Separator } from "@/components/ui/separator";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Header } from "./components/Header/Header";
+import { cookies } from "next/headers"; // Pour récupérer les cookies server-side
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "Edukai",
   description: "Révise mieux, pas plus.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  // Récupération de l'état de la sidebar depuis les cookies
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] min-h-screen w-full flex flex-col relative outfit-regular`}
-      >
+      <body className="w-full min-h-screen font-satoshi">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex items-center justify-center">
-            <Header />
-          </div>
-          <div className="flex-1 flex items-center justify-center">
-            {children}
-          </div>
+          {/* Passage de l'état de la sidebar depuis le cookie */}
+          <SidebarProvider defaultOpen={defaultOpen}>
+            <AppSidebar />
+            <SidebarInset>
+              <SidebarInset>
+                <HeaderBreadcrumb />
+                <Separator className="mb-4" />
+                {children}
+              </SidebarInset>
+            </SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>

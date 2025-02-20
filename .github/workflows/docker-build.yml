@@ -10,7 +10,6 @@ on:
       - dev
 
 jobs:
-
   docker-build:
     runs-on: ubuntu-latest
     steps:
