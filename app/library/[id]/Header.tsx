@@ -19,7 +19,7 @@ export const Header = ({
   return (
     <div className="flex flex-col items-start gap-3 lg:gap-1">
       <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between w-full">
-        <h1 className="text-[#1A202C] text-[18px] lg:text-[28px] font-semibold">
+        <h1 className="text-[#1A202C] text-[18px] lg:text-[28px] font-semibold w-full">
           {courseData.title}
         </h1>
         {/* CTA */}
