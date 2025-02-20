@@ -200,7 +200,7 @@ export default function Generate() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Renseignes le titre de ton cours.
+                      Renseigne le titre de ton cours.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
