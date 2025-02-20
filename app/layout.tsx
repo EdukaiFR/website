@@ -9,7 +9,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Edukai",
-  description: "Kaiboard is a dashboard for your daily tasks and notes.",
+  description: "Révise mieux, pas plus.",
 };
 
 export default async function RootLayout({
