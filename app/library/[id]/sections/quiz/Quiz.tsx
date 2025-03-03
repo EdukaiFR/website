@@ -5,6 +5,7 @@ import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
 import { PossibleAnswers } from "./PossibleAnswers";
+import { toast } from "sonner";
 
 export type QuizProps = {
   course_id: string;
@@ -40,6 +41,7 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setIsAnswer(true);
     } catch (error: any) {
       console.error("Oups.. An error occured:", error);
+      toast.error("Oups.. An error occured:", error);
     } finally {
       setProcessingSubmit(!processingSubmit);
     }
@@ -59,6 +61,7 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setQuestionIndex(questionIndex + 1);
     } catch (error: any) {
       console.error("Oups.. An error occured:", error);
+      toast.error("Oups.. An error occured:", error);
     } finally {
       setProcessingSubmit(!processingSubmit);
     }
@@ -74,6 +77,10 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setQuestionIndex(1);
     } catch (error: any) {
       console.error(
+        "Oups... an error occured when we restart the quiz: ",
+        error
+      );
+      toast.error(
         "Oups... an error occured when we restart the quiz: ",
         error
       );

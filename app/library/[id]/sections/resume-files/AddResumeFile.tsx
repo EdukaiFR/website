@@ -13,6 +13,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const fileSchema = z.custom<File>((value) => {
@@ -41,6 +42,10 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
       // TODO: call hooks to add resumeFile(s)
     } catch (error: any) {
       console.error("Error submitting resumeFile(s) form: ", error);
+      toast.error("Error submitting resumeFile(s) form: ", error);
+    } finally {
+      form.reset();
+      toast.success("Fiches de révision ajoutées avec succès.");
     }
   };
 

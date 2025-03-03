@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -27,8 +28,12 @@ export function NavUser() {
   const logout = async () => {
     try {
       console.log("Logging out...");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Unexpected error during logout:", err);
+      toast.error("Unexpected error during logout:", err);
+    } finally {
+      router.push("/auth/login");
+      toast.success("Déconnexion réussie.");
     }
   };
 

@@ -30,6 +30,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon, Check, Plus, Trash } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -85,8 +86,19 @@ export const ExamDialog = ({
       //TODO: implement delete exam function from hook
     } catch (error: any) {
       console.error("Error deleting exam: ", error);
+      toast("Erreur", {
+        description:
+          "Une erreur s'est produite lors de la suppression de l'examen.",
+      });
     } finally {
       console.log("Update exams");
+      toast("Suppression", {
+        description: "Votre examen " + exam?.title + " a bien été supprimé.",
+        action: {
+          label: "Annuler",
+          onClick: () => console.log("Annuler la suppression"), // TODO: implement undo delete exam,
+        },
+      });
     }
   };
 
@@ -107,8 +119,15 @@ export const ExamDialog = ({
       console.log("Form submitted with data:", data);
     } catch (error: any) {
       console.error("Error submitting form: ", error);
+      toast("Erreur", {
+        description:
+          "Une erreur s'est produite lors de la création de l'examen.",
+      });
     } finally {
       form.reset();
+      toast("Succès", {
+        description: "Votre examen a bien été créé.",
+      });
       updateCourseData();
     }
   };
