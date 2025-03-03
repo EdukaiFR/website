@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -83,7 +85,11 @@ export const ExamDialog = ({
   const deleteExam = async (examId: string) => {
     try {
       console.log("Delete exam with id: ", examId);
-      //TODO: implement delete exam function from hook
+      //TODO: implémenter la suppression réelle
+
+      toast("Suppression", {
+        description: "Votre examen " + exam?.title + " a bien été supprimé.",
+      });
     } catch (error: any) {
       console.error("Error deleting exam: ", error);
       toast("Erreur", {
@@ -91,14 +97,7 @@ export const ExamDialog = ({
           "Une erreur s'est produite lors de la suppression de l'examen.",
       });
     } finally {
-      console.log("Update exams");
-      toast("Suppression", {
-        description: "Votre examen " + exam?.title + " a bien été supprimé.",
-        action: {
-          label: "Annuler",
-          onClick: () => console.log("Annuler la suppression"), // TODO: implement undo delete exam,
-        },
-      });
+      updateCourseData();
     }
   };
 
@@ -116,7 +115,6 @@ export const ExamDialog = ({
           data.date
         );
       }
-      console.log("Form submitted with data:", data);
     } catch (error: any) {
       console.error("Error submitting form: ", error);
       toast("Erreur", {
@@ -125,9 +123,6 @@ export const ExamDialog = ({
       });
     } finally {
       form.reset();
-      toast("Succès", {
-        description: "Votre examen a bien été créé.",
-      });
       updateCourseData();
     }
   };
@@ -263,7 +258,9 @@ export const ExamDialog = ({
                     variant={"destructive"}
                     disabled={false}
                     className="w-full"
-                    onClick={() => deleteExam(exam._id || "")}
+                    onClick={() => {
+                      deleteExam(exam._id || "");
+                    }}
                   >
                     <Trash size={16} className="ml-2" />
                     Supprimer l'examen
