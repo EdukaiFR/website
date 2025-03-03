@@ -1,18 +1,29 @@
-import type { CourseService } from "@/services";
 import type { GeneratorForm } from "@/app/generate/page";
+import type { CourseService } from "@/services";
 import { useState } from "react";
 
-export interface CourseData {
+interface CourseData {
   title: string;
   subject: string;
   level: string;
   quizzes: string[];
+  exams: string[];
   resumeFiles: [];
 }
+
+interface ExamData {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+}
+
+type ExamsDataArray = ExamData[];
 
 export function useCourse(courseService: CourseService) {
   const [courseId, setCourseId] = useState("");
   const [courseData, setCourseData] = useState<CourseData | null>(null);
+  const [examsData, setExamsData] = useState<ExamsDataArray | []>([]);
   const [isCreating, setIsLoading] = useState(false);
   const [courseError, setError] = useState<string | null>(null);
 
@@ -37,6 +48,9 @@ export function useCourse(courseService: CourseService) {
     try {
       const response = await courseService.getCourseById(courseId);
       setCourseData(response.item);
+      console.log("Course data: ", response.item.exams);
+      // Also call getExams to get the exams associated with the course
+      await getExams(response.item.exams);
     } catch (error) {
       console.error(`Error getting course ${courseId} `, error);
       setError("Failed to load course. Please try again.");
@@ -57,13 +71,62 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+  const createExam = async (
+    courseId: string,
+    title: string,
+    description: string,
+    date: Date
+  ): Promise<{ message: string } | null> => {
+    try {
+      const response = await courseService.createExam(
+        courseId,
+        title,
+        description,
+        date
+      );
+      return response?.message ? { message: response.message } : null;
+    } catch (error) {
+      console.error("Error creating exam: ", error);
+      setError(
+        `Failed to create an exam for the course ${courseId}. Please try again.`
+      );
+      return null;
+    }
+  };
+
+  const getExams = async (courseExamsIds: string[]) => {
+    try {
+      const response = await Promise.all(
+        courseExamsIds.map(async (examId) => {
+          const exam = await courseService.getExamById(examId);
+          return exam.item;
+        })
+      );
+
+      const examsData = response.sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+
+      setExamsData(examsData);
+
+      return examsData;
+    } catch (error) {
+      console.error("Error getting course exams: ", error);
+      setError(`Failed to get exams. Please try again.`);
+      return null;
+    }
+  };
+
   return {
     courseId,
     isCreating,
     courseData,
     courseError,
+    examsData,
     createCourse,
     loadCourse,
     addQuizToCourse,
+    createExam,
+    getExams,
   };
 }

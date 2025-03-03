@@ -38,11 +38,10 @@ export default function MyCourses() {
   const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
   const [isResumeFilesVisible, setResumeFilesVisible] =
     useState<boolean>(false);
-  const [exams, setExams] = useState<any[]>([]);
-
   // Fetch data
   const courseService = useCourseService();
-  const { courseData, loadCourse } = useCourse(courseService);
+  const { courseData, loadCourse, examsData, createExam, getExams } =
+    useCourse(courseService);
   const quizService = useQuizService();
   const insightsService = useInsightsService();
   const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
@@ -65,8 +64,15 @@ export default function MyCourses() {
 
   const [selectedTab, setSelectedTab] = useState(navBar[0].tab);
 
+  const reFetchCourse = async () => {
+    if (courseId) {
+      await loadCourse(courseId);
+    }
+  };
+
   useEffect(() => {
     if (courseId) {
+      console.log("Course ID: ", courseId, courseId.toString());
       loadCourse(courseId);
     }
   }, [courseId]);
@@ -130,7 +136,16 @@ export default function MyCourses() {
         />
       )}
       {selectedTab === "exams" && (
-        <Exams course_id={course.id.toString()} exams={null} />
+        <Exams
+          course_id={courseId.toString()}
+          exams={examsData}
+          createExam={createExam}
+          getExams={getExams}
+          updateCourseData={reFetchCourse}
+          updateExam={() => {
+            console.log("Update exam here"); // TODO: implement update exam function
+          }}
+        />
       )}
       {selectedTab === "objectives" && (
         <Objectives course_id={course.id.toString()} objectives={null} />

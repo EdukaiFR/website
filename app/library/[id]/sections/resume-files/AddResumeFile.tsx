@@ -1,7 +1,5 @@
 "use client";
 
-//TODO: create a comp for the Drag & Drop section to avoid a lot of lines
-
 import { FileInput } from "@/components/input/file-input";
 import { Button } from "@/components/ui/button";
 import {
