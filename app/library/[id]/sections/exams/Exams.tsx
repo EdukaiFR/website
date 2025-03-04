@@ -15,6 +15,7 @@ export type ExamsProps = {
   ) => void;
   updateExam: (examId: string, data: any) => void;
   getExams: (courseId: string[]) => void;
+  deleteExam: (examId: string, courseId: string) => void;
   updateCourseData: () => void;
 };
 
@@ -25,6 +26,7 @@ export const Exams = ({
   updateExam,
   getExams,
   updateCourseData,
+  deleteExam,
 }: ExamsProps) => {
   return (
     <div className="w-full flex flex-col items-start min-h-[65vh] gap-4">
@@ -41,6 +43,7 @@ export const Exams = ({
           createExam={createExam}
           getExams={getExams}
           updateCourseData={updateCourseData}
+          deleteExam={deleteExam}
         />
       </div>
 
@@ -63,6 +66,7 @@ export const Exams = ({
               getExams={getExams}
               updateCourseData={updateCourseData}
               createExam={createExam}
+              deleteExam={deleteExam}
             />
           ))}
         </div>

@@ -117,6 +117,38 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+  const updateExamById = async (
+    examId: string,
+    title: string,
+    description: string,
+    date: Date
+  ): Promise<{ message: string } | null> => {
+    try {
+      const response = await courseService.updateExamById(
+        examId,
+        title,
+        description,
+        date
+      );
+      return response;
+    } catch (error) {
+      console.error(`Error updating exam with id ${examId}: `, error);
+      setError(`Failed to update exam. Please try again.`);
+      return null;
+    }
+  };
+
+  const deleteExamById = async (examId: string, courseId: string) => {
+    try {
+      const response = await courseService.deleteExamById(examId, courseId);
+      return response;
+    } catch (error) {
+      console.error(`Error deleting exam with id ${examId}: `, error);
+      setError(`Failed to delete exam. Please try again.`);
+      return null;
+    }
+  };
+
   return {
     courseId,
     isCreating,
@@ -128,5 +160,7 @@ export function useCourse(courseService: CourseService) {
     addQuizToCourse,
     createExam,
     getExams,
+    updateExamById,
+    deleteExamById,
   };
 }

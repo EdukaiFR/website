@@ -16,6 +16,7 @@ export type ExamCardProps = {
     description: string,
     date: Date
   ) => void;
+  deleteExam: (examId: string, courseId: string) => void;
 };
 
 export const ExamCard = ({
@@ -25,6 +26,7 @@ export const ExamCard = ({
   updateCourseData,
   courseId,
   createExam,
+  deleteExam,
 }: ExamCardProps) => {
   return (
     <div className="rounded-lg bg-white border border-[#E3E3E7] flex flex-col gap-6 items-start justify-between w-full max-w-sm p-4">
@@ -48,6 +50,7 @@ export const ExamCard = ({
           updateExam={updateExam}
           getExams={getExams}
           updateCourseData={updateCourseData}
+          deleteExam={deleteExam}
         />
       </div>
       {/* Days left */}

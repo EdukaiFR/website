@@ -55,6 +55,7 @@ export type ExamDialogProps = {
   updateExam?: (examId: string, data: ExamFormData) => void;
   getExams: (courseId: string[]) => void;
   updateCourseData: () => void;
+  deleteExam: (examId: string, courseId: string) => void;
   isEditing?: boolean;
 };
 
@@ -65,6 +66,7 @@ export const ExamDialog = ({
   courseId,
   updateCourseData,
   exam,
+  deleteExam,
   isEditing = false,
 }: ExamDialogProps) => {
   const form = useForm<ExamFormData>({
@@ -81,25 +83,6 @@ export const ExamDialog = ({
           date: new Date(),
         },
   });
-
-  const deleteExam = async (examId: string) => {
-    try {
-      console.log("Delete exam with id: ", examId);
-      //TODO: implémenter la suppression réelle
-
-      toast("Suppression", {
-        description: "Votre examen " + exam?.title + " a bien été supprimé.",
-      });
-    } catch (error: any) {
-      console.error("Error deleting exam: ", error);
-      toast("Erreur", {
-        description:
-          "Une erreur s'est produite lors de la suppression de l'examen.",
-      });
-    } finally {
-      updateCourseData();
-    }
-  };
 
   const onSubmit = async (data: ExamFormData) => {
     try {
@@ -252,32 +235,33 @@ export const ExamDialog = ({
             />
 
             <DialogClose asChild>
-              <div className="flex flex-col items-start gap-1 w-full">
-                {isEditing && exam?._id && (
-                  <Button
-                    variant={"destructive"}
-                    disabled={false}
-                    className="w-full"
-                    onClick={() => {
-                      deleteExam(exam._id || "");
-                    }}
-                  >
-                    <Trash size={16} className="ml-2" />
-                    Supprimer l'examen
-                  </Button>
-                )}
-                <Button
-                  disabled={!form.formState.isValid}
-                  type="submit"
-                  className="w-full bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-md hover:opacity-95 mt-auto"
-                >
-                  <Check size={16} className="ml-2" />
-                  {isEditing ? "Modifier l'examen" : "Créer l'examen"}
-                </Button>
-              </div>
+              <Button
+                disabled={!form.formState.isValid}
+                type="submit"
+                className="w-full bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-md hover:opacity-95 mt-auto"
+              >
+                <Check size={16} className="ml-2" />
+                {isEditing ? "Modifier l'examen" : "Créer l'examen"}
+              </Button>
             </DialogClose>
           </form>
         </FormProvider>
+        <DialogClose asChild>
+          {isEditing && exam?._id && (
+            <Button
+              variant={"destructive"}
+              disabled={false}
+              className="w-full"
+              onClick={() => {
+                deleteExam(exam?._id || "", courseId);
+                return undefined;
+              }}
+            >
+              <Trash size={16} className="ml-2" />
+              Supprimer l'examen
+            </Button>
+          )}
+        </DialogClose>
       </DialogContent>
     </Dialog>
   );

@@ -23,6 +23,7 @@ import {
 import course from "@/json/testData/course.json";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Header } from "./Header";
 import { NavBar as NavBarComp } from "./NavBar";
 import { Quiz } from "./sections/quiz/Quiz";
@@ -40,8 +41,15 @@ export default function MyCourses() {
     useState<boolean>(false);
   // Fetch data
   const courseService = useCourseService();
-  const { courseData, loadCourse, examsData, createExam, getExams } =
-    useCourse(courseService);
+  const {
+    courseData,
+    loadCourse,
+    examsData,
+    createExam,
+    getExams,
+    updateExamById,
+    deleteExamById,
+  } = useCourse(courseService);
   const quizService = useQuizService();
   const insightsService = useInsightsService();
   const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
@@ -105,6 +113,62 @@ export default function MyCourses() {
     }
   };
 
+  // Delete Exam
+  const deleteExam = async (examId: string) => {
+    try {
+      const deletionResponse = await deleteExamById(examId, courseId);
+      if (deletionResponse) {
+        await reFetchCourse();
+        console.log("Exam deleted successfully");
+        toast.success("Examen supprimé", {
+          description: "L'examen a bien été supprimé.",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error deleting exam: ", error);
+      toast.error("Oups..", {
+        description: "Une erreur s'est produite lors de la suppression.",
+      });
+    }
+  };
+
+  // Update Exam
+  const updateExam = async (examId: string, data: any) => {
+    try {
+      const updatedExam = {
+        _id: examId,
+        title: data.title,
+        description: data.description,
+        date: new Date(data.date),
+      };
+
+      const updateResponse = await updateExamById(
+        examId,
+        updatedExam.title,
+        updatedExam.description,
+        updatedExam.date
+      );
+
+      if (updateResponse) {
+        console.log("Exam updated successfully");
+        toast.success("Examen modifié", {
+          description: "L'examen " + updatedExam.title + " a bien été modifié.",
+        });
+        await reFetchCourse();
+      } else {
+        toast.error("Oups..", {
+          description: "Une erreur s'est produite lors de la modification.",
+        });
+        console.error("Error updating exam");
+      }
+    } catch (error: any) {
+      console.error("Error updating exam: ", error);
+      toast.error("Oups..", {
+        description: "Une erreur s'est produite lors de la modification.",
+      });
+    }
+  };
+
   // Loader (TODO: implement better UI for that (component?))
   if (!courseData || !quizData) {
     return <div>Loading...</div>;
@@ -142,9 +206,8 @@ export default function MyCourses() {
           createExam={createExam}
           getExams={getExams}
           updateCourseData={reFetchCourse}
-          updateExam={() => {
-            console.log("Update exam here"); // TODO: implement update exam function
-          }}
+          updateExam={updateExam}
+          deleteExam={deleteExam}
         />
       )}
       {selectedTab === "objectives" && (
