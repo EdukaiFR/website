@@ -86,8 +86,6 @@ export const ExamDialog = ({
 
   const onSubmit = async (data: ExamFormData) => {
     try {
-      console.log("Exam: ", exam);
-      console.log(isEditing, exam?._id, updateExam);
       if (isEditing && exam?._id && updateExam) {
         await updateExam(exam._id, data);
       } else {

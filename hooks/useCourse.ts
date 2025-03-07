@@ -48,7 +48,6 @@ export function useCourse(courseService: CourseService) {
     try {
       const response = await courseService.getCourseById(courseId);
       setCourseData(response.item);
-      console.log("Course data: ", response.item.exams);
       // Also call getExams to get the exams associated with the course
       await getExams(response.item.exams);
     } catch (error) {

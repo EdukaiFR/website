@@ -27,7 +27,6 @@ export function NavUser() {
 
   const logout = async () => {
     try {
-      console.log("Logging out...");
     } catch (err: any) {
       console.error("Unexpected error during logout:", err);
       toast.error("Unexpected error during logout:", err);

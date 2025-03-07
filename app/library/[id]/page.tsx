@@ -80,7 +80,6 @@ export default function MyCourses() {
 
   useEffect(() => {
     if (courseId) {
-      console.log("Course ID: ", courseId, courseId.toString());
       loadCourse(courseId);
     }
   }, [courseId]);
@@ -119,7 +118,6 @@ export default function MyCourses() {
       const deletionResponse = await deleteExamById(examId, courseId);
       if (deletionResponse) {
         await reFetchCourse();
-        console.log("Exam deleted successfully");
         toast.success("Examen supprimé", {
           description: "L'examen a bien été supprimé.",
         });
@@ -150,7 +148,6 @@ export default function MyCourses() {
       );
 
       if (updateResponse) {
-        console.log("Exam updated successfully");
         toast.success("Examen modifié", {
           description: "L'examen " + updatedExam.title + " a bien été modifié.",
         });

@@ -38,7 +38,6 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("Form submitted with data:", data);
       // TODO: call hooks to add resumeFile(s)
     } catch (error: any) {
       console.error("Error submitting resumeFile(s) form: ", error);
