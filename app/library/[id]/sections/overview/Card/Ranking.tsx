@@ -24,7 +24,7 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
           if (index >= 3) {
             return;
           }
-          return <RankCard ranking={item} rank={index + 1} />;
+          return <RankCard key={index} ranking={item} rank={index + 1} />;
         })}
       </div>
     </div>

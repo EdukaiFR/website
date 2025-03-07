@@ -2,11 +2,10 @@ import { LevelBadge } from "@/components/badge/LevelBadge";
 import { OwnerBadge } from "@/components/badge/OwnerBadge";
 import { SubjectBadge } from "@/components/badge/SubjectBadge";
 import { Button } from "@/components/ui/button";
-import { CourseData } from "@/hooks";
 import { BicepsFlexed, CircleStop, Heart, Settings } from "lucide-react";
 
 export type HeaderProps = {
-  courseData: CourseData;
+  courseData: any;
   setSelectedTab: (tab: string) => void;
   selectedTab: string;
 };

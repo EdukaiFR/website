@@ -1,7 +1,5 @@
 "use client";
 
-//TODO: create a comp for the Drag & Drop section to avoid a lot of lines
-
 import { FileInput } from "@/components/input/file-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +13,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const fileSchema = z.custom<File>((value) => {
@@ -39,10 +38,13 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("Form submitted with data:", data);
       // TODO: call hooks to add resumeFile(s)
     } catch (error: any) {
       console.error("Error submitting resumeFile(s) form: ", error);
+      toast.error("Error submitting resumeFile(s) form: ", error);
+    } finally {
+      form.reset();
+      toast.success("Fiches de révision ajoutées avec succès.");
     }
   };
 

@@ -5,6 +5,7 @@ import { ResumeFileCard } from "@/components/card/ResumeFileCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export type ResumeFilesProps = {
   resume_files: any[];
@@ -63,6 +64,13 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
       await Promise.all(downloads);
     } catch (error) {
       console.error("Erreur lors du processus de téléchargement :", error);
+      toast("Erreur", {
+        description: "Une erreur s'est produite lors du téléchargement.",
+      });
+    } finally {
+      toast("Téléchargement", {
+        description: "Les fichiers de révision ont été téléchargés.",
+      });
     }
   };
 
