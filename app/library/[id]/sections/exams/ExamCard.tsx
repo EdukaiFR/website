@@ -56,7 +56,9 @@ export const ExamCard = ({
       {/* Days left */}
       <div className="w-full flex items-center justify-center gap-2">
         <p className="text-6xl text-[#2D6BCF]">{getDaysLeft(exam.date)}</p>
-        <p className="text-sm text-[#2D6BCF] text-opacity-50">Jours restant</p>
+        <p className="text-sm text-[#2D6BCF] text-opacity-50">
+          {getDaysLeft(exam.date) === 1 ? "jour restant" : "jours restants"}
+        </p>
       </div>
       {/* Footer */}
       <p className="ml-auto mr-auto mt-auto text-xs text-[#6C757D]">
