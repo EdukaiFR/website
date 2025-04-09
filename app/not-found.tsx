@@ -51,7 +51,7 @@ export default function NotFound() {
         </p>
 
         {/* Bouton retour accueil */}
-        <Button onClick={() => router.push("/home")} className="mt-4">
+        <Button onClick={() => router.push("/")} className="mt-4">
           Retour à l'accueil
         </Button>
       </div>
