@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { FilterCourses } from './FilterCourses';
 import { columns } from './columns';
 import { DataTable } from '@/components/data-table';
+import { Button } from '@/components/ui/button';
 
 export default function LibraryPage() {
   // Basic Data
@@ -107,7 +108,7 @@ export default function LibraryPage() {
       />
       {/* Filter + badge + searchbar */}
       <div className='w-full flex items-center justify-between gap-2'>
-        <div className='flex items-center justify-start gap-2 w-full'>
+        <div className='flex items-center justify-start gap-0 w-full'>
           <FilterCourses
             coursesFilter={coursesFilter}
             activeFilter={filter}
@@ -115,6 +116,18 @@ export default function LibraryPage() {
             isFilterOpen={isFilterOpen}
             setFilterOpen={setFilterOpen}
           />
+          {/* if we have an active filter, we need to display a little text to reset it */}
+          {filter.type && (
+            <div className='flex items-center justify-start gap-2'>
+              <Button
+                variant='link'
+                className='text-sm text-red-500'
+                onClick={() => setFilter({ type: '', value: '' })}
+              >
+                Réinitialiser le filtre
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
