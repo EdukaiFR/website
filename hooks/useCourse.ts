@@ -1,4 +1,4 @@
-import type { GeneratorForm } from '@/app/generate/page';
+import type { GeneratorForm } from '@/app/(dashboard)/generate/page';
 import type { CourseService } from '@/services';
 import { useState } from 'react';
 

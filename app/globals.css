@@ -1,26 +1,26 @@
-@import url("satoshi.css");
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url('satoshi.css');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .outfit-regular {
-  font-family: "Outfit", serif;
+  font-family: 'Outfit', serif;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
 }
 
 .outfit-bold {
-  font-family: "Outfit", serif;
+  font-family: 'Outfit', serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
 }
 
 .outfit-light {
-  font-family: "Outfit", serif;
+  font-family: 'Outfit', serif;
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
@@ -119,33 +119,43 @@ body {
 }
 
 .satoshi-medium {
-  font-family: "Satoshi-Medium", sans-serif;
+  font-family: 'Satoshi-Medium', sans-serif;
   font-weight: 500;
 }
 
 .text-medium-white {
-  font-family: "Satoshi-Medium", sans-serif;
+  font-family: 'Satoshi-Medium', sans-serif;
   font-weight: 500;
   color: #fff;
 }
 
 .text-medium-black {
-  font-family: "Satoshi-Medium", sans-serif;
+  font-family: 'Satoshi-Medium', sans-serif;
   font-weight: 500;
   color: rgba(26, 32, 44, 0.75);
 }
 
 .text-medium {
-  font-family: "Satoshi-Medium", sans-serif;
+  font-family: 'Satoshi-Medium', sans-serif;
   font-weight: 500;
   color: #3678ff;
 }
 
 .text-medium-muted {
-  font-family: "Satoshi-Medium", sans-serif;
+  font-family: 'Satoshi-Medium', sans-serif;
   font-weight: 500;
   color: #3678ff;
   opacity: 0.75;
+}
+
+.satoshi-bold {
+  font-family: 'Satoshi-Bold', sans-serif;
+  font-weight: 700;
+}
+
+.satoshi-medium {
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-weight: 500;
 }
 
 /* Hover & selected style for sidebarLinks */
