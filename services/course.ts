@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
@@ -21,6 +21,7 @@ export interface CourseService {
     description: string,
     date: Date
   ) => Promise<{ message: string } | null>;
+  getCourses: () => Promise<any>;
 }
 
 export function useCourseService() {
@@ -39,7 +40,7 @@ export function useCourseService() {
       );
       return response.data;
     } catch (error) {
-      console.error("An error ocurred creating the course", error);
+      console.error('An error ocurred creating the course', error);
     }
   };
 
@@ -51,6 +52,17 @@ export function useCourseService() {
       return response.data;
     } catch (error) {
       console.error(`An error ocurred getting the course ${courseId}`, error);
+    }
+  };
+
+  const getCourses = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/courses`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`An error ocurred getting the courses.`, error);
     }
   };
 
@@ -147,5 +159,6 @@ export function useCourseService() {
     getExamById,
     updateExamById,
     deleteExamById,
+    getCourses,
   };
 }

@@ -1,6 +1,6 @@
-import type { GeneratorForm } from "@/app/generate/page";
-import type { CourseService } from "@/services";
-import { useState } from "react";
+import type { GeneratorForm } from '@/app/generate/page';
+import type { CourseService } from '@/services';
+import { useState } from 'react';
 
 interface CourseData {
   title: string;
@@ -21,8 +21,9 @@ interface ExamData {
 type ExamsDataArray = ExamData[];
 
 export function useCourse(courseService: CourseService) {
-  const [courseId, setCourseId] = useState("");
+  const [courseId, setCourseId] = useState('');
   const [courseData, setCourseData] = useState<CourseData | null>(null);
+  const [coursesData, setCoursesData] = useState<CourseData[]>([]);
   const [examsData, setExamsData] = useState<ExamsDataArray | []>([]);
   const [isCreating, setIsLoading] = useState(false);
   const [courseError, setError] = useState<string | null>(null);
@@ -37,8 +38,8 @@ export function useCourse(courseService: CourseService) {
       setCourseId(newCourseId);
       return newCourseId;
     } catch (error) {
-      console.error("Error creating course: ", error);
-      setError("Failed to create course. Please try again.");
+      console.error('Error creating course: ', error);
+      setError('Failed to create course. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +53,19 @@ export function useCourse(courseService: CourseService) {
       await getExams(response.item.exams);
     } catch (error) {
       console.error(`Error getting course ${courseId} `, error);
-      setError("Failed to load course. Please try again.");
+      setError('Failed to load course. Please try again.');
+      return null;
+    }
+  };
+
+  const loadAllCourses = async () => {
+    try {
+      const response = await courseService.getCourses();
+      setCoursesData(response.items);
+      return response.items;
+    } catch (error) {
+      console.error('Error getting all courses: ', error);
+      setError('Failed to load courses. Please try again.');
       return null;
     }
   };
@@ -65,7 +78,7 @@ export function useCourse(courseService: CourseService) {
         `Error adding quiz ${quizId} to course ${courseId} `,
         error
       );
-      setError("Failed to associate quiz to course. Please try again.");
+      setError('Failed to associate quiz to course. Please try again.');
       return null;
     }
   };
@@ -85,7 +98,7 @@ export function useCourse(courseService: CourseService) {
       );
       return response?.message ? { message: response.message } : null;
     } catch (error) {
-      console.error("Error creating exam: ", error);
+      console.error('Error creating exam: ', error);
       setError(
         `Failed to create an exam for the course ${courseId}. Please try again.`
       );
@@ -110,7 +123,7 @@ export function useCourse(courseService: CourseService) {
 
       return examsData;
     } catch (error) {
-      console.error("Error getting course exams: ", error);
+      console.error('Error getting course exams: ', error);
       setError(`Failed to get exams. Please try again.`);
       return null;
     }
@@ -152,10 +165,12 @@ export function useCourse(courseService: CourseService) {
     courseId,
     isCreating,
     courseData,
+    coursesData,
     courseError,
     examsData,
     createCourse,
     loadCourse,
+    loadAllCourses,
     addQuizToCourse,
     createExam,
     getExams,
