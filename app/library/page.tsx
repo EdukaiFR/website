@@ -23,6 +23,7 @@ export default function LibraryPage() {
     levels: [],
     titles: [],
   });
+  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
   const [isFilterOpen, setFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<{
     type: '' | 'title' | 'subject' | 'level';
@@ -31,6 +32,17 @@ export default function LibraryPage() {
     type: '',
     value: '',
   });
+
+  const applyCourseFilter = (
+    courses: any[],
+    filter: { type: 'title' | 'subject' | 'level' | ''; value: string }
+  ): any[] => {
+    if (!filter.type || !filter.value) return courses;
+
+    return courses.filter((course) =>
+      course[filter.type]?.toLowerCase().includes(filter.value.toLowerCase())
+    );
+  };
 
   const getFilterFromCourses = () => {
     const subjects = new Set<string>();
@@ -74,6 +86,11 @@ export default function LibraryPage() {
     fetchCourses();
   }, []);
 
+  useEffect(() => {
+    const result = applyCourseFilter(userCourses, filter);
+    setFilteredCourses(result);
+  }, [userCourses, filter]);
+
   if (!coursesData) {
     return (
       <div className='flex items-center justify-center w-full h-full'>
@@ -103,7 +120,7 @@ export default function LibraryPage() {
 
       {/* Content Table */}
       <div className='flex items-center w-full'>
-        <DataTable data={userCourses} columns={columns} />
+        <DataTable data={filteredCourses} columns={columns} />
       </div>
     </div>
   );
