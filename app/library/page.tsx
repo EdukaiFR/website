@@ -8,6 +8,8 @@ import { FilterCourses } from './FilterCourses';
 import { columns } from './columns';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
+import { CounterBadge } from '@/components/badge/CounterBadge';
+import { SearchBar } from './SearchBar';
 
 export default function LibraryPage() {
   // Basic Data
@@ -33,16 +35,35 @@ export default function LibraryPage() {
     type: '',
     value: '',
   });
+  // Courses Search Bar
+  const [search, setSearch] = useState<string>('');
 
   const applyCourseFilter = (
     courses: any[],
-    filter: { type: 'title' | 'subject' | 'level' | ''; value: string }
+    filter: { type: 'title' | 'subject' | 'level' | ''; value: string },
+    search: string
   ): any[] => {
-    if (!filter.type || !filter.value) return courses;
+    let result = [...courses];
 
-    return courses.filter((course) =>
-      course[filter.type]?.toLowerCase().includes(filter.value.toLowerCase())
-    );
+    // Filtrage par filtre sélectionné (subject, level, title)
+    if (filter.type && filter.value) {
+      result = result.filter((course) =>
+        course[filter.type]?.toLowerCase().includes(filter.value.toLowerCase())
+      );
+    }
+
+    // Filtrage par recherche libre (sur plusieurs champs si besoin)
+    if (search) {
+      const loweredSearch = search.toLowerCase();
+      result = result.filter(
+        (course) =>
+          course.title.toLowerCase().includes(loweredSearch) ||
+          course.subject.toLowerCase().includes(loweredSearch) ||
+          course.level.toLowerCase().includes(loweredSearch)
+      );
+    }
+
+    return result;
   };
 
   const getFilterFromCourses = () => {
@@ -88,9 +109,9 @@ export default function LibraryPage() {
   }, []);
 
   useEffect(() => {
-    const result = applyCourseFilter(userCourses, filter);
+    const result = applyCourseFilter(userCourses, filter, search);
     setFilteredCourses(result);
-  }, [userCourses, filter]);
+  }, [userCourses, filter, search]);
 
   if (!coursesData) {
     return (
@@ -108,7 +129,7 @@ export default function LibraryPage() {
       />
       {/* Filter + badge + searchbar */}
       <div className='w-full flex items-center justify-between gap-2'>
-        <div className='flex items-center justify-start gap-0 w-full'>
+        <div className='flex items-center justify-start gap-1 w-full'>
           <FilterCourses
             coursesFilter={coursesFilter}
             activeFilter={filter}
@@ -128,7 +149,17 @@ export default function LibraryPage() {
               </Button>
             </div>
           )}
+          {/* Counter Badge */}
+          <div className='ml-2'>
+            <CounterBadge
+              counter={filteredCourses.length}
+              type={'cours'}
+              size='sm'
+            />
+          </div>
         </div>
+
+        <SearchBar setSearch={setSearch} />
       </div>
 
       {/* Content Table */}
