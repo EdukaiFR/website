@@ -17,7 +17,7 @@ export function TableFooter<TData>({ table }: { table: Table<TData> }) {
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm">Ligne par page</p>
+          <p className="text-sm">Lignes par page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
