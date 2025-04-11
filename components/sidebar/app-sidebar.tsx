@@ -17,6 +17,7 @@ import { usePathname } from "next/navigation"; // Hook pour obtenir l'URL actuel
 import { useEffect, useState } from "react";
 import { useLinks } from "../../hooks/use-links";
 import { NavUser } from "./nav-user";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 export function AppSidebar() {
   const { upLinks, downLinks } = useLinks();
@@ -53,19 +54,26 @@ export function AppSidebar() {
             <SidebarMenu className="">
               <div className="flex flex-col gap-4 ml-auto mr-auto">
                 {upLinks.map(({ href, label, Icon }) => (
-                  <SidebarMenuItem key={href}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={href}
-                        className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
-                          selectedLink === href && "sidebar-link-selected"
-                        }`}
-                      >
-                        <Icon className="w-6 h-6" />
-                        <span className="text-medium text-base">{label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <SidebarMenuItem key={href}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            href={href}
+                            className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
+                              selectedLink === href && "sidebar-link-selected"
+                            }`}
+                          >
+                            <Icon className="w-6 h-6" />
+                            <span className="text-medium text-base">{label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center" className="tooltip-content rounded bg-black text-white px-2 py-1 text-sm">
+                        {label}
+                    </TooltipContent>
+                  </Tooltip>
                 ))}
               </div>
             </SidebarMenu>
@@ -78,19 +86,26 @@ export function AppSidebar() {
             <SidebarMenu>
               <div className="flex flex-col gap-4 ml-auto mr-auto">
                 {downLinks.map(({ href, label, Icon }) => (
-                  <SidebarMenuItem key={href}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={href}
-                        className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
-                          selectedLink === href && "sidebar-link-selected"
-                        }`}
-                      >
-                        <Icon className="w-6 h-6" />
-                        <span className="text-medium text-base">{label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <SidebarMenuItem key={href}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            href={href}
+                            className={`flex items-center gap-3 p-2 rounded-md text-[#2D6BCF] transition-all ${
+                              selectedLink === href && "sidebar-link-selected"
+                            }`}
+                          >
+                            <Icon className="w-6 h-6" />
+                            <span className="text-medium text-base">{label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center" className="tooltip-content rounded bg-black text-white px-2 py-1 text-sm">
+                      {label}
+                    </TooltipContent>
+                  </Tooltip>
                 ))}
               </div>
             </SidebarMenu>
