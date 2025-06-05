@@ -1,0 +1,353 @@
+'use client';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { Settings, Save, Bell, Eye, Shield, Trash2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { 
+  preferencesSettingsSchema, 
+  type PreferencesSettingsFormValues 
+} from '@/lib/schemas/user';
+import { updatePreferencesAction, deleteAccountAction } from '@/lib/actions/user';
+
+export interface PreferencesSettingsProps {
+  initialData?: PreferencesSettingsFormValues;
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+}
+
+export function PreferencesSettings({ initialData, onSuccess, onError }: PreferencesSettingsProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty },
+    setError,
+    reset,
+  } = useForm<PreferencesSettingsFormValues>({
+    resolver: zodResolver(preferencesSettingsSchema),
+    defaultValues: initialData || {
+      notifications: {
+        email: true,
+        push: true,
+        weeklyReport: false,
+      },
+      profileVisibility: 'friends',
+      dataSharing: false,
+    },
+  });
+
+  const onSubmit = async (data: PreferencesSettingsFormValues) => {
+    setIsLoading(true);
+    
+    try {
+      const result = await updatePreferencesAction(data);
+      
+      if (result.success) {
+        reset(data);
+        onSuccess?.();
+      } else {
+        const errorMessage = result.error || 'Une erreur est survenue';
+        setError('root', { message: errorMessage });
+        onError?.(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage = 'Une erreur inattendue est survenue';
+      setError('root', { message: errorMessage });
+      onError?.(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    
+    try {
+      const result = await deleteAccountAction();
+      
+      if (result.success) {
+        // Redirect to home or login page
+        window.location.href = '/';
+      } else {
+        const errorMessage = result.error || 'Une erreur est survenue lors de la suppression';
+        setError('root', { message: errorMessage });
+        onError?.(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage = 'Une erreur inattendue est survenue';
+      setError('root', { message: errorMessage });
+      onError?.(errorMessage);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Preferences Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="w-5 h-5" />
+            Préférences
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Notifications Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Bell className="w-5 h-5 text-gray-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+              </div>
+              
+              <div className="space-y-4 pl-7">
+                <Controller
+                  name="notifications.email"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Notifications par email
+                        </label>
+                        <p className="text-xs text-gray-500">
+                          Recevoir des notifications importantes par email
+                        </p>
+                      </div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="notifications.push"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Notifications push
+                        </label>
+                        <p className="text-xs text-gray-500">
+                          Recevoir des notifications sur votre navigateur
+                        </p>
+                      </div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="notifications.weeklyReport"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Rapport hebdomadaire
+                        </label>
+                        <p className="text-xs text-gray-500">
+                          Recevoir un résumé de vos progrès chaque semaine
+                        </p>
+                      </div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Privacy Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Shield className="w-5 h-5 text-gray-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Confidentialité</h3>
+              </div>
+              
+              <div className="space-y-4 pl-7">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    Visibilité du profil
+                  </label>
+                  <Controller
+                    name="profileVisibility"
+                    control={control}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="h-11 border-2 transition-all duration-200 focus:border-blue-500 border-gray-200">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="public">
+                            <div>
+                              <div className="font-medium">Public</div>
+                              <div className="text-xs text-gray-500">Visible par tous les utilisateurs</div>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="friends">
+                            <div>
+                              <div className="font-medium">Amis uniquement</div>
+                              <div className="text-xs text-gray-500">Visible par vos amis seulement</div>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="private">
+                            <div>
+                              <div className="font-medium">Privé</div>
+                              <div className="text-xs text-gray-500">Profil non visible</div>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+
+                <Controller
+                  name="dataSharing"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Partage de données anonymes
+                        </label>
+                        <p className="text-xs text-gray-500">
+                          Aider à améliorer l'application en partageant des données anonymes
+                        </p>
+                      </div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {errors.root && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 flex items-center gap-2">
+                  <span className="text-red-500">⚠</span>
+                  {errors.root.message}
+                </p>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={isLoading || !isDirty}
+                className="px-6 h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Sauvegarde...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    Sauvegarder
+                  </span>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="border-red-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-600">
+            <Trash2 className="w-5 h-5" />
+            Zone dangereuse
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <h4 className="font-semibold text-red-800 mb-2">Supprimer mon compte</h4>
+              <p className="text-sm text-red-700 mb-4">
+                Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+              </p>
+              
+              {!showDeleteConfirm ? (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Supprimer mon compte
+                </Button>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-red-800">
+                    Êtes-vous sûr de vouloir supprimer votre compte ?
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {isDeleting ? (
+                        <span className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Suppression...
+                        </span>
+                      ) : (
+                        'Oui, supprimer définitivement'
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeleting}
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+} 
