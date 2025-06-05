@@ -45,39 +45,39 @@ export function NavUser() {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className={isCollapsed ? 'flex justify-center' : ''}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-auto p-2"
+              className={`group flex items-center gap-3 ${isCollapsed ? 'p-2 justify-center mx-auto w-fit' : 'p-3'} rounded-xl transition-all duration-200 text-gray-700 hover:bg-white/70 hover:shadow-md hover:transform hover:scale-[1.01] backdrop-blur-sm h-auto`}
             >
               {isCollapsed ? (
                 // Collapsed: Just avatar with status indicator
-                <div className="relative flex items-center justify-center w-full">
+                <div className="relative flex items-center justify-center">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
                     <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
                       TH
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white"></div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
               ) : (
-                // Expanded: Full user info
+                // Expanded: Full user info - matching other nav items styling
                 <div className="flex items-center gap-3 w-full text-left">
                   <div className="relative flex-shrink-0">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-6 w-6">
                       <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                      <AvatarFallback className="bg-blue-600 text-white font-semibold">
+                      <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
                         TH
                       </AvatarFallback>
                     </Avatar>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white"></div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
-                    <div className="font-semibold text-base truncate">Tristan H</div>
-                    <div className="text-sm text-muted-foreground truncate">Premium</div>
+                    <div className="font-semibold text-base text-gray-700 group-hover:text-gray-900 truncate">Tristan H</div>
+                    <div className="text-sm text-blue-600 group-hover:text-indigo-600 truncate">Premium</div>
                   </div>
                 </div>
               )}

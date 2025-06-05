@@ -185,7 +185,8 @@ export default function LibraryPage() {
       {/* Filters and Search */}
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-6">
-          <div className='flex flex-col gap-4'>
+          {/* Mobile Layout (2 rows) */}
+          <div className='flex flex-col gap-4 lg:hidden'>
             {/* First Row: Filters, Counter, and View Toggle */}
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
               <div className='flex items-center gap-3 flex-wrap'>
@@ -226,6 +227,51 @@ export default function LibraryPage() {
               <div className="w-full max-w-md">
                 <SearchBar setSearch={setSearch} />
               </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout (1 row) */}
+          <div className='hidden lg:flex items-center justify-between gap-6'>
+            {/* Left: Search Bar + Filters Group */}
+            <div className="flex items-center gap-4">
+              {/* Search Bar */}
+              <div className="w-96">
+                <SearchBar setSearch={setSearch} />
+              </div>
+
+              {/* Filters and Counter */}
+              <div className='flex items-center gap-3 flex-wrap'>
+                <FilterCourses
+                  coursesFilter={coursesFilter}
+                  activeFilter={filter}
+                  setActiveFilter={setFilter}
+                  isFilterOpen={isFilterOpen}
+                  setFilterOpen={setFilterOpen}
+                />
+                
+                {filter.type && (
+                  <Button
+                    variant='outline'
+                    size="sm"
+                    className='text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300'
+                    onClick={() => setFilter({ type: '', value: '' })}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Réinitialiser
+                  </Button>
+                )}
+                
+                <CounterBadge
+                  counter={filteredCourses.length}
+                  type={'cours'}
+                  size='sm'
+                />
+              </div>
+            </div>
+
+            {/* Right: View Toggle */}
+            <div className="flex-shrink-0">
+              <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
           </div>
         </CardContent>
