@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, LogOut, Sparkles } from "lucide-react";
+import { BadgeCheck, LogOut, Sparkles, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -22,18 +22,25 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function NavUser() {
-  const { isMobile } = useSidebar();
+  const { isMobile, state } = useSidebar();
   const router = useRouter();
+  
+  const isCollapsed = state === "collapsed";
 
   const logout = async () => {
     try {
-    } catch (err: any) {
+      // Add any logout logic here (clear tokens, etc.)
+    } catch (err: unknown) {
       console.error("Unexpected error during logout:", err);
-      toast.error("Unexpected error during logout:", err);
+      toast.error("Erreur lors de la déconnexion");
     } finally {
-      router.push("/auth/login");
+      router.push("/auth");
       toast.success("Déconnexion réussie.");
     }
+  };
+
+  const goToSettings = () => {
+    router.push("/settings");
   };
 
   return (
@@ -43,75 +50,89 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
-                isMobile ? "p-2" : "p-4"
-              }`}
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-auto p-2"
             >
-              <div className="flex ml-auto mr-auto items-center justify-center gap-4">
-                <Avatar className="h-8 w-8 rounded-full flex-shrink-0">
-                  <AvatarImage src={"/temp/profile.svg"} alt={"Profile"} />
-                  <AvatarFallback className="rounded-full">
-                    {"T"}
-                    {"H"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col text-primary">
-                  <span className="truncate font-semibold">
-                    {"Tristan"} {"H"}
-                  </span>
-                  <span className="truncate text-md font-medium opacity-75">
-                    {"Freemium"}
-                  </span>
+              {isCollapsed ? (
+                // Collapsed: Just avatar with status indicator
+                <div className="relative flex items-center justify-center w-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
+                    <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
+                      TH
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white"></div>
                 </div>
-              </div>
+              ) : (
+                // Expanded: Full user info
+                <div className="flex items-center gap-3 w-full text-left">
+                  <div className="relative flex-shrink-0">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
+                      <AvatarFallback className="bg-blue-600 text-white font-semibold">
+                        TH
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white"></div>
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="font-semibold text-base truncate">Tristan H</div>
+                    <div className="text-sm text-muted-foreground truncate">Premium</div>
+                  </div>
+                </div>
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            className="w-56"
+            side={isMobile ? "top" : "right"}
             align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={"/temp/profile.svg"} alt={"Profile"} />
-                  <AvatarFallback className="rounded-full">
-                    {"T"}
-                    {"H"}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative flex-shrink-0">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
+                    <AvatarFallback className="bg-blue-600 text-white text-xs">
+                      TH
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {"Tristan"} {"H"}
+                  <span className="truncate font-semibold">Tristan H</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    tristan@example.com
                   </span>
-                  <span className="truncate text-xs">{"Freemium"}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem onClick={goToSettings}>
+                <Settings className="w-4 h-4" />
+                Paramètres
+              </DropdownMenuItem>
               <DropdownMenuItem>
-                <Sparkles />
+                <Sparkles className="w-4 h-4" />
                 Changer l'abonnement
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck />
+                <BadgeCheck className="w-4 h-4" />
                 Mon compte
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout}>
-              <LogOut />
+              <LogOut className="w-4 h-4" />
               Déconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {/* TODO: we can show this badge when we'll be able to know if the sidebar is open or not */}
-        {/* <BetaBadge /> */}
       </SidebarMenuItem>
     </SidebarMenu>
   );

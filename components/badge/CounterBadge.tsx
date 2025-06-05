@@ -19,7 +19,7 @@ export const CounterBadge = ({
 
   return (
     <div
-      className={`rounded-full flex items-center justify-center bg-[#2D6BCF] bg-opacity-25 text-[#2D6BCF] satoshi-medium gap-1 ${sizeClasses[size]}`}
+      className={`rounded-full flex items-center justify-center bg-blue-600/20 text-blue-600 font-medium gap-1 ${sizeClasses[size]} border border-blue-200/60 backdrop-blur-sm`}
     >
       <p>{counter}</p>
       {type && <p>{type}</p>}

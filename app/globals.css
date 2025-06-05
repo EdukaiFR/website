@@ -63,13 +63,13 @@ body {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 220 100% 95%; /* Bleu clair de fond */
-    --sidebar-foreground: 220 80% 30%; /* Bleu foncé */
-    --sidebar-primary: 220 90% 40%; /* Accent bleu pour les liens actifs */
-    --sidebar-primary-foreground: 0 0% 100%; /* Blanc */
-    --sidebar-accent: 220 80% 95%; /* Bleu clair légèrement plus foncé */
-    --sidebar-accent-foreground: 220 70% 30%; /* Texte bleu sur accent */
-    --sidebar-border: 220 30% 80%; /* Bordures plus discrètes */
+    --sidebar-background: 220 100% 97%; /* Updated light blue background */
+    --sidebar-foreground: 220 80% 30%;
+    --sidebar-primary: 220 90% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 80% 95%;
+    --sidebar-accent-foreground: 220 70% 30%;
+    --sidebar-border: 220 30% 80%;
     --sidebar-ring: 217 91% 60%;
   }
 
@@ -158,11 +158,28 @@ body {
   font-weight: 500;
 }
 
-/* Hover & selected style for sidebarLinks */
-.sidebar-link-selected {
-  @apply flex items-center gap-4 px-4 py-2 rounded-lg bg-[#2D6BCF] bg-opacity-25;
-}
-
 .text-primary {
   color: #2d6bcf;
+}
+
+/* Modern sidebar animations and transitions */
+@layer components {
+  .sidebar-gradient-bg {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #ffffff 100%);
+  }
+  
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .nav-link-hover {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .nav-link-hover:hover {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
 }

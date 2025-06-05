@@ -9,11 +9,15 @@ import {
 } from "@/components/ui/select";
 
 export function TableFooter<TData>({ table }: { table: Table<TData> }) {
+  const totalRows = table.getFilteredRowModel().rows.length;
+  const pageCount = table.getPageCount();
+  const currentPage = table.getState().pagination.pageIndex + 1;
+
   return (
     <div className="flex items-center justify-between w-full py-2 satoshi-medium">
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} sur{" "}
-        {table.getFilteredRowModel().rows.length} ligne(s) sélectionée(s)
+        {totalRows} ligne(s) sélectionée(s)
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
@@ -37,8 +41,11 @@ export function TableFooter<TData>({ table }: { table: Table<TData> }) {
           </Select>
         </div>
         <div className="ml-auto flex items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} sur{" "}
-          {table.getPageCount()}
+          {totalRows > 0 ? (
+            <>Page {currentPage} sur {pageCount}</>
+          ) : (
+            <>Aucune donnée</>
+          )}
         </div>
       </div>
     </div>

@@ -10,12 +10,29 @@ import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import { CounterBadge } from '@/components/badge/CounterBadge';
 import { SearchBar } from './SearchBar';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookOpen, Filter, Search, RotateCcw } from 'lucide-react';
+
+// Define the extended course type for the table
+interface ExtendedCourseData {
+  _id?: string;
+  id: string;
+  title: string;
+  subject: string;
+  level: string;
+  author: string;
+  isPublished: boolean;
+  createdAt: string;
+  quizzes: string[];
+  exams: string[];
+  resumeFiles: unknown[];
+}
 
 export default function LibraryPage() {
   // Basic Data
   const course_service = useCourseService();
   const { coursesData, loadAllCourses } = useCourse(course_service);
-  const [userCourses, setUserCourses] = useState<any[]>([]);
+  const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
   // Courses Filter
   const [coursesFilter, setCoursesFilter] = useState<{
     subjects: string[];
@@ -26,7 +43,7 @@ export default function LibraryPage() {
     levels: [],
     titles: [],
   });
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<ExtendedCourseData[]>([]);
   const [isFilterOpen, setFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<{
     type: '' | 'title' | 'subject' | 'level';
@@ -39,10 +56,10 @@ export default function LibraryPage() {
   const [search, setSearch] = useState<string>('');
 
   const applyCourseFilter = (
-    courses: any[],
+    courses: ExtendedCourseData[],
     filter: { type: 'title' | 'subject' | 'level' | ''; value: string },
     search: string
-  ): any[] => {
+  ): ExtendedCourseData[] => {
     // Safety check: ensure courses is an array
     if (!courses || !Array.isArray(courses)) {
       return [];
@@ -52,19 +69,22 @@ export default function LibraryPage() {
 
     // Filtrage par filtre sélectionné (subject, level, title)
     if (filter.type && filter.value) {
-      result = result.filter((course) =>
-        course?.[filter.type]?.toLowerCase()?.includes(filter.value.toLowerCase())
-      );
+      result = result.filter((course) => {
+        if (filter.type === 'title') return course.title?.toLowerCase()?.includes(filter.value.toLowerCase());
+        if (filter.type === 'subject') return course.subject?.toLowerCase()?.includes(filter.value.toLowerCase());
+        if (filter.type === 'level') return course.level?.toLowerCase()?.includes(filter.value.toLowerCase());
+        return false;
+      });
     }
 
     // Filtrage par recherche libre (sur plusieurs champs si besoin)
     if (search) {
       const loweredSearch = search.toLowerCase();
       result = result.filter(
-        (course) =>
-          course?.title?.toLowerCase()?.includes(loweredSearch) ||
-          course?.subject?.toLowerCase()?.includes(loweredSearch) ||
-          course?.level?.toLowerCase()?.includes(loweredSearch)
+        (course) => 
+          course.title?.toLowerCase()?.includes(loweredSearch) ||
+          course.subject?.toLowerCase()?.includes(loweredSearch) ||
+          course.level?.toLowerCase()?.includes(loweredSearch)
       );
     }
 
@@ -105,15 +125,14 @@ export default function LibraryPage() {
       
       // Check if response is null or not an array
       if (response && Array.isArray(response)) {
-        await setUserCourses(
-          response.map((course: any) => ({
-            ...course,
-            id: (course as any)._id || '',
-            author: (course as any).author || 'Unknown',
-            isPublished: (course as any).isPublished || false,
-            createdAt: (course as any).createdAt || new Date().toISOString(),
-          }))
-        );
+        const extendedCourses: ExtendedCourseData[] = response.map((course) => ({
+          ...course,
+          id: (course as any)._id || '',
+          author: (course as any).author || 'Unknown',
+          isPublished: (course as any).isPublished || false,
+          createdAt: (course as any).createdAt || new Date().toISOString(),
+        }));
+        setUserCourses(extendedCourses);
       } else {
         // If response is null or not an array, set empty array
         console.warn('Failed to load courses or received invalid response');
@@ -131,57 +150,88 @@ export default function LibraryPage() {
 
   if (!coursesData) {
     return (
-      <div className='flex items-center justify-center w-full h-full'>
-        Loading...
+      <div className='flex items-center justify-center w-full h-full min-h-[60vh]'>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-muted-foreground">Chargement de vos cours...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className='flex flex-col gap-2 lg:gap-6 px-2 lg:px-6 min-h-[calc(100vh-5rem)] w-full'>
-      <Header
-        title={`Ta bibliothèque`}
-        description={`Ici tu retrouveras tous tes cours générés ainsi que tes favoris`}
-      />
-      {/* Filter + badge + searchbar */}
-      <div className='w-full flex items-center justify-between gap-2'>
-        <div className='flex items-center justify-start gap-1 w-full'>
-          <FilterCourses
-            coursesFilter={coursesFilter}
-            activeFilter={filter}
-            setActiveFilter={setFilter}
-            isFilterOpen={isFilterOpen}
-            setFilterOpen={setFilterOpen}
-          />
-          {/* if we have an active filter, we need to display a little text to reset it */}
-          {filter.type && (
-            <div className='flex items-center justify-start gap-2'>
-              <Button
-                variant='link'
-                className='text-sm text-red-500'
-                onClick={() => setFilter({ type: '', value: '' })}
-              >
-                Réinitialiser le filtre
-              </Button>
+    <div className='flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50'>
+      {/* Modern Header with gradient background */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+              <BookOpen className="w-6 h-6 text-white" />
             </div>
-          )}
-          {/* Counter Badge */}
-          <div className='ml-2'>
-            <CounterBadge
-              counter={filteredCourses.length}
-              type={'cours'}
-              size='sm'
-            />
+            <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+              Bibliothèque
+            </div>
           </div>
+          <h1 className="text-2xl lg:text-4xl font-bold mb-2">Ta bibliothèque</h1>
+          <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
+            Ici tu retrouveras tous tes cours générés ainsi que tes favoris
+          </p>
         </div>
-
-        <SearchBar setSearch={setSearch} />
+        {/* Decorative elements */}
+        <div className="absolute top-4 right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 right-8 w-20 h-20 bg-purple-300/20 rounded-full blur-lg"></div>
       </div>
 
-      {/* Content Table */}
-      <div className='flex items-center w-full'>
-        <DataTable data={filteredCourses} columns={columns} />
-      </div>
+      {/* Modern Filter and Search Section */}
+      <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <div className='flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4'>
+            <div className='flex items-center gap-3 flex-wrap'>
+              <FilterCourses
+                coursesFilter={coursesFilter}
+                activeFilter={filter}
+                setActiveFilter={setFilter}
+                isFilterOpen={isFilterOpen}
+                setFilterOpen={setFilterOpen}
+              />
+              
+              {filter.type && (
+                <Button
+                  variant='outline'
+                  size="sm"
+                  className='text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300'
+                  onClick={() => setFilter({ type: '', value: '' })}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Réinitialiser
+                </Button>
+              )}
+              
+              <CounterBadge
+                counter={filteredCourses.length}
+                type={'cours'}
+                size='sm'
+              />
+            </div>
+
+            <div className="w-full lg:w-auto lg:max-w-[350px] flex justify-end">
+              <div className="w-full lg:w-[300px]">
+                <SearchBar setSearch={setSearch} />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modern Content Table */}
+      <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm flex-1">
+        <CardContent className="p-6">
+          <div className='w-full'>
+            <DataTable data={filteredCourses} columns={columns} />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

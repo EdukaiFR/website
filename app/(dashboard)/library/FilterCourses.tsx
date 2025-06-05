@@ -77,11 +77,11 @@ export const FilterCourses = ({
           variant='outline'
           role='combobox'
           aria-expanded={isFilterOpen}
-          className='w-fit justify-between border border-b[#E3E3E7] text-[#2D6BCF] hover:bg-gray-200/30 transition-all hover:text-[#2D6BCF] selected:none'
+          className='w-fit justify-between border border-blue-200/60 text-blue-600 hover:bg-blue-50/80 hover:border-indigo-300 transition-all hover:text-indigo-600'
         >
           <div className='flex items-center justify-start gap-2'>
             <ListFilter className='h-4 w-4 shrink-0' />
-            <span className='text-bold text-md'>
+            <span className='font-medium text-sm'>
               {activeFilter.value ? `${activeFilter.value}` : 'Filtre'}
             </span>
           </div>
