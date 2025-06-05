@@ -1,7 +1,7 @@
 'use client';
 
 import { useCourseService } from '@/services';
-import { Header } from './Header';
+import { LibraryHeader } from './LibraryHeader';
 import { useCourse } from '@/hooks';
 import { useEffect, useState } from 'react';
 import { FilterCourses } from './FilterCourses';
@@ -12,6 +12,8 @@ import { CounterBadge } from '@/components/badge/CounterBadge';
 import { SearchBar } from './SearchBar';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Filter, Search, RotateCcw } from 'lucide-react';
+import { CourseGrid } from './CourseGrid';
+import { ViewToggle } from './ViewToggle';
 
 // Define the extended course type for the table
 interface ExtendedCourseData {
@@ -33,6 +35,22 @@ export default function LibraryPage() {
   const course_service = useCourseService();
   const { coursesData, loadAllCourses } = useCourse(course_service);
   const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
+  // View State - Load from localStorage or default to 'grid'
+  const [view, setView] = useState<'grid' | 'table'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('library-view') as 'grid' | 'table') || 'grid';
+    }
+    return 'grid';
+  });
+  
+  // Save view preference to localStorage
+  const handleViewChange = (newView: 'grid' | 'table') => {
+    setView(newView);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('library-view', newView);
+    }
+  };
+  
   // Courses Filter
   const [coursesFilter, setCoursesFilter] = useState<{
     subjects: string[];
@@ -161,29 +179,10 @@ export default function LibraryPage() {
 
   return (
     <div className='flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50'>
-      {/* Modern Header with gradient background */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-              Bibliothèque
-            </div>
-          </div>
-          <h1 className="text-2xl lg:text-4xl font-bold mb-2">Ta bibliothèque</h1>
-          <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
-            Ici tu retrouveras tous tes cours générés ainsi que tes favoris
-          </p>
-        </div>
-        {/* Decorative elements */}
-        <div className="absolute top-4 right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-4 right-8 w-20 h-20 bg-purple-300/20 rounded-full blur-lg"></div>
-      </div>
+      {/* Header */}
+      <LibraryHeader />
 
-      {/* Modern Filter and Search Section */}
+      {/* Filters and Search */}
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className='flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4'>
@@ -215,20 +214,38 @@ export default function LibraryPage() {
               />
             </div>
 
-            <div className="w-full lg:w-auto lg:max-w-[350px] flex justify-end">
-              <div className="w-full lg:w-[300px]">
-                <SearchBar setSearch={setSearch} />
+            <div className="flex items-center gap-4">
+              <ViewToggle view={view} onViewChange={handleViewChange} />
+              <div className="w-full lg:w-auto lg:max-w-[350px]">
+                <div className="w-full lg:w-[300px]">
+                  <SearchBar setSearch={setSearch} />
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Modern Content Table */}
+      {/* Content */}
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm flex-1">
         <CardContent className="p-6">
           <div className='w-full'>
-            <DataTable data={filteredCourses} columns={columns} />
+            {view === 'grid' ? (
+              <CourseGrid 
+                courses={filteredCourses.map(course => ({
+                  id: course.id,
+                  title: course.title,
+                  subject: course.subject,
+                  level: course.level,
+                  author: course.author,
+                  createdAt: course.createdAt,
+                  isPublished: course.isPublished,
+                }))}
+                isLoading={false}
+              />
+            ) : (
+              <DataTable data={filteredCourses} columns={columns} />
+            )}
           </div>
         </CardContent>
       </Card>
