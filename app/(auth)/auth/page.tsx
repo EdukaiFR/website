@@ -2,14 +2,10 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { Signin } from './Signin';
-import { Signup } from './Signup';
-import { ResetPassword } from './ResetPassword';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { AuthContainer } from '@/components/auth';
 
 export default function Authpage() {
-  const [selectedOption, setSelectedOption] = useState('login');
   const [currentSlide, setCurrentSlide] = useState(0);
   
   // Automatic slider effect
@@ -20,6 +16,16 @@ export default function Authpage() {
     
     return () => clearInterval(interval);
   }, []);
+
+  const handleAuthSuccess = () => {
+    console.log('Authentication successful');
+    // TODO: Redirect to dashboard or handle successful auth
+  };
+
+  const handleAuthError = (error: string) => {
+    console.error('Authentication error:', error);
+    // TODO: Handle auth errors (toast, etc.)
+  };
   
   return (
     <div className="flex items-center justify-center p-2 sm:p-4 min-h-screen">
@@ -46,50 +52,12 @@ export default function Authpage() {
                 </div>
               </div>
 
-              {/* Auth Content */}
-              <div className="space-y-4 sm:space-y-6">
-                {selectedOption === 'login' && (
-                  <Signin setSelectedOption={setSelectedOption} />
-                )}
-                {selectedOption === 'register' && (
-                  <Signup setSelectedOption={setSelectedOption} />
-                )}
-                {selectedOption === 'forgot' && (
-                  <ResetPassword setSelectedOption={setSelectedOption} />
-                )}
-              </div>
-
-              {/* Footer Navigation */}
-              <div className="mt-6 sm:mt-8 text-center">
-                {selectedOption === 'login' && (
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600">
-                      Pas encore de compte ?
-                    </p>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setSelectedOption('register')}
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base"
-                    >
-                      Créer un compte gratuitement
-                    </Button>
-                  </div>
-                )}
-                {selectedOption === 'register' && (
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600">
-                      Déjà un compte ?
-                    </p>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setSelectedOption('login')}
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base"
-                    >
-                      Se connecter
-                    </Button>
-                  </div>
-                )}
-              </div>
+              {/* Auth Container */}
+              <AuthContainer
+                initialMode="login"
+                onAuthSuccess={handleAuthSuccess}
+                onAuthError={handleAuthError}
+              />
             </CardContent>
           </Card>
         </div>
@@ -133,22 +101,16 @@ export default function Authpage() {
                 <div className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
                   currentSlide === 0 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
                 }`}>
-                  <div className="flex justify-center items-end h-full pb-2 sm:pb-4 pt-2 sm:pt-4">
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-6 shadow-lg border border-white/20 transform hover:scale-105 transition-all duration-300">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-xl">
+                  <div className="flex justify-center items-end h-full pb-2 sm:pb-4 pt-4 sm:pt-4">
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-2 shadow-lg border border-white/20 transform hover:scale-105 transition-all duration-300">
                         <Image
                           src="/preview/openCourse.svg"
                           width={160}
                           height={120}
                           alt="Preview de l'application Edukai"
-                          className="sm:w-64 sm:h-48 lg:w-80 lg:h-60 rounded-lg sm:rounded-xl shadow-lg"
+                          className="sm:w-64 sm:h-48 lg:w-90 lg:h-55 rounded-lg sm:rounded-xl"
                         />
-                      </div>
-                      <div className="mt-2 sm:mt-3 text-center">
-                        <p className="text-white/80 text-xs sm:text-sm font-medium drop-shadow-md">
-                          Interface de l'application
-                        </p>
-                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -201,8 +163,8 @@ export default function Authpage() {
                             <div className="w-3 h-3 sm:w-4 sm:h-4 bg-purple-400 rounded-full"></div>
                           </div>
                           <div>
-                            <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">Gratuit</p>
-                            <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">Toujours accessible et gratuit</p>
+                            <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">Intelligent</p>
+                            <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">Analyse tes points faibles</p>
                           </div>
                         </div>
                       </div>
@@ -212,27 +174,21 @@ export default function Authpage() {
               </div>
             </div>
 
-            {/* Slide Indicators - Only visible on desktop */}
-            <div className="absolute bottom-1 sm:bottom-2 left-1/2 transform -translate-x-1/2 z-30 hidden lg:flex">
-              <div className="flex space-x-1.5 sm:space-x-2">
-                <button
-                  onClick={() => setCurrentSlide(0)}
-                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                    currentSlide === 0 ? 'bg-white' : 'bg-white/40'
-                  }`}
-                />
-                <button
-                  onClick={() => setCurrentSlide(1)}
-                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                    currentSlide === 1 ? 'bg-white' : 'bg-white/40'
-                  }`}
-                />
-              </div>
+            {/* Slide indicators */}
+            <div className="absolute bottom-3 sm:bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 z-30 hidden lg:flex space-x-2">
+              <button
+                onClick={() => setCurrentSlide(0)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  currentSlide === 0 ? 'bg-white' : 'bg-white/40'
+                }`}
+              />
+              <button
+                onClick={() => setCurrentSlide(1)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  currentSlide === 1 ? 'bg-white' : 'bg-white/40'
+                }`}
+              />
             </div>
-            
-            {/* Decorative Elements - Responsive */}
-            <div className="absolute top-6 sm:top-8 lg:top-10 right-6 sm:right-8 lg:right-10 w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white/5 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute bottom-12 sm:bottom-16 lg:bottom-20 left-6 sm:left-8 lg:left-10 w-12 h-12 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-yellow-400/10 rounded-full blur-xl animate-pulse delay-1000"></div>
           </div>
         </div>
       </div>

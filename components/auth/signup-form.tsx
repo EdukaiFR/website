@@ -2,36 +2,20 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState } from 'react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
-import { useState } from 'react';
+import { signupSchema, type SignupFormValues, getPasswordRequirements } from '@/lib/schemas/auth';
+import { signupAction } from '@/lib/actions/auth';
 
-export type SignupProps = {
-  setSelectedOption: (option: string) => void;
-};
+export interface SignupFormProps {
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+}
 
-// Validation schema
-const signupSchema = z
-  .object({
-    firstName: z.string().min(2, 'Prénom requis (min. 2 caractères)'),
-    lastName: z.string().min(2, 'Nom requis (min. 2 caractères)'),
-    email: z.string().email('Adresse email invalide'),
-    password: z
-      .string()
-      .min(6, 'Le mot de passe doit contenir au moins 6 caractères')
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Le mot de passe doit contenir une majuscule, une minuscule et un chiffre'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirmPassword'],
-  });
-
-type SignupFormValues = z.infer<typeof signupSchema>;
-
-export const Signup = ({ setSelectedOption }: SignupProps) => {
+export function SignupForm({ onSuccess, onError }: SignupFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,26 +25,34 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
     handleSubmit,
     watch,
     formState: { errors },
+    setError,
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
   });
 
   const password = watch('password');
+  const passwordRequirements = getPasswordRequirements(password || '');
   
-  const passwordRequirements = [
-    { label: 'Au moins 6 caractères', met: password?.length >= 6 },
-    { label: 'Une majuscule', met: /[A-Z]/.test(password || '') },
-    { label: 'Une minuscule', met: /[a-z]/.test(password || '') },
-    { label: 'Un chiffre', met: /\d/.test(password || '') },
-  ];
-
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
-    console.log('Form data:', data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    // Logic d'inscription ici
+    
+    try {
+      const result = await signupAction(data);
+      
+      if (result.success) {
+        onSuccess?.();
+      } else {
+        const errorMessage = result.error || 'Une erreur est survenue';
+        setError('root', { message: errorMessage });
+        onError?.(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage = 'Une erreur inattendue est survenue';
+      setError('root', { message: errorMessage });
+      onError?.(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,18 +60,17 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
       {/* Header */}
       <div className='text-center space-y-1 sm:space-y-2'>
         <h2 className='text-2xl sm:text-3xl font-bold text-gray-900'>
-          Bienvenue sur Edukai !
+          Créer ton compte
         </h2>
         <p className='text-sm sm:text-base text-gray-600'>
-          Crée ton compte pour commencer à apprendre dès maintenant
+          Rejoins Edukai et révolutionne tes révisions
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 sm:space-y-5'>
-        {/* Name Fields */}
+        {/* First Name & Last Name */}
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-          {/* First Name */}
           <div className='space-y-2'>
             <label htmlFor='firstName' className='text-sm font-medium text-gray-700 flex items-center gap-2'>
               <User className='w-4 h-4' />
@@ -88,6 +79,7 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
             <div className='relative'>
               <Input
                 id='firstName'
+                type='text'
                 placeholder='John'
                 {...register('firstName')}
                 className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
@@ -104,7 +96,6 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
             )}
           </div>
 
-          {/* Last Name */}
           <div className='space-y-2'>
             <label htmlFor='lastName' className='text-sm font-medium text-gray-700 flex items-center gap-2'>
               <User className='w-4 h-4' />
@@ -113,6 +104,7 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
             <div className='relative'>
               <Input
                 id='lastName'
+                type='text'
                 placeholder='Doe'
                 {...register('lastName')}
                 className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
@@ -184,17 +176,17 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
           
           {/* Password Requirements */}
           {password && (
-            <div className='bg-gray-50 rounded-lg p-3 space-y-2'>
-              <p className='text-xs text-gray-600 font-medium'>Exigences du mot de passe :</p>
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+            <div className='mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200'>
+              <p className='text-xs font-semibold text-gray-700 mb-2'>Critères du mot de passe :</p>
+              <div className='grid grid-cols-2 gap-2'>
                 {passwordRequirements.map((req, index) => (
-                  <div key={index} className='flex items-center gap-2 text-xs'>
-                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                      req.met ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-400'
+                  <div key={index} className='flex items-center gap-2'>
+                    <div className={`w-3 h-3 rounded-full flex items-center justify-center ${
+                      req.met ? 'bg-green-500' : 'bg-gray-300'
                     }`}>
-                      <Check className='w-2.5 h-2.5' />
+                      {req.met && <Check className='w-2 h-2 text-white' />}
                     </div>
-                    <span className={req.met ? 'text-green-600' : 'text-gray-500'}>
+                    <span className={`text-xs ${req.met ? 'text-green-700' : 'text-gray-600'}`}>
                       {req.label}
                     </span>
                   </div>
@@ -244,6 +236,16 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
           )}
         </div>
 
+        {/* Error Display */}
+        {errors.root && (
+          <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+            <p className='text-sm text-red-600 flex items-center gap-2'>
+              <span className='text-red-500'>⚠</span>
+              {errors.root.message}
+            </p>
+          </div>
+        )}
+
         {/* Submit Button */}
         <Button
           type='submit'
@@ -253,7 +255,7 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
           {isLoading ? (
             <span className='flex items-center gap-2'>
               <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
-              Création du compte...
+              Création en cours...
             </span>
           ) : (
             <span className='flex items-center gap-2'>
@@ -265,4 +267,4 @@ export const Signup = ({ setSelectedOption }: SignupProps) => {
       </form>
     </div>
   );
-};
+} 

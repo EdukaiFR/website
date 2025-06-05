@@ -1,27 +1,23 @@
+'use client';
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState } from 'react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { signinSchema, type SigninFormValues } from '@/lib/schemas/auth';
+import { signinAction } from '@/lib/actions/auth';
 
-export type SigninProps = {
-  setSelectedOption: (option: string) => void;
-};
+export interface SigninFormProps {
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  onForgotPassword?: () => void;
+}
 
-// Schéma de validation avec zod
-const signinSchema = z.object({
-  email: z.string().email('Adresse email invalide'),
-  password: z
-    .string()
-    .min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-});
-
-type SigninFormValues = z.infer<typeof signinSchema>;
-
-export const Signin = ({ setSelectedOption }: SigninProps) => {
+export function SigninForm({ onSuccess, onError, onForgotPassword }: SigninFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -29,17 +25,31 @@ export const Signin = ({ setSelectedOption }: SigninProps) => {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<SigninFormValues>({
     resolver: zodResolver(signinSchema),
   });
 
   const onSubmit = async (data: SigninFormValues) => {
     setIsLoading(true);
-    console.log('Form data:', data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    // Ajoutez ici la logique pour gérer la soumission du formulaire
+    
+    try {
+      const result = await signinAction(data);
+      
+      if (result.success) {
+        onSuccess?.();
+      } else {
+        const errorMessage = result.error || 'Une erreur est survenue';
+        setError('root', { message: errorMessage });
+        onError?.(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage = 'Une erreur inattendue est survenue';
+      setError('root', { message: errorMessage });
+      onError?.(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -118,9 +128,9 @@ export const Signin = ({ setSelectedOption }: SigninProps) => {
         {/* Remember me & Forgot password */}
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0'>
           <div className='flex items-center space-x-3'>
-            <Checkbox id='remember' className='border-2 border-gray-300' />
+            <Checkbox id='rememberMe' {...register('rememberMe')} className='border-2 border-gray-300' />
             <label
-              htmlFor='remember'
+              htmlFor='rememberMe'
               className='text-sm text-gray-700 font-medium cursor-pointer'
             >
               Se souvenir de moi
@@ -130,11 +140,21 @@ export const Signin = ({ setSelectedOption }: SigninProps) => {
             type='button'
             variant='link'
             className='text-sm text-blue-600 hover:text-blue-700 font-medium p-0 h-auto self-start sm:self-auto'
-            onClick={() => setSelectedOption('forgot')}
+            onClick={onForgotPassword}
           >
             Mot de passe oublié ?
           </Button>
         </div>
+
+        {/* Error Display */}
+        {errors.root && (
+          <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+            <p className='text-sm text-red-600 flex items-center gap-2'>
+              <span className='text-red-500'>⚠</span>
+              {errors.root.message}
+            </p>
+          </div>
+        )}
 
         {/* Submit Button */}
         <Button
@@ -157,4 +177,4 @@ export const Signin = ({ setSelectedOption }: SigninProps) => {
       </form>
     </div>
   );
-};
+} 

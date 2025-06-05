@@ -2,30 +2,29 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState } from 'react';
+import { Mail, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Mail, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { resetPasswordSchema, type ResetPasswordFormValues } from '@/lib/schemas/auth';
+import { resetPasswordAction } from '@/lib/actions/auth';
 
-export type ResetPasswordProps = {
-  setSelectedOption: (option: string) => void;
-};
+export interface ResetPasswordFormProps {
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  onBack?: () => void;
+}
 
-const resetPasswordSchema = z.object({
-  email: z.string().email('Adresse email invalide'),
-});
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
-
-export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
+export function ResetPasswordForm({ onSuccess, onError, onBack }: ResetPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
     getValues,
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -33,62 +32,80 @@ export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     setIsLoading(true);
-    console.log('Reset email sent to:', data.email);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    setIsEmailSent(true);
-    // Ici, tu pourrais déclencher un appel API vers Supabase ou autre
+    
+    try {
+      const result = await resetPasswordAction(data);
+      
+      if (result.success) {
+        setIsSubmitted(true);
+        onSuccess?.();
+      } else {
+        const errorMessage = result.error || 'Une erreur est survenue';
+        setError('root', { message: errorMessage });
+        onError?.(errorMessage);
+      }
+    } catch (error) {
+      const errorMessage = 'Une erreur inattendue est survenue';
+      setError('root', { message: errorMessage });
+      onError?.(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (isEmailSent) {
+  const handleResend = async () => {
+    const email = getValues('email');
+    if (email) {
+      setIsLoading(true);
+      try {
+        await resetPasswordAction({ email });
+      } catch (error) {
+        console.error('Resend error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  if (isSubmitted) {
     return (
-      <div className='space-y-4 sm:space-y-6 text-center'>
-        {/* Success Icon */}
-        <div className='flex justify-center'>
-          <div className='w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center'>
-            <CheckCircle className='w-6 h-6 sm:w-8 sm:h-8 text-green-600' />
+      <div className='space-y-4 sm:space-y-6'>
+        {/* Success Header */}
+        <div className='text-center space-y-3 sm:space-y-4'>
+          <div className='mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center'>
+            <CheckCircle className='w-8 h-8 text-green-600' />
           </div>
-        </div>
-        
-        {/* Success Message */}
-        <div className='space-y-1 sm:space-y-2'>
-          <h2 className='text-xl sm:text-2xl font-bold text-gray-900'>
+          <h2 className='text-2xl sm:text-3xl font-bold text-gray-900'>
             Email envoyé !
           </h2>
-          <p className='text-sm sm:text-base text-gray-600'>
-            Nous avons envoyé un lien de réinitialisation à
+          <p className='text-sm sm:text-base text-gray-600 max-w-md mx-auto'>
+            Nous avons envoyé un lien de réinitialisation à <strong>{getValues('email')}</strong>. 
+            Vérifiez votre boîte de réception et vos spams.
           </p>
-          <p className='font-medium text-blue-600 text-sm sm:text-base break-all'>
-            {getValues('email')}
-          </p>
-        </div>
-
-        {/* Instructions */}
-        <div className='bg-blue-50 rounded-lg p-3 sm:p-4 space-y-2'>
-          <p className='text-sm text-blue-800 font-medium'>
-            Prochaines étapes :
-          </p>
-          <ul className='text-sm text-blue-700 space-y-1 text-left'>
-            <li>• Vérifie ta boîte de réception et tes spams</li>
-            <li>• Clique sur le lien dans l'email reçu</li>
-            <li>• Crée ton nouveau mot de passe</li>
-          </ul>
         </div>
 
         {/* Actions */}
         <div className='space-y-3'>
           <Button
-            onClick={() => setIsEmailSent(false)}
+            onClick={handleResend}
+            disabled={isLoading}
             variant='outline'
-            className='w-full h-11 sm:h-12 border-2 border-gray-200 hover:border-gray-300 rounded-xl text-base'
+            className='w-full h-11 sm:h-12 border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-base'
           >
-            Renvoyer l'email
+            {isLoading ? (
+              <span className='flex items-center gap-2'>
+                <div className='w-4 h-4 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin' />
+                Renvoi en cours...
+              </span>
+            ) : (
+              'Renvoyer l\'email'
+            )}
           </Button>
+          
           <Button
-            onClick={() => setSelectedOption('login')}
+            onClick={onBack}
             variant='ghost'
-            className='w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base'
+            className='w-full h-11 sm:h-12 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 text-base'
           >
             <ArrowLeft className='w-4 h-4 mr-2' />
             Retour à la connexion
@@ -106,7 +123,7 @@ export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
           Mot de passe oublié ?
         </h2>
         <p className='text-sm sm:text-base text-gray-600'>
-          Pas de souci ! Entre ton email et on t'envoie un lien de réinitialisation
+          Pas de problème ! Entrez votre email et nous vous enverrons un lien de réinitialisation.
         </p>
       </div>
 
@@ -138,19 +155,15 @@ export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
           )}
         </div>
 
-        {/* Info Box */}
-        <div className='bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4'>
-          <div className='flex items-start gap-3'>
-            <div className='w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0'>ℹ️</div>
-            <div className='text-sm text-amber-800'>
-              <p className='font-medium mb-1'>Note importante :</p>
-              <p>
-                Si tu ne reçois pas l'email dans les 5 minutes, pense à vérifier 
-                tes courriers indésirables (spam).
-              </p>
-            </div>
+        {/* Error Display */}
+        {errors.root && (
+          <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+            <p className='text-sm text-red-600 flex items-center gap-2'>
+              <span className='text-red-500'>⚠</span>
+              {errors.root.message}
+            </p>
           </div>
-        </div>
+        )}
 
         {/* Submit Button */}
         <Button
@@ -165,18 +178,18 @@ export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
             </span>
           ) : (
             <span className='flex items-center gap-2'>
-              Envoyer le lien
+              Envoyer le lien de réinitialisation
               <ArrowRight className='w-4 h-4' />
             </span>
           )}
         </Button>
 
-        {/* Back to Login */}
+        {/* Back Button */}
         <Button
           type='button'
+          onClick={onBack}
           variant='ghost'
-          onClick={() => setSelectedOption('login')}
-          className='w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base'
+          className='w-full h-11 sm:h-12 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 text-base'
         >
           <ArrowLeft className='w-4 h-4 mr-2' />
           Retour à la connexion
@@ -184,4 +197,4 @@ export const ResetPassword = ({ setSelectedOption }: ResetPasswordProps) => {
       </form>
     </div>
   );
-};
+} 
