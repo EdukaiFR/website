@@ -44,3 +44,6 @@
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
+
+# cursor IDE configuration
+.cursor/

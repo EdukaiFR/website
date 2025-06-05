@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:clean": "rm -rf .next && pnpm dev",
+    "reset": "pkill -f 'next dev' 2>/dev/null || true && rm -rf .next && pnpm dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

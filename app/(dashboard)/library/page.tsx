@@ -43,12 +43,17 @@ export default function LibraryPage() {
     filter: { type: 'title' | 'subject' | 'level' | ''; value: string },
     search: string
   ): any[] => {
+    // Safety check: ensure courses is an array
+    if (!courses || !Array.isArray(courses)) {
+      return [];
+    }
+    
     let result = [...courses];
 
     // Filtrage par filtre sélectionné (subject, level, title)
     if (filter.type && filter.value) {
       result = result.filter((course) =>
-        course[filter.type]?.toLowerCase().includes(filter.value.toLowerCase())
+        course?.[filter.type]?.toLowerCase()?.includes(filter.value.toLowerCase())
       );
     }
 
@@ -57,9 +62,9 @@ export default function LibraryPage() {
       const loweredSearch = search.toLowerCase();
       result = result.filter(
         (course) =>
-          course.title.toLowerCase().includes(loweredSearch) ||
-          course.subject.toLowerCase().includes(loweredSearch) ||
-          course.level.toLowerCase().includes(loweredSearch)
+          course?.title?.toLowerCase()?.includes(loweredSearch) ||
+          course?.subject?.toLowerCase()?.includes(loweredSearch) ||
+          course?.level?.toLowerCase()?.includes(loweredSearch)
       );
     }
 
@@ -71,11 +76,14 @@ export default function LibraryPage() {
     const levels = new Set<string>();
     const titles = new Set<string>();
 
-    coursesData?.forEach((course) => {
-      subjects.add(course.subject);
-      levels.add(course.level);
-      titles.add(course.title);
-    });
+    // Safety check: ensure coursesData is an array
+    if (coursesData && Array.isArray(coursesData)) {
+      coursesData.forEach((course) => {
+        if (course?.subject) subjects.add(course.subject);
+        if (course?.level) levels.add(course.level);
+        if (course?.title) titles.add(course.title);
+      });
+    }
 
     return {
       subjects: Array.from(subjects),
@@ -94,15 +102,23 @@ export default function LibraryPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       const response = await loadAllCourses();
-      await setUserCourses(
-        response.map((course: any) => ({
-          ...course,
-          id: (course as any)._id || '',
-          author: (course as any).author || 'Unknown',
-          isPublished: (course as any).isPublished || false,
-          createdAt: (course as any).createdAt || new Date().toISOString(),
-        }))
-      );
+      
+      // Check if response is null or not an array
+      if (response && Array.isArray(response)) {
+        await setUserCourses(
+          response.map((course: any) => ({
+            ...course,
+            id: (course as any)._id || '',
+            author: (course as any).author || 'Unknown',
+            isPublished: (course as any).isPublished || false,
+            createdAt: (course as any).createdAt || new Date().toISOString(),
+          }))
+        );
+      } else {
+        // If response is null or not an array, set empty array
+        console.warn('Failed to load courses or received invalid response');
+        setUserCourses([]);
+      }
     };
 
     fetchCourses();
