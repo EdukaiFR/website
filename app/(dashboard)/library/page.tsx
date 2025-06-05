@@ -185,41 +185,46 @@ export default function LibraryPage() {
       {/* Filters and Search */}
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-6">
-          <div className='flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4'>
-            <div className='flex items-center gap-3 flex-wrap'>
-              <FilterCourses
-                coursesFilter={coursesFilter}
-                activeFilter={filter}
-                setActiveFilter={setFilter}
-                isFilterOpen={isFilterOpen}
-                setFilterOpen={setFilterOpen}
-              />
-              
-              {filter.type && (
-                <Button
-                  variant='outline'
-                  size="sm"
-                  className='text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300'
-                  onClick={() => setFilter({ type: '', value: '' })}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Réinitialiser
-                </Button>
-              )}
-              
-              <CounterBadge
-                counter={filteredCourses.length}
-                type={'cours'}
-                size='sm'
-              />
+          <div className='flex flex-col gap-4'>
+            {/* First Row: Filters, Counter, and View Toggle */}
+            <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
+              <div className='flex items-center gap-3 flex-wrap'>
+                <FilterCourses
+                  coursesFilter={coursesFilter}
+                  activeFilter={filter}
+                  setActiveFilter={setFilter}
+                  isFilterOpen={isFilterOpen}
+                  setFilterOpen={setFilterOpen}
+                />
+                
+                {filter.type && (
+                  <Button
+                    variant='outline'
+                    size="sm"
+                    className='text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300'
+                    onClick={() => setFilter({ type: '', value: '' })}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Réinitialiser
+                  </Button>
+                )}
+                
+                <CounterBadge
+                  counter={filteredCourses.length}
+                  type={'cours'}
+                  size='sm'
+                />
+              </div>
+
+              <div className="flex items-center">
+                <ViewToggle view={view} onViewChange={handleViewChange} />
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <ViewToggle view={view} onViewChange={handleViewChange} />
-              <div className="w-full lg:w-auto lg:max-w-[350px]">
-                <div className="w-full lg:w-[300px]">
-                  <SearchBar setSearch={setSearch} />
-                </div>
+            {/* Second Row: Search Bar (Full Width on Mobile) */}
+            <div className="w-full">
+              <div className="w-full max-w-md">
+                <SearchBar setSearch={setSearch} />
               </div>
             </div>
           </div>

@@ -74,7 +74,7 @@ export const CourseCard = ({
                   {subject}
                 </Badge>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight lg:truncate">
                 {title}
               </h3>
             </div>
@@ -82,7 +82,7 @@ export const CourseCard = ({
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="opacity-0 group-hover:opacity-100 transition-all duration-300 ml-4 hover:bg-blue-50 hover:text-blue-600 transform translate-x-2 group-hover:translate-x-0"
+                className="opacity-0 group-hover:opacity-100 transition-all duration-300 ml-4 hover:bg-blue-50 hover:text-blue-600 transform translate-x-2 group-hover:translate-x-0 flex-shrink-0"
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -93,17 +93,17 @@ export const CourseCard = ({
           <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
             <div className="flex items-center gap-1.5">
               <GraduationCap className="w-4 h-4 text-gray-400" />
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(level)} transition-all group-hover:shadow-sm`}>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(level)} transition-all group-hover:shadow-sm whitespace-nowrap`}>
                 {level}
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <User className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium">{author}</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-sm font-medium truncate">{author}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-gray-400" />
-              <span className="text-sm">
+              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-sm whitespace-nowrap">
                 {formatDate(new Date(createdAt).toLocaleDateString('fr-FR'))}
               </span>
             </div>
@@ -121,7 +121,7 @@ export const CourseCard = ({
               <Button 
                 variant="outline" 
                 size="sm"
-                className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105"
+                className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105 whitespace-nowrap"
               >
                 Voir le cours
               </Button>
