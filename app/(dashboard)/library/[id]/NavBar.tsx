@@ -34,16 +34,16 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
   return (
     <>
       {/* Large screen view */}
-      <div className="w-full hidden lg:flex items-center justify-start gap-3 outfit-regular text-medium-white">
+      <div className="w-full hidden lg:flex items-center justify-start gap-3">
         {tabs.map((tab) => (
           <Button
             key={tab.tab}
             onClick={() => handleTabChange(tab.tab)}
-            className={`transition-all ${
+            className={`transition-all duration-200 ${
               selectedTab === tab.tab
-                ? "bg-[#3678FF] text-white hover:bg-[#3678FF]/80"
-                : "bg-[#E3E3E7] bg-opacity-15 text-[#1A202C] text-opacity-75 hover:bg-[#1A202C]/10 text-medium-black"
-            } px-5 rounded-full text-sm`}
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700"
+                : "bg-white/80 text-gray-700 border border-blue-200/60 hover:bg-blue-50 hover:border-blue-300 shadow-sm"
+            } px-6 py-2 rounded-xl font-medium backdrop-blur-sm`}
           >
             {tab.label}
           </Button>
@@ -51,17 +51,17 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
       </div>
 
       {/* Mobile or smaller screen */}
-      <ScrollArea className="lg:hidden w-full max-w-[19rem] whitespace-nowrap">
-        <div className="py-2 w-full flex items-center justify-start gap-3 outfit-regular text-medium-white">
+      <ScrollArea className="lg:hidden w-full whitespace-nowrap">
+        <div className="py-2 w-full flex items-center justify-start gap-3">
           {tabs.map((tab) => (
             <Button
               key={tab.tab}
               onClick={() => handleTabChange(tab.tab)}
-              className={`transition-all ${
+              className={`transition-all duration-200 ${
                 selectedTab === tab.tab
-                  ? "bg-[#3678FF] text-white hover:bg-[#3678FF]/80"
-                  : "bg-[#E3E3E7] bg-opacity-15 text-[#1A202C] text-opacity-75 hover:bg-[#1A202C]/10 text-medium-black"
-              } px-5 rounded-full text-sm`}
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700"
+                  : "bg-white/80 text-gray-700 border border-blue-200/60 hover:bg-blue-50 hover:border-blue-300 shadow-sm"
+              } px-6 py-2 rounded-xl font-medium whitespace-nowrap backdrop-blur-sm`}
             >
               {tab.label}
             </Button>

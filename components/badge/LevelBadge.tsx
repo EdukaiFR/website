@@ -4,7 +4,7 @@ export type LevelBadgeProps = {
 
 export const LevelBadge = ({ text }: LevelBadgeProps) => {
   return (
-    <div className="flex items-center justify-center px-4 py-1 rounded-full bg-[#3678FF] bg-opacity-25 text-[#3678FF] text-xs satoshi-medium">
+    <div className="flex items-center justify-center px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-medium border border-blue-200 shadow-sm">
       <p>{text.toUpperCase()}</p>
     </div>
   );

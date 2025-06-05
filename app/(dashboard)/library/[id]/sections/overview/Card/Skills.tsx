@@ -1,4 +1,4 @@
-import { IterationCcw } from "lucide-react";
+import { Target, CheckCircle } from "lucide-react";
 
 export type SkillsProps = {
   skills: string[];
@@ -6,16 +6,26 @@ export type SkillsProps = {
 
 export const Skills = (props: SkillsProps) => {
   return (
-    <div className="bg-white rounded-lg p-4 flex flex-col items-start justify-between gap-3 h-full satoshi-medium ">
-      <h3 className="text-lg text-[rgba(26, 32, 44, 1)]">Compétences</h3>
-      <div className="flex flex-col items-start justify-start gap-4 h-full">
+    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+          <Target className="w-4 h-4 text-white" />
+        </div>
+        <h3 className="text-base font-semibold text-gray-800">Compétences</h3>
+      </div>
+      
+      {/* Skills List */}
+      <div className="flex flex-col gap-3 flex-1">
         {props.skills.map((skill, index) => (
           <div
             key={index}
-            className="flex items-center justify-start gap-2 text-sm"
+            className="flex items-start gap-3 p-2.5 bg-blue-50/50 rounded-xl border border-blue-100/50 hover:bg-blue-50/80 transition-all duration-200"
           >
-            <IterationCcw size={20} className="text-[#3678FF]" />
-            <p className="text-[rgba(26, 32, 44, 1)] opacity-85">{skill}</p>
+            <div className="flex-shrink-0 mt-0.5">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+            </div>
+            <p className="text-sm text-gray-700 leading-relaxed">{skill}</p>
           </div>
         ))}
       </div>

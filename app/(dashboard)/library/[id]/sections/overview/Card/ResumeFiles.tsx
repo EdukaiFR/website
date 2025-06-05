@@ -3,31 +3,42 @@
 import { CounterBadge } from "@/components/badge/CounterBadge";
 import { ResumeFileCard } from "@/components/card/ResumeFileCard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, FileText, BookOpen } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export type ResumeFilesProps = {
-  resume_files: any[];
+  resume_files: unknown[];
+};
+
+type ResumeFileData = {
+  id: number;
+  src: string;
+  alt: string;
 };
 
 export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
-  const [showResumeFile, setShowResumeFile] = useState(resume_files[0]);
+  const typedResumeFiles = resume_files as ResumeFileData[];
+
+  const [showResumeFile, setShowResumeFile] = useState<ResumeFileData | null>(
+    typedResumeFiles && typedResumeFiles.length > 0 ? typedResumeFiles[0] : null
+  );
 
   const getArrayForShowResumeFileInResumeFiles = () => {
-    return resume_files.findIndex(
+    if (!showResumeFile || !typedResumeFiles) return -1;
+    return typedResumeFiles.findIndex(
       (resumeFile) => resumeFile.id === showResumeFile.id
     );
   };
 
   const handleDownloadResumeFiles = async () => {
     try {
-      if (!resume_files || resume_files.length === 0) {
+      if (!typedResumeFiles || typedResumeFiles.length === 0) {
         console.error("Aucun fichier disponible pour le téléchargement.");
         return;
       }
 
-      const downloads = resume_files.map(async (resume_file) => {
+      const downloads = typedResumeFiles.map(async (resume_file) => {
         if (!resume_file || !resume_file.src) {
           console.warn(
             "Fichier sans URL ignoré :",
@@ -75,69 +86,120 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
   };
 
   const handleUpdateShowResumeFiles = (index: number) => {
-    setShowResumeFile(resume_files[index]);
+    if (typedResumeFiles && typedResumeFiles[index]) {
+      setShowResumeFile(typedResumeFiles[index]);
+    }
   };
 
+  if (!typedResumeFiles || typedResumeFiles.length === 0) {
+    return (
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+            <BookOpen className="w-4 h-4 text-white" />
+          </div>
+          <h3 className="text-base font-semibold text-gray-800">Fiches de révision</h3>
+        </div>
+        
+        {/* Empty State */}
+        <div className="flex flex-col items-center justify-center gap-3 h-full text-center">
+          <div className="p-3 bg-blue-50 rounded-2xl">
+            <FileText className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-800 mb-1">
+              Aucune fiche disponible
+            </p>
+            <p className="text-xs text-gray-500">
+              Les fiches de révision apparaîtront ici une fois générées.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!showResumeFile) {
+    return (
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-lg p-4 flex flex-col items-start justify-between gap-3 h-full satoshi-medium ">
-      <div className="w-full flex items-center justify-between">
-        <div className="flex items-center justify-start gap-3">
-          <h3 className="text-lg text-[#3C517C]">Fiches de révision</h3>
-          <CounterBadge counter={resume_files.length} />
+    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+            <BookOpen className="w-4 h-4 text-white" />
+          </div>
+          <h3 className="text-base font-semibold text-gray-800">Fiches de révision</h3>
+          <CounterBadge counter={typedResumeFiles.length} />
         </div>
         <Button
           onClick={handleDownloadResumeFiles}
-          variant={"ghost"}
-          className="text-[#2D6BCF] text-sm hover:bg-[#2D6BCF]/10 hover:text-[#2D6BCF] rounded-full px-3 py-1 flex items-center gap-1"
+          className="h-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
         >
-          <Download size={16} />
+          <Download className="w-4 h-4 mr-1" />
           Télécharger
         </Button>
       </div>
-      <div className="flex items-center justify-between gap-2 text-sm w-full">
+
+      {/* Carousel */}
+      <div className="flex items-center justify-between gap-2 flex-1">
         <Button
           onClick={() =>
             handleUpdateShowResumeFiles(
               getArrayForShowResumeFileInResumeFiles() - 1
             )
           }
-          className="text-[#2D6BCF] text-sm hover:bg-[#2D6BCF]/10 hover:text-[#2D6BCF] rounded-full px-3 py-1 flex items-center gap-1"
-          size={"icon"}
-          variant={"ghost"}
+          className="h-8 w-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 rounded-xl transition-all duration-200"
+          size="icon"
+          variant="ghost"
           disabled={getArrayForShowResumeFileInResumeFiles() === 0}
         >
-          <ArrowLeft />
+          <ArrowLeft className="w-4 h-4" />
         </Button>
-        {/* Exam Carrousel */}
-        <ResumeFileCard resume_file={showResumeFile} />
+        
+        {/* Resume File Card */}
+        <div className="flex-1 max-w-[200px]">
+          <ResumeFileCard resume_file={showResumeFile} />
+        </div>
+        
         <Button
           onClick={() =>
             handleUpdateShowResumeFiles(
               getArrayForShowResumeFileInResumeFiles() + 1
             )
           }
-          className="text-[#2D6BCF] text-sm hover:bg-[#2D6BCF]/10 hover:text-[#2D6BCF] rounded-full px-3 py-1 flex items-center gap-1"
-          size={"icon"}
-          variant={"ghost"}
+          className="h-8 w-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 rounded-xl transition-all duration-200"
+          size="icon"
+          variant="ghost"
           disabled={
-            getArrayForShowResumeFileInResumeFiles() >= resume_files.length - 1
+            getArrayForShowResumeFileInResumeFiles() >= typedResumeFiles.length - 1
           }
         >
-          <ArrowRight />
+          <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
-      <div className="flex items-center justify-center gap-3 w-full mt-auto">
-        {resume_files.map((resume_file, index) => (
-          <div
+
+      {/* Pagination Dots */}
+      <div className="flex items-center justify-center gap-2 mt-3">
+        {typedResumeFiles.map((resume_file, index) => (
+          <button
             key={index}
             onClick={() => handleUpdateShowResumeFiles(index)}
-            className={
-              `rounded-full w-2 h-2 cursor-pointer transition-all ` +
-              (getArrayForShowResumeFileInResumeFiles() === index
-                ? "bg-[#2D6BCF]"
-                : "bg-[#2D6BCF] bg-opacity-25")
-            }
-          ></div>
+            className={`rounded-full w-2 h-2 transition-all duration-200 ${
+              getArrayForShowResumeFileInResumeFiles() === index
+                ? "bg-blue-600 scale-125"
+                : "bg-blue-300 hover:bg-blue-400"
+            }`}
+          />
         ))}
       </div>
     </div>

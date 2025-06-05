@@ -4,7 +4,7 @@ export type SubjectBadgeProps = {
 
 export const SubjectBadge = ({ text }: SubjectBadgeProps) => {
   return (
-    <div className="flex items-center justify-center px-4 py-1 rounded-full bg-[#28A745] bg-opacity-15 text-[#28A745] text-xs satoshi-medium">
+    <div className="flex items-center justify-center px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-green-700 text-xs font-medium border border-green-200 shadow-sm">
       <p>{text.toUpperCase()}</p>
     </div>
   );

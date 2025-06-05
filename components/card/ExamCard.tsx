@@ -5,11 +5,21 @@ export type ExamCardProps = {
     examId: number;
     title: string;
     description?: string;
-    date: Date;
+    date: Date | string;
   };
 };
 
 export const ExamCard = ({ exam }: ExamCardProps) => {
+  // Safely convert date to Date object
+  const getDateObject = (date: Date | string): Date => {
+    if (date instanceof Date) {
+      return date;
+    }
+    return new Date(date);
+  };
+
+  const examDate = getDateObject(exam.date);
+
   return (
     <div className="rounded-lg bg-white border border-[#E3E3E7] flex flex-col gap-6 items-start justify-between w-full p-4">
       {/* Header */}
@@ -21,12 +31,12 @@ export const ExamCard = ({ exam }: ExamCardProps) => {
       </div>
       {/* Days left */}
       <div className="w-full flex items-center justify-center gap-2">
-        <p className="text-6xl text-[#2D6BCF]">{getDaysLeft(exam.date)}</p>
+        <p className="text-6xl text-[#2D6BCF]">{getDaysLeft(examDate)}</p>
         <p className="text-sm text-[#2D6BCF] text-opacity-50">Jours restant</p>
       </div>
       {/* Footer */}
       <p className="ml-auto mr-auto mt-auto text-xs text-[#6C757D]">
-        {formatDate(exam.date.toLocaleDateString("fr-FR"))}
+        {formatDate(examDate.toLocaleDateString("fr-FR"))}
       </p>
     </div>
   );

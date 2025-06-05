@@ -122,7 +122,7 @@ export default function MyCourses() {
           description: "L'examen a bien été supprimé.",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting exam: ", error);
       toast.error("Oups..", {
         description: "Une erreur s'est produite lors de la suppression.",
@@ -131,13 +131,14 @@ export default function MyCourses() {
   };
 
   // Update Exam
-  const updateExam = async (examId: string, data: any) => {
+  const updateExam = async (examId: string, data: unknown) => {
     try {
+      const examData = data as Record<string, unknown>;
       const updatedExam = {
         _id: examId,
-        title: data.title,
-        description: data.description,
-        date: new Date(data.date),
+        title: examData.title as string,
+        description: examData.description as string,
+        date: new Date(examData.date as string),
       };
 
       const updateResponse = await updateExamById(
@@ -158,7 +159,7 @@ export default function MyCourses() {
         });
         console.error("Error updating exam");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating exam: ", error);
       toast.error("Oups..", {
         description: "Une erreur s'est produite lors de la modification.",
@@ -166,13 +167,22 @@ export default function MyCourses() {
     }
   };
 
-  // Loader (TODO: implement better UI for that (component?))
+  // Modern Loading UI
   if (!courseData || !quizData) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex items-center justify-center w-full h-full min-h-[60vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="text-muted-foreground">Chargement du cours...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-2 lg:gap-6 px-2 lg:px-6 min-h-[calc(100vh-5rem)] w-full">
+    <div className="flex flex-col gap-4 px-4 lg:px-6 py-4 h-[calc(100vh-8rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
       <Header
         courseData={courseData}
         selectedTab={selectedTab}
@@ -186,42 +196,54 @@ export default function MyCourses() {
         />
       )}
 
-      {/* Display the good section depands on selectedTab */}
-      {selectedTab === "overview" && (
-        <Overview overview={null} course_id={course.id.toString()} />
-      )}
-      {selectedTab === "resumeFiles" && (
-        <ResumeFiles
-          course_id={course.id.toString()}
-          resumeFiles={resumeFilesValue}
-        />
-      )}
-      {selectedTab === "exams" && (
-        <Exams
-          course_id={courseId.toString()}
-          exams={examsData}
-          createExam={createExam}
-          getExams={getExams}
-          updateCourseData={reFetchCourse}
-          updateExam={updateExam}
-          deleteExam={deleteExam}
-        />
-      )}
-      {selectedTab === "objectives" && (
-        <Objectives course_id={course.id.toString()} objectives={null} />
-      )}
-      {selectedTab === "statistics" && (
-        <Statistics course_id={course.id.toString()} statistics={null} />
-      )}
-      {selectedTab === "similarCourses" && (
-        <SimilarCourses
-          course_id={course.id.toString()}
-          similarCourses={null}
-        />
-      )}
-      {selectedTab === "quiz" && (
-        <Quiz course_id={course.id.toString()} quiz_data={quizData} />
-      )}
+      {/* Content without scroll - compact layout */}
+      <div className="flex-1 min-h-0">
+        {/* Display the good section depends on selectedTab */}
+        {selectedTab === "overview" && (
+          <Overview 
+            overview={null} 
+            course_id={course.id.toString()}
+            examsData={examsData}
+            createExam={createExam}
+            getExams={getExams}
+            updateCourseData={reFetchCourse}
+            updateExam={updateExam}
+            deleteExam={deleteExam}
+          />
+        )}
+        {selectedTab === "resumeFiles" && (
+          <ResumeFiles
+            course_id={course.id.toString()}
+            resumeFiles={resumeFilesValue}
+          />
+        )}
+        {selectedTab === "exams" && (
+          <Exams
+            course_id={courseId.toString()}
+            exams={examsData}
+            createExam={createExam}
+            getExams={getExams}
+            updateCourseData={reFetchCourse}
+            updateExam={updateExam}
+            deleteExam={deleteExam}
+          />
+        )}
+        {selectedTab === "objectives" && (
+          <Objectives course_id={course.id.toString()} objectives={null} />
+        )}
+        {selectedTab === "statistics" && (
+          <Statistics course_id={course.id.toString()} statistics={null} />
+        )}
+        {selectedTab === "similarCourses" && (
+          <SimilarCourses
+            course_id={course.id.toString()}
+            similarCourses={null}
+          />
+        )}
+        {selectedTab === "quiz" && (
+          <Quiz course_id={course.id.toString()} quiz_data={quizData} />
+        )}
+      </div>
     </div>
   );
 }

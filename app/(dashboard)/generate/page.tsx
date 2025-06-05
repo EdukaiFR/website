@@ -2,6 +2,7 @@
 
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,7 +17,7 @@ import { useCourse, useQuiz } from "@/hooks";
 import { useCourseService, useQuizService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { CircleX, CloudUpload, FileText, WandSparkles } from "lucide-react";
+import { CircleX, CloudUpload, FileText, WandSparkles, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -114,18 +115,18 @@ export default function Generate() {
     form.setValue("files", [...selectedFiles, ...files]);
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: unknown) => {
     try {
       // Format the zod form data into generator form data
       const formFields: GeneratorForm = {
         option: "files",
-        title: data.title,
-        subject: data.subject,
-        level: data.level,
-        files: data.files,
+        title: (data as Record<string, unknown>).title as string,
+        subject: (data as Record<string, unknown>).subject as string,
+        level: (data as Record<string, unknown>).level as string,
+        files: (data as Record<string, unknown>).files as File[],
       };
       await handleGenerate(formFields);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting form: ", error);
     }
   };
@@ -164,196 +165,238 @@ export default function Generate() {
   }, [form.watch()]);
 
   return (
-    <div className="flex flex-col gap-6 px-6 min-h-[calc(100vh-5rem)] w-full">
+    <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
       {isGenerationLaunched ? (
         <LoadingUi step={generationStep} idCourse={courseId} />
       ) : (
         <>
-          {/* Titre principal */}
-          <div className="flex flex-col gap-1 items-center justify-center">
-            <h1 className="text-4xl font-bold text-[#3C517C]">
-              Bienvenue dans le générateur
-            </h1>
-            <p className="text-md text-medium-muted">
-              Remplis les champs ci-dessous puis clique sur 'Lancer la
-              génération'.
-            </p>
+          {/* Modern Header with gradient background */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <WandSparkles className="w-6 h-6 text-white" />
+                </div>
+                <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+                  Générateur IA
+                </div>
+              </div>
+              <h1 className="text-2xl lg:text-4xl font-bold mb-2">Bienvenue dans le générateur</h1>
+              <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
+                Remplis les champs ci-dessous puis clique sur 'Lancer la génération'.
+              </p>
+            </div>
+            {/* Decorative elements */}
+            <div className="absolute top-4 right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+            <div className="absolute bottom-4 right-8 w-20 h-20 bg-purple-300/20 rounded-full blur-lg"></div>
           </div>
 
-          {/* Form */}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-full lg:w-1/2 mx-auto flex flex-col gap-4"
-            >
-              {/* Title Field */}
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Titre</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Les équations du second degré"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Renseigne le titre de ton cours.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="w-full flex flex-col lg:flex-row gap-4">
-                {/* Subject Field */}
-                <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Matière</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Mathématiques" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        La matière de ton cours.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Level Field */}
-                <FormField
-                  control={form.control}
-                  name="level"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Niveau</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Seconde" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Le niveau d'étude de ton cours.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* File Upload Field */}
-              <FormField
-                control={form.control}
-                name="files"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Fichiers</FormLabel>
-                    <FormControl>
-                      <div
-                        className={clsx(
-                          "border-dashed border-2 rounded-lg p-6 text-center cursor-pointer bg-[#6C757D] bg-opacity-5",
-                          isDragActive
-                            ? "border-[#2d6bcf] bg-[#6C757D] bg-opacity-25"
-                            : "border-gray-300 hover:bg-[#6C757D] hover:bg-opacity-15"
-                        )}
-                        onClick={() =>
-                          document.getElementById("file-input")?.click()
-                        }
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                      >
-                        <input
-                          id="file-input"
-                          type="file"
-                          multiple
-                          className="hidden"
-                          accept=".pdf,.txt,.png,.jpg,.jpeg,.ppt"
-                          onChange={handleFileChange}
-                        />
-                        <div className="flex flex-col items-center justify-center">
-                          <CloudUpload
-                            size={48}
-                            strokeWidth={1.5}
-                            className="text-[#3678FF]"
+          {/* Modern Form Card */}
+          <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm max-w-4xl mx-auto w-full">
+            <CardContent className="p-8">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="flex flex-col gap-6"
+                >
+                  {/* Title Field */}
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-800 font-semibold">Titre</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Les équations du second degré"
+                            className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
+                            {...field}
                           />
-                          <p className="mt-2 text-sm text-[#6C757D] text-opacity-50">
-                            PDF, TXT, PNG, JPG, JPEG, PPT
-                          </p>
-                          <p className="text-sm text-black font-semibold">
-                            Drag & Drop tes fichiers ici ou clique sur le cadre
-                          </p>
-                        </div>
-                      </div>
-                    </FormControl>
-                    <FormDescription>Sélectionnes tes fichiers</FormDescription>
-                    <FormMessage />
+                        </FormControl>
+                        <FormDescription className="text-gray-600">
+                          Renseigne le titre de ton cours.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* File Preview */}
-                    <div className="mt-4 space-y-2">
-                      {selectedFiles.map((file, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-start p-2 border rounded-md bg-white"
-                        >
-                          <FileText
-                            size={32}
-                            strokeWidth={1.5}
-                            className="text-medium mr-4"
-                          />
-                          <div className="flex flex-col items-start gap-0">
-                            <span className="text-sm">{file.name}</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-500">
-                                {Math.round(file.size / 1024)} KB |{" "}
-                              </span>
-                              <TextRecognizer
-                                key={index}
-                                selectedImage={file}
-                                onTextRecognized={handleRecognizedText}
-                                setIsRecognizing={setIsRecognizing}
-                              />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Subject Field */}
+                    <FormField
+                      control={form.control}
+                      name="subject"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-800 font-semibold">Matière</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Mathématiques"
+                              className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-gray-600">
+                            La matière de ton cours.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Level Field */}
+                    <FormField
+                      control={form.control}
+                      name="level"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-800 font-semibold">Niveau</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Seconde"
+                              className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-gray-600">
+                            Le niveau d'étude de ton cours.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* File Upload Field */}
+                  <FormField
+                    control={form.control}
+                    name="files"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel className="text-gray-800 font-semibold">Fichiers</FormLabel>
+                        <FormControl>
+                          <div
+                            className={clsx(
+                              "relative border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
+                              isDragActive
+                                ? "border-blue-600 bg-blue-50 shadow-lg scale-[1.02]"
+                                : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
+                            )}
+                            onClick={() =>
+                              document.getElementById("file-input")?.click()
+                            }
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                          >
+                            <input
+                              id="file-input"
+                              type="file"
+                              multiple
+                              className="hidden"
+                              accept=".pdf,.txt,.png,.jpg,.jpeg,.ppt"
+                              onChange={handleFileChange}
+                            />
+                            <div className="flex flex-col items-center justify-center">
+                              <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4">
+                                <CloudUpload className="w-8 h-8 text-white" />
+                              </div>
+                              <p className="text-lg font-semibold text-gray-800 mb-2">
+                                Drag & Drop tes fichiers ici ou clique sur le cadre
+                              </p>
+                              <p className="text-sm text-blue-600 font-medium">
+                                PDF, TXT, PNG, JPG, JPEG, PPT
+                              </p>
                             </div>
                           </div>
+                        </FormControl>
+                        <FormDescription className="text-gray-600">
+                          Sélectionnes tes fichiers
+                        </FormDescription>
+                        <FormMessage />
 
-                          <Button
-                            variant={"ghost"}
-                            size={"icon"}
-                            className="transition-all p-2 text-destructive/75 hover:text-destructive ml-auto"
-                            onClick={() => {
-                              const updatedFiles = selectedFiles.filter(
-                                (_, i) => i !== index
-                              );
-                              setSelectedFiles(updatedFiles);
-                              setRecognizedTexts((prevTexts) =>
-                                prevTexts.filter((_, i) => i !== index)
-                              );
-                              form.setValue("files", updatedFiles); // Met à jour Zod form
-                            }}
-                          >
-                            <CircleX size={16} strokeWidth={1.5} />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </FormItem>
-                )}
-              />
+                        {/* File Preview */}
+                        {selectedFiles.length > 0 && (
+                          <div className="mt-6 space-y-3">
+                            <h4 className="font-semibold text-gray-800 mb-3">Fichiers sélectionnés :</h4>
+                            {selectedFiles.map((file, index) => {
+                              const isProcessing = isRecognizing; // You might want to track per-file processing state
+                              
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between p-4 border border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm hover:shadow-md transition-all duration-200"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className="relative p-2 bg-blue-100 rounded-lg">
+                                      <FileText className="w-6 h-6 text-blue-600" />
+                                      {isProcessing && (
+                                        <div className="absolute inset-0 bg-blue-100/80 rounded-lg flex items-center justify-center">
+                                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium text-gray-800">{file.name}</span>
+                                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                                        <span>{Math.round(file.size / 1024)} KB</span>
+                                        <span>•</span>
+                                        {isProcessing ? (
+                                          <span className="text-blue-600 font-medium">
+                                            Traitement en cours...
+                                          </span>
+                                        ) : (
+                                          <TextRecognizer
+                                            key={index}
+                                            selectedImage={file}
+                                            onTextRecognized={handleRecognizedText}
+                                            setIsRecognizing={setIsRecognizing}
+                                          />
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
 
-              <Button
-                disabled={!isInputFilled || isRecognizing}
-                type="submit"
-                className="bg-gradient-to-tr from-[#2D6BCF] to-[#3678FF] text-white py-2 px-4 rounded-md hover:opacity-95 mb-4"
-              >
-                <WandSparkles size={16} className="mr-2" />
-                Lancer la génération
-              </Button>
-            </form>
-          </Form>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    disabled={isProcessing}
+                                    onClick={() => {
+                                      const updatedFiles = selectedFiles.filter(
+                                        (_, i) => i !== index
+                                      );
+                                      setSelectedFiles(updatedFiles);
+                                      setRecognizedTexts((prevTexts) =>
+                                        prevTexts.filter((_, i) => i !== index)
+                                      );
+                                      form.setValue("files", updatedFiles);
+                                    }}
+                                  >
+                                    <CircleX className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    disabled={!isInputFilled || isRecognizing}
+                    type="submit"
+                    className="h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                  >
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Lancer la génération
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </>
       )}
     </div>
