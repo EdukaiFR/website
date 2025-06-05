@@ -123,18 +123,20 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                   control={control}
                   render={({ field }) => (
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <label className="text-sm font-medium text-gray-700 block">
                           Notifications par email
                         </label>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 break-words">
                           Recevoir des notifications importantes par email
                         </p>
                       </div>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <div className="flex-shrink-0">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
                     </div>
                   )}
                 />
@@ -144,18 +146,20 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                   control={control}
                   render={({ field }) => (
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <label className="text-sm font-medium text-gray-700 block">
                           Notifications push
                         </label>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 break-words">
                           Recevoir des notifications sur votre navigateur
                         </p>
                       </div>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <div className="flex-shrink-0">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
                     </div>
                   )}
                 />
@@ -165,18 +169,20 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                   control={control}
                   render={({ field }) => (
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <label className="text-sm font-medium text-gray-700 block">
                           Rapport hebdomadaire
                         </label>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 break-words">
                           Recevoir un résumé de vos progrès chaque semaine
                         </p>
                       </div>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <div className="flex-shrink-0">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
                     </div>
                   )}
                 />
@@ -193,8 +199,8 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
               <div className="space-y-4 pl-7">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    Visibilité du profil
+                    <Eye className="w-4 h-4 flex-shrink-0" />
+                    <span className="break-words">Visibilité du profil</span>
                   </label>
                   <Controller
                     name="profileVisibility"
@@ -204,23 +210,29 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                         <SelectTrigger className="h-11 border-2 transition-all duration-200 focus:border-blue-500 border-gray-200">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-w-[300px]">
                           <SelectItem value="public">
-                            <div>
-                              <div className="font-medium">Public</div>
-                              <div className="text-xs text-gray-500">Visible par tous les utilisateurs</div>
+                            <div className="w-full">
+                              <div className="font-medium truncate">Public</div>
+                              <div className="text-xs text-gray-500 break-words whitespace-normal leading-relaxed">
+                                Visible par tous les utilisateurs
+                              </div>
                             </div>
                           </SelectItem>
                           <SelectItem value="friends">
-                            <div>
-                              <div className="font-medium">Amis uniquement</div>
-                              <div className="text-xs text-gray-500">Visible par vos amis seulement</div>
+                            <div className="w-full">
+                              <div className="font-medium truncate">Amis uniquement</div>
+                              <div className="text-xs text-gray-500 break-words whitespace-normal leading-relaxed">
+                                Visible par vos amis seulement
+                              </div>
                             </div>
                           </SelectItem>
                           <SelectItem value="private">
-                            <div>
-                              <div className="font-medium">Privé</div>
-                              <div className="text-xs text-gray-500">Profil non visible</div>
+                            <div className="w-full">
+                              <div className="font-medium truncate">Privé</div>
+                              <div className="text-xs text-gray-500 break-words whitespace-normal leading-relaxed">
+                                Profil non visible
+                              </div>
                             </div>
                           </SelectItem>
                         </SelectContent>
@@ -234,18 +246,20 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                   control={control}
                   render={({ field }) => (
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <label className="text-sm font-medium text-gray-700 block">
                           Partage de données anonymes
                         </label>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 break-words">
                           Aider à améliorer l'application en partageant des données anonymes
                         </p>
                       </div>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <div className="flex-shrink-0">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
                     </div>
                   )}
                 />
@@ -255,9 +269,9 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
             {/* Error Display */}
             {errors.root && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 flex items-center gap-2">
-                  <span className="text-red-500">⚠</span>
-                  {errors.root.message}
+                <p className="text-sm text-red-600 flex items-start gap-2 break-words">
+                  <span className="text-red-500 flex-shrink-0 mt-0.5">⚠</span>
+                  <span className="break-words">{errors.root.message}</span>
                 </p>
               </div>
             )}
@@ -290,15 +304,15 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
       <Card className="border-red-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-600">
-            <Trash2 className="w-5 h-5" />
-            Zone dangereuse
+            <Trash2 className="w-5 h-5 flex-shrink-0" />
+            <span className="break-words">Zone dangereuse</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <h4 className="font-semibold text-red-800 mb-2">Supprimer mon compte</h4>
-              <p className="text-sm text-red-700 mb-4">
+              <h4 className="font-semibold text-red-800 mb-2 break-words">Supprimer mon compte</h4>
+              <p className="text-sm text-red-700 mb-4 break-words leading-relaxed">
                 Cette action est irréversible. Toutes vos données seront définitivement supprimées.
               </p>
               
@@ -313,16 +327,16 @@ export function PreferencesSettings({ initialData, onSuccess, onError }: Prefere
                 </Button>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-red-800">
+                  <p className="text-sm font-semibold text-red-800 break-words">
                     Êtes-vous sûr de vouloir supprimer votre compte ?
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Button
                       type="button"
                       variant="destructive"
                       onClick={handleDeleteAccount}
                       disabled={isDeleting}
-                      className="bg-red-600 hover:bg-red-700"
+                      className="bg-red-600 hover:bg-red-700 whitespace-normal text-center"
                     >
                       {isDeleting ? (
                         <span className="flex items-center gap-2">

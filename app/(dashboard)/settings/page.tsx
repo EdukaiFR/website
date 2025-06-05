@@ -186,13 +186,16 @@ export default function SettingsPage() {
                       }`}
                       onClick={() => setActiveTab(tab.key)}
                     >
-                      <div className="flex items-start gap-3">
-                        {tab.icon}
-                        <div className="text-left">
-                          <div className="font-semibold">{tab.label}</div>
-                          <div className={`text-xs mt-1 ${
+                      <div className="flex items-start gap-3 w-full">
+                        <div className="flex-shrink-0">
+                          {tab.icon}
+                        </div>
+                        <div className="text-left flex-1 overflow-hidden">
+                          <div className="font-semibold whitespace-normal break-words">{tab.label}</div>
+                          <div className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
                             activeTab === tab.key ? 'text-blue-100' : 'text-gray-500'
-                          }`}>
+                          }`}
+                          style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                             {tab.description}
                           </div>
                         </div>
