@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
-import { PanelLeft, PanelRightOpen } from "lucide-react";
+import { PanelRightOpen, PanelRightClose } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -263,7 +263,10 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, state, isMobile, openMobile } = useSidebar();
+
+  // Determine if sidebar is currently open based on mobile/desktop state
+  const isOpen = isMobile ? openMobile : state === "expanded";
 
   return (
     <Button
@@ -271,15 +274,37 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
+      className={cn("h-7 w-7 overflow-hidden", className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      <PanelRightOpen />
-      <span className="sr-only">Toggle Sidebar</span>
+      <div className="relative w-4 h-4">
+        {/* PanelRightOpen icon - visible when sidebar is closed */}
+        <PanelRightClose 
+          className={cn(
+            "absolute inset-0 transition-all duration-300 ease-in-out",
+            isOpen 
+              ? "opacity-0 scale-90" 
+              : "opacity-100 scale-100"
+          )}
+        />
+        
+        {/* PanelLeft icon - visible when sidebar is open */}
+        <PanelRightOpen 
+          className={cn(
+            "absolute inset-0 transition-all duration-300 ease-in-out",
+            isOpen 
+              ? "opacity-100 scale-100" 
+              : "opacity-0 scale-90"
+          )}
+        />
+      </div>
+      <span className="sr-only">
+        {isOpen ? "Close Sidebar" : "Open Sidebar"}
+      </span>
     </Button>
   );
 });
