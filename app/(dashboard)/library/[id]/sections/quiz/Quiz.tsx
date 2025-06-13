@@ -5,7 +5,7 @@ import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
 import { PossibleAnswers } from "./PossibleAnswers";
-import { toast } from "sonner";
+import { quizToast } from "@/lib/toast";
 
 export type QuizProps = {
   course_id: string;
@@ -22,7 +22,8 @@ type QuizQuestion = {
 export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const typedQuizData = quiz_data as QuizQuestion[];
   const [questionIndex, setQuestionIndex] = useState<number>(1);
-  const [answeredQuestionsCount, setAnsweredQuestionsCount] = useState<number>(0);
+  const [answeredQuestionsCount, setAnsweredQuestionsCount] =
+    useState<number>(0);
 
   const [answer, setAnswer] = useState<string>(
     typedQuizData[questionIndex - 1]?.answer || ""
@@ -38,20 +39,20 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const handleSubmitQuestion = () => {
     try {
       setProcessingSubmit(true);
-      
+
       // Extract just the letter from both selected answer and correct answer
       const selectedLetter = selectedAnswer.charAt(0);
       const correctLetter = answer.charAt(0);
-      
+
       const isCorrectAnswer = selectedLetter === correctLetter;
-      
+
       if (isCorrectAnswer) {
         setScore(score + 1);
       }
       setIsAnswer(true);
     } catch (error: unknown) {
-      console.error("Oups.. An error occured:", error);
-      toast.error("Une erreur s'est produite");
+      console.error("Oups.. Une erreur est survenue:", error);
+      quizToast.generateError();
     } finally {
       setProcessingSubmit(false);
     }
@@ -60,10 +61,10 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const handleNextQuestion = () => {
     try {
       setProcessingSubmit(true);
-      
+
       // Increment answered questions count when moving to next question
       setAnsweredQuestionsCount(answeredQuestionsCount + 1);
-      
+
       if (questionIndex >= typedQuizData.length) {
         // end game
         setIsFinish(true);
@@ -74,8 +75,8 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setIsAnswer(false);
       setQuestionIndex(questionIndex + 1);
     } catch (error: unknown) {
-      console.error("Oups.. An error occured:", error);
-      toast.error("Une erreur s'est produite");
+      console.error("Oups.. Une erreur est survenue:", error);
+      quizToast.loadError();
     } finally {
       setProcessingSubmit(false);
     }
@@ -92,10 +93,10 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setAnsweredQuestionsCount(0);
     } catch (error: unknown) {
       console.error(
-        "Oups... an error occured when we restart the quiz: ",
+        "Oups... une erreur est survenue lors du redémarrage du quiz:",
         error
       );
-      toast.error("Une erreur s'est produite lors du redémarrage du quiz");
+      quizToast.restartError();
     }
   };
 
@@ -104,7 +105,9 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full">
         <div className="flex items-center justify-center w-full h-full min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
-            <p className="text-muted-foreground">Aucune question disponible pour ce quiz.</p>
+            <p className="text-muted-foreground">
+              Aucune question disponible pour ce quiz.
+            </p>
           </div>
         </div>
       </div>
@@ -153,14 +156,23 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
             {/* Progress Bar */}
             <div className="mb-6">
               <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${(answeredQuestionsCount / typedQuizData.length) * 100}%` }}
+                  style={{
+                    width: `${
+                      (answeredQuestionsCount / typedQuizData.length) * 100
+                    }%`,
+                  }}
                 />
               </div>
               <div className="flex justify-between text-xs text-gray-500 mt-2">
                 <span>Début</span>
-                <span>{Math.round((answeredQuestionsCount / typedQuizData.length) * 100)}% terminé</span>
+                <span>
+                  {Math.round(
+                    (answeredQuestionsCount / typedQuizData.length) * 100
+                  )}
+                  % terminé
+                </span>
                 <span>Fin</span>
               </div>
             </div>
@@ -177,7 +189,9 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
               <PossibleAnswers
                 answers={typedQuizData[questionIndex - 1]?.choices || []}
                 correct_answer={typedQuizData[questionIndex - 1]?.answer || ""}
-                explanation={typedQuizData[questionIndex - 1]?.explanation || ""}
+                explanation={
+                  typedQuizData[questionIndex - 1]?.explanation || ""
+                }
                 setSelectedAnswer={setSelectedAnswer}
                 selectedAnswer={selectedAnswer}
                 onSubmitQuestion={handleSubmitQuestion}

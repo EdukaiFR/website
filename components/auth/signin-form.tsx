@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { FormErrorAlert } from "@/components/ui/form-alert";
 import { signinSchema, type SigninFormValues } from "@/lib/schemas/auth";
 import { useSession } from "@/hooks/useSession";
 
@@ -188,12 +189,11 @@ export function SigninForm({
 
           {/* Error Display */}
           {form.formState.errors.root && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600 flex items-center gap-2">
-                <span className="text-red-500">⚠</span>
-                {form.formState.errors.root.message}
-              </p>
-            </div>
+            <FormErrorAlert
+              message={
+                form.formState.errors.root.message || "Une erreur est survenue"
+              }
+            />
           )}
 
           {/* Submit Button */}

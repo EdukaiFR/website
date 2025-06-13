@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { fileToast } from "@/lib/toast";
 import Tesseract from "tesseract.js";
 
 const TextRecognizer = ({
@@ -25,8 +25,8 @@ const TextRecognizer = ({
           });
           onTextRecognized(result.data.text);
         } catch (error: any) {
-          console.error("Error recognizing text:", error);
-          toast.error("Error recognizing text:", error);
+          console.error("Erreur lors de la reconnaissance de texte:", error);
+          fileToast.recognitionError();
         } finally {
           setProcessing(false);
           setIsRecognizing(false);

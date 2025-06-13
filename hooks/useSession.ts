@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { sessionStorage } from "@/lib/session";
+import { authToast, handleError } from "@/lib/toast";
 import {
   useAuthService,
   LoginCredentials,
@@ -44,7 +45,10 @@ export function useSession() {
       setLoading(false);
     } catch (error: any) {
       // If refresh fails, clear session and continue
-      console.warn("Token validation failed, clearing session:", error.message);
+      console.warn(
+        "Validation du token échouée, nettoyage de la session:",
+        error.message
+      );
       sessionStorage.clearSession();
       setUser(null);
       setLoading(false);
@@ -57,11 +61,14 @@ export function useSession() {
       sessionStorage.setToken(response.token);
       sessionStorage.setUser(response.user);
       setUser(response.user);
+      authToast.loginSuccess();
       return { success: true, data: response };
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message;
+      authToast.loginError(errorMessage);
       return {
         success: false,
-        error: error.response?.data?.message || error.message,
+        error: errorMessage,
       };
     }
   };
@@ -72,9 +79,12 @@ export function useSession() {
       sessionStorage.setToken(response.token);
       sessionStorage.setUser(response.user);
       setUser(response.user);
+      authToast.registerSuccess();
       return { success: true, data: response };
     } catch (error: any) {
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.message || error.message;
+      authToast.registerError(errorMessage);
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -83,8 +93,11 @@ export function useSession() {
       await authService.logout();
       sessionStorage.clearSession();
       setUser(null);
+      authToast.logoutSuccess();
     } catch (error) {
       // Even if logout fails on server, clear local session
+      console.error("Erreur lors de la déconnexion:", error);
+      authToast.logoutError();
       sessionStorage.clearSession();
       setUser(null);
     }

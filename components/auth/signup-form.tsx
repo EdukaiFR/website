@@ -7,6 +7,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { FormErrorAlert } from "@/components/ui/form-alert";
 import {
   signupSchema,
   type SignupFormValues,
@@ -296,12 +297,9 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
 
         {/* Error Display */}
         {errors.root && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600 flex items-center gap-2">
-              <span className="text-red-500">⚠</span>
-              {errors.root.message}
-            </p>
-          </div>
+          <FormErrorAlert
+            message={errors.root.message || "Une erreur est survenue"}
+          />
         )}
 
         {/* Submit Button */}

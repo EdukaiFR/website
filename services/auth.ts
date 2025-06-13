@@ -50,7 +50,7 @@ export function useAuthService(): AuthService {
       return response.data;
     } catch (error: any) {
       console.error(
-        "Login error:",
+        "Erreur de connexion:",
         error.response?.data?.message || error.message
       );
       throw error;
@@ -64,7 +64,7 @@ export function useAuthService(): AuthService {
       });
       return response.data;
     } catch (error) {
-      console.error("Register error:", error);
+      console.error("Erreur d'inscription:", error);
       throw error;
     }
   };
@@ -79,7 +79,7 @@ export function useAuthService(): AuthService {
         }
       );
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Erreur de déconnexion:", error);
       throw error;
     }
   };
@@ -95,7 +95,7 @@ export function useAuthService(): AuthService {
       );
       return response.data;
     } catch (error) {
-      console.error("Refresh token error:", error);
+      console.error("Erreur de renouvellement du token:", error);
       throw error;
     }
   };

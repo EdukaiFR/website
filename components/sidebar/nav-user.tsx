@@ -19,7 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { authToast } from "@/lib/toast";
 import { useSession } from "@/hooks/useSession";
 
 export function NavUser() {
@@ -44,10 +44,8 @@ export function NavUser() {
     try {
       await sessionLogout();
       router.push("/auth");
-      toast.success("Déconnexion réussie.");
     } catch (err: unknown) {
-      console.error("Unexpected error during logout:", err);
-      toast.error("Erreur lors de la déconnexion");
+      console.error("Erreur inattendue lors de la déconnexion:", err);
     }
   };
 

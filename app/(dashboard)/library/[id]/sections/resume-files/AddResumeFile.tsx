@@ -13,7 +13,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Plus, Upload, FileText, X } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { fileToast } from "@/lib/toast";
 import { z } from "zod";
 import { useState } from "react";
 
@@ -53,20 +53,25 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
   };
 
   const removeFile = (indexToRemove: number) => {
-    const updatedFiles = watchedFiles.filter((_, index) => index !== indexToRemove);
+    const updatedFiles = watchedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
     form.setValue("files", updatedFiles);
   };
 
   const onSubmit = async (data: FormData) => {
     try {
       // TODO: call hooks to add resumeFile(s)
-      console.log('Files to upload:', data.files);
+      console.log("Files to upload:", data.files);
     } catch (error: unknown) {
-      console.error("Error submitting resumeFile(s) form: ", error);
-      toast.error("Erreur lors de l'ajout des fichiers");
+      console.error(
+        "Erreur lors de la soumission du formulaire de fichiers:",
+        error
+      );
+      fileToast.uploadError();
     } finally {
       form.reset();
-      toast.success("Fiches de révision ajoutées avec succès!");
+      fileToast.uploadSuccess();
     }
   };
 
@@ -91,24 +96,22 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
               Ajouter des fiches de révision
             </DialogTitle>
             <DialogDescription className="text-gray-600 mt-2 text-sm leading-relaxed">
-              Téléchargez vos documents de révision (PDF, images, etc.) pour les organiser et y accéder facilement
+              Téléchargez vos documents de révision (PDF, images, etc.) pour les
+              organiser et y accéder facilement
             </DialogDescription>
           </DialogHeader>
 
           <FormProvider {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
                 {/* Custom Drag & Drop Area */}
-                <div 
+                <div
                   className={`p-6 border-2 border-dashed rounded-2xl transition-colors duration-200 cursor-pointer ${
-                    isDragActive 
-                      ? 'border-blue-400 bg-blue-50' 
-                      : 'border-gray-200 bg-gray-50/50 hover:bg-gray-50'
+                    isDragActive
+                      ? "border-blue-400 bg-blue-50"
+                      : "border-gray-200 bg-gray-50/50 hover:bg-gray-50"
                   }`}
-                  onClick={() => document.getElementById('file-input')?.click()}
+                  onClick={() => document.getElementById("file-input")?.click()}
                   onDragOver={(e) => {
                     e.preventDefault();
                     setIsDragActive(true);
@@ -129,7 +132,7 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
                       </p>
                     </div>
                   </div>
-                  
+
                   {/* Hidden File Input */}
                   <input
                     id="file-input"
@@ -190,7 +193,12 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
                     className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Check className="w-4 h-4 mr-2" />
-                    Ajouter {watchedFiles.length > 0 ? `${watchedFiles.length} fichier${watchedFiles.length > 1 ? 's' : ''}` : 'les fichiers'}
+                    Ajouter{" "}
+                    {watchedFiles.length > 0
+                      ? `${watchedFiles.length} fichier${
+                          watchedFiles.length > 1 ? "s" : ""
+                        }`
+                      : "les fichiers"}
                   </Button>
                 </DialogClose>
               </div>

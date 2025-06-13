@@ -1,27 +1,28 @@
-'use client';
+"use client";
 
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { GraduationCap, Save, Plus, Send } from 'lucide-react';
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { GraduationCap, Save, Plus, Send } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  educationSettingsSchema, 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormErrorAlert } from "@/components/ui/form-alert";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  educationSettingsSchema,
   type EducationSettingsFormValues,
   educationLevels,
-  type EducationLevel
-} from '@/lib/schemas/user';
-import { updateEducationAction } from '@/lib/actions/user';
+  type EducationLevel,
+} from "@/lib/schemas/user";
+import { updateEducationAction } from "@/lib/actions/user";
 
 export interface EducationSettingsProps {
   initialData?: EducationSettingsFormValues;
@@ -29,11 +30,16 @@ export interface EducationSettingsProps {
   onError?: (error: string) => void;
 }
 
-export function EducationSettings({ initialData, onSuccess, onError }: EducationSettingsProps) {
+export function EducationSettings({
+  initialData,
+  onSuccess,
+  onError,
+}: EducationSettingsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showCustomClass, setShowCustomClass] = useState(false);
-  const [showCustomSpecialization, setShowCustomSpecialization] = useState(false);
-  
+  const [showCustomSpecialization, setShowCustomSpecialization] =
+    useState(false);
+
   const {
     control,
     register,
@@ -46,51 +52,52 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
   } = useForm<EducationSettingsFormValues>({
     resolver: zodResolver(educationSettingsSchema),
     defaultValues: initialData || {
-      educationLevel: 'lycee',
-      currentClass: '',
-      specialization: '',
-      customClassRequest: '',
-      customSpecializationRequest: '',
+      educationLevel: "lycee",
+      currentClass: "",
+      specialization: "",
+      customClassRequest: "",
+      customSpecializationRequest: "",
     },
   });
 
-  const selectedEducationLevel = watch('educationLevel');
-  const customClassRequest = watch('customClassRequest');
-  const customSpecializationRequest = watch('customSpecializationRequest');
+  const selectedEducationLevel = watch("educationLevel");
+  const customClassRequest = watch("customClassRequest");
+  const customSpecializationRequest = watch("customSpecializationRequest");
 
   const onSubmit = async (data: EducationSettingsFormValues) => {
     setIsLoading(true);
-    
+
     try {
       // Convert "none" back to empty string for submission
       const submitData = {
         ...data,
-        specialization: data.specialization === 'none' ? '' : data.specialization,
+        specialization:
+          data.specialization === "none" ? "" : data.specialization,
       };
-      
+
       const result = await updateEducationAction(submitData);
-      
+
       if (result.success) {
         // Clear custom request fields after successful submission
-        setValue('customClassRequest', '');
-        setValue('customSpecializationRequest', '');
+        setValue("customClassRequest", "");
+        setValue("customSpecializationRequest", "");
         setShowCustomClass(false);
         setShowCustomSpecialization(false);
-        
+
         reset({
           ...data,
-          customClassRequest: '',
-          customSpecializationRequest: '',
+          customClassRequest: "",
+          customSpecializationRequest: "",
         });
         onSuccess?.();
       } else {
-        const errorMessage = result.error || 'Une erreur est survenue';
-        setError('root', { message: errorMessage });
+        const errorMessage = result.error || "Une erreur est survenue";
+        setError("root", { message: errorMessage });
         onError?.(errorMessage);
       }
     } catch (error) {
-      const errorMessage = 'Une erreur inattendue est survenue';
-      setError('root', { message: errorMessage });
+      const errorMessage = "Une erreur inattendue est survenue";
+      setError("root", { message: errorMessage });
       onError?.(errorMessage);
     } finally {
       setIsLoading(false);
@@ -98,14 +105,14 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
   };
 
   const getClassOptions = (level: EducationLevel) => {
-    if (level === 'superieur') {
+    if (level === "superieur") {
       return educationLevels.superieur.cursus;
     }
     return educationLevels[level].classes;
   };
 
   const getSpecializationOptions = (level: EducationLevel) => {
-    if (level === 'lycee') {
+    if (level === "lycee") {
       return educationLevels.lycee.specializations;
     }
     return [];
@@ -114,20 +121,20 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
   const handleCustomClassToggle = () => {
     setShowCustomClass(!showCustomClass);
     if (!showCustomClass) {
-      setValue('currentClass', 'custom');
+      setValue("currentClass", "custom");
     } else {
-      setValue('currentClass', '');
-      setValue('customClassRequest', '');
+      setValue("currentClass", "");
+      setValue("customClassRequest", "");
     }
   };
 
   const handleCustomSpecializationToggle = () => {
     setShowCustomSpecialization(!showCustomSpecialization);
     if (!showCustomSpecialization) {
-      setValue('specialization', 'custom');
+      setValue("specialization", "custom");
     } else {
-      setValue('specialization', '');
-      setValue('customSpecializationRequest', '');
+      setValue("specialization", "");
+      setValue("customSpecializationRequest", "");
     }
   };
 
@@ -151,9 +158,13 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
               control={control}
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className={`h-11 border-2 transition-all duration-200 focus:border-blue-500 ${
-                    errors.educationLevel ? 'border-red-300' : 'border-gray-200'
-                  }`}>
+                  <SelectTrigger
+                    className={`h-11 border-2 transition-all duration-200 focus:border-blue-500 ${
+                      errors.educationLevel
+                        ? "border-red-300"
+                        : "border-gray-200"
+                    }`}
+                  >
                     <SelectValue placeholder="Sélectionnez votre niveau" />
                   </SelectTrigger>
                   <SelectContent>
@@ -178,7 +189,9 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-700">
-                {selectedEducationLevel === 'superieur' ? 'Cursus actuel' : 'Classe actuelle'}
+                {selectedEducationLevel === "superieur"
+                  ? "Cursus actuel"
+                  : "Classe actuelle"}
               </label>
               <Button
                 type="button"
@@ -188,7 +201,7 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
                 className="text-xs"
               >
                 <Plus className="w-3 h-3 mr-1" />
-                {showCustomClass ? 'Annuler' : 'Autre'}
+                {showCustomClass ? "Annuler" : "Autre"}
               </Button>
             </div>
 
@@ -198,14 +211,20 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className={`h-11 border-2 transition-all duration-200 focus:border-blue-500 ${
-                      errors.currentClass ? 'border-red-300' : 'border-gray-200'
-                    }`}>
-                      <SelectValue placeholder={
-                        selectedEducationLevel === 'superieur' 
-                          ? "Sélectionnez votre cursus" 
-                          : "Sélectionnez votre classe"
-                      } />
+                    <SelectTrigger
+                      className={`h-11 border-2 transition-all duration-200 focus:border-blue-500 ${
+                        errors.currentClass
+                          ? "border-red-300"
+                          : "border-gray-200"
+                      }`}
+                    >
+                      <SelectValue
+                        placeholder={
+                          selectedEducationLevel === "superieur"
+                            ? "Sélectionnez votre cursus"
+                            : "Sélectionnez votre classe"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {getClassOptions(selectedEducationLevel).map((option) => (
@@ -220,15 +239,18 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
             ) : (
               <div className="space-y-2">
                 <Input
-                  placeholder={`Décrivez votre ${selectedEducationLevel === 'superieur' ? 'cursus' : 'classe'} personnalisé`}
-                  {...register('customClassRequest')}
+                  placeholder={`Décrivez votre ${
+                    selectedEducationLevel === "superieur" ? "cursus" : "classe"
+                  } personnalisé`}
+                  {...register("customClassRequest")}
                   className="h-11 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 border-gray-200"
                 />
                 {customClassRequest && (
                   <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <p className="text-sm text-yellow-800">
                       <Send className="w-4 h-4 inline mr-1" />
-                      Cette demande sera envoyée à nos équipes pour validation et ajout à notre système.
+                      Cette demande sera envoyée à nos équipes pour validation
+                      et ajout à notre système.
                     </p>
                   </div>
                 )}
@@ -244,7 +266,7 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
           </div>
 
           {/* Specialization (only for Lycée) */}
-          {selectedEducationLevel === 'lycee' && (
+          {selectedEducationLevel === "lycee" && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
@@ -258,7 +280,7 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
                   className="text-xs"
                 >
                   <Plus className="w-3 h-3 mr-1" />
-                  {showCustomSpecialization ? 'Annuler' : 'Autre'}
+                  {showCustomSpecialization ? "Annuler" : "Autre"}
                 </Button>
               </div>
 
@@ -267,20 +289,26 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
                   name="specialization"
                   control={control}
                   render={({ field }) => (
-                    <Select 
-                      value={field.value || 'none'} 
-                      onValueChange={(value) => field.onChange(value === 'none' ? '' : value)}
+                    <Select
+                      value={field.value || "none"}
+                      onValueChange={(value) =>
+                        field.onChange(value === "none" ? "" : value)
+                      }
                     >
                       <SelectTrigger className="h-11 border-2 transition-all duration-200 focus:border-blue-500 border-gray-200">
                         <SelectValue placeholder="Sélectionnez votre spécialisation" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">Aucune spécialisation</SelectItem>
-                        {getSpecializationOptions(selectedEducationLevel).map((spec) => (
-                          <SelectItem key={spec} value={spec}>
-                            {spec}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="none">
+                          Aucune spécialisation
+                        </SelectItem>
+                        {getSpecializationOptions(selectedEducationLevel).map(
+                          (spec) => (
+                            <SelectItem key={spec} value={spec}>
+                              {spec}
+                            </SelectItem>
+                          )
+                        )}
                       </SelectContent>
                     </Select>
                   )}
@@ -289,14 +317,15 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
                 <div className="space-y-2">
                   <Input
                     placeholder="Décrivez votre spécialisation personnalisée"
-                    {...register('customSpecializationRequest')}
+                    {...register("customSpecializationRequest")}
                     className="h-11 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 border-gray-200"
                   />
                   {customSpecializationRequest && (
                     <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                       <p className="text-sm text-yellow-800">
                         <Send className="w-4 h-4 inline mr-1" />
-                        Cette demande sera envoyée à nos équipes pour validation et ajout à notre système.
+                        Cette demande sera envoyée à nos équipes pour validation
+                        et ajout à notre système.
                       </p>
                     </div>
                   )}
@@ -310,11 +339,15 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
             <p className="text-sm text-blue-800">
               <strong>💡 Pourquoi ces informations ?</strong>
               <br />
-              Ces données nous permettent de personnaliser vos questions et exercices selon votre niveau d'études et vos spécialisations.
+              Ces données nous permettent de personnaliser vos questions et
+              exercices selon votre niveau d'études et vos spécialisations.
               {(customClassRequest || customSpecializationRequest) && (
                 <>
-                  <br /><br />
-                  <strong>📝 Demandes personnalisées :</strong> Vos demandes sont directement transmises à notre équipe pédagogique pour enrichir notre catalogue.
+                  <br />
+                  <br />
+                  <strong>📝 Demandes personnalisées :</strong> Vos demandes
+                  sont directement transmises à notre équipe pédagogique pour
+                  enrichir notre catalogue.
                 </>
               )}
             </p>
@@ -322,12 +355,9 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
 
           {/* Error Display */}
           {errors.root && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600 flex items-center gap-2">
-                <span className="text-red-500">⚠</span>
-                {errors.root.message}
-              </p>
-            </div>
+            <FormErrorAlert
+              message={errors.root.message || "Une erreur est survenue"}
+            />
           )}
 
           {/* Submit Button */}
@@ -345,7 +375,9 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
               ) : (
                 <span className="flex items-center gap-2">
                   <Save className="w-4 h-4" />
-                  {(customClassRequest || customSpecializationRequest) ? 'Sauvegarder et envoyer les demandes' : 'Sauvegarder'}
+                  {customClassRequest || customSpecializationRequest
+                    ? "Sauvegarder et envoyer les demandes"
+                    : "Sauvegarder"}
                 </span>
               )}
             </Button>
@@ -354,4 +386,4 @@ export function EducationSettings({ initialData, onSuccess, onError }: Education
       </CardContent>
     </Card>
   );
-} 
+}
