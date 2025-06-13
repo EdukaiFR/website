@@ -113,14 +113,14 @@ export const ExamDialog = ({
       <DialogTrigger asChild>
         <Button
           variant={"ghost"}
-          className="h-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
+          className="w-full h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
         >
           {isEditing ? (
             <span>Modifier</span>
           ) : (
             <>
-              <Plus className="mr-1 h-4 w-4" />
-              Ajouter
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter un examen
             </>
           )}
         </Button>
@@ -142,10 +142,7 @@ export const ExamDialog = ({
           </DialogHeader>
 
           <FormProvider {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="title"
@@ -156,8 +153,8 @@ export const ExamDialog = ({
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          placeholder="Bac blanc de mathématiques" 
+                        <Input
+                          placeholder="Bac blanc de mathématiques"
                           {...field}
                           className="h-12 px-4 bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder:text-gray-400"
                         />
@@ -177,7 +174,10 @@ export const ExamDialog = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-semibold text-gray-700 mb-2 block">
-                      Description <span className="text-gray-400 font-normal">(optionnel)</span>
+                      Description{" "}
+                      <span className="text-gray-400 font-normal">
+                        (optionnel)
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
@@ -216,7 +216,9 @@ export const ExamDialog = ({
                             <CalendarIcon className="mr-3 h-4 w-4 text-gray-500" />
                             {field.value ? (
                               <span className="text-gray-700">
-                                {format(field.value, "EEEE d MMMM yyyy", { locale: fr })}
+                                {format(field.value, "EEEE d MMMM yyyy", {
+                                  locale: fr,
+                                })}
                               </span>
                             ) : (
                               <span>Sélectionner une date</span>
@@ -224,7 +226,10 @@ export const ExamDialog = ({
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-white/95 backdrop-blur-xl border border-white/20 shadow-xl rounded-2xl" align="start">
+                      <PopoverContent
+                        className="w-auto p-0 bg-white/95 backdrop-blur-xl border border-white/20 shadow-xl rounded-2xl"
+                        align="start"
+                      >
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -256,7 +261,7 @@ export const ExamDialog = ({
                     {isEditing ? "Modifier l'examen" : "Créer l'examen"}
                   </Button>
                 </DialogClose>
-                
+
                 {isEditing && exam?._id && (
                   <DialogClose asChild>
                     <Button

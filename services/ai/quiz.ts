@@ -12,9 +12,15 @@ export function useQuizService(): QuizService {
     try {
       const textString = recognizedText.join("\n");
 
-      const response = await axios.post(`${apiUrl}/ai/generate-quiz`, {
-        textString,
-      });
+      const response = await axios.post(
+        `${apiUrl}/ai/generate-quiz`,
+        {
+          textString,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       return response.data;
     } catch (error) {

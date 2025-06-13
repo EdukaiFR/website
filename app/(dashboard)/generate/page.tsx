@@ -17,7 +17,13 @@ import { useCourse, useQuiz } from "@/hooks";
 import { useCourseService, useQuizService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { CircleX, CloudUpload, FileText, WandSparkles, Sparkles } from "lucide-react";
+import {
+  CircleX,
+  CloudUpload,
+  FileText,
+  WandSparkles,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -148,8 +154,19 @@ export default function Generate() {
           }
         }, 1000);
       } else {
+        // Reset generation state on failure
+        setGenerationLaunched(false);
+        setGenerationStep(0);
+        console.error(
+          "Failed to generate quiz, aborted course creation.",
+          generation?.error
+        );
         // TODO: display message here once we implement toasts.
-        console.error("Failed to generate quiz, aborted course creation.");
+        alert(
+          `Erreur lors de la génération: ${
+            generation?.error || "Erreur inconnue"
+          }`
+        );
       }
     }
   };
@@ -182,9 +199,12 @@ export default function Generate() {
                   Générateur IA
                 </div>
               </div>
-              <h1 className="text-2xl lg:text-4xl font-bold mb-2">Bienvenue dans le générateur</h1>
+              <h1 className="text-2xl lg:text-4xl font-bold mb-2">
+                Bienvenue dans le générateur
+              </h1>
               <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
-                Remplis les champs ci-dessous puis clique sur 'Lancer la génération'.
+                Remplis les champs ci-dessous puis clique sur 'Lancer la
+                génération'.
               </p>
             </div>
             {/* Decorative elements */}
@@ -206,7 +226,9 @@ export default function Generate() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-800 font-semibold">Titre</FormLabel>
+                        <FormLabel className="text-gray-800 font-semibold">
+                          Titre
+                        </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Les équations du second degré"
@@ -229,7 +251,9 @@ export default function Generate() {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-800 font-semibold">Matière</FormLabel>
+                          <FormLabel className="text-gray-800 font-semibold">
+                            Matière
+                          </FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Mathématiques"
@@ -251,7 +275,9 @@ export default function Generate() {
                       name="level"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-800 font-semibold">Niveau</FormLabel>
+                          <FormLabel className="text-gray-800 font-semibold">
+                            Niveau
+                          </FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Seconde"
@@ -274,7 +300,9 @@ export default function Generate() {
                     name="files"
                     render={() => (
                       <FormItem>
-                        <FormLabel className="text-gray-800 font-semibold">Fichiers</FormLabel>
+                        <FormLabel className="text-gray-800 font-semibold">
+                          Fichiers
+                        </FormLabel>
                         <FormControl>
                           <div
                             className={clsx(
@@ -303,7 +331,8 @@ export default function Generate() {
                                 <CloudUpload className="w-8 h-8 text-white" />
                               </div>
                               <p className="text-lg font-semibold text-gray-800 mb-2">
-                                Drag & Drop tes fichiers ici ou clique sur le cadre
+                                Drag & Drop tes fichiers ici ou clique sur le
+                                cadre
                               </p>
                               <p className="text-sm text-blue-600 font-medium">
                                 PDF, TXT, PNG, JPG, JPEG, PPT
@@ -319,10 +348,12 @@ export default function Generate() {
                         {/* File Preview */}
                         {selectedFiles.length > 0 && (
                           <div className="mt-6 space-y-3">
-                            <h4 className="font-semibold text-gray-800 mb-3">Fichiers sélectionnés :</h4>
+                            <h4 className="font-semibold text-gray-800 mb-3">
+                              Fichiers sélectionnés :
+                            </h4>
                             {selectedFiles.map((file, index) => {
                               const isProcessing = isRecognizing; // You might want to track per-file processing state
-                              
+
                               return (
                                 <div
                                   key={index}
@@ -338,9 +369,13 @@ export default function Generate() {
                                       )}
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="font-medium text-gray-800">{file.name}</span>
+                                      <span className="font-medium text-gray-800">
+                                        {file.name}
+                                      </span>
                                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                                        <span>{Math.round(file.size / 1024)} KB</span>
+                                        <span>
+                                          {Math.round(file.size / 1024)} KB
+                                        </span>
                                         <span>•</span>
                                         {isProcessing ? (
                                           <span className="text-blue-600 font-medium">
@@ -350,7 +385,9 @@ export default function Generate() {
                                           <TextRecognizer
                                             key={index}
                                             selectedImage={file}
-                                            onTextRecognized={handleRecognizedText}
+                                            onTextRecognized={
+                                              handleRecognizedText
+                                            }
                                             setIsRecognizing={setIsRecognizing}
                                           />
                                         )}

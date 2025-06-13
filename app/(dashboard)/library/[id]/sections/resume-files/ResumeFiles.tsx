@@ -1,14 +1,25 @@
 "use client";
 
-import { CounterBadge } from '@/components/badge/CounterBadge';
-import { Button } from '@/components/ui/button';
-import { resumeFilesValue } from '@/public/mocks/default-value';
-import { AddResumeFile } from './AddResumeFile';
-import { FilePreviewDialog } from './FilePreviewDialog';
-import { FileText, Download, Eye, Trash, Calendar, User, Search, Grid, List, DownloadCloud } from 'lucide-react';
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { CounterBadge } from "@/components/badge/CounterBadge";
+import { Button } from "@/components/ui/button";
+import { resumeFilesValue } from "@/public/mocks/default-value";
+import { AddResumeFile } from "./AddResumeFile";
+import { FilePreviewDialog } from "./FilePreviewDialog";
+import {
+  FileText,
+  Download,
+  Eye,
+  Trash,
+  Calendar,
+  User,
+  Search,
+  Grid,
+  List,
+  DownloadCloud,
+} from "lucide-react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export type ResumeFilesProps = {
   course_id: string;
@@ -24,19 +35,22 @@ type ResumeFileData = {
 };
 
 export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
-  const typedResumeFiles = (resumeFiles?.length ? resumeFiles : resumeFilesValue) as ResumeFileData[];
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const typedResumeFiles = (
+    resumeFiles?.length ? resumeFiles : resumeFilesValue
+  ) as ResumeFileData[];
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const filteredFiles = typedResumeFiles.filter(file =>
-    file.alt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    file.origin.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFiles = typedResumeFiles.filter(
+    (file) =>
+      file.alt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      file.origin.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDownload = (file: ResumeFileData) => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = file.src;
     link.download = file.alt;
     document.body.appendChild(link);
@@ -50,7 +64,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
         return new Promise<void>((resolve) => {
           // Add small delay between downloads to avoid overwhelming the browser
           setTimeout(() => {
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = file.src;
             link.download = file.alt || `fichier-${index + 1}`;
             document.body.appendChild(link);
@@ -62,15 +76,19 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
       });
 
       await Promise.all(downloadPromises);
-      toast.success(`${filteredFiles.length} fichier${filteredFiles.length > 1 ? 's' : ''} téléchargé${filteredFiles.length > 1 ? 's' : ''} avec succès!`);
+      toast.success(
+        `${filteredFiles.length} fichier${
+          filteredFiles.length > 1 ? "s" : ""
+        } téléchargé${filteredFiles.length > 1 ? "s" : ""} avec succès!`
+      );
     } catch (error) {
-      toast.error('Erreur lors du téléchargement des fichiers');
-      console.error('Bulk download error:', error);
+      toast.error("Erreur lors du téléchargement des fichiers");
+      console.error("Bulk download error:", error);
     }
   };
 
   const handlePreviewFile = (file: ResumeFileData) => {
-    const fileIndex = filteredFiles.findIndex(f => f.id === file.id);
+    const fileIndex = filteredFiles.findIndex((f) => f.id === file.id);
     setCurrentFileIndex(fileIndex);
     setIsPreviewOpen(true);
   };
@@ -79,39 +97,50 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
     setIsPreviewOpen(false);
   };
 
-  const handleNavigate = (direction: 'prev' | 'next') => {
-    if (direction === 'prev' && currentFileIndex > 0) {
+  const handleNavigate = (direction: "prev" | "next") => {
+    if (direction === "prev" && currentFileIndex > 0) {
       setCurrentFileIndex(currentFileIndex - 1);
-    } else if (direction === 'next' && currentFileIndex < filteredFiles.length - 1) {
+    } else if (
+      direction === "next" &&
+      currentFileIndex < filteredFiles.length - 1
+    ) {
       setCurrentFileIndex(currentFileIndex + 1);
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     });
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-6">
+    <div className="w-full flex flex-col min-h-[calc(100vh-12rem)] sm:min-h-[65vh] gap-4 sm:gap-6 overflow-auto">
       {/* Header Section */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border-0 shadow-lg">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
-              <FileText className="w-6 h-6 text-white" />
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border-0 shadow-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex-shrink-0">
+              <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Fiches de révision</h1>
-              <p className="text-gray-600 text-sm">Gérez vos documents de révision</p>
+            <div className="flex-1">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
+                Fiches de révision
+              </h1>
+              <p className="text-gray-600 text-xs sm:text-sm">
+                Gérez vos documents de révision
+              </p>
             </div>
-            <CounterBadge counter={filteredFiles.length} type="élements" size="sm" />
+            <CounterBadge
+              counter={filteredFiles.length}
+              type="élements"
+              size="sm"
+            />
           </div>
-          
-          <div className="flex items-center gap-3">
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             {filteredFiles.length > 0 && (
               <Button
                 variant="outline"
@@ -119,7 +148,12 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                 className="h-10 border-green-200 hover:bg-green-50 text-green-700 font-medium rounded-xl"
               >
                 <DownloadCloud className="w-4 h-4 mr-2" />
-                Tout télécharger ({filteredFiles.length})
+                <span className="hidden sm:inline">
+                  Tout télécharger ({filteredFiles.length})
+                </span>
+                <span className="sm:hidden">
+                  Télécharger ({filteredFiles.length})
+                </span>
               </Button>
             )}
             <AddResumeFile />
@@ -127,7 +161,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
         </div>
 
         {/* Search and View Toggle */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -137,25 +171,27 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
               className="pl-10 h-10 bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
-          <div className="flex bg-gray-100 rounded-xl p-1">
+          <div className="flex bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('grid')}
-              className={`rounded-lg ${viewMode === 'grid' 
-                ? 'bg-white shadow-sm text-blue-600' 
-                : 'text-gray-600 hover:text-gray-800'
+              onClick={() => setViewMode("grid")}
+              className={`rounded-lg flex-1 sm:flex-none ${
+                viewMode === "grid"
+                  ? "bg-white shadow-sm text-blue-600"
+                  : "text-gray-600 hover:text-gray-800"
               }`}
             >
               <Grid className="w-4 h-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('list')}
-              className={`rounded-lg ${viewMode === 'list' 
-                ? 'bg-white shadow-sm text-blue-600' 
-                : 'text-gray-600 hover:text-gray-800'
+              onClick={() => setViewMode("list")}
+              className={`rounded-lg flex-1 sm:flex-none ${
+                viewMode === "list"
+                  ? "bg-white shadow-sm text-blue-600"
+                  : "text-gray-600 hover:text-gray-800"
               }`}
             >
               <List className="w-4 h-4" />
@@ -173,31 +209,34 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                 <FileText className="w-12 h-12 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                {searchTerm ? 'Aucun fichier trouvé' : 'Aucune fiche de révision'}
+                {searchTerm
+                  ? "Aucun fichier trouvé"
+                  : "Aucune fiche de révision"}
               </h3>
               <p className="text-gray-600 text-sm mb-6">
-                {searchTerm 
-                  ? 'Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers.'
-                  : 'Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage.'
-                }
+                {searchTerm
+                  ? "Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers."
+                  : "Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage."}
               </p>
               {!searchTerm && <AddResumeFile />}
             </div>
           </div>
         ) : (
-          <div className={`${
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-              : 'flex flex-col gap-4'
-          }`}>
+          <div
+            className={`${
+              viewMode === "grid"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6"
+                : "flex flex-col gap-3 sm:gap-4"
+            }`}
+          >
             {filteredFiles.map((file) => (
               <div
                 key={file.id}
                 className={`bg-white/70 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-200 group ${
-                  viewMode === 'grid' ? 'p-6' : 'p-4'
+                  viewMode === "grid" ? "p-4 sm:p-6" : "p-3 sm:p-4"
                 }`}
               >
-                {viewMode === 'grid' ? (
+                {viewMode === "grid" ? (
                   // Grid View
                   <div className="flex flex-col h-full">
                     <div className="flex items-start justify-between mb-4">
@@ -230,12 +269,12 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
                         {file.alt}
                       </h3>
-                      
+
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
@@ -271,7 +310,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button
                         size="sm"

@@ -20,22 +20,34 @@ import {
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "@/hooks/useSession";
 
 export function NavUser() {
-  const { isMobile, state } = useSidebar();
+  const { isMobile } = useSidebar();
   const router = useRouter();
-  
-  const isCollapsed = state === "collapsed";
+  const { user, logout: sessionLogout } = useSession();
+
+  // Get user display data
+  const displayName =
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName.charAt(0)}`
+      : user?.username || "User";
+
+  const initials =
+    user?.firstName && user?.lastName
+      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+      : user?.username?.substring(0, 2).toUpperCase() || "U";
+
+  const email = user?.email || user?.username || "";
 
   const logout = async () => {
     try {
-      // Add any logout logic here (clear tokens, etc.)
+      await sessionLogout();
+      router.push("/auth");
+      toast.success("Déconnexion réussie.");
     } catch (err: unknown) {
       console.error("Unexpected error during logout:", err);
       toast.error("Erreur lors de la déconnexion");
-    } finally {
-      router.push("/auth");
-      toast.success("Déconnexion réussie.");
     }
   };
 
@@ -45,42 +57,33 @@ export function NavUser() {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className={isCollapsed ? 'flex justify-center' : ''}>
+      <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className={`group flex items-center gap-3 ${isCollapsed ? 'p-2 justify-center mx-auto w-fit' : 'p-3'} rounded-xl transition-all duration-200 text-gray-700 hover:bg-white/70 hover:shadow-md hover:transform hover:scale-[1.01] backdrop-blur-sm h-auto`}
+              className="group flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-white/70 hover:shadow-md hover:transform hover:scale-[1.01] backdrop-blur-sm h-auto group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:w-fit"
             >
-              {isCollapsed ? (
-                // Collapsed: Just avatar with status indicator
-                <div className="relative flex items-center justify-center">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                    <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
-                      TH
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              {/* Avatar - always visible */}
+              <div className="relative flex-shrink-0">
+                <Avatar className="h-6 w-6 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
+                  <AvatarImage src="/temp/profile.svg" alt={displayName} />
+                  <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold group-data-[collapsible=icon]:text-sm">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
+
+              {/* User info - hidden when collapsed */}
+              <div className="flex flex-col min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+                <div className="font-semibold text-base text-gray-700 group-hover:text-gray-900 truncate">
+                  {displayName}
                 </div>
-              ) : (
-                // Expanded: Full user info - matching other nav items styling
-                <div className="flex items-center gap-3 w-full text-left">
-                  <div className="relative flex-shrink-0">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                      <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
-                        TH
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <div className="font-semibold text-base text-gray-700 group-hover:text-gray-900 truncate">Tristan H</div>
-                    <div className="text-sm text-blue-600 group-hover:text-indigo-600 truncate">Premium</div>
-                  </div>
+                <div className="text-sm text-blue-600 group-hover:text-indigo-600 truncate">
+                  Premium
                 </div>
-              )}
+              </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -93,17 +96,17 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="relative flex-shrink-0">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
+                    <AvatarImage src="/temp/profile.svg" alt={displayName} />
                     <AvatarFallback className="bg-blue-600 text-white text-xs">
-                      TH
+                      {initials}
                     </AvatarFallback>
                   </Avatar>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Tristan H</span>
+                  <span className="truncate font-semibold">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    tristan@example.com
+                    {email}
                   </span>
                 </div>
               </div>

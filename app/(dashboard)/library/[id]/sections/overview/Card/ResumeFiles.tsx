@@ -3,7 +3,13 @@
 import { CounterBadge } from "@/components/badge/CounterBadge";
 import { ResumeFileCard } from "@/components/card/ResumeFileCard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Download, FileText, BookOpen } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Download,
+  FileText,
+  BookOpen,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -95,13 +101,26 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
     return (
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
-            <BookOpen className="w-4 h-4 text-white" />
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="text-base font-semibold text-gray-800">
+              Fiches de révision
+            </h3>
           </div>
-          <h3 className="text-base font-semibold text-gray-800">Fiches de révision</h3>
+
+          {/* Placeholder Button - Full width on new line */}
+          <Button
+            disabled
+            className="w-full h-10 bg-gray-300 text-gray-500 border border-gray-300 font-medium rounded-xl text-sm"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Aucune fiche disponible
+          </Button>
         </div>
-        
+
         {/* Empty State */}
         <div className="flex flex-col items-center justify-center gap-3 h-full text-center">
           <div className="p-3 bg-blue-50 rounded-2xl">
@@ -133,20 +152,24 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
             <BookOpen className="w-4 h-4 text-white" />
           </div>
-          <h3 className="text-base font-semibold text-gray-800">Fiches de révision</h3>
+          <h3 className="text-base font-semibold text-gray-800">
+            Fiches de révision
+          </h3>
           <CounterBadge counter={typedResumeFiles.length} />
         </div>
+
+        {/* Download Button - Full width on new line */}
         <Button
           onClick={handleDownloadResumeFiles}
-          className="h-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
+          className="w-full h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
         >
-          <Download className="w-4 h-4 mr-1" />
-          Télécharger
+          <Download className="w-4 h-4 mr-2" />
+          Télécharger toutes les fiches
         </Button>
       </div>
 
@@ -165,12 +188,12 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
-        
+
         {/* Resume File Card */}
         <div className="flex-1 max-w-[200px]">
           <ResumeFileCard resume_file={showResumeFile} />
         </div>
-        
+
         <Button
           onClick={() =>
             handleUpdateShowResumeFiles(
@@ -181,7 +204,8 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
           size="icon"
           variant="ghost"
           disabled={
-            getArrayForShowResumeFileInResumeFiles() >= typedResumeFiles.length - 1
+            getArrayForShowResumeFileInResumeFiles() >=
+            typedResumeFiles.length - 1
           }
         >
           <ArrowRight className="w-4 h-4" />
