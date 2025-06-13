@@ -184,7 +184,7 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full overflow-x-hidden">
+    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
       <style jsx global>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
@@ -199,7 +199,6 @@ export default function MyCourses() {
         }
         html,
         body {
-          overflow-x: hidden;
           max-width: 100vw;
         }
         /* Prevent any navigation elements from overflowing */
@@ -231,7 +230,7 @@ export default function MyCourses() {
       )}
 
       {/* Content with responsive layout */}
-      <div className="flex-1 min-h-0 overflow-hidden w-full max-w-full">
+      <div className="flex-1 min-h-0 w-full max-w-full">
         {/* Display the good section depends on selectedTab */}
         {selectedTab === "overview" && (
           <Overview

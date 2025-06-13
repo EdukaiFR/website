@@ -1,5 +1,137 @@
 import { toast } from "sonner";
 
+// API Error Translation Map - Convert English API errors to French
+const apiErrorTranslations: Record<string, string> = {
+  // Authentication errors
+  "Invalid credentials": "Identifiants invalides",
+  "Invalid username or password": "Nom d'utilisateur ou mot de passe incorrect",
+  "User not found": "Utilisateur introuvable",
+  "Email not found": "Adresse email introuvable",
+  "Password incorrect": "Mot de passe incorrect",
+  "Account not found": "Compte introuvable",
+  "Authentication failed": "Échec de l'authentification",
+  "Access denied": "Accès refusé",
+  "Token expired": "Session expirée",
+  "Invalid token": "Token invalide",
+  "Session expired": "Session expirée",
+  Unauthorized: "Non autorisé",
+  Forbidden: "Accès interdit",
+
+  // Registration errors
+  "Email already exists": "Cette adresse email est déjà utilisée",
+  "User already exists": "Cet utilisateur existe déjà",
+  "Username already taken": "Ce nom d'utilisateur est déjà pris",
+  "Email already registered": "Email déjà enregistré",
+  "Account already exists": "Ce compte existe déjà",
+
+  // Validation errors
+  "Email is required": "L'adresse email est requise",
+  "Password is required": "Le mot de passe est requis",
+  "Invalid email format": "Format d'email invalide",
+  "Password too short": "Mot de passe trop court",
+  "Password too weak": "Mot de passe trop faible",
+  "Passwords do not match": "Les mots de passe ne correspondent pas",
+  "Required field": "Champ requis",
+  "Invalid input": "Saisie invalide",
+  "Missing required fields": "Champs obligatoires manquants",
+
+  // Network/Server errors
+  "Network error": "Erreur de connexion",
+  "Server error": "Erreur serveur",
+  "Internal server error": "Erreur interne du serveur",
+  "Service unavailable": "Service indisponible",
+  "Connection timeout": "Délai de connexion dépassé",
+  "Request timeout": "Délai de requête dépassé",
+  "Bad request": "Requête invalide",
+  "Not found": "Élément introuvable",
+  "Method not allowed": "Méthode non autorisée",
+  "Too many requests": "Trop de requêtes",
+  "Rate limit exceeded": "Limite de taux dépassée",
+
+  // File/Upload errors
+  "File too large": "Fichier trop volumineux",
+  "Invalid file type": "Type de fichier invalide",
+  "Upload failed": "Échec du téléchargement",
+  "File not found": "Fichier introuvable",
+  "Permission denied": "Permission refusée",
+
+  // Course/Content errors
+  "Course not found": "Cours introuvable",
+  "Quiz not found": "Quiz introuvable",
+  "Exam not found": "Examen introuvable",
+  "Content not found": "Contenu introuvable",
+  "Invalid course data": "Données de cours invalides",
+  "Course creation failed": "Échec de la création du cours",
+
+  // Generic errors
+  "Something went wrong": "Une erreur s'est produite",
+  "An error occurred": "Une erreur s'est produite",
+  "Unknown error": "Erreur inconnue",
+  "Unexpected error": "Erreur inattendue",
+  "Operation failed": "Opération échouée",
+  "Request failed": "Requête échouée",
+  "Processing failed": "Traitement échoué",
+};
+
+// Function to translate API error messages
+export const translateApiError = (errorMessage: string): string => {
+  if (!errorMessage || typeof errorMessage !== "string") {
+    return "Une erreur inattendue s'est produite";
+  }
+
+  // Check for exact matches first
+  const exactMatch = apiErrorTranslations[errorMessage];
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  // Check for partial matches (case insensitive)
+  const lowerMessage = errorMessage.toLowerCase();
+  for (const [englishError, frenchError] of Object.entries(
+    apiErrorTranslations
+  )) {
+    if (lowerMessage.includes(englishError.toLowerCase())) {
+      return frenchError;
+    }
+  }
+
+  // If no translation found, return the original message
+  // (it might already be in French or be a custom message)
+  return errorMessage;
+};
+
+// Enhanced error handler utility that translates API errors
+export const handleError = (error: any, context?: string) => {
+  console.error(`Error${context ? ` in ${context}` : ""}:`, error);
+
+  let errorMessage = "Une erreur inattendue s'est produite";
+
+  // Extract error message from different possible sources
+  if (error?.response?.data?.message) {
+    errorMessage = translateApiError(error.response.data.message);
+  } else if (error?.message) {
+    errorMessage = translateApiError(error.message);
+  } else if (typeof error === "string") {
+    errorMessage = translateApiError(error);
+  }
+
+  // Determine error type and show appropriate toast
+  const statusCode = error?.response?.status;
+  if (statusCode === 401) {
+    authToast.sessionExpired();
+  } else if (statusCode === 403) {
+    showToast.error(translateApiError("Access denied"));
+  } else if (statusCode === 404) {
+    showToast.error(translateApiError("Not found"));
+  } else if (statusCode >= 500) {
+    showToast.error(translateApiError("Server error"));
+  } else if (error?.code === "NETWORK_ERROR" || !error?.response) {
+    showToast.error(translateApiError("Network error"));
+  } else {
+    showToast.error(errorMessage);
+  }
+};
+
 // French toast messages for common scenarios
 export const toastMessages = {
   // Authentication
@@ -222,28 +354,4 @@ export const fileToast = {
   downloadError: () => showToast.error(toastMessages.file.downloadError),
   recognitionError: () => showToast.error(toastMessages.file.recognitionError),
   noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
-};
-
-// Error handler utility that automatically shows appropriate toasts
-export const handleError = (error: any, context?: string) => {
-  console.error(`Error${context ? ` in ${context}` : ""}:`, error);
-
-  // Determine error type and show appropriate toast
-  if (error?.response?.status === 401) {
-    authToast.sessionExpired();
-  } else if (error?.response?.status === 403) {
-    showToast.error(toastMessages.general.permissionError);
-  } else if (error?.response?.status === 404) {
-    showToast.error(toastMessages.general.notFoundError);
-  } else if (error?.response?.status >= 500) {
-    showToast.error(toastMessages.general.serverError);
-  } else if (error?.code === "NETWORK_ERROR" || !error?.response) {
-    showToast.error(toastMessages.general.networkError);
-  } else {
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      toastMessages.general.error;
-    showToast.error(errorMessage);
-  }
 };

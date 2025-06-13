@@ -1,4 +1,5 @@
 import axios from "axios";
+import { translateApiError } from "@/lib/toast";
 
 export interface LoginCredentials {
   username: string;
@@ -36,7 +37,7 @@ export function useAuthService(): AuthService {
 
   if (!apiUrl) {
     console.error(
-      "❌ NEXT_PUBLIC_API_URL is not set! Please add it to your .env.local file"
+      "❌ NEXT_PUBLIC_API_URL n'est pas défini ! Veuillez l'ajouter à votre fichier .env.local"
     );
   }
 
@@ -71,13 +72,7 @@ export function useAuthService(): AuthService {
 
   const logout = async (): Promise<void> => {
     try {
-      await axios.post(
-        `${apiUrl}/auth/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      console.log("Déconnexion...");
     } catch (error) {
       console.error("Erreur de déconnexion:", error);
       throw error;

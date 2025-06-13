@@ -19,7 +19,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { authToast } from "@/lib/toast";
 import { useSession } from "@/hooks/useSession";
 
 export function NavUser() {
@@ -54,31 +53,31 @@ export function NavUser() {
   };
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="px-2">
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="group flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-white/70 hover:shadow-md hover:transform hover:scale-[1.01] backdrop-blur-sm h-auto group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:w-fit"
+              className="group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 bg-gradient-to-r from-gray-50 to-gray-100/50 hover:from-white hover:to-gray-50 hover:shadow-md hover:shadow-gray-200/50 border border-gray-200/50 hover:border-gray-300/50 backdrop-blur-sm h-auto group-data-[collapsible=icon]:p-2.5 group-data-[collapsible=icon]:justify-center"
             >
               {/* Avatar - always visible */}
-              <div className="relative flex-shrink-0">
-                <Avatar className="h-6 w-6 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
+              <div className="relative flex-shrink-0 w-5 h-5 flex items-center justify-center group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-auto">
+                <Avatar className="h-5 w-5 ring-1 ring-white shadow-sm group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:ring-2">
                   <AvatarImage src="/temp/profile.svg" alt={displayName} />
-                  <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold group-data-[collapsible=icon]:text-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-[10px] font-semibold group-data-[collapsible=icon]:text-sm">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gradient-to-br from-green-400 to-green-500 rounded-full border border-white shadow-sm group-data-[collapsible=icon]:w-3 group-data-[collapsible=icon]:h-3 group-data-[collapsible=icon]:border-2"></div>
               </div>
 
               {/* User info - hidden when collapsed */}
               <div className="flex flex-col min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                <div className="font-semibold text-base text-gray-700 group-hover:text-gray-900 truncate">
+                <div className="font-semibold text-sm text-gray-800 group-hover:text-gray-900 truncate">
                   {displayName}
                 </div>
-                <div className="text-sm text-blue-600 group-hover:text-indigo-600 truncate">
+                <div className="text-xs font-medium text-blue-600 group-hover:text-indigo-600 truncate bg-blue-50 px-2 py-0.5 rounded-md mt-1 w-fit">
                   Premium
                 </div>
               </div>

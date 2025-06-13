@@ -43,7 +43,7 @@ export function useQuiz(
       setError("Failed to generate quiz. Please try again.");
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : "Erreur inconnue",
       };
     } finally {
       setIsGenerating(false);

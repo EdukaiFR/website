@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useLinks } from "../hooks/use-links";
@@ -174,12 +175,18 @@ export function HeaderBreadcrumb() {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-0 lg:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-14 bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/20 border-b border-gray-100 backdrop-blur-md">
+    <header className="flex h-14 shrink-0 items-center gap-0 lg:gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-14">
       <div className="flex items-center gap-3 px-4 w-full min-w-0">
-        <SidebarTrigger className="mt-0.5 -ml-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex-shrink-0" />
+        {/* Sidebar Trigger - Always visible on larger screens, hidden on mobile when sidebar is open as overlay */}
+        <SidebarTrigger className="mt-0.5 -ml-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex-shrink-0 md:flex" />
+
+        <Separator
+          orientation="vertical"
+          className="data-[orientation=vertical]:h-4 text-gray-400 bg-gray-400 rounded-full"
+        />
 
         {/* Modern Breadcrumb Container - Responsive with icon-only on small screens */}
-        <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-xl px-2 sm:px-3 lg:px-4 py-2 shadow-sm border border-gray-100/80 flex-1 min-w-0 animate-in fade-in-0 slide-in-from-top-1 duration-300">
+        <div className="flex items-center rounded-xl py-2 flex-1 min-w-0 animate-in fade-in-0 slide-in-from-top-1 duration-300">
           {/* Home Icon - Always visible */}
           <div className="flex items-center gap-2 text-blue-600 flex-shrink-0">
             <div className="p-1.5 bg-blue-100 rounded-lg group hover:bg-blue-200 transition-colors">

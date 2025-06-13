@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertCircle, CheckCircle, Info, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { translateApiError } from "@/lib/toast";
 
 export interface FormAlertProps {
   type: "error" | "success" | "warning" | "info";
@@ -107,7 +108,7 @@ export function FormErrorAlert({
   return (
     <FormAlert
       type="error"
-      message={message}
+      message={translateApiError(message)}
       description={description}
       className={className}
       onDismiss={onDismiss}

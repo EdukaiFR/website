@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { sessionStorage } from "@/lib/session";
-import { authToast, handleError } from "@/lib/toast";
+import { authToast, handleError, translateApiError } from "@/lib/toast";
 import {
   useAuthService,
   LoginCredentials,
@@ -64,7 +64,9 @@ export function useSession() {
       authToast.loginSuccess();
       return { success: true, data: response };
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message;
+      const errorMessage = translateApiError(
+        error.response?.data?.message || error.message
+      );
       authToast.loginError(errorMessage);
       return {
         success: false,
@@ -82,7 +84,9 @@ export function useSession() {
       authToast.registerSuccess();
       return { success: true, data: response };
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message;
+      const errorMessage = translateApiError(
+        error.response?.data?.message || error.message
+      );
       authToast.registerError(errorMessage);
       return { success: false, error: errorMessage };
     }

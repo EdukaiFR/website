@@ -17,7 +17,7 @@ export function useInsightsService() {
       );
       return response.data;
     } catch (error) {
-      console.error("An error ocurred creating the insight", error);
+      console.error("Erreur lors de la création de l'insight", error);
     }
   };
 
@@ -28,7 +28,7 @@ export function useInsightsService() {
       });
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred fetching insights`, error);
+      console.error(`Erreur lors de la récupération des insights`, error);
     }
   };
 

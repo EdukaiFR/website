@@ -24,7 +24,7 @@ export function useQuizService(): QuizService {
 
       return response.data;
     } catch (error) {
-      console.error("An error ocurred generating the Quiz", error);
+      console.error("Erreur lors de la génération du Quiz", error);
     }
   };
 
@@ -35,7 +35,7 @@ export function useQuizService(): QuizService {
       });
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred getting the Quiz ${quizId}`, error);
+      console.error(`Erreur lors de la récupération du Quiz ${quizId}`, error);
     }
   };
 

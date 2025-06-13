@@ -111,9 +111,7 @@ export function SigninForm({
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   </div>
                 </FormControl>
-                <FormMessage className="text-sm text-red-500 flex items-center gap-1">
-                  <span className="w-4 h-4 text-xs">⚠</span>
-                </FormMessage>
+                <FormMessage className="text-sm text-red-500" />
               </FormItem>
             )}
           />
@@ -150,9 +148,7 @@ export function SigninForm({
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-sm text-red-500 flex items-center gap-1">
-                  <span className="w-4 h-4 text-xs">⚠</span>
-                </FormMessage>
+                <FormMessage className="text-sm text-red-500" />
               </FormItem>
             )}
           />

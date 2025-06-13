@@ -1,26 +1,26 @@
-@import url('satoshi.css');
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url("satoshi.css");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .outfit-regular {
-  font-family: 'Outfit', serif;
+  font-family: "Outfit", serif;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
 }
 
 .outfit-bold {
-  font-family: 'Outfit', serif;
+  font-family: "Outfit", serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
 }
 
 .outfit-light {
-  font-family: 'Outfit', serif;
+  font-family: "Outfit", serif;
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
@@ -63,14 +63,14 @@ body {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 220 100% 97%; /* Updated light blue background */
-    --sidebar-foreground: 220 80% 30%;
-    --sidebar-primary: 220 90% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 80% 95%;
-    --sidebar-accent-foreground: 220 70% 30%;
-    --sidebar-border: 220 30% 80%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -119,42 +119,42 @@ body {
 }
 
 .satoshi-medium {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
 }
 
 .text-medium-white {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
   color: #fff;
 }
 
 .text-medium-black {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
   color: rgba(26, 32, 44, 0.75);
 }
 
 .text-medium {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
   color: #3678ff;
 }
 
 .text-medium-muted {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
   color: #3678ff;
   opacity: 0.75;
 }
 
 .satoshi-bold {
-  font-family: 'Satoshi-Bold', sans-serif;
+  font-family: "Satoshi-Bold", sans-serif;
   font-weight: 700;
 }
 
 .satoshi-medium {
-  font-family: 'Satoshi-Medium', sans-serif;
+  font-family: "Satoshi-Medium", sans-serif;
   font-weight: 500;
 }
 
@@ -162,24 +162,7 @@ body {
   color: #2d6bcf;
 }
 
-/* Modern sidebar animations and transitions */
+/* Debug styles to help with sidebar issues */
 @layer components {
-  .sidebar-gradient-bg {
-    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #ffffff 100%);
-  }
-  
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .nav-link-hover {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .nav-link-hover:hover {
-    transform: translateY(-1px) scale(1.01);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-  }
+  /* Remove forced sidebar styles - let the component handle its own layout */
 }

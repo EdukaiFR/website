@@ -10,6 +10,7 @@ import {
   RegisterData,
 } from "@/services/auth";
 import { sessionStorage } from "@/lib/session";
+import { translateApiError } from "@/lib/toast";
 
 // Types for auth responses
 export interface AuthResponse {
@@ -50,9 +51,10 @@ export async function signinAction(
     console.error("Signin error:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la connexion",
+          "Une erreur est survenue lors de la connexion"
+      ),
     };
   }
 }
@@ -84,9 +86,10 @@ export async function signupAction(
     console.error("Signup error:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la création du compte",
+          "Une erreur est survenue lors de la création du compte"
+      ),
     };
   }
 }

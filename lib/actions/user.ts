@@ -9,6 +9,7 @@ import {
   PreferencesSettingsFormValues,
   CustomEducationRequestFormValues,
 } from "@/lib/schemas/user";
+import { translateApiError } from "@/lib/toast";
 
 // Types for user responses
 export interface UserResponse {
@@ -53,12 +54,16 @@ export async function getUserProfileAction(): Promise<UserResponse> {
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Get user profile error:", error);
+    console.error(
+      "Erreur lors de la récupération du profil utilisateur:",
+      error
+    );
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la récupération du profil",
+          "Une erreur est survenue lors de la récupération du profil"
+      ),
     };
   }
 }
@@ -79,12 +84,13 @@ export async function updateProfileAction(
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Update profile error:", error);
+    console.error("Erreur lors de la mise à jour du profil:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la mise à jour du profil",
+          "Une erreur est survenue lors de la mise à jour du profil"
+      ),
     };
   }
 }
@@ -107,12 +113,16 @@ export async function updateEducationAction(
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Update education error:", error);
+    console.error(
+      "Erreur lors de la mise à jour des informations d'études:",
+      error
+    );
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la mise à jour des informations d'études",
+          "Une erreur est survenue lors de la mise à jour des informations d'études"
+      ),
     };
   }
 }
@@ -133,12 +143,13 @@ export async function updateSubscriptionAction(
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Update subscription error:", error);
+    console.error("Erreur lors de la mise à jour de l'abonnement:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la mise à jour de l'abonnement",
+          "Une erreur est survenue lors de la mise à jour de l'abonnement"
+      ),
     };
   }
 }
@@ -159,12 +170,13 @@ export async function updatePreferencesAction(
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Update preferences error:", error);
+    console.error("Erreur lors de la mise à jour des préférences:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la mise à jour des préférences",
+          "Une erreur est survenue lors de la mise à jour des préférences"
+      ),
     };
   }
 }
@@ -183,12 +195,13 @@ export async function deleteAccountAction(): Promise<UserResponse> {
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Delete account error:", error);
+    console.error("Erreur lors de la suppression du compte:", error);
     return {
       success: false,
-      error:
+      error: translateApiError(
         error.response?.data?.message ||
-        "Une erreur est survenue lors de la suppression du compte",
+          "Une erreur est survenue lors de la suppression du compte"
+      ),
     };
   }
 }
@@ -227,7 +240,7 @@ export async function notifyAdminCustomRequest(
       },
     };
   } catch (error) {
-    console.error("Admin notification error:", error);
+    console.error("Erreur lors de la notification admin:", error);
     return {
       success: false,
       error: "Une erreur est survenue lors de l'envoi de la demande",
