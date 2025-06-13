@@ -1,0 +1,104 @@
+import axios from "axios";
+
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+export interface RegisterData {
+  username: string;
+  password: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  };
+}
+
+export interface AuthService {
+  login: (credentials: LoginCredentials) => Promise<AuthResponse>;
+  register: (userData: RegisterData) => Promise<AuthResponse>;
+  logout: () => Promise<void>;
+  refreshToken: () => Promise<{ token: string }>;
+}
+
+export function useAuthService(): AuthService {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiUrl) {
+    console.error(
+      "❌ NEXT_PUBLIC_API_URL is not set! Please add it to your .env.local file"
+    );
+  }
+
+  const login = async (
+    credentials: LoginCredentials
+  ): Promise<AuthResponse> => {
+    try {
+      const response = await axios.post(`${apiUrl}/auth/login`, credentials, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        "Login error:",
+        error.response?.data?.message || error.message
+      );
+      throw error;
+    }
+  };
+
+  const register = async (userData: RegisterData): Promise<AuthResponse> => {
+    try {
+      const response = await axios.post(`${apiUrl}/auth/register`, userData, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Register error:", error);
+      throw error;
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await axios.post(
+        `${apiUrl}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
+  };
+
+  const refreshToken = async (): Promise<{ token: string }> => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/auth/refresh`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Refresh token error:", error);
+      throw error;
+    }
+  };
+
+  return { login, register, logout, refreshToken };
+}
