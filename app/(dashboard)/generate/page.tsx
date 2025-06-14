@@ -1,11 +1,13 @@
 "use client";
 
+import {
+  GeneratorForm,
+  GeneratorHeader,
+  LoadingUi,
+} from "@/components/generator";
+import { useGeneration } from "@/hooks/use-generation";
+import type { FileProcessingState } from "@/lib/types/generator";
 import { useEffect, useState } from "react";
-import { GeneratorHeader } from "./components/generator-header";
-import { GeneratorForm } from "./components/generator-form";
-import { useGeneration } from "./hooks/use-generation";
-import { LoadingUi } from "./loading-ui";
-import type { FileProcessingState } from "./types";
 
 const MAX_CONCURRENT_PROCESSING = 2;
 

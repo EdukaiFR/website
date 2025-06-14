@@ -12,12 +12,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  GeneratorFormSchema,
+  type GeneratorFormSchemaType,
+} from "@/lib/schemas/generator.schema";
+import type { FileProcessingState, GeneratorForm } from "@/lib/types/generator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { GeneratorFormSchema, type GeneratorFormData } from "../schema";
-import type { FileProcessingState, GeneratorForm } from "../types";
 import { FileUpload } from "./file-upload";
 
 type GeneratorFormProps = {
@@ -51,7 +54,7 @@ export function GeneratorForm({
   setProcessedFiles,
   isRecognizing,
 }: GeneratorFormProps) {
-  const form = useForm<GeneratorFormData>({
+  const form = useForm<GeneratorFormSchemaType>({
     resolver: zodResolver(GeneratorFormSchema),
     defaultValues: {
       title: "",
@@ -67,7 +70,7 @@ export function GeneratorForm({
     form.watch("level") &&
     selectedFiles.length > 0;
 
-  const handleFormSubmit = async (data: GeneratorFormData) => {
+  const handleFormSubmit = async (data: GeneratorFormSchemaType) => {
     try {
       const formFields: GeneratorForm = {
         option: "files",

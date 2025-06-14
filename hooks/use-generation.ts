@@ -1,13 +1,9 @@
 "use client";
 
 import { useCourse, useQuiz } from "@/hooks";
+import type { GenerationStep, GeneratorForm } from "@/lib/types/generator";
 import { useCourseService, useQuizService } from "@/services";
-import { useEffect, useState } from "react";
-import type {
-  GenerationStep,
-  GeneratorForm,
-  FileProcessingState,
-} from "../types";
+import { useState } from "react";
 
 export function useGeneration() {
   const [isGenerationLaunched, setGenerationLaunched] =

@@ -1,4 +1,4 @@
-import type { GeneratorForm } from "@/app/(dashboard)/generate/page";
+import type { GeneratorForm } from "@/lib/types/generator";
 import type { CourseService } from "@/services";
 import { courseToast, examToast, handleError } from "@/lib/toast";
 import { useState } from "react";

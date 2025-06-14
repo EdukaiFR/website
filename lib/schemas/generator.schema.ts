@@ -7,4 +7,4 @@ export const GeneratorFormSchema = z.object({
   files: z.array(z.any()).min(1, { message: "Files are required." }),
 });
 
-export type GeneratorFormData = z.infer<typeof GeneratorFormSchema>;
+export type GeneratorFormSchemaType = z.infer<typeof GeneratorFormSchema>;

@@ -9,10 +9,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import type { FileProcessingState } from "@/lib/types/generator";
 import clsx from "clsx";
 import { CircleX, CloudUpload, FileText } from "lucide-react";
 import { useState } from "react";
-import type { FileProcessingState } from "../types";
 
 type FileUploadProps = {
   selectedFiles: File[];

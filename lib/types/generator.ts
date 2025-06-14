@@ -11,3 +11,16 @@ export type GeneratorForm = {
 export type GenerationStep = 0 | 1 | 2 | 3 | 4;
 
 export type FileProcessingState = Record<string, boolean>;
+
+// Quiz-related types
+export type Question = {
+  question: string;
+  choices: string[];
+  answer: string;
+  explanation: string;
+};
+
+export type QuizResponse = {
+  success: boolean;
+  message: Question[];
+};

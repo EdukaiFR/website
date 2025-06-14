@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Clock, FileText, Sparkles, ArrowRight } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  FileText,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -36,7 +42,7 @@ const steps = [
   },
 ];
 
-export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
+export function LoadingUi({ step, idCourse }: LoadingUiProps) {
   const router = useRouter();
   const [progress, setProgress] = useState(0);
 
@@ -70,10 +76,9 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
             {isComplete ? "🎉 Génération terminée !" : "Génération..."}
           </h1>
           <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
-            {isComplete 
+            {isComplete
               ? "Votre cours a été généré avec succès ! Cliquez ci-dessous pour l'explorer."
-              : "Notre IA analyse vos documents et génère votre cours personnalisé."
-            }
+              : "Notre IA analyse vos documents et génère votre cours personnalisé."}
           </p>
         </div>
         {/* Decorative elements */}
@@ -95,7 +100,8 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
                   Cours généré avec succès !
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Votre cours personnalisé est prêt. Vous pouvez maintenant commencer à apprendre !
+                  Votre cours personnalisé est prêt. Vous pouvez maintenant
+                  commencer à apprendre !
                 </p>
               </div>
               <Button
@@ -116,7 +122,7 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
                   <span>{Math.round(progress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                   />
@@ -133,9 +139,7 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
                       {currentStep.title}
                     </h3>
-                    <p className="text-gray-600">
-                      {currentStep.description}
-                    </p>
+                    <p className="text-gray-600">{currentStep.description}</p>
                   </div>
                 </div>
               )}
@@ -152,32 +156,42 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
                       key={stepItem.id}
                       className={`p-4 rounded-xl border transition-all duration-300 ${
                         isActive
-                          ? 'bg-blue-50 border-blue-200 shadow-md'
+                          ? "bg-blue-50 border-blue-200 shadow-md"
                           : isCompleted
-                          ? 'bg-green-50 border-green-200'
-                          : 'bg-gray-50 border-gray-200'
+                          ? "bg-green-50 border-green-200"
+                          : "bg-gray-50 border-gray-200"
                       }`}
                     >
                       <div className="flex flex-col items-center text-center space-y-2">
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center ${
                             isActive
-                              ? 'bg-blue-600 text-white'
+                              ? "bg-blue-600 text-white"
                               : isCompleted
-                              ? 'bg-green-600 text-white'
-                              : 'bg-gray-300 text-gray-600'
+                              ? "bg-green-600 text-white"
+                              : "bg-gray-300 text-gray-600"
                           }`}
                         >
                           {isCompleted ? (
                             <CheckCircle className="w-5 h-5" />
                           ) : (
-                            <stepItem.icon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
+                            <stepItem.icon
+                              className={`w-5 h-5 ${
+                                isActive ? "animate-pulse" : ""
+                              }`}
+                            />
                           )}
                         </div>
                         <div>
-                          <p className={`text-xs font-medium ${
-                            isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'
-                          }`}>
+                          <p
+                            className={`text-xs font-medium ${
+                              isActive
+                                ? "text-blue-600"
+                                : isCompleted
+                                ? "text-green-600"
+                                : "text-gray-500"
+                            }`}
+                          >
                             {stepItem.title}
                           </p>
                         </div>
@@ -189,7 +203,10 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
 
               {/* Loading Message */}
               <div className="text-center text-gray-500 text-sm">
-                <p>Veuillez patienter pendant que nous créons votre cours personnalisé...</p>
+                <p>
+                  Veuillez patienter pendant que nous créons votre cours
+                  personnalisé...
+                </p>
               </div>
             </div>
           )}
@@ -197,4 +214,4 @@ export const LoadingUi = ({ step, idCourse }: LoadingUiProps) => {
       </Card>
     </div>
   );
-};
+}
