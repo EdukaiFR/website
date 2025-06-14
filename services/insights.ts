@@ -35,7 +35,7 @@ export function useInsightsService() {
 
       const response = await axios.post(
         `${apiUrl}/insights/${quizId}`,
-        { score, userId }, // Include the actual user ID from session
+        { score, userId },
         { withCredentials: true }
       );
 
@@ -45,22 +45,42 @@ export function useInsightsService() {
       );
       return response.data;
     } catch (error) {
-      console.error(
-        "❌ [Insights Service] Erreur lors de la création de l'insight",
-        error
-      );
+      console.error("❌ [Insights Service] Error creating insight:", error);
       throw error;
     }
   };
 
   const getQuizInsights = async (quizId: string) => {
     try {
+      console.log("🔍 [Insights Service] Fetching insights for quiz:", quizId);
+
       const response = await axios.get(`${apiUrl}/insights/${quizId}`, {
         withCredentials: true,
       });
-      return response.data;
+
+      console.log("✅ [Insights Service] Raw response:", response);
+      console.log("✅ [Insights Service] Response data:", response.data);
+      console.log("✅ [Insights Service] Response status:", response.status);
+
+      const data = response.data;
+      console.log(
+        "✅ [Insights Service] Processed data structure:",
+        JSON.stringify(data, null, 2)
+      );
+
+      return data;
     } catch (error) {
-      console.error(`Erreur lors de la récupération des insights`, error);
+      console.error("❌ [Insights Service] Error fetching insights:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.error("❌ [Insights Service] Axios error details:", {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+        });
+      }
+
+      throw error;
     }
   };
 

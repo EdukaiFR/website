@@ -112,6 +112,31 @@ export default function MyCourses() {
     }
   };
 
+  // Ensure insights are loaded when switching to statistics tab
+  useEffect(() => {
+    const loadInsightsForStats = async () => {
+      if (selectedTab === "statistics" && quizId && !insightsData) {
+        console.log(
+          "🔍 [Page] Loading insights for statistics tab, quizId:",
+          quizId
+        );
+        await getQuizInsights(quizId);
+      }
+    };
+
+    loadInsightsForStats();
+  }, [selectedTab, quizId, insightsData, getQuizInsights]);
+
+  // Debug logging for insights data
+  useEffect(() => {
+    console.log("🔍 [Page] Debug - Insights data updated:", {
+      quizId,
+      insightsData,
+      selectedTab,
+      hasInsightsService: !!insightsService,
+    });
+  }, [insightsData, quizId, selectedTab]);
+
   // Delete Exam
   const deleteExam = async (examId: string) => {
     try {
@@ -262,13 +287,25 @@ export default function MyCourses() {
           <Objectives course_id={courseId} objectives={null} />
         )}
         {selectedTab === "statistics" && (
-          <Statistics course_id={courseId} statistics={null} />
+          <Statistics
+            course_id={courseId}
+            statistics={null}
+            quiz_id={quizId}
+            insights_service={insightsService}
+            insights_data={insightsData}
+          />
         )}
         {selectedTab === "similarCourses" && (
           <SimilarCourses course_id={courseId} similarCourses={null} />
         )}
         {selectedTab === "quiz" && (
-          <Quiz course_id={courseId} quiz_data={quizData} />
+          <Quiz
+            course_id={courseId}
+            quiz_data={quizData}
+            quiz_id={quizId}
+            insights_service={insightsService}
+            insights_data={insightsData}
+          />
         )}
       </div>
     </div>

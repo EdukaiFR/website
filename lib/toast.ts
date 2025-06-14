@@ -200,6 +200,14 @@ export const toastMessages = {
     restartError: "Erreur lors du redémarrage du quiz.",
   },
 
+  // Insights
+  insights: {
+    createSuccess: "Résultat sauvegardé avec succès.",
+    createError: "Erreur lors de la sauvegarde du résultat.",
+    loadSuccess: "Statistiques chargées avec succès.",
+    loadError: "Erreur lors du chargement des statistiques.",
+  },
+
   // Files
   file: {
     uploadSuccess: "Fichier(s) téléchargé(s) avec succès.",
@@ -345,6 +353,13 @@ export const quizToast = {
   generateError: () => showToast.error(toastMessages.quiz.generateError),
   loadError: () => showToast.error(toastMessages.quiz.loadError),
   restartError: () => showToast.error(toastMessages.quiz.restartError),
+};
+
+export const insightsToast = {
+  createSuccess: () => showToast.success(toastMessages.insights.createSuccess),
+  createError: () => showToast.error(toastMessages.insights.createError),
+  loadSuccess: () => showToast.success(toastMessages.insights.loadSuccess),
+  loadError: () => showToast.error(toastMessages.insights.loadError),
 };
 
 export const fileToast = {
