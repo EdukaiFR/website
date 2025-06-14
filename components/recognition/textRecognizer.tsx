@@ -24,7 +24,8 @@ const TextRecognizer = ({
             logger: (m) => console.log(m),
           });
           onTextRecognized(result.data.text);
-        } catch (error: any) {
+          console.log("Final text: ", result.data.text);
+        } catch (error) {
           console.error("Error recognizing text:", error);
           toast.error("Error recognizing text:", error);
         } finally {
