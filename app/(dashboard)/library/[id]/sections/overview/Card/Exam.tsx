@@ -72,7 +72,7 @@ export const Exam = ({
     return (
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
         {/* Header */}
-        <div className="flex flex-col gap-3 mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
               <Calendar className="w-4 h-4 text-white" />
@@ -82,13 +82,13 @@ export const Exam = ({
             </h3>
           </div>
 
-          {/* Action Button - Full width on new line */}
+          {/* Action Button - Full width on mobile, auto on desktop */}
           {createExam &&
           courseId &&
           getExams &&
           updateCourseData &&
           deleteExam ? (
-            <div className="w-full">
+            <div className="w-full lg:w-auto lg:flex-shrink-0">
               <ExamDialog
                 courseId={courseId}
                 createExam={createExam}
@@ -100,7 +100,7 @@ export const Exam = ({
           ) : (
             <Button
               disabled
-              className="w-full h-10 bg-gray-300 text-gray-500 border border-gray-300 font-medium rounded-xl text-sm"
+              className="w-full lg:w-auto h-10 bg-gray-300 text-gray-500 border border-gray-300 font-medium rounded-xl text-sm lg:flex-shrink-0"
             >
               <Plus className="w-4 h-4 mr-2" />
               Ajouter un examen
@@ -132,7 +132,7 @@ export const Exam = ({
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
       {/* Header */}
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
             <Calendar className="w-4 h-4 text-white" />
@@ -143,13 +143,13 @@ export const Exam = ({
           <CounterBadge counter={typedExams.length} />
         </div>
 
-        {/* Action Button - Full width on new line */}
+        {/* Action Button - Full width on mobile, auto on desktop */}
         {createExam &&
         courseId &&
         getExams &&
         updateCourseData &&
         deleteExam ? (
-          <div className="w-full">
+          <div className="w-full lg:w-auto lg:flex-shrink-0">
             <ExamDialog
               courseId={courseId}
               createExam={createExam}
@@ -161,7 +161,7 @@ export const Exam = ({
         ) : (
           <Button
             disabled
-            className="w-full h-10 bg-gray-300 text-gray-500 border border-gray-300 font-medium rounded-xl text-sm"
+            className="w-full lg:w-auto h-10 bg-gray-300 text-gray-500 border border-gray-300 font-medium rounded-xl text-sm lg:flex-shrink-0"
           >
             <Plus className="w-4 h-4 mr-2" />
             Ajouter un examen

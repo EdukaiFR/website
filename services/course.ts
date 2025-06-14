@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAuthToken, getCurrentUserId } from "@/lib/auth-utils";
 
 export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
@@ -35,12 +36,17 @@ export function useCourseService() {
     try {
       const response = await axios.post(
         `${apiUrl}/courses/create`,
-        { title, subject, level },
+        { title, subject, level }, // Include the actual user ID from session
         { withCredentials: true }
       );
+
       return response.data;
     } catch (error) {
-      console.error("Erreur lors de la création du cours", error);
+      console.error(
+        "❌ [Course Service] Erreur lors de la création du cours",
+        error
+      );
+      throw error;
     }
   };
 

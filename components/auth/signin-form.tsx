@@ -76,7 +76,7 @@ export function SigninForm({
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="text-center space-y-1 sm:space-y-2">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
           Content de te revoir !
         </h2>
         <p className="text-sm sm:text-base text-gray-600">

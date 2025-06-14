@@ -33,14 +33,14 @@ export default function Home() {
                 <span className="text-sm font-medium">Tableau de Bord</span>
               </div>
 
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+              <h1 className="text-2xl lg:text-4xl font-bold mb-6 leading-tight">
                 Bienvenue
                 <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
                   Tristan
                 </span>
               </h1>
 
-              <p className="text-xl lg:text-2xl text-blue-100 mb-8 max-w-2xl">
+              <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
                 Voici un petit résumé de ton compte et de tes progrès récents
                 dans ton parcours d'apprentissage.
               </p>
@@ -65,7 +65,7 @@ export default function Home() {
                   <div className="w-12 h-12 bg-blue-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-blue-400/30 group-hover:scale-110">
                     <BookOpen className="w-6 h-6 text-blue-300 transition-all duration-300 group-hover:text-blue-200" />
                   </div>
-                  <div className="text-3xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
+                  <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
                     12
                   </div>
                   <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
@@ -78,7 +78,7 @@ export default function Home() {
                   <div className="w-12 h-12 bg-green-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-green-400/30 group-hover:scale-110">
                     <Clock className="w-6 h-6 text-green-300 transition-all duration-300 group-hover:text-green-200" />
                   </div>
-                  <div className="text-3xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
+                  <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
                     45h
                   </div>
                   <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
@@ -91,7 +91,7 @@ export default function Home() {
                   <div className="w-12 h-12 bg-yellow-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-yellow-400/30 group-hover:scale-110">
                     <Trophy className="w-6 h-6 text-yellow-300 transition-all duration-300 group-hover:text-yellow-200" />
                   </div>
-                  <div className="text-3xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
+                  <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
                     8
                   </div>
                   <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
@@ -104,7 +104,7 @@ export default function Home() {
                   <div className="w-12 h-12 bg-purple-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-purple-400/30 group-hover:scale-110">
                     <TrendingUp className="w-6 h-6 text-purple-300 transition-all duration-300 group-hover:text-purple-200" />
                   </div>
-                  <div className="text-3xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
+                  <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
                     78%
                   </div>
                   <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">

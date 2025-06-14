@@ -41,7 +41,7 @@ export const Header = ({
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm text-white/80 mb-1">Cours</p>
-              <h1 className="text-xl sm:text-2xl lg:text-4xl xl:text-5xl font-bold leading-tight break-words">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight break-words">
                 {course?.title || "OUIIII"}
               </h1>
             </div>
@@ -57,7 +57,7 @@ export const Header = ({
                   setSelectedTab("quiz");
                 }
               }}
-              className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base whitespace-nowrap"
+              className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm whitespace-nowrap"
             >
               {selectedTab === "quiz" ? (
                 <>

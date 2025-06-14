@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { 
-  User, 
-  GraduationCap, 
-  CreditCard, 
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  User,
+  GraduationCap,
+  CreditCard,
   Settings as SettingsIcon,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
   ProfileSettings,
   EducationSettings,
   SubscriptionSettings,
-  PreferencesSettings
-} from '@/components/settings';
-import { getUserProfileAction, type UserProfile } from '@/lib/actions/user';
+  PreferencesSettings,
+} from "@/components/settings";
+import { getUserProfileAction, type UserProfile } from "@/lib/actions/user";
 
-type TabKey = 'profile' | 'education' | 'subscription' | 'preferences';
+type TabKey = "profile" | "education" | "subscription" | "preferences";
 
 interface Tab {
   key: TabKey;
@@ -32,37 +32,37 @@ interface Tab {
 
 const tabs: Tab[] = [
   {
-    key: 'profile',
-    label: 'Profil',
+    key: "profile",
+    label: "Profil",
     icon: <User className="w-5 h-5" />,
-    description: 'Informations personnelles et coordonnées'
+    description: "Informations personnelles et coordonnées",
   },
   {
-    key: 'education',
-    label: 'Études',
+    key: "education",
+    label: "Études",
     icon: <GraduationCap className="w-5 h-5" />,
-    description: 'Niveau d\'études et spécialisations'
+    description: "Niveau d'études et spécialisations",
   },
   {
-    key: 'subscription',
-    label: 'Abonnement',
+    key: "subscription",
+    label: "Abonnement",
     icon: <CreditCard className="w-5 h-5" />,
-    description: 'Plan d\'abonnement et facturation'
+    description: "Plan d'abonnement et facturation",
   },
   {
-    key: 'preferences',
-    label: 'Préférences',
+    key: "preferences",
+    label: "Préférences",
     icon: <SettingsIcon className="w-5 h-5" />,
-    description: 'Notifications et confidentialité'
-  }
+    description: "Notifications et confidentialité",
+  },
 ];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>('profile');
+  const [activeTab, setActiveTab] = useState<TabKey>("profile");
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
+    type: "success" | "error";
     message: string;
   } | null>(null);
 
@@ -77,28 +77,31 @@ export default function SettingsPage() {
       if (result.success && result.data) {
         setUserProfile(result.data as UserProfile);
       } else {
-        showNotification('error', 'Impossible de charger le profil utilisateur');
+        showNotification(
+          "error",
+          "Impossible de charger le profil utilisateur"
+        );
       }
     } catch (error) {
-      showNotification('error', 'Une erreur est survenue');
+      showNotification("error", "Une erreur est survenue");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const showNotification = (type: 'success' | 'error', message: string) => {
+  const showNotification = (type: "success" | "error", message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 5000);
   };
 
   const handleSuccess = () => {
-    showNotification('success', 'Paramètres mis à jour avec succès !');
+    showNotification("success", "Paramètres mis à jour avec succès !");
     // Reload user profile to get updated data
     loadUserProfile();
   };
 
   const handleError = (error: string) => {
-    showNotification('error', error);
+    showNotification("error", error);
   };
 
   if (isLoading) {
@@ -130,7 +133,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Paramètres
               </h1>
               <p className="text-gray-600">
@@ -145,7 +148,8 @@ export default function SettingsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                    {userProfile.firstName.charAt(0)}{userProfile.lastName.charAt(0)}
+                    {userProfile.firstName.charAt(0)}
+                    {userProfile.lastName.charAt(0)}
                   </div>
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">
@@ -178,24 +182,31 @@ export default function SettingsPage() {
                   {tabs.map((tab) => (
                     <Button
                       key={tab.key}
-                      variant={activeTab === tab.key ? 'default' : 'ghost'}
+                      variant={activeTab === tab.key ? "default" : "ghost"}
                       className={`w-full justify-start h-auto p-4 ${
                         activeTab === tab.key
-                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                       onClick={() => setActiveTab(tab.key)}
                     >
                       <div className="flex items-start gap-3 w-full">
-                        <div className="flex-shrink-0">
-                          {tab.icon}
-                        </div>
+                        <div className="flex-shrink-0">{tab.icon}</div>
                         <div className="text-left flex-1 overflow-hidden">
-                          <div className="font-semibold whitespace-normal break-words">{tab.label}</div>
-                          <div className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
-                            activeTab === tab.key ? 'text-blue-100' : 'text-gray-500'
-                          }`}
-                          style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                          <div className="font-semibold whitespace-normal break-words">
+                            {tab.label}
+                          </div>
+                          <div
+                            className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
+                              activeTab === tab.key
+                                ? "text-blue-100"
+                                : "text-gray-500"
+                            }`}
+                            style={{
+                              wordWrap: "break-word",
+                              overflowWrap: "break-word",
+                            }}
+                          >
                             {tab.description}
                           </div>
                         </div>
@@ -212,13 +223,15 @@ export default function SettingsPage() {
             <div className="space-y-6">
               {/* Notification */}
               {notification && (
-                <div className={`p-4 rounded-lg border ${
-                  notification.type === 'success'
-                    ? 'bg-green-50 border-green-200 text-green-800'
-                    : 'bg-red-50 border-red-200 text-red-800'
-                }`}>
+                <div
+                  className={`p-4 rounded-lg border ${
+                    notification.type === "success"
+                      ? "bg-green-50 border-green-200 text-green-800"
+                      : "bg-red-50 border-red-200 text-red-800"
+                  }`}
+                >
                   <div className="flex items-center gap-2">
-                    {notification.type === 'success' ? (
+                    {notification.type === "success" ? (
                       <CheckCircle className="w-5 h-5" />
                     ) : (
                       <AlertCircle className="w-5 h-5" />
@@ -229,7 +242,7 @@ export default function SettingsPage() {
               )}
 
               {/* Tab Content */}
-              {activeTab === 'profile' && userProfile && (
+              {activeTab === "profile" && userProfile && (
                 <ProfileSettings
                   initialData={{
                     firstName: userProfile.firstName,
@@ -242,7 +255,7 @@ export default function SettingsPage() {
                 />
               )}
 
-              {activeTab === 'education' && userProfile && (
+              {activeTab === "education" && userProfile && (
                 <EducationSettings
                   initialData={{
                     educationLevel: userProfile.educationLevel,
@@ -254,7 +267,7 @@ export default function SettingsPage() {
                 />
               )}
 
-              {activeTab === 'subscription' && userProfile && (
+              {activeTab === "subscription" && userProfile && (
                 <SubscriptionSettings
                   initialData={{
                     subscriptionPlan: userProfile.subscriptionPlan,
@@ -264,7 +277,7 @@ export default function SettingsPage() {
                 />
               )}
 
-              {activeTab === 'preferences' && userProfile && (
+              {activeTab === "preferences" && userProfile && (
                 <PreferencesSettings
                   initialData={{
                     notifications: userProfile.notifications,
@@ -281,4 +294,4 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-} 
+}

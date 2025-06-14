@@ -108,7 +108,7 @@ export const Exams = ({
       {displayedExams.length === 0 ? (
         <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] w-full">
           <div className="text-center">
-            <div className="text-4xl sm:text-6xl mb-4">📚</div>
+            <div className="text-2xl sm:text-4xl mb-4">📚</div>
             <p className="text-muted-foreground text-sm sm:text-base">
               {examFilter === "upcoming"
                 ? "Vous n'avez pas d'examen prévu"

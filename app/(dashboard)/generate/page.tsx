@@ -65,11 +65,35 @@ export default function Generate() {
 
   const [isInputFilled, setIsInputFilled] = useState<boolean>(false);
   const [recognizedTexts, setRecognizedTexts] = useState<string[]>([]);
-  const [isRecognizing, setIsRecognizing] = useState<boolean>(false);
+  const [fileProcessingStates, setFileProcessingStates] = useState<
+    Record<string, boolean>
+  >({});
+  const [processedFiles, setProcessedFiles] = useState<Set<string>>(new Set());
   const [isGenerationLaunched, setGenerationLaunched] =
     useState<boolean>(false);
   const [generationStep, setGenerationStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [idGeneratedCourse, setIdGeneratedCourse] = useState<string>("");
+
+  // Check if any files are being processed
+  const isRecognizing = Object.values(fileProcessingStates).some(Boolean);
+
+  // Maximum number of files to process simultaneously
+  const MAX_CONCURRENT_PROCESSING = 2;
+  const currentlyProcessingCount =
+    Object.values(fileProcessingStates).filter(Boolean).length;
+
+  // Auto-process queued files when slots become available
+  useEffect(() => {
+    if (
+      Object.values(fileProcessingStates).length < MAX_CONCURRENT_PROCESSING
+    ) {
+      // Trigger re-render for queued files
+      const timer = setTimeout(() => {
+        // This will cause components to re-evaluate canStartProcessing
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [Object.values(fileProcessingStates).length, MAX_CONCURRENT_PROCESSING]);
 
   // Increment generation step if it's lower than 4
   const incrementGenerationStep = () => {
@@ -95,13 +119,31 @@ export default function Generate() {
     form.setValue("files", [...selectedFiles, ...files]);
   };
 
-  const handleRecognizedText = (text: string) => {
+  const handleRecognizedText = (text: string, fileId: string) => {
     setRecognizedTexts((prevTexts) => {
       if (!prevTexts.includes(text)) {
         return [...prevTexts, text];
       }
       return prevTexts;
     });
+    // Mark file as processed
+    setProcessedFiles((prev) => new Set(Array.from(prev).concat(fileId)));
+  };
+
+  // Helper functions for per-file processing states
+  const setFileProcessing = (fileId: string, isProcessing: boolean) => {
+    setFileProcessingStates((prev) => ({
+      ...prev,
+      [fileId]: isProcessing,
+    }));
+  };
+
+  const isFileProcessing = (fileId: string) => {
+    return fileProcessingStates[fileId] || false;
+  };
+
+  const isFileProcessed = (fileId: string) => {
+    return processedFiles.has(fileId);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -140,6 +182,7 @@ export default function Generate() {
   // Handle Generate process
   const handleGenerate = async (formFields: GeneratorForm) => {
     if (recognizedTexts.length > 0) {
+      console.log("recognizedTexts", recognizedTexts);
       setGenerationLaunched(true);
       const generation = await generateQuiz(recognizedTexts);
 
@@ -199,7 +242,7 @@ export default function Generate() {
                   Générateur IA
                 </div>
               </div>
-              <h1 className="text-2xl lg:text-4xl font-bold mb-2">
+              <h1 className="text-xl lg:text-2xl font-bold mb-2">
                 Bienvenue dans le générateur
               </h1>
               <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
@@ -348,15 +391,33 @@ export default function Generate() {
                         {/* File Preview */}
                         {selectedFiles.length > 0 && (
                           <div className="mt-6 space-y-3">
-                            <h4 className="font-semibold text-gray-800 mb-3">
-                              Fichiers sélectionnés :
-                            </h4>
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-gray-800 mb-3">
+                                Fichiers sélectionnés :
+                              </h4>
+                              {isRecognizing && (
+                                <div className="text-sm text-blue-600 font-medium">
+                                  {currentlyProcessingCount} analyse
+                                  {currentlyProcessingCount > 1 ? "s" : ""} en
+                                  cours...
+                                </div>
+                              )}
+                            </div>
                             {selectedFiles.map((file, index) => {
-                              const isProcessing = isRecognizing; // You might want to track per-file processing state
+                              const fileId = `${file.name}-${file.size}-${index}`;
+                              const isProcessing = isFileProcessing(fileId);
+                              const hasBeenProcessed = isFileProcessed(fileId);
+
+                              // Only allow processing if under capacity and not already processed/processing
+                              const shouldQueue =
+                                !hasBeenProcessed &&
+                                !isProcessing &&
+                                currentlyProcessingCount >=
+                                  MAX_CONCURRENT_PROCESSING;
 
                               return (
                                 <div
-                                  key={index}
+                                  key={fileId}
                                   className="flex items-center justify-between p-4 border border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm hover:shadow-md transition-all duration-200"
                                 >
                                   <div className="flex items-center gap-4">
@@ -377,18 +438,28 @@ export default function Generate() {
                                           {Math.round(file.size / 1024)} KB
                                         </span>
                                         <span>•</span>
-                                        {isProcessing ? (
-                                          <span className="text-blue-600 font-medium">
-                                            Traitement en cours...
+                                        {hasBeenProcessed ? (
+                                          <span className="text-green-600 text-xs">
+                                            Importé !
+                                          </span>
+                                        ) : shouldQueue ? (
+                                          <span className="text-orange-600 font-medium">
+                                            En file d'attente...
                                           </span>
                                         ) : (
                                           <TextRecognizer
-                                            key={index}
+                                            key={fileId}
                                             selectedImage={file}
-                                            onTextRecognized={
-                                              handleRecognizedText
+                                            fileId={fileId}
+                                            onTextRecognized={(text) =>
+                                              handleRecognizedText(text, fileId)
                                             }
-                                            setIsRecognizing={setIsRecognizing}
+                                            setIsRecognizing={(processing) =>
+                                              setFileProcessing(
+                                                fileId,
+                                                processing
+                                              )
+                                            }
                                           />
                                         )}
                                       </div>
@@ -409,6 +480,20 @@ export default function Generate() {
                                         prevTexts.filter((_, i) => i !== index)
                                       );
                                       form.setValue("files", updatedFiles);
+                                      // Clean up processing state
+                                      setFileProcessingStates((prev) => {
+                                        const updated = { ...prev };
+                                        delete updated[fileId];
+                                        return updated;
+                                      });
+                                      // Clean up processed files state
+                                      setProcessedFiles((prev) => {
+                                        const updated = new Set(
+                                          Array.from(prev)
+                                        );
+                                        updated.delete(fileId);
+                                        return updated;
+                                      });
                                     }}
                                   >
                                     <CircleX className="w-4 h-4" />

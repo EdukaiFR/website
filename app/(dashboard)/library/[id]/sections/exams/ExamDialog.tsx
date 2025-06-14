@@ -113,7 +113,7 @@ export const ExamDialog = ({
       <DialogTrigger asChild>
         <Button
           variant={"ghost"}
-          className="w-full h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm"
+          className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0 lg:whitespace-nowrap"
         >
           {isEditing ? (
             <span>Modifier</span>
