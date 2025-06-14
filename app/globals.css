@@ -161,8 +161,3 @@ body {
 .text-primary {
   color: #2d6bcf;
 }
-
-/* Debug styles to help with sidebar issues */
-@layer components {
-  /* Remove forced sidebar styles - let the component handle its own layout */
-}

@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavMain({
@@ -22,6 +23,8 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <SidebarGroup>
@@ -41,18 +44,24 @@ export function NavMain({
                 tooltip={item.label}
                 isActive={isActive}
                 className={`
-                  group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 
+                  group relative flex items-center transition-all duration-200 
                   ${
                     isActive
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
                       : "text-gray-700 hover:bg-gray-100/80 hover:text-gray-900"
                   }
-                  group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2.5
+                  ${
+                    isCollapsed
+                      ? "justify-center p-2 w-8 h-8"
+                      : "gap-3 px-3 py-2.5 rounded-xl"
+                  }
                 `}
               >
                 <Link
                   href={item.href}
-                  className="flex items-center gap-3 w-full"
+                  className={`flex items-center ${
+                    isCollapsed ? "justify-center" : "gap-3 w-full"
+                  }`}
                 >
                   <div
                     className={`
@@ -66,20 +75,22 @@ export function NavMain({
                   >
                     <item.Icon className="w-5 h-5" />
                   </div>
-                  <span
-                    className={`
-                    font-medium truncate group-data-[collapsible=icon]:hidden
-                    ${
-                      isActive
-                        ? "text-white"
-                        : "text-gray-700 group-hover:text-gray-900"
-                    }
-                  `}
-                  >
-                    {item.label}
-                  </span>
-                  {isActive && (
-                    <div className="absolute inset-y-0 left-0 w-1 bg-white/30 rounded-r-full group-data-[collapsible=icon]:hidden" />
+                  {!isCollapsed && (
+                    <span
+                      className={`
+                      font-medium truncate
+                      ${
+                        isActive
+                          ? "text-white"
+                          : "text-gray-700 group-hover:text-gray-900"
+                      }
+                    `}
+                    >
+                      {item.label}
+                    </span>
+                  )}
+                  {isActive && !isCollapsed && (
+                    <div className="absolute inset-y-0 left-0 w-1 bg-white/30 rounded-r-full" />
                   )}
                 </Link>
               </SidebarMenuButton>
