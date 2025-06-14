@@ -63,6 +63,7 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
     try {
       // TODO: call hooks to add resumeFile(s)
       console.log("Files to upload:", data.files);
+      fileToast.uploadSuccess();
     } catch (error: unknown) {
       console.error(
         "Erreur lors de la soumission du formulaire de fichiers:",
@@ -71,7 +72,6 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
       fileToast.uploadError();
     } finally {
       form.reset();
-      fileToast.uploadSuccess();
     }
   };
 
