@@ -78,14 +78,14 @@ export default function Generate() {
   const quizService = useQuizService();
   const { quizId, isGenerating, generateQuiz } = useQuiz(quizService);
 
+  // Summary sheet generation
+  const summarySheetsService = useSummarySheetService();
+  const { sheetId, generateSheet } = useSheet(summarySheetsService);
+
   // Course creation
   const courseService = useCourseService();
   const { courseId, isCreating, courseError, createCourse,
     addQuizToCourse,addSheetToCourse } = useCourse(courseService);
-
-  const summarySheetsService = useSummarySheetService();
-  const blobService = useBlobService();
-  const { sheetId, generateSheet } = useSheet(summarySheetsService, blobService);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);

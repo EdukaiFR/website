@@ -9,8 +9,7 @@ interface SummarySheet {
 }
 
 export function useSheet(
-  summarySheetService: SummarySheetService,
-  blobService: BlobService,
+  summarySheetService: SummarySheetService
 ) {
   const [sheetData, setSheetData] = useState<SummarySheet>();
   const [sheetId, setSheetId] = useState("");
@@ -37,26 +36,10 @@ export function useSheet(
     }
   }
 
-  // const loadSheet = async (sheetId: string) => {
-  //   try {
-  //     const sheetResponse = await blobService.getFileById(sheetId);
-  //     setSheetData(sheetResponse.item);
-
-  //     return sheetResponse.item;
-
-  //   } catch (error) {
-  //       console.error(`Error getting summary sheet file ${sheetId} `, error);
-  //       setError("Failed to load summary sheet file. Please try again.");
-  //     return null;
-  //   }
-  // };
-
-
   return {
     sheetId,
     error,
     sheetData,
     generateSheet
-    // loadSheet,
   };
 }

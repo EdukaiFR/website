@@ -2,7 +2,7 @@ import axios from "axios";
 
 export interface SummarySheetService {
     generateSheet: (recognizedText: string[]) => Promise<any>;
-    // getSheetById: (sheetId: string) => Promise<any>;
+    getSheetById: (sheetId: string) => Promise<any>;
 }
 
 export function useSummarySheetService(): SummarySheetService {
@@ -22,16 +22,16 @@ export function useSummarySheetService(): SummarySheetService {
     }
   };
 
-  // const getSheetById = async (sheetId: string) => {
-  //   try {
-  //     const response = await axios.get(`${apiUrl}/blob/${sheetId}`, {
-  //       withCredentials: true,
-  //     });
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error(`An error ocurred getting the summary sheet ${sheetId}`, error);
-  //   }
-  // };
+  const getSheetById = async (sheetId: string) => {
+    try {
+      const response = await axios.get(`${apiUrl}/summary-sheets/${sheetId}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`An error ocurred getting the summary sheet ${sheetId}`, error);
+    }
+  };
 
-  return { generateSheet };
+  return { generateSheet, getSheetById };
 }
