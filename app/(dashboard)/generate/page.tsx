@@ -13,8 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCourse, useQuiz } from "@/hooks";
-import { useCourseService, useQuizService } from "@/services";
+import { useCourse, useQuiz, useSheet } from "@/hooks";
+import { useCourseService, useQuizService, useSummarySheetService, useBlobService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { CircleX, CloudUpload, FileText, WandSparkles, Sparkles } from "lucide-react";
@@ -78,10 +78,14 @@ export default function Generate() {
   const quizService = useQuizService();
   const { quizId, isGenerating, generateQuiz } = useQuiz(quizService);
 
+  // Summary sheet generation
+  const summarySheetsService = useSummarySheetService();
+  const { sheetId, generateSheet } = useSheet(summarySheetsService);
+
   // Course creation
   const courseService = useCourseService();
-  const { courseId, isCreating, courseError, createCourse, addQuizToCourse } =
-    useCourse(courseService);
+  const { courseId, isCreating, courseError, createCourse,
+    addQuizToCourse,addSheetToCourse } = useCourse(courseService);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -135,22 +139,41 @@ export default function Generate() {
   const handleGenerate = async (formFields: GeneratorForm) => {
     if (recognizedTexts.length > 0) {
       setGenerationLaunched(true);
-      const generation = await generateQuiz(recognizedTexts);
 
-      if (generation?.success) {
-        const courseId = await createCourse(formFields);
-        await addQuizToCourse(courseId, generation.newQuizId);
-        // Each 1 second, call incrementGenerationStep until generationStep is 4
-        const interval = setInterval(() => {
-          incrementGenerationStep();
-          if (generationStep === 4) {
-            clearInterval(interval);
-          }
-        }, 1000);
-      } else {
-        // TODO: display message here once we implement toasts.
-        console.error("Failed to generate quiz, aborted course creation.");
+      const [quizGeneration, sheetGeneration] = await Promise.all([
+        generateQuiz(recognizedTexts),
+        generateSheet(recognizedTexts)
+      ]);
+
+      if (!quizGeneration?.success && !sheetGeneration?.success) {
+        // TODO: display message in a toast.
+        console.error("Failed to generate both quiz and summary sheet.")
+        return;
       }
+
+      let courseId = await createCourse(formFields);
+
+      if (quizGeneration?.success) {
+        await addQuizToCourse(courseId, quizGeneration.newQuizId);
+      } else {
+        // TODO: display message in a toast.
+        console.error("Failed to generate quiz.");
+      }
+
+      if (sheetGeneration?.success) {
+        await addSheetToCourse(courseId, sheetGeneration.newSheetId)
+      } else {
+        // TODO: display message in a toast.
+        console.error("Failed to generate summary sheet");
+      }
+
+      // Each 1 second, call incrementGenerationStep until generationStep is 4
+      const interval = setInterval(() => {
+        incrementGenerationStep();
+        if (generationStep === 4) {
+          clearInterval(interval);
+        }
+      }, 1000);
     }
   };
 
