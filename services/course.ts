@@ -5,6 +5,7 @@ export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
   getCourseById: (courseId: string) => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
+  addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
   createExam: (
     courseId: string,
     title: string,
@@ -86,6 +87,22 @@ export function useCourseService() {
     } catch (error) {
       console.error(
         `Erreur lors de l'ajout du quiz ${quizId} au cours ${courseId}`,
+        error
+      );
+    }
+  };
+
+  const addSheetToCourse = async (courseId: string, sheetId: string) => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/courses/${courseId}/addSheet`,
+        { sheetId: sheetId },
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `An error ocurred adding the summary sheet ${sheetId} to the course ${courseId}`,
         error
       );
     }
@@ -173,6 +190,7 @@ export function useCourseService() {
     createCourse,
     getCourseById,
     addQuizToCourse,
+    addSheetToCourse,
     createExam,
     getExamById,
     updateExamById,

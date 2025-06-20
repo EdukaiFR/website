@@ -87,6 +87,19 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+  const addSheetToCourse = async (courseId: string, sheetId: string) => {
+    try {
+      await courseService.addSheetToCourse(courseId, sheetId);
+    } catch (error) {
+      console.error(
+        `Error adding summary sheet ${sheetId} to course ${courseId} `,
+        error
+      );
+      setError('Failed to associate summary sheet to course. Please try again.');
+      return null;
+    }
+  };
+
   const createExam = async (
     courseId: string,
     title: string,
@@ -178,6 +191,7 @@ export function useCourse(courseService: CourseService) {
     loadCourse,
     loadAllCourses,
     addQuizToCourse,
+    addSheetToCourse,
     createExam,
     getExams,
     updateExamById,

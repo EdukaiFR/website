@@ -36,6 +36,7 @@ const TextRecognizer = ({
             },
           });
           onTextRecognized(result.data.text);
+          console.log("Final text: ", result.data.text);
         } catch (error: any) {
           console.error("Erreur lors de la reconnaissance de texte:", error);
           fileToast.recognitionError();
