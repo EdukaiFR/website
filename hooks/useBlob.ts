@@ -11,8 +11,10 @@ export function useBlob(blobService: BlobService) {
         setError(null);
 
         try {
-            const fileResponse = await blobService.uploadFile(file, fileType);
-            setFileId(fileResponse._id);
+            const newFile = await blobService.uploadFile(file, fileType);
+            const newFileId = newFile.items._id;
+            setFileId(newFile.items._id);
+            return { success: true, newFileId }
         } catch (error) {
             console.error("Error uploading file: ", error);
             setError("Failed to upload file. Please try again.");

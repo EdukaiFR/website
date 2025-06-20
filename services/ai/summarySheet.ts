@@ -12,9 +12,10 @@ export function useSummarySheetService(): SummarySheetService {
     try {
       const textString = recognizedText.join("\n");
 
-      const response = await axios.post(`${apiUrl}/ai/generate-sheet`, {
-        textString,
-      });
+      const response = await axios.post(`${apiUrl}/ai/generate-sheet`,
+        { textString},
+        { withCredentials: true }
+      );
 
       return response.data;
     } catch (error) {
@@ -24,9 +25,10 @@ export function useSummarySheetService(): SummarySheetService {
 
   const getSheetById = async (sheetId: string) => {
     try {
-      const response = await axios.get(`${apiUrl}/summary-sheets/${sheetId}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(`${apiUrl}/summary-sheets/${sheetId}`,
+        { withCredentials: true }
+      );
+
       return response.data;
     } catch (error) {
       console.error(`An error ocurred getting the summary sheet ${sheetId}`, error);

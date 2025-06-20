@@ -17,6 +17,9 @@ export default function Generate() {
   const [fileProcessingStates, setFileProcessingStates] =
     useState<FileProcessingState>({});
 
+  const [uploadedFileIds, setUploadedFileIds] =
+    useState<{ [localFileId: string]: string }>({});
+
   // Generation logic
   const {
     isGenerationLaunched,
@@ -53,7 +56,7 @@ export default function Generate() {
         <>
           <GeneratorHeader />
           <GeneratorForm
-            onSubmit={handleGenerate}
+            onSubmit={(formFields) => handleGenerate(formFields, uploadedFileIds)}
             selectedFiles={selectedFiles}
             setSelectedFiles={setSelectedFiles}
             onRecognizedText={handleRecognizedText}
@@ -63,6 +66,8 @@ export default function Generate() {
             processedFiles={processedFiles}
             setProcessedFiles={setProcessedFiles}
             isRecognizing={isRecognizing}
+            uploadedFileIds={uploadedFileIds}
+            setUploadedFileIds={setUploadedFileIds}
           />
         </>
       )}

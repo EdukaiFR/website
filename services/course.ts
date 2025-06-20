@@ -6,6 +6,7 @@ export interface CourseService {
   getCourseById: (courseId: string) => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
   addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
+  addFileToCourse: (courseId: string, fileId: string) => Promise<any>;
   createExam: (
     courseId: string,
     title: string,
@@ -25,6 +26,8 @@ export interface CourseService {
   ) => Promise<{ message: string } | null>;
   getCourses: () => Promise<any>;
 }
+
+// TODO: change console messages to english
 
 export function useCourseService() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -103,6 +106,22 @@ export function useCourseService() {
     } catch (error) {
       console.error(
         `An error ocurred adding the summary sheet ${sheetId} to the course ${courseId}`,
+        error
+      );
+    }
+  };
+
+  const addFileToCourse = async (courseId: string, fileId: string) => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/courses/${courseId}/addFile`,
+        { fileId: fileId },
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `An error ocurred adding the file ${fileId} to the course ${courseId}`,
         error
       );
     }
@@ -191,6 +210,7 @@ export function useCourseService() {
     getCourseById,
     addQuizToCourse,
     addSheetToCourse,
+    addFileToCourse,
     createExam,
     getExamById,
     updateExamById,

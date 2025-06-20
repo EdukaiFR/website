@@ -1,5 +1,7 @@
 "use client";
 
+import type { FileProcessingState } from "@/lib/types/generator";
+import { useState } from "react";
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,10 +11,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import type { FileProcessingState } from "@/lib/types/generator";
 import clsx from "clsx";
 import { CircleX, CloudUpload, FileText } from "lucide-react";
-import { useState } from "react";
+
+import { useBlob } from "@/hooks";
+import { useBlobService } from "@/services";
 
 type FileUploadProps = {
   selectedFiles: File[];
@@ -30,6 +33,8 @@ type FileUploadProps = {
   setProcessedFiles: (
     files: Set<string> | ((prev: Set<string>) => Set<string>)
   ) => void;
+  uploadedFileIds: { [localFileId: string]: string };
+  setUploadedFileIds : React.Dispatch<React.SetStateAction<{ [localFileId: string]: string }>>;
 };
 
 const MAX_CONCURRENT_PROCESSING = 2;
@@ -44,12 +49,16 @@ export function FileUpload({
   setFileProcessingStates,
   processedFiles,
   setProcessedFiles,
+  uploadedFileIds,
+  setUploadedFileIds
 }: FileUploadProps) {
   const [isDragActive, setIsDragActive] = useState(false);
-
   const isRecognizing = Object.values(fileProcessingStates).some(Boolean);
   const currentlyProcessingCount =
     Object.values(fileProcessingStates).filter(Boolean).length;
+
+  const blobService = useBlobService();
+  const { uploadFile } = useBlob(blobService);
 
   const setFileProcessing = (fileId: string, isProcessing: boolean) => {
     setFileProcessingStates((prev) => ({
@@ -66,11 +75,25 @@ export function FileUpload({
     return processedFiles.has(fileId);
   };
 
+  const handleFileUpload = async (file: File, localFileId: string) => {
+    try {
+      const uploadResponse = await uploadFile(file, "course");
+      setUploadedFileIds((prev: any) => ({ ...prev, [localFileId]: uploadResponse?.newFileId }));
+    } catch (err) {
+      console.error("An error occured uploading files");
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     const newFiles = [...selectedFiles, ...files];
     setSelectedFiles(newFiles);
     onFilesChange(newFiles);
+
+    files.forEach((file, index) => {
+      const localFileId = `${file.name}-${file.size}-${selectedFiles.length + index}`;
+      handleFileUpload(file, localFileId);
+    });
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {

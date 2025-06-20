@@ -24,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { FileUpload } from "./file-upload";
 
 type GeneratorFormProps = {
-  onSubmit: (data: GeneratorForm) => Promise<void>;
+  onSubmit: (data: GeneratorForm, uploadedFileIds: { [localFileId: string]: string }) => Promise<void>;
   selectedFiles: File[];
   setSelectedFiles: (files: File[] | ((prev: File[]) => File[])) => void;
   onRecognizedText: (text: string, fileId: string) => void;
@@ -40,6 +40,8 @@ type GeneratorFormProps = {
     files: Set<string> | ((prev: Set<string>) => Set<string>)
   ) => void;
   isRecognizing: boolean;
+  uploadedFileIds: { [localFileId: string]: string };
+  setUploadedFileIds : React.Dispatch<React.SetStateAction<{ [localFileId: string]: string }>>;
 };
 
 export function GeneratorForm({
@@ -53,6 +55,8 @@ export function GeneratorForm({
   processedFiles,
   setProcessedFiles,
   isRecognizing,
+  uploadedFileIds,
+  setUploadedFileIds
 }: GeneratorFormProps) {
   const form = useForm<GeneratorFormSchemaType>({
     resolver: zodResolver(GeneratorFormSchema),
@@ -79,7 +83,7 @@ export function GeneratorForm({
         level: data.level,
         files: data.files,
       };
-      await onSubmit(formFields);
+      await onSubmit(formFields, uploadedFileIds);
     } catch (error: unknown) {
       console.error("Error submitting form: ", error);
     }
@@ -94,8 +98,9 @@ export function GeneratorForm({
     const subscription = form.watch(() => {
       // Trigger validation when form values change
     });
+    console.log("Uploaded file id's: ", uploadedFileIds)
     return () => subscription.unsubscribe();
-  }, [form]);
+  }, [form, uploadedFileIds]);
 
   return (
     <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm max-w-4xl mx-auto w-full">
@@ -194,6 +199,8 @@ export function GeneratorForm({
                   setFileProcessingStates={setFileProcessingStates}
                   processedFiles={processedFiles}
                   setProcessedFiles={setProcessedFiles}
+                  uploadedFileIds={uploadedFileIds}
+                  setUploadedFileIds={setUploadedFileIds}
                 />
               )}
             />
