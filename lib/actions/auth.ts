@@ -1,6 +1,16 @@
-'use server';
-
-import { SigninFormValues, SignupFormValues, ResetPasswordFormValues, ChangePasswordFormValues } from '@/lib/schemas/auth';
+import {
+  SigninFormValues,
+  SignupFormValues,
+  ResetPasswordFormValues,
+  ChangePasswordFormValues,
+} from "@/lib/schemas/auth";
+import {
+  useAuthService,
+  LoginCredentials,
+  RegisterData,
+} from "@/services/auth";
+import { sessionStorage } from "@/lib/session";
+import { translateApiError } from "@/lib/toast";
 
 // Types for auth responses
 export interface AuthResponse {
@@ -18,143 +28,130 @@ export interface AuthUser {
 }
 
 // Signin action
-export async function signinAction(data: SigninFormValues): Promise<AuthResponse> {
+export async function signinAction(
+  data: SigninFormValues
+): Promise<AuthResponse> {
+  const authService = useAuthService();
   try {
-    // TODO: Implement actual authentication logic
-    // This is a placeholder for the actual API call
-    console.log('Signin attempt:', { email: data.email });
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock response - replace with actual authentication logic
-    if (data.email === 'test@example.com' && data.password === 'password') {
-      return {
-        success: true,
-        data: {
-          user: {
-            id: '1',
-            email: data.email,
-            firstName: 'Test',
-            lastName: 'User',
-            createdAt: new Date(),
-          },
-          token: 'mock-jwt-token',
-        },
-      };
-    }
-    
-    return {
-      success: false,
-      error: 'Email ou mot de passe incorrect',
+    // Map form data to API format
+    const credentials: LoginCredentials = {
+      username: data.email, // API expects username, form uses email
+      password: data.password,
     };
-  } catch (error) {
-    console.error('Signin error:', error);
+
+    const response = await authService.login(credentials);
+    sessionStorage.setToken(response.token);
+    sessionStorage.setUser(response.user);
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
+    console.error("Signin error:", error);
     return {
       success: false,
-      error: 'Une erreur est survenue lors de la connexion',
+      error: translateApiError(
+        error.response?.data?.message ||
+          "Une erreur est survenue lors de la connexion"
+      ),
     };
   }
 }
 
 // Signup action
-export async function signupAction(data: SignupFormValues): Promise<AuthResponse> {
+export async function signupAction(
+  data: SignupFormValues
+): Promise<AuthResponse> {
+  const authService = useAuthService();
   try {
-    // TODO: Implement actual user registration logic
-    console.log('Signup attempt:', { 
-      email: data.email, 
-      firstName: data.firstName, 
-      lastName: data.lastName 
-    });
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock response - replace with actual registration logic
-    // Check if user already exists (mock)
-    if (data.email === 'existing@example.com') {
-      return {
-        success: false,
-        error: 'Un compte avec cette adresse email existe déjà',
-      };
-    }
-    
+    // Map form data to API format
+    const userData: RegisterData = {
+      username: data.email, // API expects username, form uses email
+      password: data.password,
+      email: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+    };
+
+    const response = await authService.register(userData);
+    sessionStorage.setToken(response.token);
+    sessionStorage.setUser(response.user);
+
     return {
       success: true,
-      data: {
-        user: {
-          id: '1',
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          createdAt: new Date(),
-        },
-        token: 'mock-jwt-token',
-      },
+      data: response,
     };
-  } catch (error) {
-    console.error('Signup error:', error);
+  } catch (error: any) {
+    console.error("Signup error:", error);
     return {
       success: false,
-      error: 'Une erreur est survenue lors de la création du compte',
+      error: translateApiError(
+        error.response?.data?.message ||
+          "Une erreur est survenue lors de la création du compte"
+      ),
     };
   }
 }
 
 // Reset password action
-export async function resetPasswordAction(data: ResetPasswordFormValues): Promise<AuthResponse> {
+export async function resetPasswordAction(
+  data: ResetPasswordFormValues
+): Promise<AuthResponse> {
   try {
     // TODO: Implement actual password reset logic
-    console.log('Reset password attempt:', { email: data.email });
-    
+    console.log("Reset password attempt:", { email: data.email });
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     // Mock response - replace with actual password reset logic
     return {
       success: true,
       data: {
-        message: 'Un email de réinitialisation a été envoyé à votre adresse',
+        message: "Un email de réinitialisation a été envoyé à votre adresse",
       },
     };
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error("Reset password error:", error);
     return {
       success: false,
-      error: 'Une erreur est survenue lors de la réinitialisation',
+      error: "Une erreur est survenue lors de la réinitialisation",
     };
   }
 }
 
 // Change password action
-export async function changePasswordAction(data: ChangePasswordFormValues): Promise<AuthResponse> {
+export async function changePasswordAction(
+  data: ChangePasswordFormValues
+): Promise<AuthResponse> {
   try {
     // TODO: Implement actual password change logic
-    console.log('Change password attempt');
-    
+    console.log("Change password attempt");
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Mock response - replace with actual password change logic
     // Verify current password (mock)
-    if (data.currentPassword !== 'currentpassword') {
+    if (data.currentPassword !== "currentpassword") {
       return {
         success: false,
-        error: 'Le mot de passe actuel est incorrect',
+        error: "Le mot de passe actuel est incorrect",
       };
     }
-    
+
     return {
       success: true,
       data: {
-        message: 'Votre mot de passe a été mis à jour avec succès',
+        message: "Votre mot de passe a été mis à jour avec succès",
       },
     };
   } catch (error) {
-    console.error('Change password error:', error);
+    console.error("Change password error:", error);
     return {
       success: false,
-      error: 'Une erreur est survenue lors de la modification du mot de passe',
+      error: "Une erreur est survenue lors de la modification du mot de passe",
     };
   }
 }
@@ -163,22 +160,22 @@ export async function changePasswordAction(data: ChangePasswordFormValues): Prom
 export async function signoutAction(): Promise<AuthResponse> {
   try {
     // TODO: Implement actual signout logic (clear tokens, etc.)
-    console.log('Signout attempt');
-    
+    console.log("Signout attempt");
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     return {
       success: true,
       data: {
-        message: 'Déconnexion réussie',
+        message: "Déconnexion réussie",
       },
     };
   } catch (error) {
-    console.error('Signout error:', error);
+    console.error("Signout error:", error);
     return {
       success: false,
-      error: 'Une erreur est survenue lors de la déconnexion',
+      error: "Une erreur est survenue lors de la déconnexion",
     };
   }
-} 
+}

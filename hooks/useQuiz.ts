@@ -14,6 +14,10 @@ export type Quiz = {
 type Insights = {
   averageScore: number;
   insightsCount: number;
+  insights?: Array<{
+    score: number;
+    createdAt: string;
+  }>;
 };
 
 export function useQuiz(
@@ -41,6 +45,10 @@ export function useQuiz(
     } catch (error) {
       console.error("Error generating quiz: ", error);
       setError("Failed to generate quiz. Please try again.");
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Erreur inconnue",
+      };
     } finally {
       setIsGenerating(false);
     }
@@ -64,11 +72,44 @@ export function useQuiz(
 
   const getQuizInsights = async (quizId: string) => {
     try {
+      console.log("🔍 [useQuiz] Getting insights for quiz:", quizId);
       const insights = await insightsService?.getQuizInsights(quizId);
+      console.log("✅ [useQuiz] Raw insights from API:", insights);
+      console.log("✅ [useQuiz] Insights type:", typeof insights);
+      console.log(
+        "✅ [useQuiz] Insights structure:",
+        JSON.stringify(insights, null, 2)
+      );
+
       setInsightsData(insights);
+      console.log("✅ [useQuiz] Set insights data to state");
+      return insights;
     } catch (error) {
-      console.error(`Error getting quiz ${quizId} `, error);
-      setError("Failed to load quiz. Please try again.");
+      console.error(
+        `❌ [useQuiz] Error getting insights for quiz ${quizId}:`,
+        error
+      );
+      setError("Failed to load quiz insights.");
+      return null;
+    }
+  };
+
+  const createInsight = async (quizId: string, score: number) => {
+    try {
+      if (!insightsService) {
+        console.warn("Insights service not available");
+        return null;
+      }
+
+      const insight = await insightsService.createInsight(quizId, score);
+
+      // Refresh insights data after creating new insight
+      await getQuizInsights(quizId);
+
+      return insight;
+    } catch (error) {
+      console.error(`Error creating insight for quiz ${quizId}`, error);
+      setError("Failed to save quiz result.");
       return null;
     }
   };
@@ -83,5 +124,6 @@ export function useQuiz(
     generateQuiz,
     loadQuiz,
     getQuizInsights,
+    createInsight,
   };
 }

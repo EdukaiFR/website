@@ -34,23 +34,33 @@ export const EndQuizCard = ({
   };
 
   return (
-    <div className={`bg-white/70 backdrop-blur-sm rounded-2xl p-4 border-0 shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}>
+    <div
+      className={`bg-white/70 backdrop-blur-sm rounded-2xl p-4 border-0 shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
           <Trophy className="w-4 h-4 text-white" />
         </div>
-        <h3 className="text-base font-semibold text-gray-800">Quiz terminé !</h3>
+        <h3 className="text-base font-semibold text-gray-800">
+          Quiz terminé !
+        </h3>
       </div>
 
       {/* Score Display */}
       <div className={`${getScoreBg()} rounded-2xl p-4 mb-4 text-center`}>
         <div className="flex items-end justify-center gap-2 mb-3">
-          <span className={`text-4xl font-bold ${getScoreColor()}`}>{score}</span>
-          <span className={`text-lg font-medium ${getScoreColor()} mb-1`}>%</span>
+          <span className={`text-2xl font-bold ${getScoreColor()}`}>
+            {score}
+          </span>
+          <span className={`text-lg font-medium ${getScoreColor()} mb-1`}>
+            %
+          </span>
         </div>
         <p className="text-sm text-gray-600 mb-2">de bonnes réponses</p>
-        <p className={`font-semibold ${getScoreColor()}`}>{getScoreMessage()}</p>
+        <p className={`font-semibold ${getScoreColor()}`}>
+          {getScoreMessage()}
+        </p>
       </div>
 
       {/* Stats */}

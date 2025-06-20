@@ -1,15 +1,26 @@
 import { getPercentage, normalizeText } from "@/lib/utils";
 import { rankings } from "@/public/mocks/default-value";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
 import { PossibleAnswers } from "./PossibleAnswers";
-import { toast } from "sonner";
+import { quizToast, insightsToast } from "@/lib/toast";
+import type { InsightsService } from "@/services";
 
 export type QuizProps = {
   course_id: string;
   quiz_data: unknown[];
+  quiz_id?: string;
+  insights_service?: InsightsService;
+  insights_data?: {
+    averageScore: number;
+    insightsCount: number;
+    insights?: Array<{
+      score: number;
+      createdAt: string;
+    }>;
+  };
 };
 
 type QuizQuestion = {
@@ -19,10 +30,17 @@ type QuizQuestion = {
   explanation: string;
 };
 
-export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
+export const Quiz = ({
+  course_id,
+  quiz_data,
+  quiz_id,
+  insights_service,
+  insights_data,
+}: QuizProps) => {
   const typedQuizData = quiz_data as QuizQuestion[];
   const [questionIndex, setQuestionIndex] = useState<number>(1);
-  const [answeredQuestionsCount, setAnsweredQuestionsCount] = useState<number>(0);
+  const [answeredQuestionsCount, setAnsweredQuestionsCount] =
+    useState<number>(0);
 
   const [answer, setAnswer] = useState<string>(
     typedQuizData[questionIndex - 1]?.answer || ""
@@ -35,23 +53,46 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
   const [isFinish, setIsFinish] = useState<boolean>(false);
 
+  // Create insight when quiz is finished
+  useEffect(() => {
+    const createQuizInsight = async () => {
+      if (isFinish && quiz_id && insights_service) {
+        try {
+          const finalScore = getPercentage(score, typedQuizData.length);
+          await insights_service.createInsight(quiz_id, finalScore);
+          console.log("✅ Quiz insight created successfully");
+          insightsToast.createSuccess();
+
+          // Force refresh insights data after creating new insight
+          console.log("🔄 [Quiz] Refreshing insights after quiz completion");
+          await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay to ensure backend is updated
+        } catch (error) {
+          console.error("❌ Failed to create quiz insight:", error);
+          insightsToast.createError();
+        }
+      }
+    };
+
+    createQuizInsight();
+  }, [isFinish, quiz_id, score, typedQuizData.length, insights_service]);
+
   const handleSubmitQuestion = () => {
     try {
       setProcessingSubmit(true);
-      
+
       // Extract just the letter from both selected answer and correct answer
       const selectedLetter = selectedAnswer.charAt(0);
       const correctLetter = answer.charAt(0);
-      
+
       const isCorrectAnswer = selectedLetter === correctLetter;
-      
+
       if (isCorrectAnswer) {
         setScore(score + 1);
       }
       setIsAnswer(true);
     } catch (error: unknown) {
-      console.error("Oups.. An error occured:", error);
-      toast.error("Une erreur s'est produite");
+      console.error("Oups.. Une erreur est survenue:", error);
+      quizToast.generateError();
     } finally {
       setProcessingSubmit(false);
     }
@@ -60,10 +101,10 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
   const handleNextQuestion = () => {
     try {
       setProcessingSubmit(true);
-      
+
       // Increment answered questions count when moving to next question
       setAnsweredQuestionsCount(answeredQuestionsCount + 1);
-      
+
       if (questionIndex >= typedQuizData.length) {
         // end game
         setIsFinish(true);
@@ -74,8 +115,8 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       setIsAnswer(false);
       setQuestionIndex(questionIndex + 1);
     } catch (error: unknown) {
-      console.error("Oups.. An error occured:", error);
-      toast.error("Une erreur s'est produite");
+      console.error("Oups.. Une erreur est survenue:", error);
+      quizToast.loadError();
     } finally {
       setProcessingSubmit(false);
     }
@@ -83,19 +124,19 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
 
   const restartQuiz = () => {
     try {
-      setSelectedAnswer("");
-      setIsFinish(false);
-      setIsAnswer(false);
-      setScore(0);
-      setAnswer(typedQuizData[0]?.answer || "");
+      setProcessingSubmit(true);
       setQuestionIndex(1);
       setAnsweredQuestionsCount(0);
+      setAnswer(typedQuizData[0]?.answer || "");
+      setSelectedAnswer("");
+      setIsAnswer(false);
+      setScore(0);
+      setIsFinish(false);
     } catch (error: unknown) {
-      console.error(
-        "Oups... an error occured when we restart the quiz: ",
-        error
-      );
-      toast.error("Une erreur s'est produite lors du redémarrage du quiz");
+      console.error("Oups.. Une erreur est survenue:", error);
+      quizToast.restartError();
+    } finally {
+      setProcessingSubmit(false);
     }
   };
 
@@ -104,7 +145,9 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
       <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full">
         <div className="flex items-center justify-center w-full h-full min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
-            <p className="text-muted-foreground">Aucune question disponible pour ce quiz.</p>
+            <p className="text-muted-foreground">
+              Aucune question disponible pour ce quiz.
+            </p>
           </div>
         </div>
       </div>
@@ -124,7 +167,10 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
               />
             </div>
             <div className="flex-1">
-              <LastQuiz last_attemps={[]} />
+              <LastQuiz
+                last_attemps={insights_data?.insights || []}
+                insights_data={insights_data}
+              />
             </div>
           </div>
 
@@ -153,14 +199,23 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
             {/* Progress Bar */}
             <div className="mb-6">
               <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${(answeredQuestionsCount / typedQuizData.length) * 100}%` }}
+                  style={{
+                    width: `${
+                      (answeredQuestionsCount / typedQuizData.length) * 100
+                    }%`,
+                  }}
                 />
               </div>
               <div className="flex justify-between text-xs text-gray-500 mt-2">
                 <span>Début</span>
-                <span>{Math.round((answeredQuestionsCount / typedQuizData.length) * 100)}% terminé</span>
+                <span>
+                  {Math.round(
+                    (answeredQuestionsCount / typedQuizData.length) * 100
+                  )}
+                  % terminé
+                </span>
                 <span>Fin</span>
               </div>
             </div>
@@ -177,7 +232,9 @@ export const Quiz = ({ course_id, quiz_data }: QuizProps) => {
               <PossibleAnswers
                 answers={typedQuizData[questionIndex - 1]?.choices || []}
                 correct_answer={typedQuizData[questionIndex - 1]?.answer || ""}
-                explanation={typedQuizData[questionIndex - 1]?.explanation || ""}
+                explanation={
+                  typedQuizData[questionIndex - 1]?.explanation || ""
+                }
                 setSelectedAnswer={setSelectedAnswer}
                 selectedAnswer={selectedAnswer}
                 onSubmitQuestion={handleSubmitQuestion}

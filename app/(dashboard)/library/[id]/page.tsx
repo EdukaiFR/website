@@ -112,6 +112,31 @@ export default function MyCourses() {
     }
   };
 
+  // Ensure insights are loaded when switching to statistics tab
+  useEffect(() => {
+    const loadInsightsForStats = async () => {
+      if (selectedTab === "statistics" && quizId && !insightsData) {
+        console.log(
+          "🔍 [Page] Loading insights for statistics tab, quizId:",
+          quizId
+        );
+        await getQuizInsights(quizId);
+      }
+    };
+
+    loadInsightsForStats();
+  }, [selectedTab, quizId, insightsData, getQuizInsights]);
+
+  // Debug logging for insights data
+  useEffect(() => {
+    console.log("🔍 [Page] Debug - Insights data updated:", {
+      quizId,
+      insightsData,
+      selectedTab,
+      hasInsightsService: !!insightsService,
+    });
+  }, [insightsData, quizId, selectedTab]);
+
   // Delete Exam
   const deleteExam = async (examId: string) => {
     try {
@@ -170,11 +195,13 @@ export default function MyCourses() {
   // Modern Loading UI
   if (!courseData || !quizData) {
     return (
-      <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
-        <div className="flex items-center justify-center w-full h-full min-h-[60vh]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="text-muted-foreground">Chargement du cours...</p>
+      <div className="flex flex-col gap-4 sm:gap-6 px-3 sm:px-4 lg:px-8 py-3 sm:py-6 min-h-[calc(100vh-3.5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex items-center justify-center w-full h-full min-h-[50vh] sm:min-h-[60vh]">
+          <div className="flex flex-col items-center gap-3 sm:gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Chargement du cours...
+            </p>
           </div>
         </div>
       </div>
@@ -182,7 +209,38 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 lg:px-6 py-4 h-[calc(100vh-8rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
+    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
+      <style jsx global>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          box-sizing: border-box;
+          max-width: 100%;
+        }
+        html,
+        body {
+          max-width: 100vw;
+        }
+        /* Prevent any navigation elements from overflowing */
+        nav,
+        .nav,
+        [role="navigation"] {
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+        /* Ensure buttons and interactive elements don't overflow */
+        button,
+        .btn {
+          max-width: 100%;
+          word-break: break-word;
+        }
+      `}</style>
+
       <Header
         courseData={courseData}
         selectedTab={selectedTab}
@@ -196,13 +254,13 @@ export default function MyCourses() {
         />
       )}
 
-      {/* Content without scroll - compact layout */}
-      <div className="flex-1 min-h-0">
+      {/* Content with responsive layout */}
+      <div className="flex-1 min-h-0 w-full max-w-full">
         {/* Display the good section depends on selectedTab */}
         {selectedTab === "overview" && (
-          <Overview 
-            overview={null} 
-            course_id={course.id.toString()}
+          <Overview
+            overview={null}
+            course_id={courseId}
             examsData={examsData}
             createExam={createExam}
             getExams={getExams}
@@ -212,14 +270,11 @@ export default function MyCourses() {
           />
         )}
         {selectedTab === "resumeFiles" && (
-          <ResumeFiles
-            course_id={course.id.toString()}
-            resumeFiles={resumeFilesValue}
-          />
+          <ResumeFiles course_id={courseId} resumeFiles={resumeFilesValue} />
         )}
         {selectedTab === "exams" && (
           <Exams
-            course_id={courseId.toString()}
+            course_id={courseId}
             exams={examsData}
             createExam={createExam}
             getExams={getExams}
@@ -229,19 +284,28 @@ export default function MyCourses() {
           />
         )}
         {selectedTab === "objectives" && (
-          <Objectives course_id={course.id.toString()} objectives={null} />
+          <Objectives course_id={courseId} objectives={null} />
         )}
         {selectedTab === "statistics" && (
-          <Statistics course_id={course.id.toString()} statistics={null} />
-        )}
-        {selectedTab === "similarCourses" && (
-          <SimilarCourses
-            course_id={course.id.toString()}
-            similarCourses={null}
+          <Statistics
+            course_id={courseId}
+            statistics={null}
+            quiz_id={quizId}
+            insights_service={insightsService}
+            insights_data={insightsData}
           />
         )}
+        {selectedTab === "similarCourses" && (
+          <SimilarCourses course_id={courseId} similarCourses={null} />
+        )}
         {selectedTab === "quiz" && (
-          <Quiz course_id={course.id.toString()} quiz_data={quizData} />
+          <Quiz
+            course_id={courseId}
+            quiz_data={quizData}
+            quiz_id={quizId}
+            insights_service={insightsService}
+            insights_data={insightsData}
+          />
         )}
       </div>
     </div>

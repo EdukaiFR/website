@@ -1,11 +1,12 @@
 import {
   Bell,
-  Earth,
-  LayoutDashboard,
-  LibraryBig,
-  LifeBuoy,
+  Users,
+  Home,
+  BookOpen,
+  HelpCircle,
   Settings,
-  Sparkles,
+  Zap,
+  GraduationCap,
 } from "lucide-react";
 
 /*
@@ -24,22 +25,22 @@ export function useLinks() {
     {
       href: "/",
       label: "Accueil",
-      Icon: LayoutDashboard,
+      Icon: Home,
     },
     {
       href: "/generate",
       label: "Générer",
-      Icon: Sparkles,
+      Icon: Zap,
     },
     {
       href: "/club-edukai",
       label: "Club Edukai",
-      Icon: Earth,
+      Icon: Users,
     },
     {
       href: "/library",
       label: "Bibliothèque",
-      Icon: LibraryBig,
+      Icon: GraduationCap,
     },
   ];
 
@@ -52,7 +53,7 @@ export function useLinks() {
     {
       href: "/support",
       label: "Assistance",
-      Icon: LifeBuoy,
+      Icon: HelpCircle,
     },
     {
       href: "/settings",

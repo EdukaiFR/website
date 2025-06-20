@@ -15,12 +15,17 @@ import {
   AlertTriangle,
   BookOpen,
   Calendar,
-  Star
+  Star,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-type NotificationType = "success" | "info" | "warning" | "achievement" | "reminder";
+type NotificationType =
+  | "success"
+  | "info"
+  | "warning"
+  | "achievement"
+  | "reminder";
 
 type Notification = {
   id: string;
@@ -39,50 +44,55 @@ const mockNotifications: Notification[] = [
     id: "1",
     type: "achievement",
     title: "🎉 Nouveau badge débloqué !",
-    message: "Félicitations ! Tu as terminé 5 quiz d'affilée. Tu as débloqué le badge 'Étudiant assidu'.",
+    message:
+      "Félicitations ! Tu as terminé 5 quiz d'affilée. Tu as débloqué le badge 'Étudiant assidu'.",
     timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
     isRead: false,
     actionUrl: "/achievements",
-    actionLabel: "Voir mes badges"
+    actionLabel: "Voir mes badges",
   },
   {
     id: "2",
     type: "reminder",
     title: "📚 Rappel d'examen",
-    message: "Ton examen de Mathématiques est prévu dans 2 jours. Il est temps de réviser !",
+    message:
+      "Ton examen de Mathématiques est prévu dans 2 jours. Il est temps de réviser !",
     timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
     isRead: false,
     actionUrl: "/library/6841219f211bac0652987453",
-    actionLabel: "Réviser maintenant"
+    actionLabel: "Réviser maintenant",
   },
   {
     id: "3",
     type: "success",
     title: "✅ Quiz terminé",
-    message: "Tu as obtenu 18/20 au quiz 'Les équations du second degré'. Excellent travail !",
+    message:
+      "Tu as obtenu 18/20 au quiz 'Les équations du second degré'. Excellent travail !",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
     isRead: true,
     actionUrl: "/library/6841219f211bac0652987453",
-    actionLabel: "Voir les détails"
+    actionLabel: "Voir les détails",
   },
   {
     id: "4",
     type: "info",
     title: "📖 Nouveau cours disponible",
-    message: "Un nouveau cours 'Probabilités et Statistiques' a été ajouté à ta bibliothèque.",
+    message:
+      "Un nouveau cours 'Probabilités et Statistiques' a été ajouté à ta bibliothèque.",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
     isRead: true,
     actionUrl: "/library",
-    actionLabel: "Explorer"
+    actionLabel: "Explorer",
   },
   {
     id: "5",
     type: "warning",
     title: "⚠️ Session expirée",
-    message: "Ta session a expiré. Reconnecte-toi pour continuer à utiliser Edukai.",
+    message:
+      "Ta session a expiré. Reconnecte-toi pour continuer à utiliser Edukai.",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
     isRead: true,
-  }
+  },
 ];
 
 const getNotificationIcon = (type: NotificationType) => {
@@ -120,39 +130,42 @@ const getNotificationColor = (type: NotificationType) => {
 const formatTimeAgo = (date: Date) => {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
+
   if (diffInSeconds < 60) return "À l'instant";
-  if (diffInSeconds < 3600) return `Il y a ${Math.floor(diffInSeconds / 60)} min`;
-  if (diffInSeconds < 86400) return `Il y a ${Math.floor(diffInSeconds / 3600)} h`;
-  if (diffInSeconds < 2592000) return `Il y a ${Math.floor(diffInSeconds / 86400)} j`;
+  if (diffInSeconds < 3600)
+    return `Il y a ${Math.floor(diffInSeconds / 60)} min`;
+  if (diffInSeconds < 86400)
+    return `Il y a ${Math.floor(diffInSeconds / 3600)} h`;
+  if (diffInSeconds < 2592000)
+    return `Il y a ${Math.floor(diffInSeconds / 86400)} j`;
   return date.toLocaleDateString("fr-FR");
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(mockNotifications);
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-  
-  const filteredNotifications = filter === "unread" 
-    ? notifications.filter(n => !n.isRead)
-    : notifications;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const filteredNotifications =
+    filter === "unread"
+      ? notifications.filter((n) => !n.isRead)
+      : notifications;
 
   const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, isRead: true } : n)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(n => ({ ...n, isRead: true }))
-    );
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     toast.success("Toutes les notifications ont été marquées comme lues");
   };
 
   const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
     toast.success("Notification supprimée");
   };
 
@@ -175,11 +188,12 @@ export default function NotificationsPage() {
               {unreadCount > 0 ? `${unreadCount} nouvelles` : "À jour"}
             </Badge>
           </div>
-          <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-2">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
             Notifications
           </h1>
           <p className="text-blue-100 text-sm sm:text-base lg:text-lg max-w-2xl">
-            Reste informé de tes progrès, examens à venir et nouvelles fonctionnalités.
+            Reste informé de tes progrès, examens à venir et nouvelles
+            fonctionnalités.
           </p>
         </div>
         {/* Decorative elements */}
@@ -197,9 +211,10 @@ export default function NotificationsPage() {
                 variant={filter === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter("all")}
-                className={`text-xs lg:text-sm h-8 lg:h-9 ${filter === "all" 
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg" 
-                  : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                className={`text-xs lg:text-sm h-8 lg:h-9 ${
+                  filter === "all"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                    : "border-gray-200 text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Toutes ({notifications.length})
@@ -208,9 +223,10 @@ export default function NotificationsPage() {
                 variant={filter === "unread" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter("unread")}
-                className={`text-xs lg:text-sm h-8 lg:h-9 ${filter === "unread" 
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg" 
-                  : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                className={`text-xs lg:text-sm h-8 lg:h-9 ${
+                  filter === "unread"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                    : "border-gray-200 text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Non lues ({unreadCount})
@@ -227,7 +243,9 @@ export default function NotificationsPage() {
                   className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs lg:text-sm h-8 lg:h-9"
                 >
                   <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-2" />
-                  <span className="hidden sm:inline">Tout marquer comme lu</span>
+                  <span className="hidden sm:inline">
+                    Tout marquer comme lu
+                  </span>
                   <span className="sm:hidden">Marquer tout</span>
                 </Button>
               )}
@@ -259,13 +277,14 @@ export default function NotificationsPage() {
                 </div>
                 <div>
                   <h3 className="text-base lg:text-lg font-semibold text-gray-800 mb-2">
-                    {filter === "unread" ? "Aucune notification non lue" : "Aucune notification"}
+                    {filter === "unread"
+                      ? "Aucune notification non lue"
+                      : "Aucune notification"}
                   </h3>
                   <p className="text-gray-500 max-w-md text-sm lg:text-base">
-                    {filter === "unread" 
+                    {filter === "unread"
                       ? "Tu es à jour ! Toutes tes notifications ont été lues."
-                      : "Tu n'as pas encore de notifications. Elles apparaîtront ici quand tu en recevras."
-                    }
+                      : "Tu n'as pas encore de notifications. Elles apparaîtront ici quand tu en recevras."}
                   </p>
                 </div>
               </div>
@@ -282,16 +301,22 @@ export default function NotificationsPage() {
               <CardContent className="p-4 lg:p-6">
                 <div className="flex items-start gap-3 lg:gap-4">
                   {/* Icon */}
-                  <div className={`p-2 lg:p-3 rounded-xl shrink-0 ${getNotificationColor(notification.type)}`}>
+                  <div
+                    className={`p-2 lg:p-3 rounded-xl shrink-0 ${getNotificationColor(
+                      notification.type
+                    )}`}
+                  >
                     {getNotificationIcon(notification.type)}
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-2">
-                      <h3 className={`text-sm lg:text-base font-semibold text-gray-800 ${
-                        !notification.isRead ? "text-gray-900" : ""
-                      }`}>
+                      <h3
+                        className={`text-sm lg:text-base font-semibold text-gray-800 ${
+                          !notification.isRead ? "text-gray-900" : ""
+                        }`}
+                      >
                         {notification.title}
                       </h3>
                       <div className="flex items-center gap-1 lg:gap-2 text-xs text-gray-500 shrink-0">
@@ -314,7 +339,9 @@ export default function NotificationsPage() {
                             onClick={() => {
                               markAsRead(notification.id);
                               // In a real app, you'd navigate to the URL
-                              toast.success(`Redirection vers ${notification.actionLabel}`);
+                              toast.success(
+                                `Redirection vers ${notification.actionLabel}`
+                              );
                             }}
                           >
                             {notification.actionLabel}
@@ -327,7 +354,9 @@ export default function NotificationsPage() {
                             onClick={() => markAsRead(notification.id)}
                             className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs lg:text-sm h-8 lg:h-9"
                           >
-                            <span className="hidden sm:inline">Marquer comme lu</span>
+                            <span className="hidden sm:inline">
+                              Marquer comme lu
+                            </span>
                             <span className="sm:hidden">Lu</span>
                           </Button>
                         )}
@@ -363,20 +392,20 @@ export default function NotificationsPage() {
                 <div className="text-xs text-gray-600">Total</div>
               </div>
               <div className="text-center p-3 lg:p-4 bg-green-50 rounded-2xl">
-                <div className="text-xl lg:text-2xl font-bold text-green-600 mb-1">
-                  {notifications.filter(n => n.isRead).length}
+                <div className="text-lg lg:text-xl font-bold text-green-600 mb-1">
+                  {notifications.filter((n) => n.isRead).length}
                 </div>
                 <div className="text-xs text-gray-600">Lues</div>
               </div>
               <div className="text-center p-3 lg:p-4 bg-orange-50 rounded-2xl">
-                <div className="text-xl lg:text-2xl font-bold text-orange-600 mb-1">
+                <div className="text-lg lg:text-xl font-bold text-orange-600 mb-1">
                   {unreadCount}
                 </div>
                 <div className="text-xs text-gray-600">Non lues</div>
               </div>
               <div className="text-center p-3 lg:p-4 bg-purple-50 rounded-2xl">
-                <div className="text-xl lg:text-2xl font-bold text-purple-600 mb-1">
-                  {notifications.filter(n => n.type === "achievement").length}
+                <div className="text-lg lg:text-xl font-bold text-purple-600 mb-1">
+                  {notifications.filter((n) => n.type === "achievement").length}
                 </div>
                 <div className="text-xs text-gray-600">Badges</div>
               </div>
@@ -386,4 +415,4 @@ export default function NotificationsPage() {
       )}
     </div>
   );
-} 
+}

@@ -1,7 +1,5 @@
 "use client";
 
-import { BadgeCheck, LogOut, Sparkles, Settings } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,118 +16,134 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useSession } from "@/hooks/useSession";
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export function NavUser() {
-  const { isMobile, state } = useSidebar();
-  const router = useRouter();
-  
+  const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const router = useRouter();
+  const { user } = useSession();
 
-  const logout = async () => {
-    try {
-      // Add any logout logic here (clear tokens, etc.)
-    } catch (err: unknown) {
-      console.error("Unexpected error during logout:", err);
-      toast.error("Erreur lors de la déconnexion");
-    } finally {
-      router.push("/auth");
-      toast.success("Déconnexion réussie.");
-    }
-  };
+  if (!user) {
+    return null;
+  }
 
-  const goToSettings = () => {
-    router.push("/settings");
+  const displayName =
+    user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user.username || user.email || "User";
+
+  const initials = displayName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  const handleSignOut = () => {
+    router.push("/auth");
   };
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem className={isCollapsed ? 'flex justify-center' : ''}>
+    <SidebarMenu className="px-2">
+      <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className={`group flex items-center gap-3 ${isCollapsed ? 'p-2 justify-center mx-auto w-fit' : 'p-3'} rounded-xl transition-all duration-200 text-gray-700 hover:bg-white/70 hover:shadow-md hover:transform hover:scale-[1.01] backdrop-blur-sm h-auto`}
+              className={`group flex items-center transition-all duration-200 bg-gradient-to-r from-gray-50 to-gray-100/50 hover:from-white hover:to-gray-50 hover:shadow-md hover:shadow-gray-200/50 border border-gray-200/50 hover:border-gray-300/50 backdrop-blur-sm h-auto ${
+                isCollapsed
+                  ? "justify-center p-2.5 w-8 h-8"
+                  : "gap-3 px-3 py-2.5 rounded-xl"
+              }`}
             >
-              {isCollapsed ? (
-                // Collapsed: Just avatar with status indicator
-                <div className="relative flex items-center justify-center">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                    <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
-                      TH
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              {/* Avatar - always visible */}
+              <div
+                className={`relative flex-shrink-0 flex items-center justify-center ${
+                  isCollapsed ? "w-auto h-auto" : "w-5 h-5"
+                }`}
+              >
+                <Avatar
+                  className={`ring-1 ring-white shadow-sm ${
+                    isCollapsed ? "h-8 w-8 ring-2" : "h-5 w-5"
+                  }`}
+                >
+                  <AvatarImage src="/temp/profile.svg" alt={displayName} />
+                  <AvatarFallback
+                    className={`bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-semibold ${
+                      isCollapsed ? "text-sm" : "text-[10px]"
+                    }`}
+                  >
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  className={`absolute -top-0.5 -right-0.5 bg-gradient-to-br from-green-400 to-green-500 rounded-full border border-white shadow-sm ${
+                    isCollapsed ? "w-3 h-3 border-2" : "w-2 h-2"
+                  }`}
+                ></div>
+              </div>
+
+              {/* User info - hidden when collapsed */}
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="truncate text-sm font-semibold text-gray-800">
+                    {displayName}
+                  </span>
+                  <span className="truncate text-xs text-gray-600">
+                    {user.email}
+                  </span>
                 </div>
-              ) : (
-                // Expanded: Full user info - matching other nav items styling
-                <div className="flex items-center gap-3 w-full text-left">
-                  <div className="relative flex-shrink-0">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                      <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
-                        TH
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <div className="font-semibold text-base text-gray-700 group-hover:text-gray-900 truncate">Tristan H</div>
-                    <div className="text-sm text-blue-600 group-hover:text-indigo-600 truncate">Premium</div>
-                  </div>
-                </div>
+              )}
+
+              {/* Chevron - hidden when collapsed */}
+              {!isCollapsed && (
+                <ChevronsUpDown className="w-4 h-4 text-gray-400" />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-56"
-            side={isMobile ? "top" : "right"}
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            side="bottom"
             align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <div className="relative flex-shrink-0">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/temp/profile.svg" alt="Tristan H" />
-                    <AvatarFallback className="bg-blue-600 text-white text-xs">
-                      TH
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/temp/profile.svg" alt={displayName} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-sm font-semibold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Tristan H</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    tristan@example.com
-                  </span>
+                  <span className="truncate font-semibold">{displayName}</span>
+                  <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={goToSettings}>
-                <Settings className="w-4 h-4" />
-                Paramètres
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Sparkles className="w-4 h-4" />
-                Changer l'abonnement
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck className="w-4 h-4" />
-                Mon compte
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/settings"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="cursor-pointer"
+            >
               <LogOut className="w-4 h-4" />
-              Déconnexion
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

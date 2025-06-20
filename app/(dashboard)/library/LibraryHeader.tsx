@@ -1,4 +1,4 @@
-import { BookOpen } from 'lucide-react';
+import { BookOpen } from "lucide-react";
 
 export const LibraryHeader = () => {
   return (
@@ -13,7 +13,7 @@ export const LibraryHeader = () => {
             Bibliothèque
           </div>
         </div>
-        <h1 className="text-2xl lg:text-4xl font-bold mb-2">Ta bibliothèque</h1>
+        <h1 className="text-xl lg:text-2xl font-bold mb-2">Ta bibliothèque</h1>
         <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
           Ici tu retrouveras tous tes cours générés ainsi que tes favoris
         </p>
@@ -23,4 +23,4 @@ export const LibraryHeader = () => {
       <div className="absolute bottom-4 right-8 w-20 h-20 bg-purple-300/20 rounded-full blur-lg"></div>
     </div>
   );
-}; 
+};

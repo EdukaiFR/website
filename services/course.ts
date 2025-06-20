@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from "axios";
+import { getAuthToken, getCurrentUserId } from "@/lib/auth-utils";
 
 export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
@@ -36,12 +37,17 @@ export function useCourseService() {
     try {
       const response = await axios.post(
         `${apiUrl}/courses/create`,
-        { title, subject, level },
+        { title, subject, level }, // Include the actual user ID from session
         { withCredentials: true }
       );
+
       return response.data;
     } catch (error) {
-      console.error('An error ocurred creating the course', error);
+      console.error(
+        "❌ [Course Service] Erreur lors de la création du cours",
+        error
+      );
+      throw error;
     }
   };
 
@@ -52,7 +58,10 @@ export function useCourseService() {
       });
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred getting the course ${courseId}`, error);
+      console.error(
+        `Erreur lors de la récupération du cours ${courseId}`,
+        error
+      );
     }
   };
 
@@ -63,7 +72,7 @@ export function useCourseService() {
       });
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred getting the courses.`, error);
+      console.error(`Erreur lors de la récupération des cours.`, error);
     }
   };
 
@@ -77,7 +86,7 @@ export function useCourseService() {
       return response.data;
     } catch (error) {
       console.error(
-        `An error ocurred adding the quiz ${quizId} to the course ${courseId}`,
+        `Erreur lors de l'ajout du quiz ${quizId} au cours ${courseId}`,
         error
       );
     }
@@ -115,7 +124,7 @@ export function useCourseService() {
       return response.data;
     } catch (error) {
       console.error(
-        `An error ocurred creating an exam for the course ${courseId}`,
+        `Erreur lors de la création d'un examen pour le cours ${courseId}`,
         error
       );
       return null;
@@ -129,7 +138,10 @@ export function useCourseService() {
       });
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred getting exam ${examId}`, error);
+      console.error(
+        `Erreur lors de la récupération de l'examen ${examId}`,
+        error
+      );
     }
   };
 
@@ -147,7 +159,10 @@ export function useCourseService() {
       );
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred updating exam ${examId}`, error);
+      console.error(
+        `Erreur lors de la mise à jour de l'examen ${examId}`,
+        error
+      );
       return null;
     }
   };
@@ -163,7 +178,10 @@ export function useCourseService() {
       );
       return response.data;
     } catch (error) {
-      console.error(`An error ocurred deleting exam ${examId}`, error);
+      console.error(
+        `Erreur lors de la suppression de l'examen ${examId}`,
+        error
+      );
       return null;
     }
   };
