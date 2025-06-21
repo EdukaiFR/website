@@ -27,8 +27,6 @@ export interface CourseService {
   getCourses: () => Promise<any>;
 }
 
-// TODO: change console messages to english
-
 export function useCourseService() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -40,17 +38,15 @@ export function useCourseService() {
     try {
       const response = await axios.post(
         `${apiUrl}/courses/create`,
-        { title, subject, level }, // Include the actual user ID from session
+        { title, subject, level },
         { withCredentials: true }
       );
 
       return response.data;
+
     } catch (error) {
-      console.error(
-        "❌ [Course Service] Erreur lors de la création du cours",
-        error
-      );
-      throw error;
+      console.error("An error occurred creating the course.", error );
+      return null;
     }
   };
 
@@ -60,11 +56,10 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la récupération du cours ${courseId}`,
-        error
-      );
+      console.error( `An error occurred fetching course ${courseId}`, error);
+      return null;
     }
   };
 
@@ -74,8 +69,10 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(`Erreur lors de la récupération des cours.`, error);
+      console.error(`An error occurred fetching courses.`, error);
+      return null;
     }
   };
 
@@ -88,9 +85,8 @@ export function useCourseService() {
       );
       return response.data;
     } catch (error) {
-      console.error(
-        `Erreur lors de l'ajout du quiz ${quizId} au cours ${courseId}`,
-        error
+      console.error( `An error occurred associating ${quizId} to
+        course ${courseId}`, error
       );
     }
   };
@@ -103,11 +99,12 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `An error ocurred adding the summary sheet ${sheetId} to the course ${courseId}`,
-        error
+      console.error( `An error occurred associating summary sheet ${sheetId} to
+        course ${courseId}`, error
       );
+      return null;
     }
   };
 
@@ -119,11 +116,12 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `An error ocurred adding the file ${fileId} to the course ${courseId}`,
-        error
+      console.error( `An error occurred adding file ${fileId} to
+        course ${courseId}`, error
       );
+      return null;
     }
   };
 
@@ -141,9 +139,10 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
       console.error(
-        `Erreur lors de la création d'un examen pour le cours ${courseId}`,
+        `An error occurred creating exam for course ${courseId}`,
         error
       );
       return null;
@@ -156,11 +155,10 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la récupération de l'examen ${examId}`,
-        error
-      );
+      console.error(`An error occurred fetching the exam ${examId}`, error);
+      return null;
     }
   };
 
@@ -177,11 +175,9 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la mise à jour de l'examen ${examId}`,
-        error
-      );
+      console.error( `An error occurred updating the exam ${examId}`, error);
       return null;
     }
   };
@@ -196,11 +192,9 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la suppression de l'examen ${examId}`,
-        error
-      );
+      console.error(`An error occurred deleting the exam ${examId}`, error);
       return null;
     }
   };
