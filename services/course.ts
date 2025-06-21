@@ -4,6 +4,8 @@ import { getAuthToken, getCurrentUserId } from "@/lib/auth-utils";
 export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
   getCourseById: (courseId: string) => Promise<any>;
+  getCourseFiles: (courseId: string) => Promise<any>;
+  getCourses: () => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
   addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
   addFileToCourse: (courseId: string, fileId: string) => Promise<any>;
@@ -24,7 +26,6 @@ export interface CourseService {
     description: string,
     date: Date
   ) => Promise<{ message: string } | null>;
-  getCourses: () => Promise<any>;
 }
 
 export function useCourseService() {
@@ -72,6 +73,19 @@ export function useCourseService() {
 
     } catch (error) {
       console.error(`An error occurred fetching courses.`, error);
+      return null;
+    }
+  };
+
+  const getCourseFiles = async (courseId: string) => {
+    try {
+      const response = await axios.get(`${apiUrl}/courses/${courseId}/files`, {
+        withCredentials: true,
+      });
+      return response.data;
+
+    } catch (error) {
+      console.error( `An error occurred fetching course ${courseId} files`, error);
       return null;
     }
   };
@@ -202,6 +216,8 @@ export function useCourseService() {
   return {
     createCourse,
     getCourseById,
+    getCourseFiles,
+    getCourses,
     addQuizToCourse,
     addSheetToCourse,
     addFileToCourse,
@@ -209,6 +225,5 @@ export function useCourseService() {
     getExamById,
     updateExamById,
     deleteExamById,
-    getCourses,
   };
 }
