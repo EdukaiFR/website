@@ -102,6 +102,7 @@ export function useCourseService() {
       console.error( `An error occurred associating ${quizId} to
         course ${courseId}`, error
       );
+      return null;
     }
   };
 
