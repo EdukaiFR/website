@@ -82,7 +82,7 @@ export default function MyCourses() {
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
-      loadCourseFiles(courseId)
+      loadCourseFiles(courseId);
     }
   }, [courseId]);
 
@@ -211,7 +211,7 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
+    <div className="course-content flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
       <style jsx global>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
@@ -220,7 +220,7 @@ export default function MyCourses() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        * {
+        .course-content {
           box-sizing: border-box;
           max-width: 100%;
         }
@@ -228,18 +228,24 @@ export default function MyCourses() {
         body {
           max-width: 100vw;
         }
-        /* Prevent any navigation elements from overflowing */
-        nav,
-        .nav,
-        [role="navigation"] {
+        /* Prevent only main content navigation from overflowing, not sidebar */
+        .course-content nav,
+        .course-content .nav,
+        .course-content [role="navigation"]:not([data-sidebar]) {
           max-width: 100%;
           overflow-x: hidden;
         }
-        /* Ensure buttons and interactive elements don't overflow */
-        button,
-        .btn {
+        /* Ensure buttons in course content don't overflow */
+        .course-content button,
+        .course-content .btn {
           max-width: 100%;
           word-break: break-word;
+        }
+        /* Preserve sidebar icons */
+        [data-sidebar] svg,
+        [data-sidebar] [data-lucide] {
+          flex-shrink: 0;
+          display: inline-block !important;
         }
       `}</style>
 
