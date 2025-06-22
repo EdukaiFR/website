@@ -10,6 +10,7 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 import type { Metadata } from "next";
 import { cookies } from "next/headers"; // Pour récupérer les cookies server-side
 import "../globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Edukai",
@@ -26,15 +27,22 @@ export default async function RootLayout({
   const defaultOpen = sidebarState ? sidebarState === "true" : true;
 
   return (
-    <AuthGuard redirectTo="/auth">
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <SidebarInset>
-          <HeaderBreadcrumb />
-          <Separator className="" />
-          <div className="flex flex-1 flex-col gap-4 p-0">{children}</div>
-        </SidebarInset>
-      </SidebarProvider>
-    </AuthGuard>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <AuthGuard redirectTo="/auth">
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <SidebarInset>
+            <HeaderBreadcrumb />
+            <Separator className="" />
+            <div className="flex flex-1 flex-col gap-4 p-0">{children}</div>
+          </SidebarInset>
+        </SidebarProvider>
+      </AuthGuard>
+    </ThemeProvider>
   );
 }
