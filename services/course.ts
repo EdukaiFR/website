@@ -4,8 +4,11 @@ import { getAuthToken, getCurrentUserId } from "@/lib/auth-utils";
 export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
   getCourseById: (courseId: string) => Promise<any>;
+  getCourseFiles: (courseId: string) => Promise<any>;
+  getCourses: () => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
   addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
+  addFileToCourse: (courseId: string, fileId: string) => Promise<any>;
   createExam: (
     courseId: string,
     title: string,
@@ -23,7 +26,6 @@ export interface CourseService {
     description: string,
     date: Date
   ) => Promise<{ message: string } | null>;
-  getCourses: () => Promise<any>;
 }
 
 export function useCourseService() {
@@ -37,17 +39,15 @@ export function useCourseService() {
     try {
       const response = await axios.post(
         `${apiUrl}/courses/create`,
-        { title, subject, level }, // Include the actual user ID from session
+        { title, subject, level },
         { withCredentials: true }
       );
 
       return response.data;
+
     } catch (error) {
-      console.error(
-        "❌ [Course Service] Erreur lors de la création du cours",
-        error
-      );
-      throw error;
+      console.error("An error occurred creating the course.", error );
+      return null;
     }
   };
 
@@ -57,11 +57,10 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la récupération du cours ${courseId}`,
-        error
-      );
+      console.error( `An error occurred fetching course ${courseId}`, error);
+      return null;
     }
   };
 
@@ -71,8 +70,23 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(`Erreur lors de la récupération des cours.`, error);
+      console.error(`An error occurred fetching courses.`, error);
+      return null;
+    }
+  };
+
+  const getCourseFiles = async (courseId: string) => {
+    try {
+      const response = await axios.get(`${apiUrl}/courses/${courseId}/files`, {
+        withCredentials: true,
+      });
+      return response.data;
+
+    } catch (error) {
+      console.error( `An error occurred fetching course ${courseId} files`, error);
+      return null;
     }
   };
 
@@ -85,10 +99,10 @@ export function useCourseService() {
       );
       return response.data;
     } catch (error) {
-      console.error(
-        `Erreur lors de l'ajout du quiz ${quizId} au cours ${courseId}`,
-        error
+      console.error( `An error occurred associating ${quizId} to
+        course ${courseId}`, error
       );
+      return null;
     }
   };
 
@@ -100,11 +114,29 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `An error ocurred adding the summary sheet ${sheetId} to the course ${courseId}`,
-        error
+      console.error( `An error occurred associating summary sheet ${sheetId} to
+        course ${courseId}`, error
       );
+      return null;
+    }
+  };
+
+  const addFileToCourse = async (courseId: string, fileId: string) => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/courses/${courseId}/addFile`,
+        { fileId: fileId },
+        { withCredentials: true }
+      );
+      return response.data;
+
+    } catch (error) {
+      console.error( `An error occurred adding file ${fileId} to
+        course ${courseId}`, error
+      );
+      return null;
     }
   };
 
@@ -122,9 +154,10 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
       console.error(
-        `Erreur lors de la création d'un examen pour le cours ${courseId}`,
+        `An error occurred creating exam for course ${courseId}`,
         error
       );
       return null;
@@ -137,11 +170,10 @@ export function useCourseService() {
         withCredentials: true,
       });
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la récupération de l'examen ${examId}`,
-        error
-      );
+      console.error(`An error occurred fetching the exam ${examId}`, error);
+      return null;
     }
   };
 
@@ -158,11 +190,9 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la mise à jour de l'examen ${examId}`,
-        error
-      );
+      console.error( `An error occurred updating the exam ${examId}`, error);
       return null;
     }
   };
@@ -177,11 +207,9 @@ export function useCourseService() {
         { withCredentials: true }
       );
       return response.data;
+
     } catch (error) {
-      console.error(
-        `Erreur lors de la suppression de l'examen ${examId}`,
-        error
-      );
+      console.error(`An error occurred deleting the exam ${examId}`, error);
       return null;
     }
   };
@@ -189,12 +217,14 @@ export function useCourseService() {
   return {
     createCourse,
     getCourseById,
+    getCourseFiles,
+    getCourses,
     addQuizToCourse,
     addSheetToCourse,
+    addFileToCourse,
     createExam,
     getExamById,
     updateExamById,
     deleteExamById,
-    getCourses,
   };
 }

@@ -1,8 +1,11 @@
 "use client";
 
 import type { GenerationStep, GeneratorForm } from "@/lib/types/generator";
-import { useCourse, useQuiz, useSheet } from "@/hooks";
-import { useCourseService, useQuizService, useSummarySheetService, useBlobService } from "@/services";
+import { useCourse, useQuiz, useSheet, useBlob } from "@/hooks";
+import {
+  useCourseService, useQuizService,
+  useSummarySheetService
+} from "@/services";
 import { useState } from "react";
 
 export function useGeneration() {
@@ -26,7 +29,7 @@ export function useGeneration() {
   // Course creation
   const courseService = useCourseService();
   const { courseId, isCreating, courseError, createCourse,
-    addQuizToCourse,addSheetToCourse } = useCourse(courseService);
+    addQuizToCourse, addSheetToCourse, addFileToCourse } = useCourse(courseService);
 
   // Increment generation step if it's lower than 4
   const incrementGenerationStep = () => {
@@ -67,7 +70,11 @@ export function useGeneration() {
   };
 
   // Handle Generate process
-  const handleGenerate = async (formFields: GeneratorForm) => {
+  const handleGenerate = async (
+      formFields: GeneratorForm,
+      uploadedFileIds: { [localFileId: string]: string }
+  ) => {
+
       if (recognizedTexts.length === 0) return;
 
       console.log("recognizedTexts", recognizedTexts);
@@ -85,6 +92,11 @@ export function useGeneration() {
       }
 
       const courseId = await createCourse(formFields);
+
+      for (const fileId of Object.values(uploadedFileIds)) {
+        console.log(`Associating file: ${fileId}`)
+        await addFileToCourse(courseId, fileId);
+      }
 
       if (quizGeneration?.success) {
         await addQuizToCourse(courseId, quizGeneration.newQuizId);

@@ -74,12 +74,23 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+  const loadCourseFiles = async (courseId: string) => {
+    try {
+      const response = await courseService.getCourseFiles(courseId);
+      return response;
+    } catch (error) {
+      console.error("Error getting course files: ", error);
+      setError("Failed to load course files. Please try again.");
+      return null;
+    }
+  };
+
   const addQuizToCourse = async (courseId: string, quizId: string) => {
     try {
       await courseService.addQuizToCourse(courseId, quizId);
     } catch (error) {
       console.error(
-        `Error adding quiz ${quizId} to course ${courseId} `,
+        `Error associating quiz ${quizId} to course ${courseId} `,
         error
       );
       setError("Failed to associate quiz to course. Please try again.");
@@ -92,10 +103,23 @@ export function useCourse(courseService: CourseService) {
       await courseService.addSheetToCourse(courseId, sheetId);
     } catch (error) {
       console.error(
-        `Error adding summary sheet ${sheetId} to course ${courseId} `,
+        `Error associating summary sheet ${sheetId} to course ${courseId} `,
         error
       );
       setError('Failed to associate summary sheet to course. Please try again.');
+      return null;
+    }
+  };
+
+  const addFileToCourse = async (courseId: string, fileId: string ) => {
+    try {
+      await courseService.addFileToCourse(courseId, fileId);
+    } catch (error) {
+      console.error(
+        `Error associating file ${fileId} to course ${courseId} `,
+        error
+      );
+      setError('Failed to associate file to course. Please try again.');
       return null;
     }
   };
@@ -190,8 +214,10 @@ export function useCourse(courseService: CourseService) {
     createCourse,
     loadCourse,
     loadAllCourses,
+    loadCourseFiles,
     addQuizToCourse,
     addSheetToCourse,
+    addFileToCourse,
     createExam,
     getExams,
     updateExamById,

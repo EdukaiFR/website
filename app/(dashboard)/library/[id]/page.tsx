@@ -44,6 +44,7 @@ export default function MyCourses() {
   const {
     courseData,
     loadCourse,
+    loadCourseFiles,
     examsData,
     createExam,
     getExams,
@@ -81,6 +82,7 @@ export default function MyCourses() {
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
+      loadCourseFiles(courseId)
     }
   }, [courseId]);
 
