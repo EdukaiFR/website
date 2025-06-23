@@ -107,23 +107,28 @@ export function useGeneration() {
 
         const courseId = await createCourse(formFields);
 
-        for (const fileId of Object.values(uploadedFileIds)) {
-            console.log(`Associating file: ${fileId}`);
-            await addFileToCourse(courseId, fileId);
-        }
+        if (courseId) {
+            for (const fileId of Object.values(uploadedFileIds)) {
+                console.log(`Associating file: ${fileId}`);
+                await addFileToCourse(courseId, fileId);
+            }
 
-        if (quizGeneration?.success) {
-            await addQuizToCourse(courseId, quizGeneration.newQuizId);
-        } else {
-            // TODO: display message in a toast.
-            console.error("Failed to generate quiz.");
-        }
+            if (quizGeneration?.success) {
+                await addQuizToCourse(courseId, quizGeneration.newQuizId);
+            } else {
+                // TODO: display message in a toast.
+                console.error("Failed to generate quiz.");
+            }
 
-        if (sheetGeneration?.success) {
-            await addSheetToCourse(courseId, sheetGeneration.newSheetId);
+            if (sheetGeneration?.success) {
+                await addSheetToCourse(courseId, sheetGeneration.newSheetId);
+            } else {
+                // TODO: display message in a toast.
+                console.error("Failed to generate summary sheet");
+            }
         } else {
-            // TODO: display message in a toast.
-            console.error("Failed to generate summary sheet");
+            console.error("Failed to create course - courseId is undefined");
+            return;
         }
 
         // Increment steps progressively over 4 seconds

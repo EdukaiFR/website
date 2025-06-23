@@ -1,13 +1,13 @@
 "use client";
 
 import { Header, NavBarComp } from "@/components/course";
-import { useCourseLogic } from "@/hooks/course";
 import {
+    CourseContentRenderer,
     CourseStyles,
     LoadingState,
-    CourseContentRenderer,
 } from "@/components/course/components";
 import { navBarConfig } from "@/constants/course/constants";
+import { useCourseLogic } from "@/hooks/course";
 
 export default function MyCourses() {
     const {
@@ -25,6 +25,7 @@ export default function MyCourses() {
         reFetchCourse,
         updateExam,
         deleteExam,
+        loadCourseFiles,
     } = useCourseLogic();
 
     // Loading state
@@ -71,6 +72,7 @@ export default function MyCourses() {
                 insightsService={insightsService}
                 insightsData={insightsData}
                 quizData={quizData}
+                loadCourseFiles={loadCourseFiles}
             />
         </div>
     );

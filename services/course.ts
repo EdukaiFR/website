@@ -1,25 +1,39 @@
 import axios from "axios";
-import { getAuthToken, getCurrentUserId } from "@/lib/auth-utils";
 
 export interface CourseService {
     createCourse: (
         title: string,
         subject: string,
         level: string
-    ) => Promise<any>;
-    getCourseById: (courseId: string) => Promise<any>;
-    getCourseFiles: (courseId: string) => Promise<any>;
-    getCourses: () => Promise<any>;
-    addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
-    addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
-    addFileToCourse: (courseId: string, fileId: string) => Promise<any>;
+    ) => Promise<{ id: string; message: string } | null>;
+    getCourseById: (
+        courseId: string
+    ) => Promise<{ id: string; message: string } | null>;
+    getCourseFiles: (
+        courseId: string
+    ) => Promise<{ id: string; message: string } | null>;
+    getCourses: () => Promise<{ id: string; message: string } | null>;
+    addQuizToCourse: (
+        courseId: string,
+        quizId: string
+    ) => Promise<{ id: string; message: string } | null>;
+    addSheetToCourse: (
+        courseId: string,
+        sheetId: string
+    ) => Promise<{ id: string; message: string } | null>;
+    addFileToCourse: (
+        courseId: string,
+        fileId: string
+    ) => Promise<{ id: string; message: string } | null>;
     createExam: (
         courseId: string,
         title: string,
         description: string,
         date: Date
     ) => Promise<{ id: string; message: string } | null>;
-    getExamById: (examId: string) => Promise<any>;
+    getExamById: (
+        examId: string
+    ) => Promise<{ id: string; message: string } | null>;
     deleteExamById: (
         examId: string,
         courseId: string

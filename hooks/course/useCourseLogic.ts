@@ -197,5 +197,6 @@ export function useCourseLogic() {
         reFetchCourse,
         updateExam,
         deleteExam,
+        loadCourseFiles,
     };
 }

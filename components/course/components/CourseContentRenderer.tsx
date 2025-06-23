@@ -2,6 +2,7 @@ import { resumeFilesValue } from "@/public/mocks/default-value";
 import { InsightsService } from "@/services";
 import { CourseResumeFiles, Quiz } from "../sections";
 import { Exams } from "../sections/exams";
+import MyFiles from "../sections/Files/MyFiles";
 import { Objectives } from "../sections/objectives";
 import { Overview } from "../sections/overview";
 import { SimilarCourses } from "../sections/similar-courses";
@@ -32,6 +33,7 @@ interface CourseContentRendererProps {
     insightsService: unknown;
     insightsData: unknown;
     quizData: unknown;
+    loadCourseFiles: (courseId: string) => Promise<unknown>;
 }
 
 export function CourseContentRenderer({
@@ -47,6 +49,7 @@ export function CourseContentRenderer({
     insightsService,
     insightsData,
     quizData,
+    loadCourseFiles,
 }: CourseContentRendererProps) {
     return (
         <div className="flex-1 min-h-0 w-full max-w-full">
@@ -108,6 +111,9 @@ export function CourseContentRenderer({
             )}
             {selectedTab === "similarCourses" && (
                 <SimilarCourses course_id={courseId} similarCourses={null} />
+            )}
+            {selectedTab === "myFiles" && (
+                <MyFiles courseId={courseId} getCourseFiles={loadCourseFiles} />
             )}
             {selectedTab === "quiz" && (
                 <Quiz

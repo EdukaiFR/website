@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export interface BlobService {
-    uploadFile: (file: File, fileType: string) => Promise<any>;
-    getFileById: (fileId: string) => Promise<any>;
+    uploadFile: (file: File, fileType: string) => Promise<unknown>;
+    getFileById: (fileId: string) => Promise<unknown>;
 }
 
 export function useBlobService() {

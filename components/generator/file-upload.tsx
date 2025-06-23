@@ -1,7 +1,5 @@
 "use client";
 
-import type { FileProcessingState } from "@/lib/types/generator";
-import { useState } from "react";
 import { TextRecognizer } from "@/components/recognition/textRecognizer";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +9,10 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import type { FileProcessingState } from "@/lib/types/generator";
 import clsx from "clsx";
 import { CircleX, CloudUpload, FileText } from "lucide-react";
+import { useState } from "react";
 
 import { useBlob } from "@/hooks";
 import { useBlobService } from "@/services";
@@ -79,10 +79,14 @@ export function FileUpload({
     const handleFileUpload = async (file: File, localFileId: string) => {
         try {
             const uploadResponse = await uploadFile(file, "course");
-            setUploadedFileIds((prev: { [localFileId: string]: string }) => ({
-                ...prev,
-                [localFileId]: uploadResponse?.newFileId,
-            }));
+            if (uploadResponse?.newFileId) {
+                setUploadedFileIds(
+                    (prev: { [localFileId: string]: string }) => ({
+                        ...prev,
+                        [localFileId]: uploadResponse.newFileId,
+                    })
+                );
+            }
         } catch (error) {
             console.error("An error occured uploading files", error);
         }

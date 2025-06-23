@@ -1,9 +1,10 @@
+import { CourseResumeFiles } from "@/components/course/sections";
 import { Exams } from "@/components/course/sections/exams";
+import MyFiles from "@/components/course/sections/Files/MyFiles";
 import { Objectives } from "@/components/course/sections/objectives";
 import { Overview } from "@/components/course/sections/overview";
-import { CourseResumeFiles } from "@/components/course/sections";
-import { Statistics } from "@/components/course/sections/statistics";
 import { SimilarCourses } from "@/components/course/sections/similar-courses";
+import { Statistics } from "@/components/course/sections/statistics";
 
 export const navBarConfig = [
     { label: "Aperçu", tab: "overview", component: Overview },
@@ -20,4 +21,5 @@ export const navBarConfig = [
         tab: "similarCourses",
         component: SimilarCourses,
     },
+    { label: "Mes fichiers", tab: "myFiles", component: MyFiles },
 ];

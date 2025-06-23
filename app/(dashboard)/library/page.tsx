@@ -1,21 +1,21 @@
 "use client";
 
-import { useCourseService } from "@/services";
-import { LibraryHeader } from "@/components/library";
-import { useCourse } from "@/hooks";
-import { useEffect, useState } from "react";
+import { CounterBadge } from "@/components/badge/CounterBadge";
+import { DataTable } from "@/components/data-table";
 import {
-    FilterCourses,
     columns,
-    SearchBar,
     CourseGrid,
+    FilterCourses,
+    LibraryHeader,
+    SearchBar,
     ViewToggle,
 } from "@/components/library";
-import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
-import { CounterBadge } from "@/components/badge/CounterBadge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCourse } from "@/hooks";
+import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Define the extended course type for the table
 interface ExtendedCourseData {
@@ -31,6 +31,21 @@ interface ExtendedCourseData {
     exams: string[];
     resumeFiles: unknown[];
 }
+
+// Type for API response that might have different property names
+type ApiCourseData = {
+    _id?: string;
+    id?: string;
+    title: string;
+    subject: string;
+    level: string;
+    author?: string;
+    isPublished?: boolean;
+    createdAt?: string;
+    quizzes: string[];
+    exams: string[];
+    resumeFiles: unknown[];
+};
 
 export default function LibraryPage() {
     // Basic Data
@@ -160,14 +175,12 @@ export default function LibraryPage() {
             // Check if response is null or not an array
             if (response && Array.isArray(response)) {
                 const extendedCourses: ExtendedCourseData[] = response.map(
-                    (course: Record<string, unknown>) => ({
-                        ...(course as unknown as ExtendedCourseData),
-                        id: (course._id as string) || "",
-                        author: (course.author as string) || "Unknown",
-                        isPublished: (course.isPublished as boolean) || false,
-                        createdAt:
-                            (course.createdAt as string) ||
-                            new Date().toISOString(),
+                    (course: ApiCourseData) => ({
+                        ...course,
+                        id: course._id || course.id || "",
+                        author: course.author || "Unknown",
+                        isPublished: course.isPublished || false,
+                        createdAt: course.createdAt || new Date().toISOString(),
                     })
                 );
                 setUserCourses(extendedCourses);

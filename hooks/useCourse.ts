@@ -39,8 +39,8 @@ export function useCourse(courseService: CourseService) {
                 subject,
                 level
             );
-            const newCourseId = course.id;
-            setCourseId(newCourseId);
+            const newCourseId = course?.id;
+            setCourseId(newCourseId || "");
             return newCourseId;
         } catch (error) {
             console.error("Erreur lors de la création du cours:", error);
@@ -54,9 +54,16 @@ export function useCourse(courseService: CourseService) {
     const loadCourse = async (courseId: string) => {
         try {
             const response = await courseService.getCourseById(courseId);
-            setCourseData(response.item);
-            // Also call getExams to get the exams associated with the course
-            await getExams(response.item.exams);
+            if (response && "item" in response) {
+                setCourseData(response.item as CourseData);
+                // Also call getExams to get the exams associated with the course
+                await getExams((response.item as CourseData).exams || []);
+            } else {
+                console.warn(
+                    "Course response does not contain item property:",
+                    response
+                );
+            }
         } catch (error) {
             console.error(
                 `Erreur lors du chargement du cours ${courseId}:`,
@@ -71,8 +78,11 @@ export function useCourse(courseService: CourseService) {
     const loadAllCourses = async () => {
         try {
             const response = await courseService.getCourses();
-            setCoursesData(response.items);
-            return response.items;
+            if (response && "items" in response) {
+                setCoursesData(response.items as CourseData[]);
+                return response.items as CourseData[];
+            }
+            return [];
         } catch (error) {
             console.error("Error getting all courses: ", error);
             setError("Failed to load courses. Please try again.");
@@ -162,11 +172,16 @@ export function useCourse(courseService: CourseService) {
             const response = await Promise.all(
                 courseExamsIds.map(async examId => {
                     const exam = await courseService.getExamById(examId);
-                    return exam.item;
+                    return exam && "item" in exam
+                        ? (exam.item as ExamData)
+                        : null;
                 })
             );
 
-            const examsData = response.sort((a, b) => {
+            const validExams = response.filter(
+                (exam): exam is ExamData => exam !== null
+            );
+            const examsData = validExams.sort((a: ExamData, b: ExamData) => {
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
             });
 
