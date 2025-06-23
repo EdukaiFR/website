@@ -1,6 +1,5 @@
 "use client";
 
-import { TextRecognizer } from "@/components/recognition/textRecognizer";
 import { Button } from "@/components/ui/button";
 import {
     FormControl,
@@ -14,6 +13,7 @@ import clsx from "clsx";
 import { CircleX, CloudUpload, FileText } from "lucide-react";
 import { useState } from "react";
 
+import { FileProcessorComponent } from "@/components/recognition";
 import { useBlob } from "@/hooks";
 import { useBlobService } from "@/services";
 
@@ -256,17 +256,21 @@ export function FileUpload({
                                                     En file d&apos;attente...
                                                 </span>
                                             ) : (
-                                                <TextRecognizer
+                                                <FileProcessorComponent
                                                     key={fileId}
-                                                    selectedImage={file}
+                                                    selectedFile={file}
                                                     fileId={fileId}
-                                                    onTextRecognized={text =>
+                                                    onTextRecognized={(
+                                                        text: string
+                                                    ) =>
                                                         onRecognizedText(
                                                             text,
                                                             fileId
                                                         )
                                                     }
-                                                    setIsRecognizing={processing =>
+                                                    setIsRecognizing={(
+                                                        processing: boolean
+                                                    ) =>
                                                         setFileProcessing(
                                                             fileId,
                                                             processing
