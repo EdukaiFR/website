@@ -6,34 +6,44 @@ export interface SummarySheetService {
 }
 
 export function useSummarySheetService(): SummarySheetService {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const generateSheet = async (recognizedText: string[]) => {
-    try {
-      const textString = recognizedText.join("\n");
+    const generateSheet = async (recognizedText: string[]) => {
+        try {
+            const textString = recognizedText.join("\n");
 
-      const response = await axios.post(`${apiUrl}/ai/generate-sheet`,
-        { textString},
-        { withCredentials: true }
-      );
+            const response = await axios.post(
+                `${apiUrl}/ai/generate-sheet`,
+                { textString },
+                { withCredentials: true }
+            );
 
-      return response.data;
-    } catch (error) {
-      console.error("An error ocurred generating the summary sheet", error);
-    }
-  };
+            return response.data;
+        } catch (error) {
+            console.error(
+                "An error ocurred generating the summary sheet",
+                error
+            );
+        }
+    };
 
-  const getSheetById = async (sheetId: string) => {
-    try {
-      const response = await axios.get(`${apiUrl}/summary-sheets/${sheetId}`,
-        { withCredentials: true }
-      );
+    const getSheetById = async (sheetId: string) => {
+        try {
+            const response = await axios.get(
+                `${apiUrl}/summary-sheets/${sheetId}`,
+                {
+                    withCredentials: true,
+                }
+            );
 
-      return response.data;
-    } catch (error) {
-      console.error(`An error ocurred getting the summary sheet ${sheetId}`, error);
-    }
-  };
+            return response.data;
+        } catch (error) {
+            console.error(
+                `An error ocurred getting the summary sheet ${sheetId}`,
+                error
+            );
+        }
+    };
 
-  return { generateSheet, getSheetById };
+    return { generateSheet, getSheetById };
 }

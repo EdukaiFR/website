@@ -1,0 +1,1 @@
+export { navBarConfig } from "./navBarConfig";

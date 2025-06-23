@@ -5,41 +5,39 @@ import testData from "../json/testData/quizResponse.json";
 const tempData = testData; // Temporary test data for the quiz
 
 interface SummarySheet {
-  textString: string
+    textString: string;
 }
 
-export function useSheet(
-  summarySheetService: SummarySheetService
-) {
-  const [sheetData, setSheetData] = useState<SummarySheet>();
-  const [sheetId, setSheetId] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function useSheet(summarySheetService: SummarySheetService) {
+    const [sheetData, setSheetData] = useState<SummarySheet>();
+    const [sheetId, setSheetId] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  const generateSheet = async (recognizedTexts: string[]) => {
-    setIsGenerating(true);
-    setError(null);
+    const generateSheet = async (recognizedTexts: string[]) => {
+        setIsGenerating(true);
+        setError(null);
 
-    try {
-      const sheet = await summarySheetService.generateSheet(recognizedTexts);
-      const newSheetId = sheet.id;
+        try {
+            const sheet =
+                await summarySheetService.generateSheet(recognizedTexts);
+            const newSheetId = sheet.id;
 
-      setSheetId(newSheetId);
+            setSheetId(newSheetId);
 
-      return { success: true, newSheetId };
+            return { success: true, newSheetId };
+        } catch (error) {
+            console.error("Error generating summary sheet: ", error);
+            setError("Failed to generate summary sheet. Please try again.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
-    } catch (error) {
-        console.error("Error generating summary sheet: ", error);
-        setError("Failed to generate summary sheet. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
-  }
-
-  return {
-    sheetId,
-    error,
-    sheetData,
-    generateSheet
-  };
+    return {
+        sheetId,
+        error,
+        sheetData,
+        generateSheet,
+    };
 }

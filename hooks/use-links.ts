@@ -1,12 +1,12 @@
 import {
-  Bell,
-  Users,
-  Home,
-  BookOpen,
-  HelpCircle,
-  Settings,
-  Zap,
-  GraduationCap,
+    Bell,
+    Users,
+    Home,
+    BookOpen,
+    HelpCircle,
+    Settings,
+    Zap,
+    GraduationCap,
 } from "lucide-react";
 
 /*
@@ -21,46 +21,46 @@ import {
 */
 
 export function useLinks() {
-  const upLinks = [
-    {
-      href: "/",
-      label: "Accueil",
-      Icon: Home,
-    },
-    {
-      href: "/generate",
-      label: "Générer",
-      Icon: Zap,
-    },
-    {
-      href: "/club-edukai",
-      label: "Club Edukai",
-      Icon: Users,
-    },
-    {
-      href: "/library",
-      label: "Bibliothèque",
-      Icon: GraduationCap,
-    },
-  ];
+    const upLinks = [
+        {
+            href: "/",
+            label: "Accueil",
+            Icon: Home,
+        },
+        {
+            href: "/generate",
+            label: "Générer",
+            Icon: Zap,
+        },
+        {
+            href: "/club-edukai",
+            label: "Club Edukai",
+            Icon: Users,
+        },
+        {
+            href: "/library",
+            label: "Bibliothèque",
+            Icon: GraduationCap,
+        },
+    ];
 
-  const downLinks = [
-    {
-      href: "/notifications",
-      label: "Notifications",
-      Icon: Bell,
-    },
-    {
-      href: "/support",
-      label: "Assistance",
-      Icon: HelpCircle,
-    },
-    {
-      href: "/settings",
-      label: "Paramètres",
-      Icon: Settings,
-    },
-  ];
+    const downLinks = [
+        {
+            href: "/notifications",
+            label: "Notifications",
+            Icon: Bell,
+        },
+        {
+            href: "/support",
+            label: "Assistance",
+            Icon: HelpCircle,
+        },
+        {
+            href: "/settings",
+            label: "Paramètres",
+            Icon: Settings,
+        },
+    ];
 
-  return { upLinks, downLinks };
+    return { upLinks, downLinks };
 }

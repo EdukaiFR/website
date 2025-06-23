@@ -1,7 +1,7 @@
 import { sessionStorage } from "@/lib/session";
 
 export function getAuthToken() {
-  return sessionStorage.getToken();
+    return sessionStorage.getToken();
 }
 
 /**
@@ -9,7 +9,7 @@ export function getAuthToken() {
  * @returns User object or null if not authenticated
  */
 export function getCurrentUser() {
-  return sessionStorage.getUser();
+    return sessionStorage.getUser();
 }
 
 /**
@@ -17,14 +17,14 @@ export function getCurrentUser() {
  * @returns User ID string or null if not authenticated
  */
 export function getCurrentUserId(): string | null {
-  const user = getCurrentUser();
-  console.log("🔍 [Auth Utils] Debug - Full user object:", user);
+    const user = getCurrentUser();
+    console.log("🔍 [Auth Utils] Debug - Full user object:", user);
 
-  // Try both id and _id fields since the API might return either
-  const userId = user?.id || user?._id || null;
-  console.log("🔍 [Auth Utils] Debug - Extracted userId:", userId);
+    // Try both id and _id fields since the API might return either
+    const userId = user?.id || user?._id || null;
+    console.log("🔍 [Auth Utils] Debug - Extracted userId:", userId);
 
-  return userId;
+    return userId;
 }
 
 /**
@@ -32,9 +32,9 @@ export function getCurrentUserId(): string | null {
  * @returns boolean indicating if user is logged in
  */
 export function isAuthenticated(): boolean {
-  const token = sessionStorage.getToken();
-  const user = sessionStorage.getUser();
-  return !!(token && user);
+    const token = sessionStorage.getToken();
+    const user = sessionStorage.getUser();
+    return !!(token && user);
 }
 
 /**
@@ -42,8 +42,8 @@ export function isAuthenticated(): boolean {
  * @returns Headers object with authorization token
  */
 export function getAuthHeaders() {
-  const token = sessionStorage.getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+    const token = sessionStorage.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 /**
@@ -51,8 +51,8 @@ export function getAuthHeaders() {
  * @returns Axios config object with credentials and auth headers
  */
 export function getAuthConfig() {
-  return {
-    withCredentials: true,
-    headers: getAuthHeaders(),
-  };
+    return {
+        withCredentials: true,
+        headers: getAuthHeaders(),
+    };
 }
