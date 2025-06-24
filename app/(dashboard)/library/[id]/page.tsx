@@ -28,6 +28,8 @@ import { Header } from "./Header";
 import { NavBar as NavBarComp } from "./NavBar";
 import { Quiz } from "./sections/quiz/Quiz";
 import { SimilarCourses } from "./sections/similar-courses/SimilarCourses";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SummarySheetData } from "@/lib/types/library";
 
 export default function MyCourses() {
   // Get the course ID from the URL
@@ -45,6 +47,7 @@ export default function MyCourses() {
     courseData,
     loadCourse,
     loadCourseFiles,
+    loadCourseSummarySheets,
     examsData,
     createExam,
     getExams,
@@ -57,6 +60,11 @@ export default function MyCourses() {
     quizService,
     insightsService
   );
+
+  const [summarySheetsData, setSummarySheetsData] =
+    useState<SummarySheetData[] | []>([]);
+
+  const { userId } = useSessionStorage();
 
   const navBar = [
     { label: "Aperçu", tab: "overview", component: Overview },
@@ -82,7 +90,8 @@ export default function MyCourses() {
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
-      loadCourseFiles(courseId)
+      loadCourseFiles(courseId);
+      loadSummarySheets();
     }
   }, [courseId]);
 
@@ -114,30 +123,23 @@ export default function MyCourses() {
     }
   };
 
+  const loadSummarySheets = async () => {
+    if (courseId && loadCourseSummarySheets) {
+      const data = await loadCourseSummarySheets(courseId);
+      setSummarySheetsData(data.items);
+    }
+  };
+
   // Ensure insights are loaded when switching to statistics tab
   useEffect(() => {
     const loadInsightsForStats = async () => {
       if (selectedTab === "statistics" && quizId && !insightsData) {
-        console.log(
-          "🔍 [Page] Loading insights for statistics tab, quizId:",
-          quizId
-        );
         await getQuizInsights(quizId);
       }
     };
 
     loadInsightsForStats();
   }, [selectedTab, quizId, insightsData, getQuizInsights]);
-
-  // Debug logging for insights data
-  useEffect(() => {
-    console.log("🔍 [Page] Debug - Insights data updated:", {
-      quizId,
-      insightsData,
-      selectedTab,
-      hasInsightsService: !!insightsService,
-    });
-  }, [insightsData, quizId, selectedTab]);
 
   // Delete Exam
   const deleteExam = async (examId: string) => {
@@ -272,7 +274,11 @@ export default function MyCourses() {
           />
         )}
         {selectedTab === "resumeFiles" && (
-          <ResumeFiles course_id={courseId} resumeFiles={resumeFilesValue} />
+          <ResumeFiles
+            user_id={userId}
+            course_id={courseId}
+            resumeFiles={summarySheetsData}
+          />
         )}
         {selectedTab === "exams" && (
           <Exams

@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Filter, Search, RotateCcw } from 'lucide-react';
 import { CourseGrid } from './CourseGrid';
 import { ViewToggle } from './ViewToggle';
+import { useSessionStorage } from '@/hooks/useSessionStorage';
 
 // Define the extended course type for the table
 interface ExtendedCourseData {
@@ -32,17 +33,19 @@ interface ExtendedCourseData {
 
 export default function LibraryPage() {
   // Basic Data
-  const course_service = useCourseService();
-  const { coursesData, loadAllCourses } = useCourse(course_service);
+  const courseService = useCourseService();
+  const { coursesData, loadAllCourses } = useCourse(courseService);
   const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
-  // View State - Load from localStorage or default to 'grid'
+
+  const { userId } = useSessionStorage();
+
   const [view, setView] = useState<'grid' | 'table'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('library-view') as 'grid' | 'table') || 'grid';
     }
     return 'grid';
   });
-  
+
   // Save view preference to localStorage
   const handleViewChange = (newView: 'grid' | 'table') => {
     setView(newView);
@@ -50,7 +53,7 @@ export default function LibraryPage() {
       localStorage.setItem('library-view', newView);
     }
   };
-  
+
   // Courses Filter
   const [coursesFilter, setCoursesFilter] = useState<{
     subjects: string[];
@@ -82,7 +85,7 @@ export default function LibraryPage() {
     if (!courses || !Array.isArray(courses)) {
       return [];
     }
-    
+
     let result = [...courses];
 
     // Filtrage par filtre sélectionné (subject, level, title)
@@ -99,7 +102,7 @@ export default function LibraryPage() {
     if (search) {
       const loweredSearch = search.toLowerCase();
       result = result.filter(
-        (course) => 
+        (course) =>
           course.title?.toLowerCase()?.includes(loweredSearch) ||
           course.subject?.toLowerCase()?.includes(loweredSearch) ||
           course.level?.toLowerCase()?.includes(loweredSearch)
@@ -140,15 +143,15 @@ export default function LibraryPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       const response = await loadAllCourses();
-      
+
       // Check if response is null or not an array
       if (response && Array.isArray(response)) {
         const extendedCourses: ExtendedCourseData[] = response.map((course) => ({
           ...course,
-          id: (course as any)._id || '',
-          author: (course as any).author || 'Unknown',
-          isPublished: (course as any).isPublished || false,
-          createdAt: (course as any).createdAt || new Date().toISOString(),
+          id: course._id || '',
+          author: course.author,
+          isPublished: course.isPublished || false,
+          createdAt: course.createdAt || new Date().toISOString(),
         }));
         setUserCourses(extendedCourses);
       } else {
@@ -162,7 +165,12 @@ export default function LibraryPage() {
   }, []);
 
   useEffect(() => {
-    const result = applyCourseFilter(userCourses, filter, search);
+    const result = applyCourseFilter(userCourses, filter, search)
+                  .map((course) => ({
+                    ...course,
+                    author: userId === course.author ? "Vous" : course.author,
+                  }));
+
     setFilteredCourses(result);
   }, [userCourses, filter, search]);
 
@@ -197,7 +205,7 @@ export default function LibraryPage() {
                   isFilterOpen={isFilterOpen}
                   setFilterOpen={setFilterOpen}
                 />
-                
+
                 {filter.type && (
                   <Button
                     variant='outline'
@@ -209,7 +217,7 @@ export default function LibraryPage() {
                     Réinitialiser
                   </Button>
                 )}
-                
+
                 <CounterBadge
                   counter={filteredCourses.length}
                   type={'cours'}
@@ -248,7 +256,7 @@ export default function LibraryPage() {
                   isFilterOpen={isFilterOpen}
                   setFilterOpen={setFilterOpen}
                 />
-                
+
                 {filter.type && (
                   <Button
                     variant='outline'
@@ -260,7 +268,7 @@ export default function LibraryPage() {
                     Réinitialiser
                   </Button>
                 )}
-                
+
                 <CounterBadge
                   counter={filteredCourses.length}
                   type={'cours'}
@@ -282,7 +290,7 @@ export default function LibraryPage() {
         <CardContent className="p-6">
           <div className='w-full'>
             {view === 'grid' ? (
-              <CourseGrid 
+              <CourseGrid
                 courses={filteredCourses.map(course => ({
                   id: course.id,
                   title: course.title,

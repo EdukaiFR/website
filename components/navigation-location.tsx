@@ -99,7 +99,6 @@ export function HeaderBreadcrumb() {
           !text.includes("Bibliothèque") &&
           !text.includes("Accueil")
         ) {
-          console.log("Found course title:", text, "using selector:", selector);
           return text;
         }
       }
@@ -127,7 +126,6 @@ export function HeaderBreadcrumb() {
             text.includes("Histoire") ||
             text.includes("Mathématiques"))
         ) {
-          console.log("Found course title by pattern:", text);
           return text;
         }
       }

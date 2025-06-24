@@ -85,6 +85,18 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+  const loadCourseSummarySheets  = async (courseId: string) => {
+    try {
+      const response = await courseService.getCourseSummarySheets(courseId);
+      return response;
+    } catch (error) {
+      console.error("Error getting course summary sheets content: ", error);
+      setError("Failed to load course summary sheets content. Please try again.");
+      return null;
+    }
+  };
+
+
   const addQuizToCourse = async (courseId: string, quizId: string) => {
     try {
       await courseService.addQuizToCourse(courseId, quizId);
@@ -215,6 +227,7 @@ export function useCourse(courseService: CourseService) {
     loadCourse,
     loadAllCourses,
     loadCourseFiles,
+    loadCourseSummarySheets,
     addQuizToCourse,
     addSheetToCourse,
     addFileToCourse,

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { resumeFilesValue } from "@/public/mocks/default-value";
 import { AddResumeFile } from "./AddResumeFile";
 import { FilePreviewDialog } from "./FilePreviewDialog";
+import { generateMarkdownPdf } from "@/lib/summary-sheets/md2pdf";
 import {
   FileText,
   Download,
@@ -20,24 +21,20 @@ import {
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { SummarySheetData } from "@/lib/types/library";
 
-export type ResumeFilesProps = {
+export interface SummarySheetProps {
+  user_id: string,
   course_id: string;
-  resumeFiles: unknown[];
-};
+  resumeFiles: SummarySheetData[] | [];
+}
 
-type ResumeFileData = {
-  id: number;
-  src: string;
-  alt: string;
-  added_at: string;
-  origin: string;
-};
+// TODO: change "resume" / "files" for consistency
+export const ResumeFiles = ({ user_id, course_id, resumeFiles }: SummarySheetProps) => {
 
-export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
-  const typedResumeFiles = (
-    resumeFiles?.length ? resumeFiles : resumeFilesValue
-  ) as ResumeFileData[];
+  const typedResumeFiles: SummarySheetData[] =
+    (resumeFiles && resumeFiles.length > 0 ? resumeFiles : []);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
@@ -45,37 +42,26 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
 
   const filteredFiles = typedResumeFiles.filter(
     (file) =>
-      file.alt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      file.origin.toLowerCase().includes(searchTerm.toLowerCase())
+      file.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDownload = (file: ResumeFileData) => {
-    const link = document.createElement("a");
-    link.href = file.src;
-    link.download = file.alt;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+  const handleDownload = async (file: SummarySheetData) => {
+    await generateMarkdownPdf(course_id, file.content)
   };
 
+  function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   const handleBulkDownload = async () => {
     try {
       const downloadPromises = filteredFiles.map(async (file, index) => {
-        return new Promise<void>((resolve) => {
-          // Add small delay between downloads to avoid overwhelming the browser
-          setTimeout(() => {
-            const link = document.createElement("a");
-            link.href = file.src;
-            link.download = file.alt || `fichier-${index + 1}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            resolve();
-          }, index * 500); // 500ms delay between each download
-        });
+        await delay(index * 500);
+        await generateMarkdownPdf(course_id, file.content);
       });
 
       await Promise.all(downloadPromises);
+
       toast.success(
         `${filteredFiles.length} fichier${
           filteredFiles.length > 1 ? "s" : ""
@@ -87,8 +73,8 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
     }
   };
 
-  const handlePreviewFile = (file: ResumeFileData) => {
-    const fileIndex = filteredFiles.findIndex((f) => f.id === file.id);
+  const handlePreviewFile = (file: SummarySheetData) => {
+    const fileIndex = filteredFiles.findIndex((f) => f._id === file._id);
     setCurrentFileIndex(fileIndex);
     setIsPreviewOpen(true);
   };
@@ -229,9 +215,9 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                 : "flex flex-col gap-3 sm:gap-4"
             }`}
           >
-            {filteredFiles.map((file) => (
+            {filteredFiles.map((file, index) => (
               <div
-                key={file.id}
+                key={file._id}
                 className={`bg-white/70 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-200 group ${
                   viewMode === "grid" ? "p-4 sm:p-6" : "p-3 sm:p-4"
                 }`}
@@ -272,17 +258,17 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
 
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
-                        {file.alt}
+                        FicheRevision-{index+1}
                       </h3>
 
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span>{formatDate(file.added_at)}</span>
+                          <span>{formatDate(file.createdAt)}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4" />
-                          <span>{file.origin}</span>
+                          <span>{user_id === file.author ? "Vous" : "Auteur Inconnu"}</span>
                         </div>
                       </div>
                     </div>
@@ -296,16 +282,16 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-800 truncate">
-                          {file.alt}
+                          FicheRevision-{index+1}
                         </h3>
                         <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
-                            {formatDate(file.added_at)}
+                            {formatDate(file.createdAt)}
                           </span>
                           <span className="flex items-center gap-1">
                             <User className="w-3 h-3" />
-                            {file.origin}
+                            {user_id === file.author ? "Vous" : "Auteur Inconnu"}
                           </span>
                         </div>
                       </div>
@@ -345,7 +331,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
       </div>
 
       {/* File Preview Dialog */}
-      {filteredFiles.length > 0 && (
+      {/* {filteredFiles.length > 0 && (
         <FilePreviewDialog
           files={filteredFiles}
           currentFileIndex={currentFileIndex}
@@ -354,7 +340,7 @@ export const ResumeFiles = ({ course_id, resumeFiles }: ResumeFilesProps) => {
           onDownload={handleDownload}
           onNavigate={handleNavigate}
         />
-      )}
+      )} */}
     </div>
   );
 };
