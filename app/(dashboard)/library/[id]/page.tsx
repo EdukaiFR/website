@@ -1,13 +1,10 @@
 "use client";
 
-// Mocks value // TODO: delete when it's link to DB
-import { resumeFilesValue } from "@/public/mocks/default-value";
-
 // Import components
 import { Exams } from "./sections/exams/Exams";
 import { Objectives } from "./sections/objectives/Objectives";
 import { Overview } from "./sections/overview/Overview";
-import { ResumeFiles } from "./sections/resume-files/ResumeFiles";
+import { SummarySheets } from "./sections/summary-sheets/SummarySheets";
 import { Statistics } from "./sections/statistics/Statistics";
 
 // Receive the parameters from the URL
@@ -39,7 +36,7 @@ export default function MyCourses() {
   // State
   const [quizId, setQuizId] = useState<string>("");
   const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
-  const [isResumeFilesVisible, setResumeFilesVisible] =
+  const [isSummarySheetsVisible, setSummarySheetsVisible] =
     useState<boolean>(false);
   // Fetch data
   const courseService = useCourseService();
@@ -68,7 +65,7 @@ export default function MyCourses() {
 
   const navBar = [
     { label: "Aperçu", tab: "overview", component: Overview },
-    { label: "Fiches de révision", tab: "resumeFiles", component: ResumeFiles },
+    { label: "Fiches de révision", tab: "summarySheets", component: SummarySheets },
     { label: "Examens", tab: "exams", component: Exams },
     { label: "Objectifs", tab: "objectives", component: Objectives },
     { label: "Statistiques", tab: "statistics", component: Statistics },
@@ -100,16 +97,16 @@ export default function MyCourses() {
   }, [courseData, isQuestionsVisible]);
 
   useEffect(() => {
-    if (isQuestionsVisible && isResumeFilesVisible) {
-      setResumeFilesVisible(false);
+    if (isQuestionsVisible && isSummarySheetsVisible) {
+      setSummarySheetsVisible(false);
     }
   }, [isQuestionsVisible]);
 
   useEffect(() => {
-    if (isQuestionsVisible && isResumeFilesVisible) {
+    if (isQuestionsVisible && isSummarySheetsVisible) {
       setQuestionsVisible(false);
     }
-  }, [isResumeFilesVisible]);
+  }, [isSummarySheetsVisible]);
 
   // For now we handle only the first quiz of the course
   const fetchQuiz = async () => {
@@ -273,11 +270,11 @@ export default function MyCourses() {
             deleteExam={deleteExam}
           />
         )}
-        {selectedTab === "resumeFiles" && (
-          <ResumeFiles
+        {selectedTab === "summarySheets" && (
+          <SummarySheets
             user_id={userId}
             course_id={courseId}
-            resumeFiles={summarySheetsData}
+            summarySheets={summarySheetsData}
           />
         )}
         {selectedTab === "exams" && (

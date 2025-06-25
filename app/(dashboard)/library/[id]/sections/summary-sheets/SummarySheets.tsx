@@ -3,7 +3,7 @@
 import { CounterBadge } from "@/components/badge/CounterBadge";
 import { Button } from "@/components/ui/button";
 import { resumeFilesValue } from "@/public/mocks/default-value";
-import { AddResumeFile } from "./AddResumeFile";
+import { AddSummarySheet } from "./AddSummarySheet";
 import { FilePreviewDialog } from "./FilePreviewDialog";
 import { generateMarkdownPdf } from "@/lib/summary-sheets/md2pdf";
 import {
@@ -26,21 +26,20 @@ import { SummarySheetData } from "@/lib/types/library";
 export interface SummarySheetProps {
   user_id: string,
   course_id: string;
-  resumeFiles: SummarySheetData[] | [];
+  summarySheets: SummarySheetData[] | [];
 }
 
-// TODO: change "resume" / "files" for consistency
-export const ResumeFiles = ({ user_id, course_id, resumeFiles }: SummarySheetProps) => {
+export const SummarySheets = ({ user_id, course_id, summarySheets }: SummarySheetProps) => {
 
-  const typedResumeFiles: SummarySheetData[] =
-    (resumeFiles && resumeFiles.length > 0 ? resumeFiles : []);
+  const typedSummarySheets: SummarySheetData[] =
+    (summarySheets && summarySheets.length > 0 ? summarySheets : []);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const filteredFiles = typedResumeFiles.filter(
+  const filteredFiles = typedSummarySheets.filter(
     (file) =>
       file.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -142,7 +141,7 @@ export const ResumeFiles = ({ user_id, course_id, resumeFiles }: SummarySheetPro
                 </span>
               </Button>
             )}
-            <AddResumeFile />
+            <AddSummarySheet />
           </div>
         </div>
 
@@ -204,7 +203,7 @@ export const ResumeFiles = ({ user_id, course_id, resumeFiles }: SummarySheetPro
                   ? "Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers."
                   : "Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage."}
               </p>
-              {!searchTerm && <AddResumeFile />}
+              {!searchTerm && <AddSummarySheet />}
             </div>
           </div>
         ) : (

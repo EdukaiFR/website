@@ -25,9 +25,9 @@ const formSchema = z.object({
   files: z.array(fileSchema).min(1, { message: "Files are required." }),
 });
 
-export type AddResumeFileProps = {};
+export type AddSummarySheetProps = {};
 
-export const AddResumeFile = (props: AddResumeFileProps) => {
+export const AddSummarySheet = (props: AddSummarySheetProps) => {
   type FormData = z.infer<typeof formSchema>;
   const [isDragActive, setIsDragActive] = useState(false);
 
@@ -61,7 +61,7 @@ export const AddResumeFile = (props: AddResumeFileProps) => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // TODO: call hooks to add resumeFile(s)
+      // TODO: call hooks to add summarySheet(s)
       console.log("Files to upload:", data.files);
       fileToast.uploadSuccess();
     } catch (error: unknown) {

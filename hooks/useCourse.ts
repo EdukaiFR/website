@@ -9,7 +9,7 @@ interface CourseData {
   level: string;
   quizzes: string[];
   exams: string[];
-  resumeFiles: [];
+  summarySheets: [];
 }
 
 interface ExamData {
