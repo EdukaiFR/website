@@ -14,6 +14,5 @@ export function useSessionStorage() {
     fetchUserData();
     }, []);
 
-    console.log("userdata: ", userData);
     return { userData, userId };
 }
