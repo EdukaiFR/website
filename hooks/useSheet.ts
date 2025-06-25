@@ -36,10 +36,22 @@ export function useSheet(
     }
   }
 
+  const deleteSheetById = async (sheetId: string) => {
+    try {
+      const response = await summarySheetService.deleteSheetById(sheetId);
+      return response;
+    } catch (error) {
+      console.error("Error deleting summary sheet: ", error);
+      setError("Failed to delete summary sheet. Please try again.");
+      return { status: "failure", message: error };
+    }
+  }
+
   return {
     sheetId,
     error,
     sheetData,
-    generateSheet
+    generateSheet,
+    deleteSheetById
   };
 }

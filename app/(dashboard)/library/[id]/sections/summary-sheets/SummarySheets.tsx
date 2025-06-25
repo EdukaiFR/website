@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { CounterBadge } from "@/components/badge/CounterBadge";
 import { Button } from "@/components/ui/button";
 import { resumeFilesValue } from "@/public/mocks/default-value";
 import { AddSummarySheet } from "./AddSummarySheet";
 import { FilePreviewDialog } from "./FilePreviewDialog";
 import { generateMarkdownPdf } from "@/lib/summary-sheets/md2pdf";
+import { useSheet } from "@/hooks";
+import { useSummarySheetService } from "@/services";
 import {
   FileText,
   Download,
@@ -18,7 +21,6 @@ import {
   List,
   DownloadCloud,
 } from "lucide-react";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { SummarySheetData } from "@/lib/types/library";
@@ -34,16 +36,43 @@ export const SummarySheets = ({ user_id, course_id, summarySheets }: SummaryShee
   const typedSummarySheets: SummarySheetData[] =
     (summarySheets && summarySheets.length > 0 ? summarySheets : []);
 
+  const [localSummarySheets, setLocalSummarySheets] =
+    useState<SummarySheetData[]>(typedSummarySheets);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const filteredFiles = typedSummarySheets.filter(
+  const summarySheetsService = useSummarySheetService();
+  const { error, deleteSheetById } = useSheet(summarySheetsService);
+
+  const filteredFiles = localSummarySheets.filter(
     (file) =>
       file.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    setLocalSummarySheets(typedSummarySheets);
+  }, [typedSummarySheets]);
+
+
+  const handleDelete = async (file: SummarySheetData) => {
+    try {
+      const { status, message } = await deleteSheetById(file._id);
+      if (status === "success") {
+        setLocalSummarySheets(prevSheets =>
+          prevSheets.filter(sheet => sheet._id !== file._id)
+        );
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Erreur lors de la suppression de la fiche de révision");
+    }
+  };
 
   const handleDownload = async (file: SummarySheetData) => {
     await generateMarkdownPdf(course_id, file.content)
@@ -249,6 +278,7 @@ export const SummarySheets = ({ user_id, course_id, summarySheets }: SummaryShee
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+                          onClick={() => handleDelete(file)}
                         >
                           <Trash className="w-4 h-4" />
                         </Button>
