@@ -44,7 +44,10 @@ export default function MyCourses() {
     courseData,
     loadCourse,
     loadCourseFiles,
+<<<<<<< feat/files-integration
     loadCourseSummarySheets,
+=======
+>>>>>>> dev
     examsData,
     createExam,
     getExams,
@@ -87,8 +90,12 @@ export default function MyCourses() {
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
+<<<<<<< feat/files-integration
       loadCourseFiles(courseId);
       loadSummarySheets();
+=======
+      loadCourseFiles(courseId)
+>>>>>>> dev
     }
   }, [courseId]);
 

@@ -5,7 +5,10 @@ export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
   getCourseById: (courseId: string) => Promise<any>;
   getCourseFiles: (courseId: string) => Promise<any>;
+<<<<<<< feat/files-integration
   getCourseSummarySheets: (courseId: string) => Promise<any>;
+=======
+>>>>>>> dev
   getCourses: () => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
   addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
@@ -88,6 +91,7 @@ export function useCourseService() {
     } catch (error) {
       console.error( `An error occurred fetching course ${courseId} files`, error);
       return null;
+<<<<<<< feat/files-integration
     }
   };
 
@@ -101,6 +105,8 @@ export function useCourseService() {
     } catch (error) {
       console.error( `An error occurred fetching course ${courseId} summary sheets`, error);
       return null;
+=======
+>>>>>>> dev
     }
   };
 
@@ -116,6 +122,7 @@ export function useCourseService() {
       console.error( `An error occurred associating ${quizId} to
         course ${courseId}`, error
       );
+      return null;
     }
   };
 
@@ -131,6 +138,7 @@ export function useCourseService() {
     } catch (error) {
       console.error( `An error occurred associating summary sheet ${sheetId} to
         course ${courseId}`, error
+<<<<<<< feat/files-integration
       );
       return null;
     }
@@ -150,6 +158,27 @@ export function useCourseService() {
         course ${courseId}`, error
       );
       return null;
+=======
+      );
+      return null;
+    }
+  };
+
+  const addFileToCourse = async (courseId: string, fileId: string) => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/courses/${courseId}/addFile`,
+        { fileId: fileId },
+        { withCredentials: true }
+      );
+      return response.data;
+
+    } catch (error) {
+      console.error( `An error occurred adding file ${fileId} to
+        course ${courseId}`, error
+      );
+      return null;
+>>>>>>> dev
     }
   };
 
@@ -231,7 +260,10 @@ export function useCourseService() {
     createCourse,
     getCourseById,
     getCourseFiles,
+<<<<<<< feat/files-integration
     getCourseSummarySheets,
+=======
+>>>>>>> dev
     getCourses,
     addQuizToCourse,
     addSheetToCourse,

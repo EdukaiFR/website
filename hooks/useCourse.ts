@@ -85,6 +85,7 @@ export function useCourse(courseService: CourseService) {
     }
   };
 
+<<<<<<< feat/files-integration
   const loadCourseSummarySheets  = async (courseId: string) => {
     try {
       const response = await courseService.getCourseSummarySheets(courseId);
@@ -97,6 +98,8 @@ export function useCourse(courseService: CourseService) {
   };
 
 
+=======
+>>>>>>> dev
   const addQuizToCourse = async (courseId: string, quizId: string) => {
     try {
       await courseService.addQuizToCourse(courseId, quizId);
@@ -227,7 +230,10 @@ export function useCourse(courseService: CourseService) {
     loadCourse,
     loadAllCourses,
     loadCourseFiles,
+<<<<<<< feat/files-integration
     loadCourseSummarySheets,
+=======
+>>>>>>> dev
     addQuizToCourse,
     addSheetToCourse,
     addFileToCourse,
