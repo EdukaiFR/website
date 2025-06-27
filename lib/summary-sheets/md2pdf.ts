@@ -1,16 +1,19 @@
 import { marked } from 'marked';
 import './md2pdf.css';
 
-import html2pdf from "html2pdf.js";
-
 /**
  * Generate and download a PDF from a markdown string.
  * @param courseTitle The title to use in the PDF filename.
  * @param markdown The markdown content to convert.
  */
 export async function generateMarkdownPdf(courseTitle: string, markdown: string) {
-  const htmlContent = await marked.parse(markdown);
 
+  // Note: Do not move this import to the top !
+  // html2pdf.js uses 'self' for the global scope,
+  // which causes a ReferenceError during SSR.
+  const html2pdf = (await import('html2pdf.js')).default;
+
+  const htmlContent = await marked.parse(markdown);
   const element = document.createElement('div');
   element.className = 'markdown-pdf';
   element.innerHTML = htmlContent;
