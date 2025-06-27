@@ -29,7 +29,7 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
         if (tabFromUrl && tabFromUrl !== selectedTab) {
             setSelectedTab(tabFromUrl);
         }
-    }, [searchParams, setSelectedTab]);
+    }, [searchParams, selectedTab, setSelectedTab]);
 
     // Styles communs pour les boutons (identiques sur mobile et desktop)
     const getButtonStyles = (isSelected: boolean) =>

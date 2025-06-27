@@ -1,4 +1,3 @@
-import { resumeFilesValue } from "@/public/mocks/default-value";
 import { InsightsService } from "@/services";
 import { CourseSummarySheets, Quiz } from "../sections";
 import { Exams } from "../sections/exams";

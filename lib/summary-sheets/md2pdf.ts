@@ -1,8 +1,7 @@
 import { marked } from 'marked';
 import './md2pdf.css';
 
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import html2pdf from "html2pdf.js";
 
 /**
  * Generate and download a PDF from a markdown string.

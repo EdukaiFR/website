@@ -25,7 +25,7 @@ const formSchema = z.object({
   files: z.array(fileSchema).min(1, { message: "Files are required." }),
 });
 
-export type AddSummarySheetProps = {};
+export type AddSummarySheetProps = object;
 
 export const AddSummarySheet = (props: AddSummarySheetProps) => {
   type FormData = z.infer<typeof formSchema>;
