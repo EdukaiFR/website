@@ -12,8 +12,7 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "dev:clean": "rm -rf .next && pnpm dev",
-        "reset": "pkill -f 'next dev' 2>/dev/null || true && rm -rf .next && pnpm dev",
-        "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs"
+        "reset": "pkill -f 'next dev' 2>/dev/null || true && rm -rf .next && pnpm dev"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.1",
