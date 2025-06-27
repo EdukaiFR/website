@@ -4,19 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Trash, Eye, Download } from "lucide-react";
 import { useState } from "react";
 
-export type ResumeFileActionsProps = {
-    row: unknown;
-    onDelete?: (id: number) => void;
+export type SummarySheetActionsProps = {
+  row: any;
+  onDelete?: (id: number) => void;
 };
 
-export const ResumeFileActions = ({
-    row,
-    onDelete,
-}: ResumeFileActionsProps) => {
-    console.log(row);
-    const { id, src, alt } = row as { id: number; src: string; alt: string };
-    console.log(id, src, alt);
-    const [isDeleting, setIsDeleting] = useState(false);
+export const SummarySheetActions = ({
+  row,
+  onDelete,
+}: SummarySheetActionsProps) => {
+  const { id, src, alt } = row.original;
+  const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = () => {
         if (onDelete) {

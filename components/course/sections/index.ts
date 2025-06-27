@@ -10,8 +10,8 @@ export { Quiz, EndQuizCard, PossibleAnswers } from "./quiz";
 export { LastQuiz as QuizLastQuiz } from "./quiz";
 
 export {
-    AddResumeFile,
+    AddSummarySheet,
     FilePreviewDialog,
     columns as resumeColumns,
-} from "./resume-files";
-export { ResumeFiles as CourseResumeFiles } from "./resume-files";
+} from "./summary-sheets";
+export { SummarySheets as CourseSummarySheets } from "./summary-sheets";

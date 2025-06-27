@@ -7,15 +7,19 @@ import {
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { SummarySheetData } from "@/lib/types/library";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 export function useCourseLogic() {
     const params = useParams();
     const courseId = params?.id?.toString() || "";
 
+    const { storageUserId } = useSessionStorage();
+
     // State
     const [quizId, setQuizId] = useState<string>("");
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
-    const [isResumeFilesVisible, setResumeFilesVisible] =
+    const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
     const [selectedTab, setSelectedTab] = useState("overview");
 
@@ -29,6 +33,7 @@ export function useCourseLogic() {
         courseData,
         loadCourse,
         loadCourseFiles,
+        loadCourseSummarySheets,
         examsData,
         createExam,
         getExams,
@@ -40,6 +45,9 @@ export function useCourseLogic() {
         quizService,
         insightsService
     );
+
+    const [summarySheetsData, setSummarySheetsData] =
+        useState<SummarySheetData[] | []>([]);
 
     // Refetch course data
     const reFetchCourse = async () => {
@@ -125,6 +133,7 @@ export function useCourseLogic() {
         if (courseId) {
             loadCourse(courseId);
             loadCourseFiles(courseId);
+            loadSummarySheets();
         }
     }, [courseId]);
 
@@ -133,16 +142,23 @@ export function useCourseLogic() {
     }, [courseData, isQuestionsVisible]);
 
     useEffect(() => {
-        if (isQuestionsVisible && isResumeFilesVisible) {
-            setResumeFilesVisible(false);
+        if (isQuestionsVisible && isSummarySheetsVisible) {
+            setSummarySheetsVisible(false);
         }
     }, [isQuestionsVisible]);
 
     useEffect(() => {
-        if (isQuestionsVisible && isResumeFilesVisible) {
+        if (isQuestionsVisible && isSummarySheetsVisible) {
             setQuestionsVisible(false);
         }
-    }, [isResumeFilesVisible]);
+    }, [isSummarySheetsVisible]);
+
+    const loadSummarySheets = async () => {
+        if (courseId && loadCourseSummarySheets) {
+        const data = await loadCourseSummarySheets(courseId);
+        setSummarySheetsData(data.items);
+        }
+    };
 
     // Ensure insights are loaded when switching to statistics or overview tab
     useEffect(() => {
@@ -158,12 +174,6 @@ export function useCourseLogic() {
                         insightsData.averageScore > 0);
 
                 if (!hasValidInsights) {
-                    console.log(
-                        `🔍 [Page] Loading insights for ${selectedTab} tab, quizId:`,
-                        quizId,
-                        "Current insights:",
-                        insightsData
-                    );
                     await getQuizInsights(quizId);
                 }
             }
@@ -172,16 +182,6 @@ export function useCourseLogic() {
         loadInsightsForTab();
     }, [selectedTab, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
 
-    // Debug logging for insights data
-    useEffect(() => {
-        console.log("🔍 [Page] Debug - Insights data updated:", {
-            quizId,
-            insightsData,
-            selectedTab,
-            hasInsightsService: !!insightsService,
-        });
-    }, [insightsData, quizId, selectedTab]);
-
     return {
         courseId,
         selectedTab,
@@ -189,9 +189,11 @@ export function useCourseLogic() {
         courseData,
         quizData,
         examsData,
+        summarySheetsData,
         insightsData,
         quizId,
         insightsService,
+        storageUserId,
         createExam,
         getExams,
         reFetchCourse,

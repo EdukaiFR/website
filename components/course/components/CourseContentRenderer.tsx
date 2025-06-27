@@ -1,12 +1,13 @@
 import { resumeFilesValue } from "@/public/mocks/default-value";
 import { InsightsService } from "@/services";
-import { CourseResumeFiles, Quiz } from "../sections";
+import { CourseSummarySheets, Quiz } from "../sections";
 import { Exams } from "../sections/exams";
 import MyFiles from "../sections/Files/MyFiles";
 import { Objectives } from "../sections/objectives";
 import { Overview } from "../sections/overview";
 import { SimilarCourses } from "../sections/similar-courses";
 import { Statistics } from "../sections/statistics";
+import { SummarySheetData } from "@/lib/types/library";
 
 type Exam = {
     _id: string;
@@ -19,6 +20,8 @@ interface CourseContentRendererProps {
     selectedTab: string;
     courseId: string;
     examsData: unknown;
+    summarySheetsData: SummarySheetData[];
+    storageUserId: string;
     createExam: (
         courseId: string,
         title: string,
@@ -48,6 +51,8 @@ export function CourseContentRenderer({
     quizId,
     insightsService,
     insightsData,
+    summarySheetsData,
+    storageUserId,
     quizData,
     loadCourseFiles,
 }: CourseContentRendererProps) {
@@ -72,10 +77,11 @@ export function CourseContentRenderer({
                     }
                 />
             )}
-            {selectedTab === "resumeFiles" && (
-                <CourseResumeFiles
+            {selectedTab === "summarySheets" && (
+                <CourseSummarySheets
+                    user_id={storageUserId}
                     course_id={courseId}
-                    resumeFiles={resumeFilesValue}
+                    summarySheets={summarySheetsData}
                 />
             )}
             {selectedTab === "exams" && (

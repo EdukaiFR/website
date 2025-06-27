@@ -1,6 +1,7 @@
 "use client";
 
 import { Header, NavBarComp } from "@/components/course";
+
 import {
     CourseContentRenderer,
     CourseStyles,
@@ -18,8 +19,10 @@ export default function MyCourses() {
         quizData,
         examsData,
         insightsData,
+        summarySheetsData,
         quizId,
         insightsService,
+        storageUserId,
         createExam,
         getExams,
         reFetchCourse,
@@ -72,7 +75,9 @@ export default function MyCourses() {
                 insightsService={insightsService}
                 insightsData={insightsData}
                 quizData={quizData}
+                summarySheetsData={summarySheetsData}
                 loadCourseFiles={loadCourseFiles}
+                storageUserId={storageUserId}
             />
         </div>
     );

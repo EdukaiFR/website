@@ -1,4 +1,4 @@
-import { CourseResumeFiles } from "@/components/course/sections";
+import { CourseSummarySheets } from "@/components/course/sections";
 import { Exams } from "@/components/course/sections/exams";
 import MyFiles from "@/components/course/sections/Files/MyFiles";
 import { Objectives } from "@/components/course/sections/objectives";
@@ -10,8 +10,8 @@ export const navBarConfig = [
     { label: "Aperçu", tab: "overview", component: Overview },
     {
         label: "Fiches de révision",
-        tab: "resumeFiles",
-        component: CourseResumeFiles,
+        tab: "summarySheets",
+        component: CourseSummarySheets,
     },
     { label: "Examens", tab: "exams", component: Exams },
     { label: "Objectifs", tab: "objectives", component: Objectives },

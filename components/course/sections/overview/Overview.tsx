@@ -2,8 +2,8 @@ import { examsValue, resumeFilesValue } from "@/public/mocks/default-value";
 import { Exam } from "./Card/Exam";
 import { LastQuiz } from "./Card/LastQuiz";
 import { Ranking } from "./Card/Ranking";
-import { ResumeFiles } from "./Card/ResumeFiles";
 import { Skills } from "./Card/Skills";
+import { SummarySheets } from "./Card/SummarySheets";
 import { Tips } from "./Card/Tips";
 
 export type OverviewProps = {
@@ -75,7 +75,7 @@ export const Overview = ({
                             />
                         </div>
                         <div className="min-h-96 lg:h-[32rem] w-full min-w-0">
-                            <ResumeFiles resume_files={resumeFilesValue} />
+                            <SummarySheets summary_sheets={resumeFilesValue} />
                         </div>
                     </div>
                 </div>

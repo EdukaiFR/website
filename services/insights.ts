@@ -13,71 +13,45 @@ export function useInsightsService() {
         try {
             const userId = getCurrentUserId();
 
-            if (!userId) {
-                console.error(
-                    "❌ [Insights Service] User not authenticated - no userId found in session"
-                );
-                throw new Error("User not authenticated");
-            }
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
 
-            const response = await axios.post(
-                `${apiUrl}/insights/${quizId}`,
-                { score, userId },
-                { withCredentials: true }
-            );
+      const response = await axios.post(
+        `${apiUrl}/insights/${quizId}`,
+        { score, userId },
+        { withCredentials: true }
+      );
 
-            return response.data;
-        } catch (error) {
-            console.error(
-                "❌ [Insights Service] Error creating insight:",
-                error
-            );
-            throw error;
-        }
-    };
+      return response.data;
+    } catch (error) {
+      console.error("[Insights Service] Error creating insight:", error);
+      throw error;
+    }
+  };
 
-    const getQuizInsights = async (quizId: string) => {
-        try {
-            console.log(
-                "🔍 [Insights Service] Fetching insights for quiz:",
-                quizId
-            );
+  const getQuizInsights = async (quizId: string) => {
+    try {
+      const response = await axios.get(`${apiUrl}/insights/${quizId}`, {
+        withCredentials: true,
+      });
 
-            const response = await axios.get(`${apiUrl}/insights/${quizId}`, {
-                withCredentials: true,
-            });
+      const data = response.data;
 
-            console.log("✅ [Insights Service] Raw response:", response);
-            console.log("✅ [Insights Service] Response data:", response.data);
-            console.log(
-                "✅ [Insights Service] Response status:",
-                response.status
-            );
+      return data;
+    } catch (error) {
 
-            const data = response.data;
-            console.log(
-                "✅ [Insights Service] Processed data structure:",
-                JSON.stringify(data, null, 2)
-            );
+      if (axios.isAxiosError(error)) {
+        console.error("[Insights Service] Axios error details:", {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+        });
+      }
 
-            return data;
-        } catch (error) {
-            console.error(
-                "❌ [Insights Service] Error fetching insights:",
-                error
-            );
+      throw error;
+    }
+  };
 
-            if (axios.isAxiosError(error)) {
-                console.error("❌ [Insights Service] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
-
-            throw error;
-        }
-    };
-
-    return { createInsight, getQuizInsights };
+  return { createInsight, getQuizInsights };
 }
