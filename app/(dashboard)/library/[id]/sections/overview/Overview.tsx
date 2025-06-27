@@ -1,12 +1,12 @@
 import {
   examsValue,
   rankings,
-  resumeFilesValue,
+  resumeFilesValue, // TODO : change the value by actual summary sheets' previews
 } from "@/public/mocks/default-value";
 import { Exam } from "./Card/Exam";
 import { LastQuiz } from "./Card/LastQuiz";
 import { Ranking } from "./Card/Ranking";
-import { ResumeFiles } from "./Card/ResumeFiles";
+import { SummarySheets } from "./Card/SummarySheets";
 import { Skills } from "./Card/Skills";
 import { Tips } from "./Card/Tips";
 
@@ -71,7 +71,7 @@ export const Overview = ({
               />
             </div>
             <div className="min-h-[350px] lg:min-h-0 w-full min-w-0">
-              <ResumeFiles resume_files={resumeFilesValue} />
+              <SummarySheets summary_sheets={resumeFilesValue} />
             </div>
           </div>
         </div>

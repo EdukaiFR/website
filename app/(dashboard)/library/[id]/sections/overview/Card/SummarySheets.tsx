@@ -1,7 +1,7 @@
 "use client";
 
 import { CounterBadge } from "@/components/badge/CounterBadge";
-import { ResumeFileCard } from "@/components/card/ResumeFileCard";
+import { SummarySheetCard } from "@/components/card/SummarySheetCard";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -13,57 +13,57 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-export type ResumeFilesProps = {
-  resume_files: unknown[];
+export type SummarySheetsProps = {
+  summary_sheets: unknown[];
 };
 
-type ResumeFileData = {
+type SummarySheetData = {
   id: number;
   src: string;
   alt: string;
 };
 
-export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
-  const typedResumeFiles = resume_files as ResumeFileData[];
+export const SummarySheets = ({ summary_sheets }: SummarySheetsProps) => {
+  const typedSummarySheets = summary_sheets as SummarySheetData[];
 
-  const [showResumeFile, setShowResumeFile] = useState<ResumeFileData | null>(
-    typedResumeFiles && typedResumeFiles.length > 0 ? typedResumeFiles[0] : null
+  const [showSummarySheet, setShowSummarySheet] = useState<SummarySheetData | null>(
+    typedSummarySheets && typedSummarySheets.length > 0 ? typedSummarySheets[0] : null
   );
 
-  const getArrayForShowResumeFileInResumeFiles = () => {
-    if (!showResumeFile || !typedResumeFiles) return -1;
-    return typedResumeFiles.findIndex(
-      (resumeFile) => resumeFile.id === showResumeFile.id
+  const getArrayForShowSummarySheetInSummarySheets = () => {
+    if (!showSummarySheet || !typedSummarySheets) return -1;
+    return typedSummarySheets.findIndex(
+      (summarySheet) => summarySheet.id === showSummarySheet.id
     );
   };
 
-  const handleDownloadResumeFiles = async () => {
+  const handleDownloadSummarySheets = async () => {
     try {
-      if (!typedResumeFiles || typedResumeFiles.length === 0) {
+      if (!typedSummarySheets || typedSummarySheets.length === 0) {
         console.error("Aucun fichier disponible pour le téléchargement.");
         return;
       }
 
-      const downloads = typedResumeFiles.map(async (resume_file) => {
-        if (!resume_file || !resume_file.src) {
+      const downloads = typedSummarySheets.map(async (summary_sheet) => {
+        if (!summary_sheet || !summary_sheet.src) {
           console.warn(
             "Fichier sans URL ignoré :",
-            resume_file.alt || "inconnu"
+            summary_sheet.alt || "inconnu"
           );
           return;
         }
 
         try {
-          const response = await fetch(resume_file.src);
+          const response = await fetch(summary_sheet.src);
           if (!response.ok)
-            throw new Error(`Échec du téléchargement : ${resume_file.alt}`);
+            throw new Error(`Échec du téléchargement : ${summary_sheet.alt}`);
 
           const blob = await response.blob();
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
 
           a.href = url;
-          a.download = resume_file.alt || "fichier_revisions";
+          a.download = summary_sheet.alt || "fichier_revisions";
           document.body.appendChild(a);
           a.click();
 
@@ -71,7 +71,7 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
           document.body.removeChild(a);
         } catch (error) {
           console.error(
-            `Erreur lors du téléchargement de ${resume_file.alt} :`,
+            `Erreur lors du téléchargement de ${summary_sheet.alt} :`,
             error
           );
         }
@@ -91,13 +91,13 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
     }
   };
 
-  const handleUpdateShowResumeFiles = (index: number) => {
-    if (typedResumeFiles && typedResumeFiles[index]) {
-      setShowResumeFile(typedResumeFiles[index]);
+  const handleUpdateShowSummarySheets = (index: number) => {
+    if (typedSummarySheets && typedSummarySheets[index]) {
+      setShowSummarySheet(typedSummarySheets[index]);
     }
   };
 
-  if (!typedResumeFiles || typedResumeFiles.length === 0) {
+  if (!typedSummarySheets || typedSummarySheets.length === 0) {
     return (
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
         {/* Header */}
@@ -139,7 +139,7 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
     );
   }
 
-  if (!showResumeFile) {
+  if (!showSummarySheet) {
     return (
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
         <div className="flex items-center justify-center h-full">
@@ -160,12 +160,12 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
           <h3 className="text-base font-semibold text-gray-800">
             Fiches de révision
           </h3>
-          <CounterBadge counter={typedResumeFiles.length} />
+          <CounterBadge counter={typedSummarySheets.length} />
         </div>
 
         {/* Download Button - Full width on mobile, auto on desktop */}
         <Button
-          onClick={handleDownloadResumeFiles}
+          onClick={handleDownloadSummarySheets}
           className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0"
         >
           <Download className="w-4 h-4 mr-2" />
@@ -177,35 +177,35 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
       <div className="flex items-center justify-between gap-2 flex-1">
         <Button
           onClick={() =>
-            handleUpdateShowResumeFiles(
-              getArrayForShowResumeFileInResumeFiles() - 1
+            handleUpdateShowSummarySheets(
+              getArrayForShowSummarySheetInSummarySheets() - 1
             )
           }
           className="h-8 w-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 rounded-xl transition-all duration-200"
           size="icon"
           variant="ghost"
-          disabled={getArrayForShowResumeFileInResumeFiles() === 0}
+          disabled={getArrayForShowSummarySheetInSummarySheets() === 0}
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
 
-        {/* Resume File Card */}
+        {/* Summary Sheet Card */}
         <div className="flex-1 max-w-[200px]">
-          <ResumeFileCard resume_file={showResumeFile} />
+          <SummarySheetCard summary_sheet={showSummarySheet} />
         </div>
 
         <Button
           onClick={() =>
-            handleUpdateShowResumeFiles(
-              getArrayForShowResumeFileInResumeFiles() + 1
+            handleUpdateShowSummarySheets(
+              getArrayForShowSummarySheetInSummarySheets() + 1
             )
           }
           className="h-8 w-8 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 rounded-xl transition-all duration-200"
           size="icon"
           variant="ghost"
           disabled={
-            getArrayForShowResumeFileInResumeFiles() >=
-            typedResumeFiles.length - 1
+            getArrayForShowSummarySheetInSummarySheets() >=
+            typedSummarySheets.length - 1
           }
         >
           <ArrowRight className="w-4 h-4" />
@@ -214,12 +214,12 @@ export const ResumeFiles = ({ resume_files }: ResumeFilesProps) => {
 
       {/* Pagination Dots */}
       <div className="flex items-center justify-center gap-2 mt-3">
-        {typedResumeFiles.map((resume_file, index) => (
+        {typedSummarySheets.map((summary_sheet, index) => (
           <button
             key={index}
-            onClick={() => handleUpdateShowResumeFiles(index)}
+            onClick={() => handleUpdateShowSummarySheets(index)}
             className={`rounded-full w-2 h-2 transition-all duration-200 ${
-              getArrayForShowResumeFileInResumeFiles() === index
+              getArrayForShowSummarySheetInSummarySheets() === index
                 ? "bg-blue-600 scale-125"
                 : "bg-blue-300 hover:bg-blue-400"
             }`}

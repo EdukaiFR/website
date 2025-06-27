@@ -1,13 +1,10 @@
 "use client";
 
-// Mocks value // TODO: delete when it's link to DB
-import { resumeFilesValue } from "@/public/mocks/default-value";
-
 // Import components
 import { Exams } from "./sections/exams/Exams";
 import { Objectives } from "./sections/objectives/Objectives";
 import { Overview } from "./sections/overview/Overview";
-import { ResumeFiles } from "./sections/resume-files/ResumeFiles";
+import { SummarySheets } from "./sections/summary-sheets/SummarySheets";
 import { Statistics } from "./sections/statistics/Statistics";
 
 // Receive the parameters from the URL
@@ -28,6 +25,8 @@ import { Header } from "./Header";
 import { NavBar as NavBarComp } from "./NavBar";
 import { Quiz } from "./sections/quiz/Quiz";
 import { SimilarCourses } from "./sections/similar-courses/SimilarCourses";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SummarySheetData } from "@/lib/types/library";
 
 export default function MyCourses() {
   // Get the course ID from the URL
@@ -37,7 +36,7 @@ export default function MyCourses() {
   // State
   const [quizId, setQuizId] = useState<string>("");
   const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
-  const [isResumeFilesVisible, setResumeFilesVisible] =
+  const [isSummarySheetsVisible, setSummarySheetsVisible] =
     useState<boolean>(false);
   // Fetch data
   const courseService = useCourseService();
@@ -45,6 +44,7 @@ export default function MyCourses() {
     courseData,
     loadCourse,
     loadCourseFiles,
+    loadCourseSummarySheets,
     examsData,
     createExam,
     getExams,
@@ -58,9 +58,14 @@ export default function MyCourses() {
     insightsService
   );
 
+  const [summarySheetsData, setSummarySheetsData] =
+    useState<SummarySheetData[] | []>([]);
+
+  const { userId } = useSessionStorage();
+
   const navBar = [
     { label: "Aperçu", tab: "overview", component: Overview },
-    { label: "Fiches de révision", tab: "resumeFiles", component: ResumeFiles },
+    { label: "Fiches de révision", tab: "summarySheets", component: SummarySheets },
     { label: "Examens", tab: "exams", component: Exams },
     { label: "Objectifs", tab: "objectives", component: Objectives },
     { label: "Statistiques", tab: "statistics", component: Statistics },
@@ -82,7 +87,8 @@ export default function MyCourses() {
   useEffect(() => {
     if (courseId) {
       loadCourse(courseId);
-      loadCourseFiles(courseId)
+      loadCourseFiles(courseId);
+      loadSummarySheets();
     }
   }, [courseId]);
 
@@ -91,16 +97,16 @@ export default function MyCourses() {
   }, [courseData, isQuestionsVisible]);
 
   useEffect(() => {
-    if (isQuestionsVisible && isResumeFilesVisible) {
-      setResumeFilesVisible(false);
+    if (isQuestionsVisible && isSummarySheetsVisible) {
+      setSummarySheetsVisible(false);
     }
   }, [isQuestionsVisible]);
 
   useEffect(() => {
-    if (isQuestionsVisible && isResumeFilesVisible) {
+    if (isQuestionsVisible && isSummarySheetsVisible) {
       setQuestionsVisible(false);
     }
-  }, [isResumeFilesVisible]);
+  }, [isSummarySheetsVisible]);
 
   // For now we handle only the first quiz of the course
   const fetchQuiz = async () => {
@@ -114,30 +120,23 @@ export default function MyCourses() {
     }
   };
 
+  const loadSummarySheets = async () => {
+    if (courseId && loadCourseSummarySheets) {
+      const data = await loadCourseSummarySheets(courseId);
+      setSummarySheetsData(data.items);
+    }
+  };
+
   // Ensure insights are loaded when switching to statistics tab
   useEffect(() => {
     const loadInsightsForStats = async () => {
       if (selectedTab === "statistics" && quizId && !insightsData) {
-        console.log(
-          "🔍 [Page] Loading insights for statistics tab, quizId:",
-          quizId
-        );
         await getQuizInsights(quizId);
       }
     };
 
     loadInsightsForStats();
   }, [selectedTab, quizId, insightsData, getQuizInsights]);
-
-  // Debug logging for insights data
-  useEffect(() => {
-    console.log("🔍 [Page] Debug - Insights data updated:", {
-      quizId,
-      insightsData,
-      selectedTab,
-      hasInsightsService: !!insightsService,
-    });
-  }, [insightsData, quizId, selectedTab]);
 
   // Delete Exam
   const deleteExam = async (examId: string) => {
@@ -271,8 +270,12 @@ export default function MyCourses() {
             deleteExam={deleteExam}
           />
         )}
-        {selectedTab === "resumeFiles" && (
-          <ResumeFiles course_id={courseId} resumeFiles={resumeFilesValue} />
+        {selectedTab === "summarySheets" && (
+          <SummarySheets
+            user_id={userId}
+            course_id={courseId}
+            summarySheets={summarySheetsData}
+          />
         )}
         {selectedTab === "exams" && (
           <Exams

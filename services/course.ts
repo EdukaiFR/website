@@ -5,6 +5,7 @@ export interface CourseService {
   createCourse: (title: string, subject: string, level: string) => Promise<any>;
   getCourseById: (courseId: string) => Promise<any>;
   getCourseFiles: (courseId: string) => Promise<any>;
+  getCourseSummarySheets: (courseId: string) => Promise<any>;
   getCourses: () => Promise<any>;
   addQuizToCourse: (courseId: string, quizId: string) => Promise<any>;
   addSheetToCourse: (courseId: string, sheetId: string) => Promise<any>;
@@ -86,6 +87,19 @@ export function useCourseService() {
 
     } catch (error) {
       console.error( `An error occurred fetching course ${courseId} files`, error);
+      return null;
+    }
+  };
+
+  const getCourseSummarySheets = async (courseId: string) => {
+    try {
+      const response = await axios.get(`${apiUrl}/courses/${courseId}/summary-sheets`, {
+        withCredentials: true,
+      });
+      return response.data;
+
+    } catch (error) {
+      console.error( `An error occurred fetching course ${courseId} summary sheets`, error);
       return null;
     }
   };
@@ -218,6 +232,7 @@ export function useCourseService() {
     createCourse,
     getCourseById,
     getCourseFiles,
+    getCourseSummarySheets,
     getCourses,
     addQuizToCourse,
     addSheetToCourse,

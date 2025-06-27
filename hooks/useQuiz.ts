@@ -72,23 +72,10 @@ export function useQuiz(
 
   const getQuizInsights = async (quizId: string) => {
     try {
-      console.log("🔍 [useQuiz] Getting insights for quiz:", quizId);
       const insights = await insightsService?.getQuizInsights(quizId);
-      console.log("✅ [useQuiz] Raw insights from API:", insights);
-      console.log("✅ [useQuiz] Insights type:", typeof insights);
-      console.log(
-        "✅ [useQuiz] Insights structure:",
-        JSON.stringify(insights, null, 2)
-      );
-
       setInsightsData(insights);
-      console.log("✅ [useQuiz] Set insights data to state");
       return insights;
     } catch (error) {
-      console.error(
-        `❌ [useQuiz] Error getting insights for quiz ${quizId}:`,
-        error
-      );
       setError("Failed to load quiz insights.");
       return null;
     }

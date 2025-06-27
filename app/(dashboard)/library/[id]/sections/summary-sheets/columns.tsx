@@ -1,11 +1,11 @@
 'use client';
 
-import { ResumeFileActions } from '@/components/data-table/ResumeFilesActions';
+import { SummarySheetActions } from '@/components/data-table/SummarySheetsActions';
 import { SortableHeader } from '@/components/data-table/SortableHeader';
 import { formatDate } from '@/lib/date-format';
 import { ColumnDef } from '@tanstack/react-table';
 
-export type ResumeFile = {
+export type SummarySheet = {
   id: number;
   src: string;
   alt: string;
@@ -15,7 +15,7 @@ export type ResumeFile = {
 
 // Create a function
 
-export const columns: ColumnDef<ResumeFile>[] = [
+export const columns: ColumnDef<SummarySheet>[] = [
   {
     accessorKey: 'alt',
     header: ({ column }) => (
@@ -71,7 +71,7 @@ export const columns: ColumnDef<ResumeFile>[] = [
     ), // Aligner le titre à droite
     cell: ({ row }) => (
       <div className='flex items-center justify-end w-full gap-2'>
-        <ResumeFileActions row={row} />
+        <SummarySheetActions row={row} />
       </div>
     ),
   },

@@ -1,0 +1,85 @@
+.markdown-pdf {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #000000;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #ffffff;
+}
+
+.markdown-pdf h1, h2, h3, h4, h5, h6 {
+    color: #2d3748;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.markdown-pdf h1 { font-size: 2em; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3em; }
+.markdown-pdf h2 { font-size: 1.5em; }
+.markdown-pdf h3 { font-size: 1.25em; }
+.markdown-pdf p { margin-bottom: 1em; }
+
+.markdown-pdf code {
+    background-color: #f7fafc;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+.markdown-pdf pre {
+    background-color: #f7fafc;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+.markdown-pdf pre code {
+    background-color: transparent;
+    padding: 0;
+}
+.markdown-pdf blockquote {
+    border-left: 4px solid #cbd5e0;
+    margin: 1em 0;
+    padding-left: 1em;
+    color: #4a5568;
+    font-style: italic;
+}
+
+.markdown-pdf ul, .markdown-pdf ol {
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.markdown-pdf li {
+    margin-bottom: 0.5em;
+}
+
+.markdown-pdf a {
+    color: #3182ce;
+    text-decoration: underline;
+}
+
+.markdown-pdf hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 2em 0;
+}
+
+.markdown-pdf table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+.markdown-pdf th, .markdown-pdf td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5em;
+    text-align: left;
+}
+
+.markdown-pdf th {
+    background-color: #f7fafc;
+    font-weight: bold;
+}

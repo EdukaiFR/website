@@ -9,12 +9,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
-  Download, 
-  ExternalLink, 
-  Calendar, 
-  User, 
+import {
+  FileText,
+  Download,
+  ExternalLink,
+  Calendar,
+  User,
   File,
   Image as ImageIcon,
   FileImage,
@@ -40,17 +40,17 @@ export type FilePreviewDialogProps = {
   onNavigate: (direction: 'prev' | 'next') => void;
 };
 
-export const FilePreviewDialog = ({ 
+export const FilePreviewDialog = ({
   files,
   currentFileIndex,
-  isOpen, 
-  onClose, 
+  isOpen,
+  onClose,
   onDownload,
   onNavigate
 }: FilePreviewDialogProps) => {
   const [imageError, setImageError] = useState(false);
   const [pdfError, setPdfError] = useState(false);
-  
+
   const file = files[currentFileIndex];
   const hasPrevious = currentFileIndex > 0;
   const hasNext = currentFileIndex < files.length - 1;
@@ -65,7 +65,7 @@ export const FilePreviewDialog = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
-      
+
       if (e.key === 'ArrowLeft' && hasPrevious) {
         onNavigate('prev');
       } else if (e.key === 'ArrowRight' && hasNext) {
@@ -78,7 +78,7 @@ export const FilePreviewDialog = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, hasPrevious, hasNext, onNavigate, onClose]);
-  
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: 'numeric',
@@ -97,34 +97,34 @@ export const FilePreviewDialog = ({
   const isImage = (filename: string, src?: string) => {
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'];
     const fileExt = getFileExtension(filename);
-    
+
     // Check file extension first
     if (imageExtensions.includes(fileExt)) {
       return true;
     }
-    
+
     // Check if URL contains image indicators
     if (src) {
       const srcLower = src.toLowerCase();
       return imageExtensions.some(ext => srcLower.includes(`.${ext}`));
     }
-    
+
     return false;
   };
 
   const isPDF = (filename: string, src?: string) => {
     const fileExt = getFileExtension(filename);
-    
+
     // Check file extension first
     if (fileExt === 'pdf') {
       return true;
     }
-    
+
     // Check if URL contains PDF indicators
     if (src) {
       return src.toLowerCase().includes('.pdf') || src.toLowerCase().includes('pdf');
     }
-    
+
     return false;
   };
 
@@ -256,11 +256,11 @@ export const FilePreviewDialog = ({
                   <DialogDescription className="text-gray-600 mt-1">
                     Fichier {currentFileIndex + 1} sur {files.length} • Prévisualisation
                   </DialogDescription>
-                  
+
                   {/* File metadata */}
                   <div className="flex flex-wrap items-center gap-4 mt-3">
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`${getFileTypeColor(file.alt)} font-medium`}
                     >
                       {getFileExtension(file.alt).toUpperCase() || 'INCONNU'}
@@ -282,7 +282,7 @@ export const FilePreviewDialog = ({
           {/* Preview Content with Floating Navigation */}
           <div className="p-6 relative">
             {renderFilePreview()}
-            
+
             {/* Beautiful Floating Navigation Buttons */}
             {files.length > 1 && (
               <>
@@ -297,7 +297,7 @@ export const FilePreviewDialog = ({
                     <ChevronLeft className="w-6 h-6 text-gray-700" />
                   </Button>
                 )}
-                
+
                 {/* Next Button */}
                 {hasNext && (
                   <Button
@@ -309,7 +309,7 @@ export const FilePreviewDialog = ({
                     <ChevronRight className="w-6 h-6 text-gray-700" />
                   </Button>
                 )}
-                
+
                 {/* Navigation Indicator */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
                   <div className="bg-black/70 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
@@ -349,4 +349,4 @@ export const FilePreviewDialog = ({
       </DialogContent>
     </Dialog>
   );
-}; 
+};
