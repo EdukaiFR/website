@@ -43,13 +43,13 @@ export function useSheet(summarySheetService: SummarySheetService) {
             setError("Failed to delete summary sheet. Please try again.");
             return { status: "failure", message: error };
         }
-    }
+    };
 
     return {
         sheetId,
         error,
         sheetData,
         generateSheet,
-        deleteSheetById
+        deleteSheetById,
     };
 }

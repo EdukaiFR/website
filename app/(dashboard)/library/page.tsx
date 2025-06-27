@@ -16,22 +16,21 @@ import { useCourse } from "@/hooks";
 import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSessionStorage } from '@/hooks/useSessionStorage';
-
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 // Define the extended course type for the table
 interface ExtendedCourseData {
-  _id?: string;
-  id: string;
-  title: string;
-  subject: string;
-  level: string;
-  author: string;
-  isPublished: boolean;
-  createdAt: string;
-  quizzes: string[];
-  exams: string[];
-  summarySheets: unknown[];
+    _id?: string;
+    id: string;
+    title: string;
+    subject: string;
+    level: string;
+    author: string;
+    isPublished: boolean;
+    createdAt: string;
+    quizzes: string[];
+    exams: string[];
+    summarySheets: unknown[];
 }
 
 // Type for API response that might have different property names
@@ -50,15 +49,15 @@ type ApiCourseData = {
 };
 
 export default function LibraryPage() {
-  // Basic Data
-  const courseService = useCourseService();
-  const { coursesData, loadAllCourses } = useCourse(courseService);
-  const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
+    // Basic Data
+    const courseService = useCourseService();
+    const { coursesData, loadAllCourses } = useCourse(courseService);
+    const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
 
-  const { storageUserId } = useSessionStorage();
+    const { storageUserId } = useSessionStorage();
 
-  // View State - Load from localStorage or default to 'grid'
-   const [view, setView] = useState<"grid" | "table">(() => {
+    // View State - Load from localStorage or default to 'grid'
+    const [view, setView] = useState<"grid" | "table">(() => {
         if (typeof window !== "undefined") {
             return (
                 (localStorage.getItem("library-view") as "grid" | "table") ||
@@ -99,7 +98,6 @@ export default function LibraryPage() {
     });
     // Courses Search Bar
     const [search, setSearch] = useState<string>("");
-
 
     const applyCourseFilter = (
         courses: ExtendedCourseData[],
@@ -203,11 +201,13 @@ export default function LibraryPage() {
     }, []);
 
     useEffect(() => {
-        const result = applyCourseFilter(userCourses, filter, search)
-                  .map((course) => ({
-                    ...course,
-                    author: storageUserId === course.author ? "Vous" : course.author,
-                  }));
+        const result = applyCourseFilter(userCourses, filter, search).map(
+            course => ({
+                ...course,
+                author:
+                    storageUserId === course.author ? "Vous" : course.author,
+            })
+        );
 
         setFilteredCourses(result);
     }, [userCourses, filter, search]);

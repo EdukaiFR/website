@@ -1,16 +1,16 @@
 "use client";
 
-import { SummarySheetActions } from '@/components/data-table/SummarySheetsActions';
+import { SummarySheetActions } from "@/components/data-table/SummarySheetsActions";
 import { SortableHeader } from "@/components/data-table/SortableHeader";
 import { formatDate } from "@/lib/date-format";
 import { ColumnDef } from "@tanstack/react-table";
 
 export type SummarySheet = {
-  id: number;
-  src: string;
-  alt: string;
-  added_at: string;
-  origin: string;
+    id: number;
+    src: string;
+    alt: string;
+    added_at: string;
+    origin: string;
 };
 
 // Create a function

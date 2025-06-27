@@ -101,30 +101,35 @@ export function useCourse(courseService: CourseService) {
         }
     };
 
-  const loadCourseSummarySheets  = async (courseId: string) => {
-    try {
-      const response = await courseService.getCourseSummarySheets(courseId);
-      return response;
-    } catch (error) {
-      console.error("Error getting course summary sheets content: ", error);
-      setError("Failed to load course summary sheets content. Please try again.");
-      return null;
-    }
-  };
+    const loadCourseSummarySheets = async (courseId: string) => {
+        try {
+            const response =
+                await courseService.getCourseSummarySheets(courseId);
+            return response;
+        } catch (error) {
+            console.error(
+                "Error getting course summary sheets content: ",
+                error
+            );
+            setError(
+                "Failed to load course summary sheets content. Please try again."
+            );
+            return null;
+        }
+    };
 
-
-  const addQuizToCourse = async (courseId: string, quizId: string) => {
-    try {
-      await courseService.addQuizToCourse(courseId, quizId);
-    } catch (error) {
-      console.error(
-        `Error associating quiz ${quizId} to course ${courseId} `,
-        error
-      );
-      setError("Failed to associate quiz to course. Please try again.");
-      return null;
-    }
-  };
+    const addQuizToCourse = async (courseId: string, quizId: string) => {
+        try {
+            await courseService.addQuizToCourse(courseId, quizId);
+        } catch (error) {
+            console.error(
+                `Error associating quiz ${quizId} to course ${courseId} `,
+                error
+            );
+            setError("Failed to associate quiz to course. Please try again.");
+            return null;
+        }
+    };
 
     const addSheetToCourse = async (courseId: string, sheetId: string) => {
         try {
@@ -242,24 +247,24 @@ export function useCourse(courseService: CourseService) {
         }
     };
 
-  return {
-    courseId,
-    isCreating,
-    courseData,
-    coursesData,
-    courseError,
-    examsData,
-    createCourse,
-    loadCourse,
-    loadAllCourses,
-    loadCourseFiles,
-    loadCourseSummarySheets,
-    addQuizToCourse,
-    addSheetToCourse,
-    addFileToCourse,
-    createExam,
-    getExams,
-    updateExamById,
-    deleteExamById,
-  };
+    return {
+        courseId,
+        isCreating,
+        courseData,
+        coursesData,
+        courseError,
+        examsData,
+        createCourse,
+        loadCourse,
+        loadAllCourses,
+        loadCourseFiles,
+        loadCourseSummarySheets,
+        addQuizToCourse,
+        addSheetToCourse,
+        addFileToCourse,
+        createExam,
+        getExams,
+        updateExamById,
+        deleteExamById,
+    };
 }

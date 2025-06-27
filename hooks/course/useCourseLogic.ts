@@ -46,8 +46,9 @@ export function useCourseLogic() {
         insightsService
     );
 
-    const [summarySheetsData, setSummarySheetsData] =
-        useState<SummarySheetData[] | []>([]);
+    const [summarySheetsData, setSummarySheetsData] = useState<
+        SummarySheetData[] | []
+    >([]);
 
     // Refetch course data
     const reFetchCourse = async () => {
@@ -155,8 +156,8 @@ export function useCourseLogic() {
 
     const loadSummarySheets = async () => {
         if (courseId && loadCourseSummarySheets) {
-        const data = await loadCourseSummarySheets(courseId);
-        setSummarySheetsData(data.items);
+            const data = await loadCourseSummarySheets(courseId);
+            setSummarySheetsData(data.items);
         }
     };
 

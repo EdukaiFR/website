@@ -12,9 +12,7 @@ export interface CourseService {
     getCourseFiles: (
         courseId: string
     ) => Promise<{ id: string; message: string } | null>;
-    getCourseSummarySheets: (
-        courseId: string
-    ) => Promise<any>;
+    getCourseSummarySheets: (courseId: string) => Promise<any>;
     getCourses: () => Promise<{ id: string; message: string } | null>;
     addQuizToCourse: (
         courseId: string,
@@ -170,21 +168,25 @@ export function useCourseService() {
         }
     };
 
-  const getCourseSummarySheets = async (courseId: string) => {
-    try {
-      const response = await axios.get(`${apiUrl}/courses/${courseId}/summary-sheets`, {
-        withCredentials: true,
-      });
-      return response.data;
+    const getCourseSummarySheets = async (courseId: string) => {
+        try {
+            const response = await axios.get(
+                `${apiUrl}/courses/${courseId}/summary-sheets`,
+                {
+                    withCredentials: true,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(
+                `An error occurred fetching course ${courseId} summary sheets`,
+                error
+            );
+            return null;
+        }
+    };
 
-    } catch (error) {
-      console.error( `An error occurred fetching course ${courseId} summary sheets`, error);
-      return null;
-    }
-  };
-
-
-  const updateExamById = async (
+    const updateExamById = async (
         examId: string,
         title: string,
         description: string,
@@ -225,7 +227,7 @@ export function useCourseService() {
         }
     };
 
-  // Course's Exams \\
+    // Course's Exams \\
     const createExam = async (
         courseId: string,
         title: string,
@@ -248,31 +250,33 @@ export function useCourseService() {
         }
     };
 
-  const getExamById = async (examId: string) => {
-    try {
-      const response = await axios.get(`${apiUrl}/exams/${examId}`, {
-        withCredentials: true,
-      });
-      return response.data;
+    const getExamById = async (examId: string) => {
+        try {
+            const response = await axios.get(`${apiUrl}/exams/${examId}`, {
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error(
+                `An error occurred fetching the exam ${examId}`,
+                error
+            );
+            return null;
+        }
+    };
 
-    } catch (error) {
-      console.error(`An error occurred fetching the exam ${examId}`, error);
-      return null;
-    }
-  };
-
-  return {
-    createCourse,
-    getCourseById,
-    getCourseFiles,
-    getCourseSummarySheets,
-    getCourses,
-    addQuizToCourse,
-    addSheetToCourse,
-    addFileToCourse,
-    createExam,
-    getExamById,
-    updateExamById,
-    deleteExamById,
-  };
+    return {
+        createCourse,
+        getCourseById,
+        getCourseFiles,
+        getCourseSummarySheets,
+        getCourses,
+        addQuizToCourse,
+        addSheetToCourse,
+        addFileToCourse,
+        createExam,
+        getExamById,
+        updateExamById,
+        deleteExamById,
+    };
 }

@@ -5,23 +5,23 @@ import { Trash, Eye, Download } from "lucide-react";
 import { useState } from "react";
 
 type SummarySheetRow = {
-  original: {
-    id: number;
-    src: string;
-  };
+    original: {
+        id: number;
+        src: string;
+    };
 };
 
 export type SummarySheetActionsProps = {
-  row: SummarySheetRow;
-  onDelete?: (id: number) => void;
+    row: SummarySheetRow;
+    onDelete?: (id: number) => void;
 };
 
 export const SummarySheetActions = ({
-  row,
-  onDelete,
+    row,
+    onDelete,
 }: SummarySheetActionsProps) => {
-  const { id, src } = row.original;
-  const [isDeleting, setIsDeleting] = useState(false);
+    const { id, src } = row.original;
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = () => {
         if (onDelete) {

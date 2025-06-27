@@ -46,25 +46,25 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-  const deleteSheetById = async (sheetId: string) => {
-    try {
-      const response = await axios.delete(`${apiUrl}/summary-sheets/${sheetId}`,
-        { withCredentials: true }
-      );
+    const deleteSheetById = async (sheetId: string) => {
+        try {
+            const response = await axios.delete(
+                `${apiUrl}/summary-sheets/${sheetId}`,
+                { withCredentials: true }
+            );
 
-      return response.data;
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
 
-    } catch (error: any) {
-      if (error?.response?.data) {
-        return error.response.data;
-      }
+            return {
+                status: "failure",
+                message: "Une erreur inconnue est survenue lors de la requête.",
+            };
+        }
+    };
 
-      return {
-        status: "failure",
-        message: "Une erreur inconnue est survenue lors de la requête.",
-      };
-    }
-  };
-
-  return { generateSheet, getSheetById, deleteSheetById };
+    return { generateSheet, getSheetById, deleteSheetById };
 }

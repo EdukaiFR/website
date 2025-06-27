@@ -71,18 +71,18 @@ export function useQuiz(
         }
     };
 
-  const getQuizInsights = async (quizId: string) => {
-    try {
-      const insights = (await insightsService?.getQuizInsights(
-          quizId
-      )) as Insights;
-      setInsightsData(insights);
-      return insights;
-    } catch (error) {
-      setError("Failed to load quiz insights.");
-      return null;
-    }
-  };
+    const getQuizInsights = async (quizId: string) => {
+        try {
+            const insights = (await insightsService?.getQuizInsights(
+                quizId
+            )) as Insights;
+            setInsightsData(insights);
+            return insights;
+        } catch (error) {
+            setError("Failed to load quiz insights.");
+            return null;
+        }
+    };
 
     const createInsight = async (quizId: string, score: number) => {
         try {
