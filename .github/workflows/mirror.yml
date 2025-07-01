@@ -1,38 +1,38 @@
 name: Mirror Workflow 🪞
 
 env:
-  MIRROR_URL: "EpitechPromo2026/G-EIP-700-STG-7-1-eip-khalid.belkassmi-el-hafi.git"
+    MIRROR_URL: "EpitechPromo2026/G-EIP-700-STG-7-1-eip-khalid.belkassmi-el-hafi.git"
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-  workflow_dispatch: {}
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+        types:
+            - closed
+    workflow_dispatch: {}
 
 jobs:
-  push_to_mirror:
-    if: github.repository == 'EdukaiFR/website' &&
-      (github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.merged == true)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: main
-          token: ${{ secrets.PAT_TOKEN }}
+    push_to_mirror:
+        if: github.repository == 'EdukaiFR/website' &&
+            (github.event_name == 'workflow_dispatch' ||
+            github.event.pull_request.merged == true)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: main
+                  token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Push to mirror
-        run: |
-          set -e
-          git config user.name "Github Action"
-          git config user.email "action@github.com"
-          git remote add mirror https://${PAT}@github.com/${{ env.MIRROR_URL }}
-          git commit --allow-empty -m "[Mirror CI] - Update repository"
-          git push mirror main:main --force
+            - name: Push to mirror
+              run: |
+                  set -e
+                  git config user.name "Github Action"
+                  git config user.email "action@github.com"
+                  git remote add mirror https://${PAT}@github.com/${{ env.MIRROR_URL }}
+                  git commit --allow-empty -m "[Mirror CI] - Update repository"
+                  git push mirror main:main --force

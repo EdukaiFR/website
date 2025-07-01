@@ -2,64 +2,64 @@ const TOKEN_KEY = "auth_token";
 const USER_KEY = "user_data";
 
 export const sessionStorage = {
-  setToken: (token: string) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(TOKEN_KEY, token);
-    }
-  },
-
-  getToken: () => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem(TOKEN_KEY);
-      if (token && token !== "undefined" && token !== "null") {
-        return token;
-      }
-    }
-    return null;
-  },
-
-  setUser: (user: any) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    }
-  },
-
-  getUser: () => {
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem(USER_KEY);
-      if (user && user !== "undefined") {
-        try {
-          return JSON.parse(user);
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-          localStorage.removeItem(USER_KEY);
-          return null;
+    setToken: (token: string) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(TOKEN_KEY, token);
         }
-      }
-    }
-    return null;
-  },
+    },
 
-  clearSession: () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
-    }
-  },
+    getToken: () => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token && token !== "undefined" && token !== "null") {
+                return token;
+            }
+        }
+        return null;
+    },
 
-  // Clean up any invalid data
-  cleanupInvalidData: () => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem(TOKEN_KEY);
-      const user = localStorage.getItem(USER_KEY);
+    setUser: (user: unknown) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(USER_KEY, JSON.stringify(user));
+        }
+    },
 
-      if (token === "undefined" || token === "null") {
-        localStorage.removeItem(TOKEN_KEY);
-      }
+    getUser: () => {
+        if (typeof window !== "undefined") {
+            const user = localStorage.getItem(USER_KEY);
+            if (user && user !== "undefined") {
+                try {
+                    return JSON.parse(user);
+                } catch (error) {
+                    console.error("Error parsing user data:", error);
+                    localStorage.removeItem(USER_KEY);
+                    return null;
+                }
+            }
+        }
+        return null;
+    },
 
-      if (user === "undefined" || user === "null") {
-        localStorage.removeItem(USER_KEY);
-      }
-    }
-  },
+    clearSession: () => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+        }
+    },
+
+    // Clean up any invalid data
+    cleanupInvalidData: () => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const user = localStorage.getItem(USER_KEY);
+
+            if (token === "undefined" || token === "null") {
+                localStorage.removeItem(TOKEN_KEY);
+            }
+
+            if (user === "undefined" || user === "null") {
+                localStorage.removeItem(USER_KEY);
+            }
+        }
+    },
 };
