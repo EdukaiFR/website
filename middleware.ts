@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
 interface JwtToken {
@@ -11,16 +11,16 @@ interface JwtToken {
 
 export function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
-    const cookie  = req.cookies.get('auth_token');
+    const cookie = req.cookies.get("auth_token");
 
     let decodedToken: JwtToken | undefined;
     let userRole: string | undefined;
 
-    const adminRoutes = ['/admin'];
+    const adminRoutes = ["/admin"];
 
     if (!cookie) {
         console.log("There's no cookie ! Redirecting to /auth");
-        return NextResponse.redirect(new URL("/auth", req.url))
+        return NextResponse.redirect(new URL("/auth", req.url));
     }
 
     if (cookie) {
@@ -38,9 +38,9 @@ export function middleware(req: NextRequest) {
     }
 
     if (adminRoutes.some(route => pathname.startsWith(route))) {
-        if (userRole != 'admin') {
+        if (userRole != "admin") {
             console.log("Redirecting to unauthorized");
-            return NextResponse.redirect(new URL('/unauthorized', req.url))
+            return NextResponse.redirect(new URL("/unauthorized", req.url));
         }
     }
 
@@ -48,7 +48,8 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: [                                      //      Match all routes except
-        '/((?!api|static|.*\\..*|_next|auth).*)',   //      /api, /static, file extensions, /_next, and /auth
-    ]
+    matcher: [
+        //      Match all routes except
+        "/((?!api|static|.*\\..*|_next|auth).*)", //      /api, /static, file extensions, /_next, and /auth
+    ],
 };
