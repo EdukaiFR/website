@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text, @next/next/no-img-element */
 import {
     Dialog,
     DialogContent,

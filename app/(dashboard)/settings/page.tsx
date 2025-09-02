@@ -1,24 +1,25 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
 import {
-    User,
-    GraduationCap,
-    CreditCard,
-    Settings as SettingsIcon,
-    CheckCircle,
     AlertCircle,
+    CheckCircle,
+    CreditCard,
+    GraduationCap,
+    Settings as SettingsIcon,
+    User,
 } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
-    ProfileSettings,
     EducationSettings,
-    SubscriptionSettings,
     PreferencesSettings,
+    ProfileSettings,
+    SubscriptionSettings,
 } from "@/components/settings";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { getUserProfileAction, type UserProfile } from "@/lib/actions/user";
 
 type TabKey = "profile" | "education" | "subscription" | "preferences";

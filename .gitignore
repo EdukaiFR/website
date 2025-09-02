@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 
+# Claude
+/.claude
+CLAUDE.md
+
 # next.js
 /.next/
 /.next
