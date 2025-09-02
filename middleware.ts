@@ -1,25 +1,55 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
+import { jwtDecode } from "jwt-decode";
 
-// Since we're using client-side authentication with localStorage,
-// we'll let the client-side AuthGuard components handle route protection
-// This middleware only handles static file serving and basic routing
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+interface JwtToken {
+    userId: string;
+    iat: number;
+    exp: number;
+    role?: string;
+}
 
-    // Allow all paths - client-side auth guards will handle protection
+export function middleware(req: NextRequest) {
+    const { pathname } = req.nextUrl;
+    const cookie = req.cookies.get("auth_token");
+
+    let decodedToken: JwtToken | undefined;
+    let userRole: string | undefined;
+
+    const adminRoutes = ["/admin"];
+
+    if (!cookie) {
+        console.log("There's no cookie ! Redirecting to /auth");
+        return NextResponse.redirect(new URL("/auth", req.url));
+    }
+
+    if (cookie) {
+        try {
+            decodedToken = jwtDecode<JwtToken>(cookie.value);
+            const isTokenExpired = Date.now() >= decodedToken.exp * 1000;
+
+            if (isTokenExpired) {
+                console.log("Token expired, redirecting...");
+                return NextResponse.redirect(new URL("/auth", req.url));
+            }
+        } catch (error) {
+            return NextResponse.redirect(new URL("/auth", req.url));
+        }
+    }
+
+    if (adminRoutes.some(route => pathname.startsWith(route))) {
+        if (userRole != "admin") {
+            console.log("Redirecting to unauthorized");
+            return NextResponse.redirect(new URL("/unauthorized", req.url));
+        }
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder
-         */
-        "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+        //      Match all routes except
+        "/((?!api|static|.*\\..*|_next|auth).*)", //      /api, /static, file extensions, /_next, and /auth
     ],
 };
