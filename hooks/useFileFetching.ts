@@ -1,6 +1,7 @@
 import { ProcessedFile } from "@/lib/types/file";
 import { useEffect, useState } from "react";
 import { useFileDecompression } from "./useFileDecompression";
+import { base64ToBlob } from "@/lib/file-utils";
 
 interface UseFileFetchingProps {
     courseId: string;
@@ -23,6 +24,12 @@ export const useFileFetching = ({
         setError(null);
         setFiles([]);
 
+        const decodeAndUnzip = async (base64String: string) => {
+            const blob = base64ToBlob(base64String);
+            const arrayBuffer = await blob.arrayBuffer();
+            return unzipFile(arrayBuffer, "course-files.zip");
+        };
+
         try {
             console.log("🔄 Fetching files for course:", courseId);
 
@@ -34,54 +41,20 @@ export const useFileFetching = ({
                 console.log(
                     "🔄 Base64 endpoint not available, trying original method..."
                 );
-                const originalResponse = await getCourseFiles(courseId);
-
-                if (typeof originalResponse === "string") {
-                    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
-                    if (base64Regex.test(originalResponse.slice(0, 100))) {
-                        const blob = await fetch(
-                            `data:application/zip;base64,${originalResponse}`
-                        ).then(r => r.blob());
-                        const arrayBuffer = await blob.arrayBuffer();
-                        const extractedFiles = await unzipFile(
-                            arrayBuffer,
-                            "course-files.zip"
-                        );
-                        setFiles(extractedFiles);
-                    } else {
-                        const bytes = new Uint8Array(originalResponse.length);
-                        for (let i = 0; i < originalResponse.length; i++) {
-                            bytes[i] = originalResponse.charCodeAt(i) & 0xff;
-                        }
-                        const extractedFiles = await unzipFile(
-                            bytes.buffer,
-                            "course-files.zip"
-                        );
-                        setFiles(extractedFiles);
-                    }
-                } else if (originalResponse instanceof ArrayBuffer) {
-                    const extractedFiles = await unzipFile(
-                        originalResponse,
-                        "course-files.zip"
-                    );
-                    setFiles(extractedFiles);
-                }
+                const originalResponse = (await getCourseFiles(
+                    courseId
+                )) as string;
+                const extractedFiles = await decodeAndUnzip(originalResponse);
+                setFiles(extractedFiles);
                 return;
             }
 
             const base64Data = await response.text();
-            const blob = await fetch(
-                `data:application/zip;base64,${base64Data}`
-            ).then(r => r.blob());
-            const arrayBuffer = await blob.arrayBuffer();
-            const extractedFiles = await unzipFile(
-                arrayBuffer,
-                "course-files.zip"
-            );
+            const extractedFiles = await decodeAndUnzip(base64Data);
             setFiles(extractedFiles);
         } catch (error) {
-            console.error("❌ Error fetching files:", error);
-            setError("Impossible de charger les fichiers.");
+            console.error("Error fetching files:", error);
+            setError("Error fetching files.");
         } finally {
             setLoading(false);
         }

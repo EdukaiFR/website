@@ -12,7 +12,10 @@ export const useFileDecompression = () => {
             console.log("📦 Starting ZIP decompression...");
 
             try {
-                const zip = await JSZip.loadAsync(data);
+                const zip = await JSZip.loadAsync(
+                    data,
+                    typeof data === "string" ? { base64: true } : undefined
+                );
                 console.log("✅ ZIP loaded successfully");
 
                 const unzippedFiles: UnzippedFile[] = [];

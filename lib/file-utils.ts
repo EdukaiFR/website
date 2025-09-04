@@ -64,3 +64,17 @@ export const downloadFile = (
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 };
+
+export const base64ToBlob = (base64: string): Blob => {
+    const mimeType = "application/zip";
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    console.log("Finished decoding this !");
+    return new Blob([bytes.buffer], { type: mimeType });
+};
