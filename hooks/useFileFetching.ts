@@ -31,16 +31,11 @@ export const useFileFetching = ({
         };
 
         try {
-            console.log("🔄 Fetching files for course:", courseId);
-
             const response = await fetch(
                 `/api/courses/${courseId}/files?format=base64`
             );
 
             if (!response.ok) {
-                console.log(
-                    "🔄 Base64 endpoint not available, trying original method..."
-                );
                 const originalResponse = (await getCourseFiles(
                     courseId
                 )) as string;
@@ -53,7 +48,6 @@ export const useFileFetching = ({
             const extractedFiles = await decodeAndUnzip(base64Data);
             setFiles(extractedFiles);
         } catch (error) {
-            console.error("Error fetching files:", error);
             setError("Error fetching files.");
         } finally {
             setLoading(false);
