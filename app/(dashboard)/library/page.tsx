@@ -227,13 +227,13 @@ export default function LibraryPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex flex-col gap-4 lg:gap-6 px-3 sm:px-4 lg:px-8 py-4 lg:py-6 min-h-[calc(100vh-5rem)] w-full max-w-full overflow-hidden bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
             {/* Header */}
             <LibraryHeader />
 
             {/* Filters and Search */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
-                <CardContent className="p-6">
+                <CardContent className="p-4 lg:p-6">
                     {/* Mobile Layout (2 rows) */}
                     <div className="flex flex-col gap-4 lg:hidden">
                         {/* First Row: Filters, Counter, and View Toggle */}
@@ -278,7 +278,7 @@ export default function LibraryPage() {
 
                         {/* Second Row: Search Bar (Full Width on Mobile) */}
                         <div className="w-full">
-                            <div className="w-full max-w-md">
+                            <div className="w-full max-w-sm">
                                 <SearchBar setSearch={setSearch} />
                             </div>
                         </div>
@@ -289,7 +289,7 @@ export default function LibraryPage() {
                         {/* Left: Search Bar + Filters Group */}
                         <div className="flex items-center gap-4">
                             {/* Search Bar */}
-                            <div className="w-96">
+                            <div className="w-72 xl:w-96">
                                 <SearchBar setSearch={setSearch} />
                             </div>
 
@@ -338,8 +338,8 @@ export default function LibraryPage() {
 
             {/* Content */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm flex-1">
-                <CardContent className="p-6">
-                    <div className="w-full">
+                <CardContent className="p-4 lg:p-6">
+                    <div className="w-full max-w-full overflow-hidden">
                         {view === "grid" ? (
                             <CourseGrid
                                 courses={filteredCourses.map(course => ({
@@ -354,10 +354,12 @@ export default function LibraryPage() {
                                 isLoading={false}
                             />
                         ) : (
-                            <DataTable
-                                data={filteredCourses}
-                                columns={columns}
-                            />
+                            <div className="overflow-x-auto">
+                                <DataTable
+                                    data={filteredCourses}
+                                    columns={columns}
+                                />
+                            </div>
                         )}
                     </div>
                 </CardContent>
