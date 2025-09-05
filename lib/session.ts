@@ -27,9 +27,11 @@ export const sessionStorage = {
     getUser: () => {
         if (typeof window !== "undefined") {
             const user = localStorage.getItem(USER_KEY);
+            
             if (user && user !== "undefined") {
                 try {
-                    return JSON.parse(user);
+                    const parsedUser = JSON.parse(user);
+                    return parsedUser;
                 } catch (error) {
                     console.error("Error parsing user data:", error);
                     localStorage.removeItem(USER_KEY);

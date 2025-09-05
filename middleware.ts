@@ -32,14 +32,16 @@ export function middleware(req: NextRequest) {
                 console.log("Token expired, redirecting...");
                 return NextResponse.redirect(new URL("/auth", req.url));
             }
+
+            // EXTRACTION DU RÔLE depuis le token JWT
+            userRole = decodedToken.role;
         } catch (error) {
             return NextResponse.redirect(new URL("/auth", req.url));
         }
     }
 
     if (adminRoutes.some(route => pathname.startsWith(route))) {
-        if (userRole != "admin") {
-            console.log("Redirecting to unauthorized");
+        if (userRole !== "admin") {
             return NextResponse.redirect(new URL("/unauthorized", req.url));
         }
     }

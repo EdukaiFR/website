@@ -7,7 +7,9 @@ import {
     Settings,
     Zap,
     GraduationCap,
+    Shield,
 } from "lucide-react";
+import { useIsAdmin } from "./useRole";
 
 /*
   => Type for Links
@@ -21,6 +23,8 @@ import {
 */
 
 export function useLinks() {
+    const isAdmin = useIsAdmin();
+    
     const upLinks = [
         {
             href: "/",
@@ -51,8 +55,8 @@ export function useLinks() {
             Icon: Bell,
         },
         {
-            href: "/support",
-            label: "Assistance",
+            href: "/tickets",
+            label: "Support",
             Icon: HelpCircle,
         },
         {
@@ -62,5 +66,13 @@ export function useLinks() {
         },
     ];
 
-    return { upLinks, downLinks };
+    const adminLinks = isAdmin ? [
+        {
+            href: "/admin/tickets",
+            label: "Admin - Tickets",
+            Icon: Shield,
+        },
+    ] : [];
+
+    return { upLinks, downLinks, adminLinks };
 }
