@@ -238,7 +238,7 @@ export default function LibraryPage() {
                     <div className="flex flex-col gap-4 lg:hidden">
                         {/* First Row: Filters, Counter, and View Toggle */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                                 <FilterCourses
                                     coursesFilter={coursesFilter}
                                     activeFilter={filter}
@@ -251,13 +251,14 @@ export default function LibraryPage() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 flex-shrink-0"
                                         onClick={() =>
                                             setFilter({ type: "", value: "" })
                                         }
                                     >
                                         <RotateCcw className="w-4 h-4 mr-2" />
-                                        Réinitialiser
+                                        <span className="hidden sm:inline">Réinitialiser</span>
+                                        <span className="sm:hidden">Reset</span>
                                     </Button>
                                 )}
 
@@ -268,7 +269,7 @@ export default function LibraryPage() {
                                 />
                             </div>
 
-                            <div className="flex items-center">
+                            <div className="flex items-center flex-shrink-0">
                                 <ViewToggle
                                     view={view}
                                     onViewChange={handleViewChange}
@@ -278,23 +279,23 @@ export default function LibraryPage() {
 
                         {/* Second Row: Search Bar (Full Width on Mobile) */}
                         <div className="w-full">
-                            <div className="w-full max-w-sm">
+                            <div className="w-full sm:max-w-md">
                                 <SearchBar setSearch={setSearch} />
                             </div>
                         </div>
                     </div>
 
                     {/* Desktop Layout (1 row) */}
-                    <div className="hidden lg:flex items-center justify-between gap-6">
+                    <div className="hidden lg:flex items-center justify-between gap-2 lg:gap-3 xl:gap-6">
                         {/* Left: Search Bar + Filters Group */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 lg:gap-3 xl:gap-4 flex-1 min-w-0">
                             {/* Search Bar */}
-                            <div className="w-72 xl:w-96">
+                            <div className="w-56 lg:w-60 xl:w-80 2xl:w-96 flex-shrink-0">
                                 <SearchBar setSearch={setSearch} />
                             </div>
 
                             {/* Filters and Counter */}
-                            <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-1 lg:gap-2 xl:gap-3 flex-wrap min-w-0">
                                 <FilterCourses
                                     coursesFilter={coursesFilter}
                                     activeFilter={filter}
@@ -307,13 +308,13 @@ export default function LibraryPage() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 flex-shrink-0 px-2 lg:px-3"
                                         onClick={() =>
                                             setFilter({ type: "", value: "" })
                                         }
                                     >
-                                        <RotateCcw className="w-4 h-4 mr-2" />
-                                        Réinitialiser
+                                        <RotateCcw className="w-4 h-4 lg:mr-2" />
+                                        <span className="hidden lg:inline xl:inline">Réinitialiser</span>
                                     </Button>
                                 )}
 

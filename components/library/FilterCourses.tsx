@@ -1,22 +1,22 @@
 "use client";
 
-import { useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, ListFilter } from "lucide-react";
-import {
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import {
     Command,
-    CommandInput,
-    CommandList,
     CommandEmpty,
     CommandGroup,
+    CommandInput,
     CommandItem,
+    CommandList,
 } from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown, ListFilter } from "lucide-react";
+import { useMemo } from "react";
 
 export type FilterCoursesProps = {
     coursesFilter: {
@@ -71,18 +71,18 @@ export const FilterCourses = ({
                     variant="outline"
                     role="combobox"
                     aria-expanded={isFilterOpen}
-                    className="w-fit justify-between border border-blue-200/60 text-blue-600 hover:bg-blue-50/80 hover:border-indigo-300 transition-all hover:text-indigo-600"
+                    className="w-fit justify-between border border-blue-200/60 text-blue-600 hover:bg-blue-50/80 hover:border-indigo-300 transition-all hover:text-indigo-600 min-w-0 px-2 lg:px-3"
                 >
-                    <div className="flex items-center justify-start gap-2">
+                    <div className="flex items-center justify-start gap-1 lg:gap-2 min-w-0">
                         <ListFilter className="h-4 w-4 shrink-0" />
-                        <span className="font-medium text-sm">
+                        <span className="font-medium text-sm truncate max-w-[80px] lg:max-w-none">
                             {activeFilter.value
                                 ? `${activeFilter.value}`
                                 : "Filtre"}
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-1 lg:gap-2 ml-1 lg:ml-2 flex-shrink-0">
                         <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
                     </div>
                 </Button>
