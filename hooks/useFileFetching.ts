@@ -24,9 +24,18 @@ export const useFileFetching = ({
         setError(null);
         setFiles([]);
 
-        const decodeAndUnzip = async (base64String: string) => {
-            const blob = base64ToBlob(base64String);
-            const arrayBuffer = await blob.arrayBuffer();
+        const decodeAndUnzip = async (input: string | ArrayBuffer) => {
+            let arrayBuffer: ArrayBuffer;
+
+            if (typeof input === "string") {
+                // Base64 path
+                const blob = base64ToBlob(input);
+                arrayBuffer = await blob.arrayBuffer();
+            } else {
+                // Raw binary path
+                arrayBuffer = input;
+            }
+
             return unzipFile(arrayBuffer, "course-files.zip");
         };
 
@@ -35,17 +44,24 @@ export const useFileFetching = ({
                 `/api/courses/${courseId}/files?format=base64`
             );
 
-            if (!response.ok) {
+            let extractedFiles;
+
+            if (response.ok) {
+                const contentType = response.headers.get("content-type");
+                if (contentType?.includes("application/zip")) {
+                    const buffer = await response.arrayBuffer();
+                    extractedFiles = await decodeAndUnzip(buffer);
+                } else {
+                    const base64Data = await response.text();
+                    extractedFiles = await decodeAndUnzip(base64Data);
+                }
+            } else {
                 const originalResponse = (await getCourseFiles(
                     courseId
                 )) as string;
-                const extractedFiles = await decodeAndUnzip(originalResponse);
-                setFiles(extractedFiles);
-                return;
+                extractedFiles = await decodeAndUnzip(originalResponse);
             }
 
-            const base64Data = await response.text();
-            const extractedFiles = await decodeAndUnzip(base64Data);
             setFiles(extractedFiles);
         } catch (error) {
             setError("Error fetching files.");
