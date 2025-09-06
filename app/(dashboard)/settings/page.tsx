@@ -2,27 +2,27 @@
 "use client";
 
 import {
-    AlertCircle,
-    CheckCircle,
     CreditCard,
     GraduationCap,
-    Settings as SettingsIcon,
     User,
+    Shield,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import {
-    EducationSettings,
-    PreferencesSettings,
     ProfileSettings,
+    EducationSettings,
     SubscriptionSettings,
+    AccountSettings,
 } from "@/components/settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUserProfileAction, type UserProfile } from "@/lib/actions/user";
+import { PersistentAlertsContainer, usePersistentAlerts } from "@/components/ui/persistent-alert";
+import { useUserProfile } from "@/contexts/UserContext";
+import { getImageDisplaySrc } from "@/lib/image-utils";
 
-type TabKey = "profile" | "education" | "subscription" | "preferences";
+type TabKey = "profile" | "education" | "subscription" | "account";
 
 interface Tab {
     key: TabKey;
@@ -42,68 +42,40 @@ const tabs: Tab[] = [
         key: "education",
         label: "Études",
         icon: <GraduationCap className="w-5 h-5" />,
-        description: "Niveau d&apos;études et spécialisations",
+        description: "Niveau d'études et établissement",
     },
     {
         key: "subscription",
-        label: "Abonnement",
+        label: "Abonnement", 
         icon: <CreditCard className="w-5 h-5" />,
-        description: "Plan d'abonnement et facturation",
+        description: "Plan d'abonnement et fonctionnalités",
     },
     {
-        key: "preferences",
-        label: "Préférences",
-        icon: <SettingsIcon className="w-5 h-5" />,
-        description: "Notifications et confidentialité",
+        key: "account",
+        label: "Compte",
+        icon: <Shield className="w-5 h-5" />,
+        description: "Sécurité et gestion du compte",
     },
 ];
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState<TabKey>("profile");
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [notification, setNotification] = useState<{
-        type: "success" | "error";
-        message: string;
-    } | null>(null);
+    const { alerts, addError, addSuccess, clearAllAlerts } = usePersistentAlerts();
+    const { userProfile, loading: isLoading, refreshUserProfile } = useUserProfile();
 
     useEffect(() => {
-        loadUserProfile();
-    }, []);
+        // Clear alerts when component mounts
+        clearAllAlerts();
+    }, [clearAllAlerts]);
 
-    const loadUserProfile = async () => {
-        setIsLoading(true);
-        try {
-            const result = await getUserProfileAction();
-            if (result.success && result.data) {
-                setUserProfile(result.data as UserProfile);
-            } else {
-                showNotification(
-                    "error",
-                    "Impossible de charger le profil utilisateur"
-                );
-            }
-        } catch (error) {
-            console.error(error);
-            showNotification("error", "Une erreur est survenue");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const showNotification = (type: "success" | "error", message: string) => {
-        setNotification({ type, message });
-        setTimeout(() => setNotification(null), 5000);
-    };
-
-    const handleSuccess = () => {
-        showNotification("success", "Paramètres mis à jour avec succès !");
+    const handleSuccess = async (message?: string) => {
+        addSuccess(message || "Paramètres mis à jour avec succès !");
         // Reload user profile to get updated data
-        loadUserProfile();
+        await refreshUserProfile();
     };
 
     const handleError = (error: string) => {
-        showNotification("error", error);
+        addError(error, "Erreur lors de la mise à jour");
     };
 
     if (isLoading) {
@@ -141,8 +113,7 @@ export default function SettingsPage() {
                                 Paramètres
                             </h1>
                             <p className="text-gray-600">
-                                Gérez vos informations personnelles et
-                                préférences
+                                Gérez vos informations personnelles et préférences
                             </p>
                         </div>
                     </div>
@@ -152,27 +123,46 @@ export default function SettingsPage() {
                         <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-0">
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                                        {userProfile.firstName.charAt(0)}
-                                        {userProfile.lastName.charAt(0)}
+                                    <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+                                        {getImageDisplaySrc(userProfile.profilePic) ? (
+                                            <Image 
+                                                src={getImageDisplaySrc(userProfile.profilePic)!} 
+                                                alt="Photo de profil"
+                                                fill
+                                                className="object-cover"
+                                                onError={() => {
+                                                    // You could set a state here to fallback to initials
+                                                    // For now we'll let it show the broken image placeholder
+                                                }}
+                                            />
+                                        ) : (
+                                            <>
+                                                {userProfile.firstName.charAt(0)}
+                                                {userProfile.lastName.charAt(0)}
+                                            </>
+                                        )}
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <h2 className="text-xl font-semibold text-gray-900">
-                                            {userProfile.firstName}{" "}
-                                            {userProfile.lastName}
+                                            {userProfile.firstName} {userProfile.lastName}
                                         </h2>
-                                        <p className="text-gray-600">
-                                            {userProfile.email}
+                                        <p className="text-gray-600 text-sm">
+                                            @{userProfile.username}
                                         </p>
-                                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                        <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                             <span className="flex items-center gap-1">
                                                 <GraduationCap className="w-4 h-4" />
-                                                {userProfile.currentClass}
+                                                {userProfile.grade} • {userProfile.levelOfStudy}
                                             </span>
+                                            {userProfile.institution && (
+                                                <span className="flex items-center gap-1">
+                                                    <Shield className="w-4 h-4" />
+                                                    {userProfile.institution}
+                                                </span>
+                                            )}
                                             <span className="flex items-center gap-1">
                                                 <CreditCard className="w-4 h-4" />
-                                                Plan{" "}
-                                                {userProfile.subscriptionPlan}
+                                                Plan {userProfile.accountPlan}
                                             </span>
                                         </div>
                                     </div>
@@ -181,6 +171,9 @@ export default function SettingsPage() {
                         </Card>
                     )}
                 </div>
+
+                {/* Global Alerts */}
+                <PersistentAlertsContainer alerts={alerts} className="mb-6" />
 
                 <div className="grid lg:grid-cols-4 gap-8">
                     {/* Sidebar Navigation */}
@@ -215,16 +208,13 @@ export default function SettingsPage() {
                                                     </div>
                                                     <div
                                                         className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
-                                                            activeTab ===
-                                                            tab.key
+                                                            activeTab === tab.key
                                                                 ? "text-blue-100"
                                                                 : "text-gray-500"
                                                         }`}
                                                         style={{
-                                                            wordWrap:
-                                                                "break-word",
-                                                            overflowWrap:
-                                                                "break-word",
+                                                            wordWrap: "break-word",
+                                                            overflowWrap: "break-word",
                                                         }}
                                                     >
                                                         {tab.description}
@@ -241,35 +231,17 @@ export default function SettingsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-3">
                         <div className="space-y-6">
-                            {/* Notification */}
-                            {notification && (
-                                <div
-                                    className={`p-4 rounded-lg border ${
-                                        notification.type === "success"
-                                            ? "bg-green-50 border-green-200 text-green-800"
-                                            : "bg-red-50 border-red-200 text-red-800"
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        {notification.type === "success" ? (
-                                            <CheckCircle className="w-5 h-5" />
-                                        ) : (
-                                            <AlertCircle className="w-5 h-5" />
-                                        )}
-                                        {notification.message}
-                                    </div>
-                                </div>
-                            )}
-
                             {/* Tab Content */}
                             {activeTab === "profile" && userProfile && (
                                 <ProfileSettings
                                     initialData={{
                                         firstName: userProfile.firstName,
                                         lastName: userProfile.lastName,
-                                        email: userProfile.email,
-                                        dateOfBirth: userProfile.dateOfBirth,
+                                        username: userProfile.username,
+                                        profilePic: userProfile.profilePic || "",
+                                        email: userProfile.email, // Pass email for display but it's not editable
                                     }}
+                                    userId={userProfile._id}
                                     onSuccess={handleSuccess}
                                     onError={handleError}
                                 />
@@ -278,12 +250,11 @@ export default function SettingsPage() {
                             {activeTab === "education" && userProfile && (
                                 <EducationSettings
                                     initialData={{
-                                        educationLevel:
-                                            userProfile.educationLevel,
-                                        currentClass: userProfile.currentClass,
-                                        specialization:
-                                            userProfile.specialization,
+                                        grade: userProfile.grade,
+                                        levelOfStudy: userProfile.levelOfStudy,
+                                        institution: userProfile.institution || "",
                                     }}
+                                    userId={userProfile._id}
                                     onSuccess={handleSuccess}
                                     onError={handleError}
                                 />
@@ -292,23 +263,17 @@ export default function SettingsPage() {
                             {activeTab === "subscription" && userProfile && (
                                 <SubscriptionSettings
                                     initialData={{
-                                        subscriptionPlan:
-                                            userProfile.subscriptionPlan,
+                                        accountPlan: userProfile.accountPlan,
                                     }}
+                                    userId={userProfile._id}
                                     onSuccess={handleSuccess}
                                     onError={handleError}
                                 />
                             )}
 
-                            {activeTab === "preferences" && userProfile && (
-                                <PreferencesSettings
-                                    initialData={{
-                                        notifications:
-                                            userProfile.notifications,
-                                        profileVisibility:
-                                            userProfile.profileVisibility,
-                                        dataSharing: userProfile.dataSharing,
-                                    }}
+                            {activeTab === "account" && userProfile && (
+                                <AccountSettings
+                                    userId={userProfile._id}
                                     onSuccess={handleSuccess}
                                     onError={handleError}
                                 />

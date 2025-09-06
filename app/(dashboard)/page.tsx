@@ -10,8 +10,24 @@ import {
     TrendingUp,
     Star,
 } from "lucide-react";
+import { useUserProfile } from "@/contexts/UserContext";
 
 export default function Home() {
+    const { userProfile, loading } = useUserProfile();
+    
+    // Détermine le nom à afficher
+    const getDisplayName = () => {
+        if (!userProfile) return "";
+        
+        // Si le username est une adresse email ou identique à l'email
+        if (userProfile.username.includes("@") || userProfile.username === userProfile.email) {
+            // Affiche firstName et première lettre du lastName
+            return `${userProfile.firstName} ${userProfile.lastName.charAt(0)}.`;
+        }
+        
+        // Sinon affiche le username
+        return userProfile.username;
+    };
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
             {/* Beautiful Header Section */}
@@ -38,7 +54,11 @@ export default function Home() {
                             <h1 className="text-2xl lg:text-4xl font-bold mb-6 leading-tight">
                                 Bienvenue
                                 <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                                    Tristan
+                                    {loading ? (
+                                        <span className="inline-block animate-pulse bg-yellow-300/30 rounded h-10 w-32"></span>
+                                    ) : (
+                                        getDisplayName()
+                                    )}
                                 </span>
                             </h1>
 
