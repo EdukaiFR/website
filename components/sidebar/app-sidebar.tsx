@@ -7,6 +7,7 @@ import Link from "next/link";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/sidebar/nav-user";
+import { BetaCard } from "@/components/sidebar/beta-card";
 import {
     Sidebar,
     SidebarContent,
@@ -65,6 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavSecondary items={downLinks} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
+                <BetaCard />
                 <NavUser />
             </SidebarFooter>
             <SidebarRail />
