@@ -391,3 +391,22 @@ export const fileToast = {
         showToast.error(toastMessages.file.recognitionError),
     noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
 };
+
+// Ticket toast functions
+export const ticketToast = {
+    createSuccess: () => showToast.success("Ticket créé avec succès."),
+    createError: (error?: string) => showToast.error(error || "Erreur lors de la création du ticket."),
+    updateSuccess: () => showToast.success("Ticket mis à jour avec succès."),
+    updateError: (error?: string) => showToast.error(error || "Erreur lors de la mise à jour du ticket."),
+    deleteSuccess: () => showToast.success("Ticket supprimé avec succès."),
+    deleteError: () => showToast.error("Erreur lors de la suppression du ticket."),
+    loadError: () => showToast.error("Erreur lors du chargement des tickets."),
+    assignSuccess: () => showToast.success("Ticket assigné avec succès."),
+    assignError: () => showToast.error("Erreur lors de l'assignation du ticket."),
+    closeSuccess: () => showToast.success("Ticket fermé avec succès."),
+    closeError: () => showToast.error("Erreur lors de la fermeture du ticket."),
+    reopenSuccess: () => showToast.success("Ticket rouvert avec succès."),
+    reopenError: () => showToast.error("Erreur lors de la réouverture du ticket."),
+    addCommentSuccess: () => showToast.success("Commentaire ajouté avec succès."),
+    addCommentError: () => showToast.error("Erreur lors de l'ajout du commentaire."),
+};
