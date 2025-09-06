@@ -26,12 +26,14 @@ import {
 
 export interface PreferencesSettingsProps {
     initialData?: PreferencesSettingsFormValues;
+    userId: string;
     onSuccess?: () => void;
     onError?: (error: string) => void;
 }
 
 export function PreferencesSettings({
     initialData,
+    userId,
     onSuccess,
     onError,
 }: PreferencesSettingsProps) {
@@ -62,7 +64,7 @@ export function PreferencesSettings({
         setIsLoading(true);
 
         try {
-            const result = await updatePreferencesAction(data);
+            const result = await updatePreferencesAction(data, userId);
 
             if (result.success) {
                 reset(data);
@@ -86,7 +88,7 @@ export function PreferencesSettings({
         setIsDeleting(true);
 
         try {
-            const result = await deleteAccountAction();
+            const result = await deleteAccountAction({ confirmPassword: "" }, userId);
 
             if (result.success) {
                 // Redirect to home or login page

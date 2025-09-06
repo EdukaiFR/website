@@ -1,272 +1,170 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { CreditCard, Check, Crown, Star, Heart } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { CreditCard, AlertCircle, Shield, Sparkles, Clock, FileQuestion } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    subscriptionSettingsSchema,
-    type SubscriptionSettingsFormValues,
-    subscriptionPlans,
-    type SubscriptionPlan,
-} from "@/lib/schemas/user";
-import { updateSubscriptionAction } from "@/lib/actions/user";
 
 export interface SubscriptionSettingsProps {
-    initialData?: SubscriptionSettingsFormValues;
+    initialData?: Record<string, unknown>;
+    userId: string;
     onSuccess?: () => void;
     onError?: (error: string) => void;
 }
 
 export function SubscriptionSettings({
-    initialData,
-    onSuccess,
-    onError,
+    initialData: _initialData,
+    userId: _userId,
+    onSuccess: _onSuccess,
+    onError: _onError,
 }: SubscriptionSettingsProps) {
-    const [isLoading, setIsLoading] = useState(false);
-
-    const {
-        control,
-        handleSubmit,
-        watch,
-        formState: { errors, isDirty },
-        setError,
-        reset,
-    } = useForm<SubscriptionSettingsFormValues>({
-        resolver: zodResolver(subscriptionSettingsSchema),
-        defaultValues: initialData || {
-            subscriptionPlan: "free",
-        },
-    });
-
-    const selectedPlan = watch("subscriptionPlan");
-
-    const onSubmit = async (data: SubscriptionSettingsFormValues) => {
-        setIsLoading(true);
-
-        try {
-            const result = await updateSubscriptionAction(data);
-
-            if (result.success) {
-                reset(data);
-                onSuccess?.();
-            } else {
-                const errorMessage = result.error || "Une erreur est survenue";
-                setError("root", { message: errorMessage });
-                onError?.(errorMessage);
-            }
-        } catch (error) {
-            console.error("Error updating subscription:", error);
-            const errorMessage = "Une erreur inattendue est survenue";
-            setError("root", { message: errorMessage });
-            onError?.(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const getPlanIcon = (plan: SubscriptionPlan) => {
-        switch (plan) {
-            case "free":
-                return <Heart className="w-5 h-5" />;
-            case "student":
-                return <Star className="w-5 h-5" />;
-            case "premium":
-                return <Crown className="w-5 h-5" />;
-            default:
-                return <CreditCard className="w-5 h-5" />;
-        }
-    };
-
-    const getPlanColor = (plan: SubscriptionPlan) => {
-        switch (plan) {
-            case "free":
-                return "from-gray-500 to-gray-600";
-            case "student":
-                return "from-blue-500 to-blue-600";
-            case "premium":
-                return "from-purple-500 to-purple-600";
-            default:
-                return "from-gray-500 to-gray-600";
-        }
-    };
-
     return (
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-gray-800">
                     <CreditCard className="w-5 h-5" />
                     Abonnement
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Plan Selection */}
-                    <Controller
-                        name="subscriptionPlan"
-                        control={control}
-                        render={({ field }) => (
-                            <div className="space-y-4">
-                                <label className="text-sm font-medium text-gray-700">
-                                    Choisissez votre plan
-                                </label>
-                                <div className="grid gap-4 md:grid-cols-3">
-                                    {Object.entries(subscriptionPlans).map(
-                                        ([planKey, planData]) => {
-                                            const isSelected =
-                                                field.value === planKey;
-                                            const plan =
-                                                planKey as SubscriptionPlan;
+            <CardContent className="space-y-6">
+                {/* Beta Notice */}
+                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-white border border-blue-200/50 rounded-xl p-6">
+                    <div className="flex items-start gap-4">
+                        <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex-shrink-0">
+                            <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    Version Beta Gratuite
+                                </h3>
+                                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                    BETA
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                Pendant la phase Beta, Edukai est entièrement gratuit ! Profitez de toutes 
+                                les fonctionnalités disponibles pour nous aider à améliorer la plateforme.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-                                            return (
-                                                <div
-                                                    key={planKey}
-                                                    className={`relative cursor-pointer rounded-xl border-2 transition-all duration-200 hover:shadow-lg ${
-                                                        isSelected
-                                                            ? "border-blue-500 bg-blue-50 shadow-md"
-                                                            : "border-gray-200 hover:border-gray-300"
-                                                    }`}
-                                                    onClick={() =>
-                                                        field.onChange(planKey)
-                                                    }
-                                                >
-                                                    <div className="p-6">
-                                                        {/* Plan Header */}
-                                                        <div className="flex items-center justify-between mb-4">
-                                                            <div
-                                                                className={`p-2 rounded-lg bg-gradient-to-r ${getPlanColor(
-                                                                    plan
-                                                                )} text-white`}
-                                                            >
-                                                                {getPlanIcon(
-                                                                    plan
-                                                                )}
-                                                            </div>
-                                                            {isSelected && (
-                                                                <div className="flex items-center justify-center w-6 h-6 bg-blue-500 rounded-full">
-                                                                    <Check className="w-4 h-4 text-white" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Plan Details */}
-                                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                                            {planData.label}
-                                                        </h3>
-                                                        <p className="text-2xl font-bold text-gray-900 mb-4">
-                                                            {planData.price}
-                                                        </p>
-
-                                                        {/* Features */}
-                                                        <ul className="space-y-2">
-                                                            {planData.features.map(
-                                                                (
-                                                                    feature,
-                                                                    index
-                                                                ) => (
-                                                                    <li
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        className="flex items-center gap-2 text-sm text-gray-600"
-                                                                    >
-                                                                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                                                        {
-                                                                            feature
-                                                                        }
-                                                                    </li>
-                                                                )
-                                                            )}
-                                                        </ul>
-                                                    </div>
-
-                                                    {/* Popular Badge for Student Plan */}
-                                                    {planKey === "student" && (
-                                                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                                                            <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
-                                                                Populaire
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }
-                                    )}
+                {/* Current Limitations */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-blue-600" />
+                        Limitations actuelles (Beta)
+                    </h3>
+                    
+                    <div className="grid gap-4">
+                        {/* Rate Limit */}
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-start gap-3">
+                                <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                                    <Clock className="w-4 h-4 text-gray-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-medium text-gray-900 mb-1">
+                                        Rate Limiting
+                                    </h4>
+                                    <p className="text-sm text-gray-600">
+                                        Pour éviter les abus et garantir une expérience optimale à tous nos 
+                                        utilisateurs Beta, un système de limitation est en place sur l&apos;utilisation 
+                                        des fonctionnalités IA.
+                                    </p>
                                 </div>
                             </div>
-                        )}
-                    />
+                        </div>
 
-                    {/* Current Plan Info */}
-                    {selectedPlan && (
-                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <p className="text-sm text-green-800">
-                                <strong>✅ Plan actuel :</strong>{" "}
-                                {subscriptionPlans[selectedPlan].label}
-                                <br />
-                                {selectedPlan !== "free" && (
-                                    <span className="text-xs text-green-600 mt-1 block">
-                                        Votre abonnement se renouvelle
-                                        automatiquement. Vous pouvez
-                                        &apos;annuler à tout moment.
-                                    </span>
-                                )}
+                        {/* Quiz Limitation */}
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-start gap-3">
+                                <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                                    <FileQuestion className="w-4 h-4 text-gray-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-medium text-gray-900 mb-1">
+                                        Quiz de 4 questions
+                                    </h4>
+                                    <p className="text-sm text-gray-600">
+                                        Les quiz sont actuellement limités à 4 questions pour permettre de tester 
+                                        les fonctionnalités. Une fois la version complète lancée, le nombre de 
+                                        questions sera adapté selon votre abonnement.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Coming Soon */}
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200/50 rounded-xl p-6">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5 text-indigo-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                Bientôt disponible
+                            </h3>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <p className="text-sm text-gray-700 font-medium">
+                                Plans d&apos;abonnement à venir après la Beta :
+                            </p>
+                            
+                            <div className="grid gap-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div>
+                                        <span className="font-medium text-gray-800">Plan Gratuit</span>
+                                        <span className="text-gray-600 text-sm"> - Accès limité aux fonctionnalités de base</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                                    <div>
+                                        <span className="font-medium text-gray-800">Plan Premium</span>
+                                        <span className="text-gray-600 text-sm"> - Quiz illimités, toutes matières, support prioritaire</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                    <div>
+                                        <span className="font-medium text-gray-800">Plan Pro</span>
+                                        <span className="text-gray-600 text-sm"> - Fonctionnalités avancées pour les étudiants exigeants</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white/70 rounded-lg p-3 border border-indigo-100">
+                            <p className="text-xs text-gray-600 italic">
+                                💡 En tant qu&apos;utilisateur Beta, vous bénéficierez d&apos;avantages exclusifs 
+                                lors du lancement des abonnements payants !
                             </p>
                         </div>
-                    )}
+                    </div>
+                </div>
 
-                    {/* Payment Info */}
-                    {selectedPlan !== "free" && isDirty && (
-                        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-sm text-yellow-800">
-                                <strong>💳 Information de paiement</strong>
-                                <br />
-                                En changeant votre plan, vous serez redirigé
-                                vers notre système de paiement sécurisé. Le
-                                changement prendra effet immédiatement après
-                                confirmation.
+                {/* Beta Feedback */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                        <div className="p-1.5 bg-green-100 rounded-lg">
+                            <Sparkles className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-medium text-green-900 mb-1">
+                                Aidez-nous à améliorer Edukai
+                            </h4>
+                            <p className="text-sm text-green-700 mb-2">
+                                Vos retours sont précieux ! N&apos;hésitez pas à nous faire part de vos suggestions 
+                                et des bugs rencontrés pendant cette phase Beta.
+                            </p>
+                            <p className="text-sm text-green-800 font-medium">
+                                ✉️ Contactez-nous : <a href="mailto:contact@edukai.fr" className="underline hover:text-green-900">contact@edukai.fr</a>
                             </p>
                         </div>
-                    )}
-
-                    {/* Error Display */}
-                    {errors.root && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-sm text-red-600 flex items-center gap-2">
-                                <span className="text-red-500">⚠</span>
-                                {errors.root.message}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Submit Button */}
-                    {isDirty && (
-                        <div className="flex justify-end">
-                            <Button
-                                type="submit"
-                                disabled={isLoading}
-                                className="px-6 h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Mise à jour...
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        <CreditCard className="w-4 h-4" />
-                                        {selectedPlan === "free"
-                                            ? "Passer au plan gratuit"
-                                            : "Mettre à jour l'abonnement"}
-                                    </span>
-                                )}
-                            </Button>
-                        </div>
-                    )}
-                </form>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     );
