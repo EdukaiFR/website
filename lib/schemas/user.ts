@@ -95,52 +95,40 @@ export const subscriptionPlans = {
             "Statistiques avancées",
         ],
     },
-    student: {
-        label: "Étudiant",
-        price: "4,99€/mois",
-        features: [
-            "Questions illimitées",
-            "Toutes matières",
-            "Support étudiant",
-            "Tarif préférentiel",
-        ],
-    },
 } as const;
 
-// User settings schema
+// User settings schema (updated for new API)
 export const userSettingsSchema = z.object({
     // Personal Information
     firstName: z
         .string()
         .min(2, "Le prénom doit contenir au moins 2 caractères"),
     lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    email: z.string().email("Adresse email invalide"),
-    dateOfBirth: z.string().optional(),
+    username: z.string().min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
+    profilePic: z
+        .string()
+        .optional()
+        .refine((val) => {
+            if (!val || val === "") return true;
+            
+            // Check if it's a base64 image
+            const base64Regex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
+            if (base64Regex.test(val)) {
+                // Check base64 size limit (approximately 2MB when encoded)
+                const base64Size = (val.length * 3) / 4;
+                return base64Size <= 2 * 1024 * 1024;
+            }
+            
+            // Check if it's a valid URL
+            return z.string().url().safeParse(val).success;
+        }, {
+            message: "Photo de profil invalide (URL ou image max 2MB requise)",
+        }),
 
-    // Education
-    educationLevel: z.enum(["college", "lycee", "superieur"], {
-        required_error: "Le niveau d'étude est requis",
-    }),
-    currentClass: z.string().min(1, "La classe actuelle est requise"),
-    specialization: z.string().optional(),
-
-    // Subscription
-    subscriptionPlan: z.enum(["free", "premium", "student"], {
-        required_error: "Le plan d'abonnement est requis",
-    }),
-
-    // Preferences
-    notifications: z.object({
-        email: z.boolean().default(true),
-        push: z.boolean().default(true),
-        weeklyReport: z.boolean().default(true),
-    }),
-
-    // Privacy
-    profileVisibility: z
-        .enum(["public", "friends", "private"])
-        .default("friends"),
-    dataSharing: z.boolean().default(false),
+    // Education (updated field names to match new API)
+    grade: z.string().min(1, "La classe/grade est requise"),
+    levelOfStudy: z.string().min(1, "Le niveau d'études est requis"), 
+    institution: z.string().optional(),
 });
 
 export const profileSettingsSchema = z.object({
@@ -148,49 +136,57 @@ export const profileSettingsSchema = z.object({
         .string()
         .min(2, "Le prénom doit contenir au moins 2 caractères"),
     lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    email: z.string().email("Adresse email invalide"),
-    dateOfBirth: z.string().optional(),
+    username: z.string().min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
+    profilePic: z
+        .string()
+        .optional()
+        .refine((val) => {
+            if (!val || val === "") return true;
+            
+            // Check if it's a base64 image
+            const base64Regex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
+            if (base64Regex.test(val)) {
+                // Check base64 size limit (approximately 2MB when encoded)
+                const base64Size = (val.length * 3) / 4;
+                return base64Size <= 2 * 1024 * 1024;
+            }
+            
+            // Check if it's a valid URL
+            return z.string().url().safeParse(val).success;
+        }, {
+            message: "Photo de profil invalide (URL ou image max 2MB requise)",
+        }),
 });
 
 export const educationSettingsSchema = z.object({
-    educationLevel: z.enum(["college", "lycee", "superieur"], {
-        required_error: "Le niveau d'étude est requis",
-    }),
-    currentClass: z.string().min(1, "La classe actuelle est requise"),
-    specialization: z.string().optional(),
-    // Custom requests
-    customClassRequest: z.string().optional(),
-    customSpecializationRequest: z.string().optional(),
+    grade: z.string().min(1, "La classe/grade est requise"),
+    levelOfStudy: z.string().min(1, "Le niveau d'études est requis"),
+    institution: z.string().optional(),
 });
 
 export const subscriptionSettingsSchema = z.object({
-    subscriptionPlan: z.enum(["free", "premium", "student"], {
+    accountPlan: z.enum(["free", "premium"], {
         required_error: "Le plan d'abonnement est requis",
     }),
 });
 
+// Preferences schema - basic structure for UI compatibility
 export const preferencesSettingsSchema = z.object({
     notifications: z.object({
         email: z.boolean(),
         push: z.boolean(),
         weeklyReport: z.boolean(),
-    }),
-    profileVisibility: z.enum(["public", "friends", "private"]),
-    dataSharing: z.boolean(),
+    }).optional(),
+    profileVisibility: z.string().optional(),
+    dataSharing: z.boolean().optional(),
 });
 
-// Custom request schema
-export const customEducationRequestSchema = z.object({
-    type: z.enum(["class", "specialization"]),
-    educationLevel: z.enum(["college", "lycee", "superieur"]),
-    requestedValue: z
-        .string()
-        .min(2, "La demande doit contenir au moins 2 caractères"),
-    userEmail: z.string().email(),
-    userName: z.string(),
+// Account deletion confirmation schema
+export const deleteAccountSchema = z.object({
+    confirmPassword: z.string().min(1, "Mot de passe requis pour confirmer"),
 });
 
-// TypeScript types
+// TypeScript types (updated for new API)
 export type UserSettingsFormValues = z.infer<typeof userSettingsSchema>;
 export type ProfileSettingsFormValues = z.infer<typeof profileSettingsSchema>;
 export type EducationSettingsFormValues = z.infer<
@@ -202,9 +198,49 @@ export type SubscriptionSettingsFormValues = z.infer<
 export type PreferencesSettingsFormValues = z.infer<
     typeof preferencesSettingsSchema
 >;
-export type CustomEducationRequestFormValues = z.infer<
-    typeof customEducationRequestSchema
->;
+export type DeleteAccountFormValues = z.infer<typeof deleteAccountSchema>;
 
 export type EducationLevel = keyof typeof educationLevels;
 export type SubscriptionPlan = keyof typeof subscriptionPlans;
+
+// API response types
+export interface ApiUser {
+    _id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    profilePic?: string;
+    grade: string;
+    levelOfStudy: string;
+    institution?: string;
+    accountPlan: "free" | "premium";
+    role: "user" | "admin" | "moderator";
+}
+
+export interface ApiResponse<T = unknown> {
+    user?: T;
+    message: string;
+    status: "success" | "error";
+}
+
+// Error codes from API
+export const API_ERROR_CODES = {
+    // Auth errors
+    INVALID_CREDENTIALS: "Invalid credentials",
+    EMAIL_USERNAME_REQUIRED: "Email or username and password are required", 
+    LOGIN_FAILED: "Login failed.",
+    REGISTRATION_REQUIRED_FIELDS: "Email, password, first name, and last name are required",
+    EMAIL_USERNAME_TAKEN: "Email or username already taken",
+    REGISTRATION_FAILED: "Registration failed.",
+    
+    // User management errors
+    NO_PERMISSION_VIEW: "You do not have permission to see this user information.",
+    USER_NOT_FOUND: "User not found",
+    ERROR_GETTING_USER: "Error getting user",
+    NO_VALID_FIELDS: "No valid fields to update.",
+    NO_PERMISSION_UPDATE: "You do not have permission to update this user information.",
+    ERROR_UPDATING_USER: "Error updating user",
+    NO_PERMISSION_DELETE: "You do not have permission to delete this user.",
+    ERROR_DELETING_USER: "Error deleting user"
+} as const;
