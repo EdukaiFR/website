@@ -18,29 +18,25 @@ export interface TicketService {
     createTicket: (
         ticketData: CreateTicketRequest
     ) => Promise<CreateTicketResponse | null>;
-    
+
     getTickets: (
         params?: GetTicketsParams
     ) => Promise<GetTicketsResponse | null>;
-    
-    getTicketById: (
-        ticketId: string
-    ) => Promise<GetTicketResponse | null>;
-    
+
+    getTicketById: (ticketId: string) => Promise<GetTicketResponse | null>;
+
     updateTicket: (
         ticketId: string,
         updates: UpdateTicketRequest
     ) => Promise<UpdateTicketResponse | null>;
-    
+
     addComment: (
         ticketId: string,
         comment: AddCommentRequest
     ) => Promise<AddCommentResponse | null>;
-    
-    reopenTicket: (
-        ticketId: string
-    ) => Promise<ReopenTicketResponse | null>;
-    
+
+    reopenTicket: (ticketId: string) => Promise<ReopenTicketResponse | null>;
+
     // Admin-specific methods
     adminGetAllTickets: (
         params?: AdminGetTicketsParams
@@ -52,11 +48,9 @@ export function useTicketService(): TicketService {
 
     const createTicket = async (ticketData: CreateTicketRequest) => {
         try {
-            const response = await axios.post(
-                `${apiUrl}/tickets`,
-                ticketData,
-                { withCredentials: true }
-            );
+            const response = await axios.post(`${apiUrl}/tickets`, ticketData, {
+                withCredentials: true,
+            });
             return response.data;
         } catch (error) {
             console.error("An error occurred creating the ticket.", error);
@@ -66,18 +60,18 @@ export function useTicketService(): TicketService {
 
     const getTickets = async (params?: GetTicketsParams) => {
         try {
-            const queryString = params 
+            const queryString = params
                 ? new URLSearchParams(params as any).toString()
                 : "";
-            
-            const url = queryString 
+
+            const url = queryString
                 ? `${apiUrl}/tickets?${queryString}`
                 : `${apiUrl}/tickets`;
 
             const response = await axios.get(url, {
                 withCredentials: true,
             });
-            
+
             return response.data;
         } catch (error) {
             console.error("An error occurred fetching tickets.", error);
@@ -87,10 +81,9 @@ export function useTicketService(): TicketService {
 
     const getTicketById = async (ticketId: string) => {
         try {
-            const response = await axios.get(
-                `${apiUrl}/tickets/${ticketId}`,
-                { withCredentials: true }
-            );
+            const response = await axios.get(`${apiUrl}/tickets/${ticketId}`, {
+                withCredentials: true,
+            });
             return response.data;
         } catch (error) {
             console.error(
@@ -121,10 +114,7 @@ export function useTicketService(): TicketService {
         }
     };
 
-    const addComment = async (
-        ticketId: string,
-        comment: AddCommentRequest
-    ) => {
+    const addComment = async (ticketId: string, comment: AddCommentRequest) => {
         try {
             const response = await axios.post(
                 `${apiUrl}/tickets/${ticketId}/comments`,
@@ -162,20 +152,20 @@ export function useTicketService(): TicketService {
         try {
             const queryString = params
                 ? new URLSearchParams(
-                    Object.entries(params)
-                        .filter(([_, value]) => value !== undefined)
-                        .map(([key, value]) => [key, String(value)])
-                ).toString()
+                      Object.entries(params)
+                          .filter(([_, value]) => value !== undefined)
+                          .map(([key, value]) => [key, String(value)])
+                  ).toString()
                 : "";
-            
-            const url = queryString 
+
+            const url = queryString
                 ? `${apiUrl}/admin/tickets?${queryString}`
                 : `${apiUrl}/admin/tickets`;
 
             const response = await axios.get(url, {
                 withCredentials: true,
             });
-            
+
             return response.data;
         } catch (error) {
             console.error("An error occurred fetching admin tickets.", error);

@@ -16,13 +16,13 @@ export function useTicket(ticketService: TicketService) {
     // Hooks for user session and permissions
     const { user } = useSession();
     const permissions = useRolePermissions();
-    
+
     // State management
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
     const [comments, setComments] = useState<TicketComment[]>([]);
     const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-    
+
     // Loading states
     const [isCreatingTicket, setIsCreatingTicket] = useState(false);
     const [isLoadingTickets, setIsLoadingTickets] = useState(false);
@@ -30,7 +30,7 @@ export function useTicket(ticketService: TicketService) {
     const [isUpdatingTicket, setIsUpdatingTicket] = useState(false);
     const [isAddingComment, setIsAddingComment] = useState(false);
     const [isReopeningTicket, setIsReopeningTicket] = useState(false);
-    
+
     // Error states
     const [ticketError, setTicketError] = useState<string | null>(null);
 
@@ -39,9 +39,9 @@ export function useTicket(ticketService: TicketService) {
         try {
             setIsCreatingTicket(true);
             setTicketError(null);
-            
+
             const response = await ticketService.createTicket(ticketData);
-            
+
             if (response) {
                 ticketToast.createSuccess();
                 // Refresh tickets list to include the new ticket
@@ -49,13 +49,17 @@ export function useTicket(ticketService: TicketService) {
                 return response.data;
             } else {
                 ticketToast.createError();
-                setTicketError("Échec de la création du ticket. Veuillez réessayer.");
+                setTicketError(
+                    "Échec de la création du ticket. Veuillez réessayer."
+                );
                 return null;
             }
         } catch (error) {
             console.error("Erreur lors de la création du ticket:", error);
             ticketToast.createError();
-            setTicketError("Échec de la création du ticket. Veuillez réessayer.");
+            setTicketError(
+                "Échec de la création du ticket. Veuillez réessayer."
+            );
             return null;
         } finally {
             setIsCreatingTicket(false);
@@ -67,29 +71,33 @@ export function useTicket(ticketService: TicketService) {
         try {
             setIsLoadingTickets(true);
             setTicketError(null);
-            
+
             // Apply user-based filtering if user cannot view all tickets
             let filteredParams = { ...params };
             if (!permissions.canViewAllTickets && user?.id) {
                 // For regular users, only show their own tickets
                 filteredParams.reporter = user.id;
             }
-            
+
             const response = await ticketService.getTickets(filteredParams);
-            
+
             if (response && response.data) {
                 setTickets(response.data.tickets);
                 setPagination(response.data.pagination);
                 return response.data.tickets;
             } else {
                 ticketToast.loadAllError();
-                setTicketError("Échec du chargement des tickets. Veuillez réessayer.");
+                setTicketError(
+                    "Échec du chargement des tickets. Veuillez réessayer."
+                );
                 return [];
             }
         } catch (error) {
             console.error("Erreur lors du chargement des tickets:", error);
             ticketToast.loadAllError();
-            setTicketError("Échec du chargement des tickets. Veuillez réessayer.");
+            setTicketError(
+                "Échec du chargement des tickets. Veuillez réessayer."
+            );
             return [];
         } finally {
             setIsLoadingTickets(false);
@@ -101,22 +109,29 @@ export function useTicket(ticketService: TicketService) {
         try {
             setIsLoadingTicket(true);
             setTicketError(null);
-            
+
             const response = await ticketService.getTicketById(ticketId);
-            
+
             if (response && response.data) {
                 setCurrentTicket(response.data.ticket);
                 setComments(response.data.comments);
                 return response.data;
             } else {
                 ticketToast.loadError();
-                setTicketError("Échec du chargement du ticket. Veuillez réessayer.");
+                setTicketError(
+                    "Échec du chargement du ticket. Veuillez réessayer."
+                );
                 return null;
             }
         } catch (error) {
-            console.error(`Erreur lors du chargement du ticket ${ticketId}:`, error);
+            console.error(
+                `Erreur lors du chargement du ticket ${ticketId}:`,
+                error
+            );
             ticketToast.loadError();
-            setTicketError("Échec du chargement du ticket. Veuillez réessayer.");
+            setTicketError(
+                "Échec du chargement du ticket. Veuillez réessayer."
+            );
             return null;
         } finally {
             setIsLoadingTicket(false);
@@ -124,75 +139,94 @@ export function useTicket(ticketService: TicketService) {
     };
 
     // Update ticket properties
-    const updateTicket = async (ticketId: string, updates: UpdateTicketRequest) => {
+    const updateTicket = async (
+        ticketId: string,
+        updates: UpdateTicketRequest
+    ) => {
         try {
             setIsUpdatingTicket(true);
             setTicketError(null);
-            
+
             // Check if user has permission to modify this ticket
-            const ticket = tickets.find(t => t._id === ticketId) || currentTicket;
-            const canModify = permissions.canModifyAnyTicket || 
-                             (ticket && ticket.reporter.userId === user?.id);
-            
+            const ticket =
+                tickets.find(t => t._id === ticketId) || currentTicket;
+            const canModify =
+                permissions.canModifyAnyTicket ||
+                (ticket && ticket.reporter.userId === user?.id);
+
             if (!canModify) {
-                ticketToast.updateError("Vous n'avez pas la permission de modifier ce ticket.");
+                ticketToast.updateError(
+                    "Vous n'avez pas la permission de modifier ce ticket."
+                );
                 setTicketError("Permission refusée.");
                 return null;
             }
-            
-            const response = await ticketService.updateTicket(ticketId, updates);
-            
+
+            const response = await ticketService.updateTicket(
+                ticketId,
+                updates
+            );
+
             if (response && response.data) {
                 ticketToast.updateSuccess();
-                
+
                 // Update current ticket if it's the same one
                 if (currentTicket && currentTicket._id === ticketId) {
                     setCurrentTicket(response.data);
                 }
-                
+
                 // Update ticket in the list if it exists
-                setTickets(prev => 
-                    prev.map(ticket => 
+                setTickets(prev =>
+                    prev.map(ticket =>
                         ticket._id === ticketId ? response.data : ticket
                     )
                 );
-                
+
                 return response.data;
             } else {
                 ticketToast.updateError();
-                setTicketError("Échec de la mise à jour du ticket. Veuillez réessayer.");
+                setTicketError(
+                    "Échec de la mise à jour du ticket. Veuillez réessayer."
+                );
                 return null;
             }
         } catch (error) {
-            console.error(`Erreur lors de la mise à jour du ticket ${ticketId}:`, error);
+            console.error(
+                `Erreur lors de la mise à jour du ticket ${ticketId}:`,
+                error
+            );
             ticketToast.updateError();
-            setTicketError("Échec de la mise à jour du ticket. Veuillez réessayer.");
+            setTicketError(
+                "Échec de la mise à jour du ticket. Veuillez réessayer."
+            );
             return null;
         } finally {
             setIsUpdatingTicket(false);
         }
     };
-    
+
     // Close a ticket (Admin function)
     const closeTicket = async (ticketId: string) => {
-        return updateTicket(ticketId, { status: 'closed' as any });
+        return updateTicket(ticketId, { status: "closed" as any });
     };
-    
-    // Bulk update tickets (Admin function)  
+
+    // Bulk update tickets (Admin function)
     const bulkUpdateTickets = async (
         ticketIds: string[],
         updates: UpdateTicketRequest
     ) => {
         if (!permissions.canModifyAnyTicket) {
-            ticketToast.updateError("Vous n'avez pas la permission pour cette action.");
+            ticketToast.updateError(
+                "Vous n'avez pas la permission pour cette action."
+            );
             return false;
         }
-        
+
         try {
             setIsUpdatingTicket(true);
             const promises = ticketIds.map(id => updateTicket(id, updates));
             await Promise.all(promises);
-            
+
             ticketToast.updateSuccess();
             return true;
         } catch (error) {
@@ -209,25 +243,32 @@ export function useTicket(ticketService: TicketService) {
         try {
             setIsAddingComment(true);
             setTicketError(null);
-            
+
             const response = await ticketService.addComment(ticketId, comment);
-            
+
             if (response && response.data) {
                 ticketToast.commentSuccess();
-                
+
                 // Add comment to current comments list
                 setComments(prev => [...prev, response.data]);
-                
+
                 return response.data;
             } else {
                 ticketToast.commentError();
-                setTicketError("Échec de l'ajout du commentaire. Veuillez réessayer.");
+                setTicketError(
+                    "Échec de l'ajout du commentaire. Veuillez réessayer."
+                );
                 return null;
             }
         } catch (error) {
-            console.error(`Erreur lors de l'ajout du commentaire au ticket ${ticketId}:`, error);
+            console.error(
+                `Erreur lors de l'ajout du commentaire au ticket ${ticketId}:`,
+                error
+            );
             ticketToast.commentError();
-            setTicketError("Échec de l'ajout du commentaire. Veuillez réessayer.");
+            setTicketError(
+                "Échec de l'ajout du commentaire. Veuillez réessayer."
+            );
             return null;
         } finally {
             setIsAddingComment(false);
@@ -239,46 +280,55 @@ export function useTicket(ticketService: TicketService) {
         try {
             setIsReopeningTicket(true);
             setTicketError(null);
-            
+
             const response = await ticketService.reopenTicket(ticketId);
-            
+
             if (response && response.data) {
                 ticketToast.reopenSuccess();
-                
+
                 // Update current ticket status if it's the same one
                 if (currentTicket && currentTicket._id === ticketId) {
-                    setCurrentTicket(prev => 
-                        prev ? { 
-                            ...prev, 
-                            status: response.data.status,
-                            updatedAt: response.data.updatedAt 
-                        } : null
+                    setCurrentTicket(prev =>
+                        prev
+                            ? {
+                                  ...prev,
+                                  status: response.data.status,
+                                  updatedAt: response.data.updatedAt,
+                              }
+                            : null
                     );
                 }
-                
+
                 // Update ticket in the list
-                setTickets(prev => 
-                    prev.map(ticket => 
-                        ticket._id === ticketId 
-                            ? { 
-                                ...ticket, 
-                                status: response.data.status,
-                                updatedAt: response.data.updatedAt 
+                setTickets(prev =>
+                    prev.map(ticket =>
+                        ticket._id === ticketId
+                            ? {
+                                  ...ticket,
+                                  status: response.data.status,
+                                  updatedAt: response.data.updatedAt,
                               }
                             : ticket
                     )
                 );
-                
+
                 return response.data;
             } else {
                 ticketToast.reopenError();
-                setTicketError("Échec de la réouverture du ticket. Veuillez réessayer.");
+                setTicketError(
+                    "Échec de la réouverture du ticket. Veuillez réessayer."
+                );
                 return null;
             }
         } catch (error) {
-            console.error(`Erreur lors de la réouverture du ticket ${ticketId}:`, error);
+            console.error(
+                `Erreur lors de la réouverture du ticket ${ticketId}:`,
+                error
+            );
             ticketToast.reopenError();
-            setTicketError("Échec de la réouverture du ticket. Veuillez réessayer.");
+            setTicketError(
+                "Échec de la réouverture du ticket. Veuillez réessayer."
+            );
             return null;
         } finally {
             setIsReopeningTicket(false);
@@ -336,7 +386,7 @@ export function useTicket(ticketService: TicketService) {
         clearError,
         refreshTickets,
         refreshCurrentTicket,
-        
+
         // Admin actions
         closeTicket,
         bulkUpdateTickets,

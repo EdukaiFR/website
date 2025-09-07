@@ -9,11 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { 
-    Ticket, 
-    TicketStatus, 
-    TicketPriority
-} from "@/lib/types/ticket";
+import { Ticket, TicketStatus, TicketPriority } from "@/lib/types/ticket";
 import { cn } from "@/lib/utils";
 import {
     AlertCircle,
@@ -109,10 +105,14 @@ export function AdminTicketCard({
                         <div
                             className={cn(
                                 "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm",
-                                ticket.priority === TicketPriority.P0 && "bg-red-500 text-white",
-                                ticket.priority === TicketPriority.P1 && "bg-orange-500 text-white",
-                                ticket.priority === TicketPriority.P2 && "bg-blue-500 text-white",
-                                ticket.priority === TicketPriority.P3 && "bg-gray-500 text-white"
+                                ticket.priority === TicketPriority.P0 &&
+                                    "bg-red-500 text-white",
+                                ticket.priority === TicketPriority.P1 &&
+                                    "bg-orange-500 text-white",
+                                ticket.priority === TicketPriority.P2 &&
+                                    "bg-blue-500 text-white",
+                                ticket.priority === TicketPriority.P3 &&
+                                    "bg-gray-500 text-white"
                             )}
                         >
                             <div className="w-1.5 h-1.5 bg-white/80 rounded-full"></div>
@@ -123,11 +123,16 @@ export function AdminTicketCard({
                         <div
                             className={cn(
                                 "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium",
-                                ticket.status === TicketStatus.NEW && "bg-blue-100 text-blue-700 border border-blue-200/50",
-                                ticket.status === TicketStatus.IN_PROGRESS && "bg-amber-100 text-amber-700 border border-amber-200/50",
-                                ticket.status === TicketStatus.RESOLVED && "bg-green-100 text-green-700 border border-green-200/50",
-                                ticket.status === TicketStatus.CLOSED && "bg-gray-100 text-gray-700 border border-gray-200/50",
-                                ticket.status === TicketStatus.REOPENED && "bg-orange-100 text-orange-700 border border-orange-200/50"
+                                ticket.status === TicketStatus.NEW &&
+                                    "bg-blue-100 text-blue-700 border border-blue-200/50",
+                                ticket.status === TicketStatus.IN_PROGRESS &&
+                                    "bg-amber-100 text-amber-700 border border-amber-200/50",
+                                ticket.status === TicketStatus.RESOLVED &&
+                                    "bg-green-100 text-green-700 border border-green-200/50",
+                                ticket.status === TicketStatus.CLOSED &&
+                                    "bg-gray-100 text-gray-700 border border-gray-200/50",
+                                ticket.status === TicketStatus.REOPENED &&
+                                    "bg-orange-100 text-orange-700 border border-orange-200/50"
                             )}
                         >
                             {getStatusIcon(ticket.status)}
@@ -165,49 +170,93 @@ export function AdminTicketCard({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             {/* Status Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">Statut</label>
+                                <label className="text-xs font-medium text-gray-700">
+                                    Statut
+                                </label>
                                 <Select
                                     value={ticket.status}
-                                    onValueChange={(value) => onStatusChange(ticket._id, value as TicketStatus)}
+                                    onValueChange={value =>
+                                        onStatusChange(
+                                            ticket._id,
+                                            value as TicketStatus
+                                        )
+                                    }
                                     disabled={isUpdating}
                                 >
                                     <SelectTrigger className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value={TicketStatus.NEW}>Nouveau</SelectItem>
-                                        <SelectItem value={TicketStatus.TRIAGED}>Trié</SelectItem>
-                                        <SelectItem value={TicketStatus.IN_PROGRESS}>En cours</SelectItem>
-                                        <SelectItem value={TicketStatus.RESOLVED}>Résolu</SelectItem>
-                                        <SelectItem value={TicketStatus.CLOSED}>Fermé</SelectItem>
-                                        <SelectItem value={TicketStatus.REJECTED}>Rejeté</SelectItem>
+                                        <SelectItem value={TicketStatus.NEW}>
+                                            Nouveau
+                                        </SelectItem>
+                                        <SelectItem
+                                            value={TicketStatus.TRIAGED}
+                                        >
+                                            Trié
+                                        </SelectItem>
+                                        <SelectItem
+                                            value={TicketStatus.IN_PROGRESS}
+                                        >
+                                            En cours
+                                        </SelectItem>
+                                        <SelectItem
+                                            value={TicketStatus.RESOLVED}
+                                        >
+                                            Résolu
+                                        </SelectItem>
+                                        <SelectItem value={TicketStatus.CLOSED}>
+                                            Fermé
+                                        </SelectItem>
+                                        <SelectItem
+                                            value={TicketStatus.REJECTED}
+                                        >
+                                            Rejeté
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {/* Priority Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">Priorité</label>
+                                <label className="text-xs font-medium text-gray-700">
+                                    Priorité
+                                </label>
                                 <Select
                                     value={ticket.priority}
-                                    onValueChange={(value) => onPriorityChange(ticket._id, value as TicketPriority)}
+                                    onValueChange={value =>
+                                        onPriorityChange(
+                                            ticket._id,
+                                            value as TicketPriority
+                                        )
+                                    }
                                     disabled={isUpdating}
                                 >
                                     <SelectTrigger className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value={TicketPriority.P0}>P0 - Critique</SelectItem>
-                                        <SelectItem value={TicketPriority.P1}>P1 - Élevée</SelectItem>
-                                        <SelectItem value={TicketPriority.P2}>P2 - Normale</SelectItem>
-                                        <SelectItem value={TicketPriority.P3}>P3 - Faible</SelectItem>
+                                        <SelectItem value={TicketPriority.P0}>
+                                            P0 - Critique
+                                        </SelectItem>
+                                        <SelectItem value={TicketPriority.P1}>
+                                            P1 - Élevée
+                                        </SelectItem>
+                                        <SelectItem value={TicketPriority.P2}>
+                                            P2 - Normale
+                                        </SelectItem>
+                                        <SelectItem value={TicketPriority.P3}>
+                                            P3 - Faible
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {/* Assignment Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">Assignation</label>
+                                <label className="text-xs font-medium text-gray-700">
+                                    Assignation
+                                </label>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -216,18 +265,19 @@ export function AdminTicketCard({
                                     className="w-full h-8 text-xs"
                                 >
                                     <User className="w-3 h-3 mr-1" />
-                                    {ticket.assignees?.length ? 
-                                        `${ticket.assignees.length} assigné(s)` : 
-                                        "Assigner"
-                                    }
+                                    {ticket.assignees?.length
+                                        ? `${ticket.assignees.length} assigné(s)`
+                                        : "Assigner"}
                                 </Button>
                             </div>
                         </div>
-                        
+
                         {/* Quick Actions */}
                         <div className="mt-4 pt-3 border-t border-gray-200/50">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-medium text-gray-700">Actions rapides :</span>
+                                <span className="text-xs font-medium text-gray-700">
+                                    Actions rapides :
+                                </span>
                                 <div className="flex gap-2">
                                     {ticket.status !== TicketStatus.CLOSED && (
                                         <Button
@@ -244,18 +294,31 @@ export function AdminTicketCard({
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => onStatusChange(ticket._id, TicketStatus.IN_PROGRESS)}
+                                            onClick={() =>
+                                                onStatusChange(
+                                                    ticket._id,
+                                                    TicketStatus.IN_PROGRESS
+                                                )
+                                            }
                                             disabled={isUpdating}
                                             className="h-7 px-3 text-xs text-orange-600 border-orange-200 hover:bg-orange-50"
                                         >
                                             Prendre en charge
                                         </Button>
                                     )}
-                                    {(ticket.status === TicketStatus.IN_PROGRESS || ticket.status === TicketStatus.TRIAGED) && (
+                                    {(ticket.status ===
+                                        TicketStatus.IN_PROGRESS ||
+                                        ticket.status ===
+                                            TicketStatus.TRIAGED) && (
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => onStatusChange(ticket._id, TicketStatus.RESOLVED)}
+                                            onClick={() =>
+                                                onStatusChange(
+                                                    ticket._id,
+                                                    TicketStatus.RESOLVED
+                                                )
+                                            }
                                             disabled={isUpdating}
                                             className="h-7 px-3 text-xs text-green-600 border-green-200 hover:bg-green-50"
                                         >
@@ -271,7 +334,10 @@ export function AdminTicketCard({
 
             {/* Content */}
             <CardContent className="p-6">
-                <Link href={`/tickets/${ticket.publicId}`} className="block group-hover:text-blue-600 transition-colors">
+                <Link
+                    href={`/tickets/${ticket.publicId}`}
+                    className="block group-hover:text-blue-600 transition-colors"
+                >
                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                         {ticket.title}
                     </h3>
@@ -286,7 +352,10 @@ export function AdminTicketCard({
                     {/* Reporter Info */}
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                         <User className="w-4 h-4" />
-                        <span>Rapporté par {ticket.reporter.name} ({ticket.reporter.email})</span>
+                        <span>
+                            Rapporté par {ticket.reporter.name} (
+                            {ticket.reporter.email})
+                        </span>
                     </div>
 
                     {/* Assignees */}
@@ -294,7 +363,8 @@ export function AdminTicketCard({
                         <div className="flex items-center gap-2 text-xs text-gray-600">
                             <Settings className="w-4 h-4" />
                             <span>
-                                Assigné à: {ticket.assignees.map(a => a.name).join(", ")}
+                                Assigné à:{" "}
+                                {ticket.assignees.map(a => a.name).join(", ")}
                             </span>
                         </div>
                     )}
@@ -305,11 +375,14 @@ export function AdminTicketCard({
                             <Calendar className="w-4 h-4" />
                             <span>
                                 Créé le{" "}
-                                {new Date(ticket.createdAt).toLocaleDateString("fr-FR", {
-                                    day: "numeric",
-                                    month: "short",
-                                    year: "numeric",
-                                })}
+                                {new Date(ticket.createdAt).toLocaleDateString(
+                                    "fr-FR",
+                                    {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                    }
+                                )}
                             </span>
                         </div>
 
@@ -318,7 +391,9 @@ export function AdminTicketCard({
                                 <Clock className="w-4 h-4" />
                                 <span>
                                     Mis à jour le{" "}
-                                    {new Date(ticket.updatedAt).toLocaleDateString("fr-FR", {
+                                    {new Date(
+                                        ticket.updatedAt
+                                    ).toLocaleDateString("fr-FR", {
                                         day: "numeric",
                                         month: "short",
                                     })}

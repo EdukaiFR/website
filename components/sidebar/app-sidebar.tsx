@@ -64,7 +64,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {adminLinks.length > 0 && (
                     <>
                         <hr className="border-t border-gray-300 my-2" />
-                        <NavSecondary items={adminLinks} title="Administration" />
+                        <NavSecondary
+                            items={adminLinks}
+                            title="Administration"
+                        />
                     </>
                 )}
                 <NavSecondary items={downLinks} className="mt-auto" />

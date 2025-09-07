@@ -249,7 +249,8 @@ export const toastMessages = {
 
     // Tickets
     ticket: {
-        createSuccess: "Ticket créé avec succès. Nous examinerons votre demande rapidement.",
+        createSuccess:
+            "Ticket créé avec succès. Nous examinerons votre demande rapidement.",
         createError: "Erreur lors de la création du ticket.",
         loadError: "Erreur lors du chargement des tickets.",
         loadAllError: "Erreur lors du chargement de la liste des tickets.",
@@ -429,7 +430,8 @@ export const ticketToast = {
     reopenSuccess: () => showToast.success(toastMessages.ticket.reopenSuccess),
     reopenError: (error?: string) =>
         showToast.error(error || toastMessages.ticket.reopenError),
-    commentSuccess: () => showToast.success(toastMessages.ticket.commentSuccess),
+    commentSuccess: () =>
+        showToast.success(toastMessages.ticket.commentSuccess),
     commentError: (error?: string) =>
         showToast.error(error || toastMessages.ticket.commentError),
     statusUpdateSuccess: () =>

@@ -22,11 +22,11 @@ import {
 import { AlertCircle, Send, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks";
-import type { 
+import type {
     CreateTicketRequest,
     TicketCategory,
     TicketPriority,
-    TicketSeverity
+    TicketSeverity,
 } from "@/lib/types/ticket";
 import { TicketPriority as TicketPriorityEnum } from "@/lib/types/ticket";
 
@@ -41,17 +41,19 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     open,
     onOpenChange,
     onSubmit,
-    isCreating = false
+    isCreating = false,
 }) => {
     const { user } = useSession();
-    
+
     // Form state
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState<TicketCategory | "">("");
-    const [priority, setPriority] = useState<TicketPriority>(TicketPriorityEnum.P2);
+    const [priority, setPriority] = useState<TicketPriority>(
+        TicketPriorityEnum.P2
+    );
     const [severity, setSeverity] = useState<TicketSeverity | "">("");
-    
+
     // Error state
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -84,7 +86,7 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             return;
         }
@@ -97,8 +99,8 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                 locale: navigator.language,
                 viewport: {
                     w: window.innerWidth,
-                    h: window.innerHeight
-                }
+                    h: window.innerHeight,
+                },
             };
 
             // Build request
@@ -107,8 +109,10 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                 description: description.trim(),
                 context,
                 ...(category && { category: category as TicketCategory }),
-                ...(severity && { severityPerceived: severity as TicketSeverity }),
-                priority
+                ...(severity && {
+                    severityPerceived: severity as TicketSeverity,
+                }),
+                priority,
             };
 
             await onSubmit(ticketData);
@@ -135,7 +139,8 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                         Créer un ticket de support
                     </DialogTitle>
                     <p className="text-sm text-gray-600 mt-2">
-                        Décrivez votre problème et notre équipe vous répondra rapidement.
+                        Décrivez votre problème et notre équipe vous répondra
+                        rapidement.
                     </p>
                 </DialogHeader>
 
@@ -148,38 +153,47 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                         <Input
                             id="title"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={e => setTitle(e.target.value)}
                             placeholder="Ex: Impossible de télécharger mes documents"
                             className={cn(
                                 "bg-gray-50 border-gray-200 focus:bg-white transition-colors",
-                                errors.title && "border-red-300 focus:border-red-500"
+                                errors.title &&
+                                    "border-red-300 focus:border-red-500"
                             )}
                             disabled={isCreating}
                         />
                         {errors.title && (
-                            <p className="text-sm text-red-600">{errors.title}</p>
+                            <p className="text-sm text-red-600">
+                                {errors.title}
+                            </p>
                         )}
                     </div>
 
                     {/* Description */}
                     <div className="space-y-2">
-                        <Label htmlFor="description" className="text-sm font-medium">
+                        <Label
+                            htmlFor="description"
+                            className="text-sm font-medium"
+                        >
                             Description détaillée *
                         </Label>
                         <Textarea
                             id="description"
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={e => setDescription(e.target.value)}
                             placeholder="Décrivez votre problème en détail..."
                             rows={4}
                             className={cn(
                                 "resize-none bg-gray-50 border-gray-200 focus:bg-white transition-colors",
-                                errors.description && "border-red-300 focus:border-red-500"
+                                errors.description &&
+                                    "border-red-300 focus:border-red-500"
                             )}
                             disabled={isCreating}
                         />
                         {errors.description && (
-                            <p className="text-sm text-red-600">{errors.description}</p>
+                            <p className="text-sm text-red-600">
+                                {errors.description}
+                            </p>
                         )}
                     </div>
 
@@ -187,22 +201,35 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Category */}
                         <div className="space-y-2">
-                            <Label htmlFor="category" className="text-sm font-medium">
+                            <Label
+                                htmlFor="category"
+                                className="text-sm font-medium"
+                            >
                                 Catégorie (optionnel)
                             </Label>
-                            <Select 
-                                value={category} 
-                                onValueChange={(value) => setCategory(value as TicketCategory | "")}
+                            <Select
+                                value={category}
+                                onValueChange={value =>
+                                    setCategory(value as TicketCategory | "")
+                                }
                                 disabled={isCreating}
                             >
                                 <SelectTrigger className="bg-gray-50 border-gray-200">
                                     <SelectValue placeholder="Choisir une catégorie" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="UI">Interface</SelectItem>
-                                    <SelectItem value="Perf">Performance</SelectItem>
-                                    <SelectItem value="Data">Données</SelectItem>
-                                    <SelectItem value="Access">Accès</SelectItem>
+                                    <SelectItem value="UI">
+                                        Interface
+                                    </SelectItem>
+                                    <SelectItem value="Perf">
+                                        Performance
+                                    </SelectItem>
+                                    <SelectItem value="Data">
+                                        Données
+                                    </SelectItem>
+                                    <SelectItem value="Access">
+                                        Accès
+                                    </SelectItem>
                                     <SelectItem value="Other">Autre</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -210,12 +237,17 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
                         {/* Priority */}
                         <div className="space-y-2">
-                            <Label htmlFor="priority" className="text-sm font-medium">
+                            <Label
+                                htmlFor="priority"
+                                className="text-sm font-medium"
+                            >
                                 Priorité
                             </Label>
-                            <Select 
-                                value={priority} 
-                                onValueChange={(value) => setPriority(value as TicketPriority)}
+                            <Select
+                                value={priority}
+                                onValueChange={value =>
+                                    setPriority(value as TicketPriority)
+                                }
                                 disabled={isCreating}
                             >
                                 <SelectTrigger className="bg-gray-50 border-gray-200">
@@ -233,12 +265,17 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
                     {/* Severity */}
                     <div className="space-y-2">
-                        <Label htmlFor="severity" className="text-sm font-medium">
+                        <Label
+                            htmlFor="severity"
+                            className="text-sm font-medium"
+                        >
                             Impact sur votre utilisation (optionnel)
                         </Label>
-                        <Select 
-                            value={severity} 
-                            onValueChange={(value) => setSeverity(value as TicketSeverity | "")}
+                        <Select
+                            value={severity}
+                            onValueChange={value =>
+                                setSeverity(value as TicketSeverity | "")
+                            }
                             disabled={isCreating}
                         >
                             <SelectTrigger className="bg-gray-50 border-gray-200">
@@ -252,7 +289,8 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                     Modéré - Cela ralentit mon travail
                                 </SelectItem>
                                 <SelectItem value="high">
-                                    Élevé - Je ne peux pas utiliser cette fonctionnalité
+                                    Élevé - Je ne peux pas utiliser cette
+                                    fonctionnalité
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -262,10 +300,14 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                     {user && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                             <p className="text-sm text-blue-900">
-                                <span className="font-medium">Ticket créé par:</span> {user.firstName} {user.lastName}
+                                <span className="font-medium">
+                                    Ticket créé par:
+                                </span>{" "}
+                                {user.firstName} {user.lastName}
                             </p>
                             <p className="text-xs text-blue-700 mt-1">
-                                Vous recevrez une notification par email une fois le ticket traité.
+                                Vous recevrez une notification par email une
+                                fois le ticket traité.
                             </p>
                         </div>
                     )}

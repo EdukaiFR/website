@@ -173,14 +173,20 @@ export default function TicketsPage() {
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                                     <Shield className="w-5 h-5 text-indigo-600" />
                                     <div>
-                                        <p className="font-medium text-indigo-800">Mode Administrateur</p>
+                                        <p className="font-medium text-indigo-800">
+                                            Mode Administrateur
+                                        </p>
                                         <p className="text-sm text-indigo-700">
-                                            Vous avez accès aux fonctionnalités d&apos;administration
+                                            Vous avez accès aux fonctionnalités
+                                            d&apos;administration
                                         </p>
                                     </div>
                                 </div>
                                 <Link href="/admin/tickets">
-                                    <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-100">
+                                    <Button
+                                        variant="outline"
+                                        className="border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+                                    >
                                         <Settings className="w-4 h-4 mr-2" />
                                         Console Admin
                                     </Button>

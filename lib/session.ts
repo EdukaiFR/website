@@ -27,7 +27,7 @@ export const sessionStorage = {
     getUser: () => {
         if (typeof window !== "undefined") {
             const user = localStorage.getItem(USER_KEY);
-            
+
             if (user && user !== "undefined") {
                 try {
                     const parsedUser = JSON.parse(user);

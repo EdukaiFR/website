@@ -24,7 +24,7 @@ import { useIsAdmin } from "./useRole";
 
 export function useLinks() {
     const isAdmin = useIsAdmin();
-    
+
     const upLinks = [
         {
             href: "/",
@@ -66,13 +66,15 @@ export function useLinks() {
         },
     ];
 
-    const adminLinks = isAdmin ? [
-        {
-            href: "/admin/tickets",
-            label: "Admin - Tickets",
-            Icon: Shield,
-        },
-    ] : [];
+    const adminLinks = isAdmin
+        ? [
+              {
+                  href: "/admin/tickets",
+                  label: "Admin - Tickets",
+                  Icon: Shield,
+              },
+          ]
+        : [];
 
     return { upLinks, downLinks, adminLinks };
 }
