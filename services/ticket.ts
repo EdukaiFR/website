@@ -160,8 +160,12 @@ export function useTicketService(): TicketService {
 
     const adminGetAllTickets = async (params?: AdminGetTicketsParams) => {
         try {
-            const queryString = params 
-                ? new URLSearchParams(params as any).toString()
+            const queryString = params
+                ? new URLSearchParams(
+                    Object.entries(params)
+                        .filter(([_, value]) => value !== undefined)
+                        .map(([key, value]) => [key, String(value)])
+                ).toString()
                 : "";
             
             const url = queryString 
