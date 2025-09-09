@@ -1,12 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-    CreditCard,
-    GraduationCap,
-    User,
-    Shield,
-} from "lucide-react";
+import { CreditCard, GraduationCap, User, Shield } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -18,7 +13,10 @@ import {
 } from "@/components/settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PersistentAlertsContainer, usePersistentAlerts } from "@/components/ui/persistent-alert";
+import {
+    PersistentAlertsContainer,
+    usePersistentAlerts,
+} from "@/components/ui/persistent-alert";
 import { useUserProfile } from "@/contexts/UserContext";
 import { getImageDisplaySrc } from "@/lib/image-utils";
 
@@ -46,7 +44,7 @@ const tabs: Tab[] = [
     },
     {
         key: "subscription",
-        label: "Abonnement", 
+        label: "Abonnement",
         icon: <CreditCard className="w-5 h-5" />,
         description: "Plan d'abonnement et fonctionnalités",
     },
@@ -60,8 +58,13 @@ const tabs: Tab[] = [
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState<TabKey>("profile");
-    const { alerts, addError, addSuccess, clearAllAlerts } = usePersistentAlerts();
-    const { userProfile, loading: isLoading, refreshUserProfile } = useUserProfile();
+    const { alerts, addError, addSuccess, clearAllAlerts } =
+        usePersistentAlerts();
+    const {
+        userProfile,
+        loading: isLoading,
+        refreshUserProfile,
+    } = useUserProfile();
 
     useEffect(() => {
         // Clear alerts when component mounts
@@ -113,7 +116,8 @@ export default function SettingsPage() {
                                 Paramètres
                             </h1>
                             <p className="text-gray-600">
-                                Gérez vos informations personnelles et préférences
+                                Gérez vos informations personnelles et
+                                préférences
                             </p>
                         </div>
                     </div>
@@ -124,9 +128,15 @@ export default function SettingsPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-4">
                                     <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold overflow-hidden">
-                                        {getImageDisplaySrc(userProfile.profilePic) ? (
-                                            <Image 
-                                                src={getImageDisplaySrc(userProfile.profilePic)!} 
+                                        {getImageDisplaySrc(
+                                            userProfile.profilePic
+                                        ) ? (
+                                            <Image
+                                                src={
+                                                    getImageDisplaySrc(
+                                                        userProfile.profilePic
+                                                    )!
+                                                }
                                                 alt="Photo de profil"
                                                 fill
                                                 className="object-cover"
@@ -137,14 +147,17 @@ export default function SettingsPage() {
                                             />
                                         ) : (
                                             <>
-                                                {userProfile.firstName.charAt(0)}
+                                                {userProfile.firstName.charAt(
+                                                    0
+                                                )}
                                                 {userProfile.lastName.charAt(0)}
                                             </>
                                         )}
                                     </div>
                                     <div className="flex-1">
                                         <h2 className="text-xl font-semibold text-gray-900">
-                                            {userProfile.firstName} {userProfile.lastName}
+                                            {userProfile.firstName}{" "}
+                                            {userProfile.lastName}
                                         </h2>
                                         <p className="text-gray-600 text-sm">
                                             @{userProfile.username}
@@ -152,7 +165,8 @@ export default function SettingsPage() {
                                         <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                             <span className="flex items-center gap-1">
                                                 <GraduationCap className="w-4 h-4" />
-                                                {userProfile.grade} • {userProfile.levelOfStudy}
+                                                {userProfile.grade} •{" "}
+                                                {userProfile.levelOfStudy}
                                             </span>
                                             {userProfile.institution && (
                                                 <span className="flex items-center gap-1">
@@ -208,13 +222,16 @@ export default function SettingsPage() {
                                                     </div>
                                                     <div
                                                         className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
-                                                            activeTab === tab.key
+                                                            activeTab ===
+                                                            tab.key
                                                                 ? "text-blue-100"
                                                                 : "text-gray-500"
                                                         }`}
                                                         style={{
-                                                            wordWrap: "break-word",
-                                                            overflowWrap: "break-word",
+                                                            wordWrap:
+                                                                "break-word",
+                                                            overflowWrap:
+                                                                "break-word",
                                                         }}
                                                     >
                                                         {tab.description}
@@ -238,7 +255,8 @@ export default function SettingsPage() {
                                         firstName: userProfile.firstName,
                                         lastName: userProfile.lastName,
                                         username: userProfile.username,
-                                        profilePic: userProfile.profilePic || "",
+                                        profilePic:
+                                            userProfile.profilePic || "",
                                         email: userProfile.email, // Pass email for display but it's not editable
                                     }}
                                     userId={userProfile._id}
@@ -252,7 +270,8 @@ export default function SettingsPage() {
                                     initialData={{
                                         grade: userProfile.grade,
                                         levelOfStudy: userProfile.levelOfStudy,
-                                        institution: userProfile.institution || "",
+                                        institution:
+                                            userProfile.institution || "",
                                     }}
                                     userId={userProfile._id}
                                     onSuccess={handleSuccess}

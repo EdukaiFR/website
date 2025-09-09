@@ -482,8 +482,9 @@ export default function TicketDetailPage() {
                                                         onClick={() =>
                                                             handleCopyUrl(
                                                                 currentTicket
-                                                                    .context?.
-                                                                    pageUrl || ''
+                                                                    .context
+                                                                    ?.pageUrl ||
+                                                                    ""
                                                             )
                                                         }
                                                         className="h-8 px-2 hover:bg-green-100/50"
@@ -500,20 +501,20 @@ export default function TicketDetailPage() {
                                                     <a
                                                         href={
                                                             currentTicket
-                                                                .context?.pageUrl || '#'
+                                                                .context
+                                                                ?.pageUrl || "#"
                                                         }
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-sm text-gray-700 hover:text-green-600 transition-colors break-all"
                                                     >
-                                                        {
-                                                            currentTicket
-                                                                .context?.pageUrl || 'N/A'
-                                                        }
+                                                        {currentTicket.context
+                                                            ?.pageUrl || "N/A"}
                                                     </a>
                                                 </div>
                                             </div>
-                                            {currentTicket.context?.viewport && (
+                                            {currentTicket.context
+                                                ?.viewport && (
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                         <Monitor className="w-5 h-5 text-white" />

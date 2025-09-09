@@ -1,6 +1,13 @@
 "use client";
 
-import { CreditCard, AlertCircle, Shield, Sparkles, Clock, FileQuestion } from "lucide-react";
+import {
+    CreditCard,
+    AlertCircle,
+    Shield,
+    Sparkles,
+    Clock,
+    FileQuestion,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface SubscriptionSettingsProps {
@@ -41,8 +48,10 @@ export function SubscriptionSettings({
                                 </span>
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed">
-                                Pendant la phase Beta, Edukai est entièrement gratuit ! Profitez de toutes 
-                                les fonctionnalités disponibles pour nous aider à améliorer la plateforme.
+                                Pendant la phase Beta, Edukai est entièrement
+                                gratuit ! Profitez de toutes les fonctionnalités
+                                disponibles pour nous aider à améliorer la
+                                plateforme.
                             </p>
                         </div>
                     </div>
@@ -54,7 +63,7 @@ export function SubscriptionSettings({
                         <Shield className="w-5 h-5 text-blue-600" />
                         Limitations actuelles (Beta)
                     </h3>
-                    
+
                     <div className="grid gap-4">
                         {/* Rate Limit */}
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -67,9 +76,12 @@ export function SubscriptionSettings({
                                         Rate Limiting
                                     </h4>
                                     <p className="text-sm text-gray-600">
-                                        Pour éviter les abus et garantir une expérience optimale à tous nos 
-                                        utilisateurs Beta, un système de limitation est en place sur l&apos;utilisation 
-                                        des fonctionnalités IA.
+                                        Pour éviter les abus et garantir une
+                                        expérience optimale à tous nos
+                                        utilisateurs Beta, un système de
+                                        limitation est en place sur
+                                        l&apos;utilisation des fonctionnalités
+                                        IA.
                                     </p>
                                 </div>
                             </div>
@@ -86,9 +98,11 @@ export function SubscriptionSettings({
                                         Quiz de 4 questions
                                     </h4>
                                     <p className="text-sm text-gray-600">
-                                        Les quiz sont actuellement limités à 4 questions pour permettre de tester 
-                                        les fonctionnalités. Une fois la version complète lancée, le nombre de 
-                                        questions sera adapté selon votre abonnement.
+                                        Les quiz sont actuellement limités à 4
+                                        questions pour permettre de tester les
+                                        fonctionnalités. Une fois la version
+                                        complète lancée, le nombre de questions
+                                        sera adapté selon votre abonnement.
                                     </p>
                                 </div>
                             </div>
@@ -105,32 +119,50 @@ export function SubscriptionSettings({
                                 Bientôt disponible
                             </h3>
                         </div>
-                        
+
                         <div className="space-y-3">
                             <p className="text-sm text-gray-700 font-medium">
                                 Plans d&apos;abonnement à venir après la Beta :
                             </p>
-                            
+
                             <div className="grid gap-3">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                                     <div>
-                                        <span className="font-medium text-gray-800">Plan Gratuit</span>
-                                        <span className="text-gray-600 text-sm"> - Accès limité aux fonctionnalités de base</span>
+                                        <span className="font-medium text-gray-800">
+                                            Plan Gratuit
+                                        </span>
+                                        <span className="text-gray-600 text-sm">
+                                            {" "}
+                                            - Accès limité aux fonctionnalités
+                                            de base
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
                                     <div>
-                                        <span className="font-medium text-gray-800">Plan Premium</span>
-                                        <span className="text-gray-600 text-sm"> - Quiz illimités, toutes matières, support prioritaire</span>
+                                        <span className="font-medium text-gray-800">
+                                            Plan Premium
+                                        </span>
+                                        <span className="text-gray-600 text-sm">
+                                            {" "}
+                                            - Quiz illimités, toutes matières,
+                                            support prioritaire
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                                     <div>
-                                        <span className="font-medium text-gray-800">Plan Pro</span>
-                                        <span className="text-gray-600 text-sm"> - Fonctionnalités avancées pour les étudiants exigeants</span>
+                                        <span className="font-medium text-gray-800">
+                                            Plan Pro
+                                        </span>
+                                        <span className="text-gray-600 text-sm">
+                                            {" "}
+                                            - Fonctionnalités avancées pour les
+                                            étudiants exigeants
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -138,8 +170,9 @@ export function SubscriptionSettings({
 
                         <div className="bg-white/70 rounded-lg p-3 border border-indigo-100">
                             <p className="text-xs text-gray-600 italic">
-                                💡 En tant qu&apos;utilisateur Beta, vous bénéficierez d&apos;avantages exclusifs 
-                                lors du lancement des abonnements payants !
+                                💡 En tant qu&apos;utilisateur Beta, vous
+                                bénéficierez d&apos;avantages exclusifs lors du
+                                lancement des abonnements payants !
                             </p>
                         </div>
                     </div>
@@ -156,11 +189,18 @@ export function SubscriptionSettings({
                                 Aidez-nous à améliorer Edukai
                             </h4>
                             <p className="text-sm text-green-700 mb-2">
-                                Vos retours sont précieux ! N&apos;hésitez pas à nous faire part de vos suggestions 
-                                et des bugs rencontrés pendant cette phase Beta.
+                                Vos retours sont précieux ! N&apos;hésitez pas à
+                                nous faire part de vos suggestions et des bugs
+                                rencontrés pendant cette phase Beta.
                             </p>
                             <p className="text-sm text-green-800 font-medium">
-                                ✉️ Contactez-nous : <a href="mailto:contact@edukai.fr" className="underline hover:text-green-900">contact@edukai.fr</a>
+                                ✉️ Contactez-nous :{" "}
+                                <a
+                                    href="mailto:contact@edukai.fr"
+                                    className="underline hover:text-green-900"
+                                >
+                                    contact@edukai.fr
+                                </a>
                             </p>
                         </div>
                     </div>

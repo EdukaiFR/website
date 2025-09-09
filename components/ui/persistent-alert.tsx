@@ -27,7 +27,7 @@ const alertConfig = {
     },
     warning: {
         icon: AlertCircle,
-        className: "border-yellow-200 bg-yellow-50 text-yellow-800", 
+        className: "border-yellow-200 bg-yellow-50 text-yellow-800",
         iconClassName: "text-yellow-600",
     },
     info: {
@@ -49,16 +49,25 @@ export function PersistentAlert({
     const Icon = config.icon;
 
     return (
-        <div className={cn("p-4 rounded-lg border-2 shadow-md", config.className, className)}>
+        <div
+            className={cn(
+                "p-4 rounded-lg border-2 shadow-md",
+                config.className,
+                className
+            )}
+        >
             <div className="flex items-start gap-3">
-                <Icon className={cn("h-5 w-5 mt-0.5 flex-shrink-0", config.iconClassName)} />
+                <Icon
+                    className={cn(
+                        "h-5 w-5 mt-0.5 flex-shrink-0",
+                        config.iconClassName
+                    )}
+                />
                 <div className="flex-1 space-y-1">
                     {title && (
                         <h4 className="text-sm font-semibold">{title}</h4>
                     )}
-                    <div className="text-sm leading-relaxed">
-                        {message}
-                    </div>
+                    <div className="text-sm leading-relaxed">{message}</div>
                 </div>
                 {dismissible && onDismiss && (
                     <Button
@@ -86,31 +95,49 @@ export function usePersistentAlerts() {
         setAlerts(prev => prev.filter(alert => alert.id !== id));
     }, []);
 
-    const addAlert = React.useCallback((alert: Omit<PersistentAlertProps, 'onDismiss'>) => {
-        const id = Math.random().toString(36).substring(2, 9);
-        setAlerts(prev => [...prev, { ...alert, id, onDismiss: () => removeAlert(id) }]);
-        return id;
-    }, [removeAlert]);
+    const addAlert = React.useCallback(
+        (alert: Omit<PersistentAlertProps, "onDismiss">) => {
+            const id = Math.random().toString(36).substring(2, 9);
+            setAlerts(prev => [
+                ...prev,
+                { ...alert, id, onDismiss: () => removeAlert(id) },
+            ]);
+            return id;
+        },
+        [removeAlert]
+    );
 
     const clearAllAlerts = React.useCallback(() => {
         setAlerts([]);
     }, []);
 
-    const addSuccess = React.useCallback((message: string, title?: string) => {
-        return addAlert({ type: 'success', message, title });
-    }, [addAlert]);
+    const addSuccess = React.useCallback(
+        (message: string, title?: string) => {
+            return addAlert({ type: "success", message, title });
+        },
+        [addAlert]
+    );
 
-    const addError = React.useCallback((message: string, title?: string) => {
-        return addAlert({ type: 'error', message, title });
-    }, [addAlert]);
+    const addError = React.useCallback(
+        (message: string, title?: string) => {
+            return addAlert({ type: "error", message, title });
+        },
+        [addAlert]
+    );
 
-    const addWarning = React.useCallback((message: string, title?: string) => {
-        return addAlert({ type: 'warning', message, title });
-    }, [addAlert]);
+    const addWarning = React.useCallback(
+        (message: string, title?: string) => {
+            return addAlert({ type: "warning", message, title });
+        },
+        [addAlert]
+    );
 
-    const addInfo = React.useCallback((message: string, title?: string) => {
-        return addAlert({ type: 'info', message, title });
-    }, [addAlert]);
+    const addInfo = React.useCallback(
+        (message: string, title?: string) => {
+            return addAlert({ type: "info", message, title });
+        },
+        [addAlert]
+    );
 
     return {
         alerts,
@@ -130,9 +157,9 @@ interface PersistentAlertsContainerProps {
     className?: string;
 }
 
-export function PersistentAlertsContainer({ 
-    alerts, 
-    className = "" 
+export function PersistentAlertsContainer({
+    alerts,
+    className = "",
 }: PersistentAlertsContainerProps) {
     if (alerts.length === 0) return null;
 

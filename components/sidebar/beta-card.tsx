@@ -27,7 +27,9 @@ export function BetaCard() {
                 {/* Beta Badge with sparkle */}
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300/50 mb-3">
                     <Sparkles className="w-3 h-3 text-green-600" />
-                    <span className="text-green-700 text-xs font-semibold">Beta</span>
+                    <span className="text-green-700 text-xs font-semibold">
+                        Beta
+                    </span>
                 </div>
 
                 {/* Content */}
@@ -36,7 +38,8 @@ export function BetaCard() {
                         Version Beta d&apos;Edukai
                     </h3>
                     <p className="text-gray-600 text-xs leading-relaxed">
-                        Vous testez la version beta. Vos retours nous aident à améliorer l&apos;expérience !
+                        Vous testez la version beta. Vos retours nous aident à
+                        améliorer l&apos;expérience !
                     </p>
                 </div>
 

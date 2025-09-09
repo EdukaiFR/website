@@ -177,7 +177,8 @@ export function ProfileSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Le nom d&apos;utilisateur doit être unique et peut contenir des lettres, chiffres et underscores.
+                            Le nom d&apos;utilisateur doit être unique et peut
+                            contenir des lettres, chiffres et underscores.
                         </p>
                     </div>
 
@@ -198,7 +199,8 @@ export function ProfileSettings({
                                 className="h-11 border-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                             />
                             <p className="text-xs text-gray-500">
-                                L&apos;adresse email ne peut pas être modifiée pour des raisons de sécurité.
+                                L&apos;adresse email ne peut pas être modifiée
+                                pour des raisons de sécurité.
                             </p>
                         </div>
                     )}
@@ -206,7 +208,9 @@ export function ProfileSettings({
                     {/* Profile Picture Upload */}
                     <ProfilePictureUpload
                         value={watch("profilePic") || ""}
-                        onChange={(value) => setValue("profilePic", value, { shouldDirty: true })}
+                        onChange={value =>
+                            setValue("profilePic", value, { shouldDirty: true })
+                        }
                         error={errors.profilePic?.message}
                     />
 
@@ -214,7 +218,10 @@ export function ProfileSettings({
                     {errors.root && (
                         <PersistentAlert
                             type="error"
-                            message={errors.root.message || "Une erreur s'est produite"}
+                            message={
+                                errors.root.message ||
+                                "Une erreur s'est produite"
+                            }
                             title="Erreur de validation"
                         />
                     )}

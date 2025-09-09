@@ -8,7 +8,11 @@ import clsx from "clsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { convertFileToBase64, isValidImageType, getImageDisplaySrc } from "@/lib/image-utils";
+import {
+    convertFileToBase64,
+    isValidImageType,
+    getImageDisplaySrc,
+} from "@/lib/image-utils";
 
 interface ProfilePictureUploadProps {
     value?: string;
@@ -32,21 +36,24 @@ export function ProfilePictureUpload({
 
     const displaySrc = getImageDisplaySrc(value);
 
-    const handleFileUpload = useCallback(async (file: File) => {
-        if (!isValidImageType(file)) {
-            return;
-        }
+    const handleFileUpload = useCallback(
+        async (file: File) => {
+            if (!isValidImageType(file)) {
+                return;
+            }
 
-        try {
-            setIsUploading(true);
-            const base64 = await convertFileToBase64(file);
-            onChange(base64);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        } finally {
-            setIsUploading(false);
-        }
-    }, [onChange]);
+            try {
+                setIsUploading(true);
+                const base64 = await convertFileToBase64(file);
+                onChange(base64);
+            } catch (error) {
+                console.error("Error uploading file:", error);
+            } finally {
+                setIsUploading(false);
+            }
+        },
+        [onChange]
+    );
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -146,7 +153,7 @@ export function ProfilePictureUpload({
                         type="url"
                         placeholder="https://exemple.com/votre-photo.jpg"
                         value={urlInput}
-                        onChange={(e) => handleUrlChange(e.target.value)}
+                        onChange={e => handleUrlChange(e.target.value)}
                         className={clsx(
                             "h-11 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100",
                             error
@@ -155,7 +162,8 @@ export function ProfilePictureUpload({
                         )}
                     />
                     <p className="text-xs text-gray-500">
-                        URL de votre photo de profil (format JPG, PNG recommandé).
+                        URL de votre photo de profil (format JPG, PNG
+                        recommandé).
                     </p>
                 </div>
             )}
@@ -169,10 +177,15 @@ export function ProfilePictureUpload({
                             isDragActive
                                 ? "border-blue-600 bg-blue-50 shadow-lg scale-[1.02]"
                                 : isUploading
-                                ? "border-gray-300 bg-gray-50"
-                                : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
+                                  ? "border-gray-300 bg-gray-50"
+                                  : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
                         )}
-                        onClick={() => !isUploading && document.getElementById("profile-file-input")?.click()}
+                        onClick={() =>
+                            !isUploading &&
+                            document
+                                .getElementById("profile-file-input")
+                                ?.click()
+                        }
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
@@ -224,7 +237,9 @@ export function ProfilePictureUpload({
                                     alt="Aperçu photo de profil"
                                     fill
                                     className="object-cover"
-                                    onError={() => console.log('Image failed to load')}
+                                    onError={() =>
+                                        console.log("Image failed to load")
+                                    }
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -232,7 +247,9 @@ export function ProfilePictureUpload({
                                     Photo de profil sélectionnée
                                 </p>
                                 <p className="text-xs text-gray-500 truncate">
-                                    {value?.startsWith('data:') ? 'Image uploadée' : 'Image depuis URL'}
+                                    {value?.startsWith("data:")
+                                        ? "Image uploadée"
+                                        : "Image depuis URL"}
                                 </p>
                             </div>
                         </div>

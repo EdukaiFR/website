@@ -16,21 +16,25 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-    const organizationData = generateStructuredData('Organization');
-    const websiteData = generateStructuredData('WebSite');
-    
+    const organizationData = generateStructuredData("Organization");
+    const websiteData = generateStructuredData("WebSite");
+
     return (
         <html lang="fr">
             <head>
                 <Script
                     id="organization-structured-data"
                     type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(organizationData),
+                    }}
                 />
                 <Script
                     id="website-structured-data"
                     type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(websiteData),
+                    }}
                 />
             </head>
             <body className="w-full min-h-screen font-satoshi">
@@ -40,9 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <UserProvider>
-                        {children}
-                    </UserProvider>
+                    <UserProvider>{children}</UserProvider>
                 </ThemeProvider>
             </body>
         </html>

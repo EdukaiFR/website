@@ -118,7 +118,8 @@ export function EducationSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Votre classe actuelle ou niveau d&apos;études (ex: Terminale S, L3 Informatique, M1 Finance).
+                            Votre classe actuelle ou niveau d&apos;études (ex:
+                            Terminale S, L3 Informatique, M1 Finance).
                         </p>
                     </div>
 
@@ -149,7 +150,8 @@ export function EducationSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Type d&apos;établissement ou niveau général (ex: Lycée, Université, École supérieure).
+                            Type d&apos;établissement ou niveau général (ex:
+                            Lycée, Université, École supérieure).
                         </p>
                     </div>
 
@@ -170,7 +172,8 @@ export function EducationSettings({
                             className="h-11 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 border-gray-200"
                         />
                         <p className="text-xs text-gray-500">
-                            Nom de votre établissement scolaire ou universitaire.
+                            Nom de votre établissement scolaire ou
+                            universitaire.
                         </p>
                     </div>
 
@@ -179,8 +182,10 @@ export function EducationSettings({
                         <div className="flex">
                             <div className="ml-3">
                                 <p className="text-sm text-blue-700">
-                                    <strong>Aide :</strong> Ces informations nous aident à personnaliser votre expérience 
-                                    et à vous proposer du contenu adapté à votre niveau d&apos;études.
+                                    <strong>Aide :</strong> Ces informations
+                                    nous aident à personnaliser votre expérience
+                                    et à vous proposer du contenu adapté à votre
+                                    niveau d&apos;études.
                                 </p>
                             </div>
                         </div>
@@ -190,7 +195,10 @@ export function EducationSettings({
                     {errors.root && (
                         <PersistentAlert
                             type="error"
-                            message={errors.root.message || "Une erreur s'est produite"}
+                            message={
+                                errors.root.message ||
+                                "Une erreur s'est produite"
+                            }
                             title="Erreur de validation"
                         />
                     )}

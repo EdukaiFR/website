@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSession } from "@/hooks/useSession";
 import { UserProfile, getUserProfileAction } from "@/lib/actions/user";
 
@@ -34,35 +34,35 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                 if (user) {
                     setUserProfile({
                         _id: user.id,
-                        email: user.email || '',
-                        username: user.username || '',
-                        firstName: user.firstName || '',
-                        lastName: user.lastName || '',
+                        email: user.email || "",
+                        username: user.username || "",
+                        firstName: user.firstName || "",
+                        lastName: user.lastName || "",
                         profilePic: (user as any).profilePic || undefined,
-                        grade: '',
-                        levelOfStudy: '',
+                        grade: "",
+                        levelOfStudy: "",
                         institution: undefined,
-                        accountPlan: 'free',
-                        role: 'user'
+                        accountPlan: "free",
+                        role: "user",
                     });
                 }
             }
         } catch (error) {
-            console.error('Error refreshing user profile:', error);
+            console.error("Error refreshing user profile:", error);
             // Fallback to session user data
             if (user) {
                 setUserProfile({
                     _id: user.id,
-                    email: user.email || '',
-                    username: user.username || '',
-                    firstName: user.firstName || '',
-                    lastName: user.lastName || '',
+                    email: user.email || "",
+                    username: user.username || "",
+                    firstName: user.firstName || "",
+                    lastName: user.lastName || "",
                     profilePic: (user as any).profilePic || undefined,
-                    grade: '',
-                    levelOfStudy: '',
+                    grade: "",
+                    levelOfStudy: "",
                     institution: undefined,
-                    accountPlan: 'free',
-                    role: 'user'
+                    accountPlan: "free",
+                    role: "user",
                 });
             }
         } finally {
@@ -83,11 +83,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }, [user, sessionLoading]);
 
     return (
-        <UserContext.Provider value={{
-            userProfile,
-            loading: loading || sessionLoading,
-            refreshUserProfile
-        }}>
+        <UserContext.Provider
+            value={{
+                userProfile,
+                loading: loading || sessionLoading,
+                refreshUserProfile,
+            }}
+        >
             {children}
         </UserContext.Provider>
     );
@@ -96,7 +98,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 export function useUserProfile() {
     const context = useContext(UserContext);
     if (context === undefined) {
-        throw new Error('useUserProfile must be used within a UserProvider');
+        throw new Error("useUserProfile must be used within a UserProvider");
     }
     return context;
 }

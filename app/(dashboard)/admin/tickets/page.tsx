@@ -13,16 +13,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { 
-    useSession, 
-    useIsAdmin, 
-    useRolePermissions,
-    useTicket 
-} from "@/hooks";
-import { 
-    Ticket, 
-    TicketStatus, 
-    TicketPriority, 
+import { useSession, useIsAdmin, useRolePermissions, useTicket } from "@/hooks";
+import {
+    Ticket,
+    TicketStatus,
+    TicketPriority,
     AdminGetTicketsParams,
     TicketStatistics,
     DEFAULT_PAGE_LIMIT,
@@ -48,8 +43,8 @@ export default function AdminTicketsPage() {
     const isAdmin = useIsAdmin();
     const permissions = useRolePermissions();
     const ticketService = useTicketService();
-    const { closeTicket, bulkUpdateTickets: _bulkUpdateTickets } = useTicket(ticketService);
-
+    const { closeTicket, bulkUpdateTickets: _bulkUpdateTickets } =
+        useTicket(ticketService);
 
     // State management
     const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -76,15 +71,21 @@ export default function AdminTicketsPage() {
         if (!permissions.canAccessAdminEndpoints) {
             return;
         }
-        
+
         setIsLoading(true);
         try {
             const response = await ticketService.adminGetAllTickets({
                 page: page,
                 limit: DEFAULT_PAGE_LIMIT,
                 search: searchTerm || undefined,
-                status: statusFilter !== "all" ? (statusFilter as TicketStatus) : undefined,
-                priority: priorityFilter !== "all" ? (priorityFilter as TicketPriority) : undefined,
+                status:
+                    statusFilter !== "all"
+                        ? (statusFilter as TicketStatus)
+                        : undefined,
+                priority:
+                    priorityFilter !== "all"
+                        ? (priorityFilter as TicketPriority)
+                        : undefined,
                 ...params,
             });
 
@@ -103,23 +104,46 @@ export default function AdminTicketsPage() {
     // Load tickets on mount and filter changes
     useEffect(() => {
         // S'assurer que la session est chargée ET que l'utilisateur est défini ET que les permissions sont OK
-        if (!session.loading && session.user && permissions.canAccessAdminEndpoints && isAdmin) {
+        if (
+            !session.loading &&
+            session.user &&
+            permissions.canAccessAdminEndpoints &&
+            isAdmin
+        ) {
             loadTickets();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchTerm, statusFilter, priorityFilter, page, session.loading, session.user, permissions.canAccessAdminEndpoints, isAdmin]);
+    }, [
+        searchTerm,
+        statusFilter,
+        priorityFilter,
+        page,
+        session.loading,
+        session.user,
+        permissions.canAccessAdminEndpoints,
+        isAdmin,
+    ]);
 
     // Handle ticket status change
-    const handleStatusChange = async (ticketId: string, status: TicketStatus) => {
+    const handleStatusChange = async (
+        ticketId: string,
+        status: TicketStatus
+    ) => {
         setIsUpdating(prev => ({ ...prev, [ticketId]: true }));
         try {
-            const response = await ticketService.updateTicket(ticketId, { status });
+            const response = await ticketService.updateTicket(ticketId, {
+                status,
+            });
             if (response) {
                 // Update ticket in local state
-                setTickets(prev => 
-                    prev.map(ticket => 
-                        ticket._id === ticketId 
-                            ? { ...ticket, status, updatedAt: new Date().toISOString() }
+                setTickets(prev =>
+                    prev.map(ticket =>
+                        ticket._id === ticketId
+                            ? {
+                                  ...ticket,
+                                  status,
+                                  updatedAt: new Date().toISOString(),
+                              }
                             : ticket
                     )
                 );
@@ -134,16 +158,25 @@ export default function AdminTicketsPage() {
     };
 
     // Handle ticket priority change
-    const handlePriorityChange = async (ticketId: string, priority: TicketPriority) => {
+    const handlePriorityChange = async (
+        ticketId: string,
+        priority: TicketPriority
+    ) => {
         setIsUpdating(prev => ({ ...prev, [ticketId]: true }));
         try {
-            const response = await ticketService.updateTicket(ticketId, { priority });
+            const response = await ticketService.updateTicket(ticketId, {
+                priority,
+            });
             if (response) {
                 // Update ticket in local state
-                setTickets(prev => 
-                    prev.map(ticket => 
-                        ticket._id === ticketId 
-                            ? { ...ticket, priority, updatedAt: new Date().toISOString() }
+                setTickets(prev =>
+                    prev.map(ticket =>
+                        ticket._id === ticketId
+                            ? {
+                                  ...ticket,
+                                  priority,
+                                  updatedAt: new Date().toISOString(),
+                              }
                             : ticket
                     )
                 );
@@ -168,10 +201,14 @@ export default function AdminTicketsPage() {
             const result = await closeTicket(ticketId);
             if (result) {
                 // Update local state
-                setTickets(prev => 
-                    prev.map(ticket => 
-                        ticket._id === ticketId 
-                            ? { ...ticket, status: TicketStatus.CLOSED, updatedAt: new Date().toISOString() }
+                setTickets(prev =>
+                    prev.map(ticket =>
+                        ticket._id === ticketId
+                            ? {
+                                  ...ticket,
+                                  status: TicketStatus.CLOSED,
+                                  updatedAt: new Date().toISOString(),
+                              }
                             : ticket
                     )
                 );
@@ -225,7 +262,8 @@ export default function AdminTicketsPage() {
                                     Gestion des tickets
                                 </h1>
                                 <p className="text-indigo-100 text-sm sm:text-base lg:text-lg max-w-2xl">
-                                    Vue d&apos;ensemble de tous les tickets du système avec contrôles administrateur
+                                    Vue d&apos;ensemble de tous les tickets du
+                                    système avec contrôles administrateur
                                 </p>
                             </div>
                             <div className="hidden md:block">
@@ -243,9 +281,12 @@ export default function AdminTicketsPage() {
                         <div className="flex items-start sm:items-center gap-2 sm:gap-3">
                             <AlertTriangle className="w-5 h-5 text-amber-600" />
                             <div>
-                                <p className="font-medium text-amber-800">Mode Administrateur Activé</p>
+                                <p className="font-medium text-amber-800">
+                                    Mode Administrateur Activé
+                                </p>
                                 <p className="text-sm text-amber-700">
-                                    Vous avez accès à tous les tickets et pouvez effectuer des modifications administrateur.
+                                    Vous avez accès à tous les tickets et pouvez
+                                    effectuer des modifications administrateur.
                                 </p>
                             </div>
                         </div>
@@ -254,7 +295,10 @@ export default function AdminTicketsPage() {
 
                 {/* Statistics */}
                 {statistics && (
-                    <AdminStatistics statistics={statistics} isLoading={isLoading} />
+                    <AdminStatistics
+                        statistics={statistics}
+                        isLoading={isLoading}
+                    />
                 )}
 
                 {/* Filters */}
@@ -266,35 +310,71 @@ export default function AdminTicketsPage() {
                                 <Input
                                     placeholder="Rechercher par titre, description ou ID..."
                                     value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
+                                    onChange={e =>
+                                        setSearchTerm(e.target.value)
+                                    }
                                     className="pl-10 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                                 />
                             </div>
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select
+                                value={statusFilter}
+                                onValueChange={setStatusFilter}
+                            >
                                 <SelectTrigger className="w-full sm:w-[180px] lg:w-[200px] bg-gray-50 border-gray-200">
                                     <SelectValue placeholder="Tous les statuts" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Tous les statuts</SelectItem>
-                                    <SelectItem value={TicketStatus.NEW}>Nouveau</SelectItem>
-                                    <SelectItem value={TicketStatus.TRIAGED}>Trié</SelectItem>
-                                    <SelectItem value={TicketStatus.IN_PROGRESS}>En cours</SelectItem>
-                                    <SelectItem value={TicketStatus.RESOLVED}>Résolu</SelectItem>
-                                    <SelectItem value={TicketStatus.CLOSED}>Fermé</SelectItem>
-                                    <SelectItem value={TicketStatus.REOPENED}>Rouvert</SelectItem>
-                                    <SelectItem value={TicketStatus.REJECTED}>Rejeté</SelectItem>
+                                    <SelectItem value="all">
+                                        Tous les statuts
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.NEW}>
+                                        Nouveau
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.TRIAGED}>
+                                        Trié
+                                    </SelectItem>
+                                    <SelectItem
+                                        value={TicketStatus.IN_PROGRESS}
+                                    >
+                                        En cours
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.RESOLVED}>
+                                        Résolu
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.CLOSED}>
+                                        Fermé
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.REOPENED}>
+                                        Rouvert
+                                    </SelectItem>
+                                    <SelectItem value={TicketStatus.REJECTED}>
+                                        Rejeté
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                            <Select
+                                value={priorityFilter}
+                                onValueChange={setPriorityFilter}
+                            >
                                 <SelectTrigger className="w-full sm:w-[180px] lg:w-[200px] bg-gray-50 border-gray-200">
                                     <SelectValue placeholder="Toutes les priorités" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Toutes les priorités</SelectItem>
-                                    <SelectItem value={TicketPriority.P0}>P0 - Critique</SelectItem>
-                                    <SelectItem value={TicketPriority.P1}>P1 - Élevée</SelectItem>
-                                    <SelectItem value={TicketPriority.P2}>P2 - Normale</SelectItem>
-                                    <SelectItem value={TicketPriority.P3}>P3 - Faible</SelectItem>
+                                    <SelectItem value="all">
+                                        Toutes les priorités
+                                    </SelectItem>
+                                    <SelectItem value={TicketPriority.P0}>
+                                        P0 - Critique
+                                    </SelectItem>
+                                    <SelectItem value={TicketPriority.P1}>
+                                        P1 - Élevée
+                                    </SelectItem>
+                                    <SelectItem value={TicketPriority.P2}>
+                                        P2 - Normale
+                                    </SelectItem>
+                                    <SelectItem value={TicketPriority.P3}>
+                                        P3 - Faible
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -306,7 +386,10 @@ export default function AdminTicketsPage() {
                     {isLoading ? (
                         // Loading skeleton
                         [...Array(LOADING_SKELETON_COUNT)].map((_, i) => (
-                            <Card key={i} className="border-0 shadow-lg animate-pulse">
+                            <Card
+                                key={i}
+                                className="border-0 shadow-lg animate-pulse"
+                            >
                                 <CardContent className="p-4 sm:p-6">
                                     <div className="h-32 bg-gray-200 rounded"></div>
                                 </CardContent>
@@ -323,11 +406,15 @@ export default function AdminTicketsPage() {
                                     Aucun ticket trouvé
                                 </h3>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {searchTerm || statusFilter !== "all" || priorityFilter !== "all"
+                                    {searchTerm ||
+                                    statusFilter !== "all" ||
+                                    priorityFilter !== "all"
                                         ? "Aucun ticket ne correspond à vos critères de recherche."
                                         : "Aucun ticket n'a été trouvé dans le système."}
                                 </p>
-                                {(searchTerm || statusFilter !== "all" || priorityFilter !== "all") && (
+                                {(searchTerm ||
+                                    statusFilter !== "all" ||
+                                    priorityFilter !== "all") && (
                                     <Button
                                         variant="outline"
                                         onClick={() => {

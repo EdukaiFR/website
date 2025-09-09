@@ -37,19 +37,28 @@ export interface UserProfile {
 function translateApiErrorLocal(message: string): string {
     const errorMap: Record<string, string> = {
         [API_ERROR_CODES.INVALID_CREDENTIALS]: "Identifiants invalides",
-        [API_ERROR_CODES.EMAIL_USERNAME_REQUIRED]: "Email ou nom d'utilisateur et mot de passe requis",
+        [API_ERROR_CODES.EMAIL_USERNAME_REQUIRED]:
+            "Email ou nom d'utilisateur et mot de passe requis",
         [API_ERROR_CODES.LOGIN_FAILED]: "Échec de la connexion",
-        [API_ERROR_CODES.REGISTRATION_REQUIRED_FIELDS]: "Email, mot de passe, prénom et nom sont requis",
-        [API_ERROR_CODES.EMAIL_USERNAME_TAKEN]: "Email ou nom d'utilisateur déjà utilisé",
+        [API_ERROR_CODES.REGISTRATION_REQUIRED_FIELDS]:
+            "Email, mot de passe, prénom et nom sont requis",
+        [API_ERROR_CODES.EMAIL_USERNAME_TAKEN]:
+            "Email ou nom d'utilisateur déjà utilisé",
         [API_ERROR_CODES.REGISTRATION_FAILED]: "Échec de l'inscription",
-        [API_ERROR_CODES.NO_PERMISSION_VIEW]: "Vous n'avez pas la permission de voir ces informations utilisateur",
+        [API_ERROR_CODES.NO_PERMISSION_VIEW]:
+            "Vous n'avez pas la permission de voir ces informations utilisateur",
         [API_ERROR_CODES.USER_NOT_FOUND]: "Utilisateur non trouvé",
-        [API_ERROR_CODES.ERROR_GETTING_USER]: "Erreur lors de la récupération de l'utilisateur",
+        [API_ERROR_CODES.ERROR_GETTING_USER]:
+            "Erreur lors de la récupération de l'utilisateur",
         [API_ERROR_CODES.NO_VALID_FIELDS]: "Aucun champ valide à mettre à jour",
-        [API_ERROR_CODES.NO_PERMISSION_UPDATE]: "Vous n'avez pas la permission de mettre à jour ces informations utilisateur",
-        [API_ERROR_CODES.ERROR_UPDATING_USER]: "Erreur lors de la mise à jour de l'utilisateur",
-        [API_ERROR_CODES.NO_PERMISSION_DELETE]: "Vous n'avez pas la permission de supprimer cet utilisateur",
-        [API_ERROR_CODES.ERROR_DELETING_USER]: "Erreur lors de la suppression de l'utilisateur",
+        [API_ERROR_CODES.NO_PERMISSION_UPDATE]:
+            "Vous n'avez pas la permission de mettre à jour ces informations utilisateur",
+        [API_ERROR_CODES.ERROR_UPDATING_USER]:
+            "Erreur lors de la mise à jour de l'utilisateur",
+        [API_ERROR_CODES.NO_PERMISSION_DELETE]:
+            "Vous n'avez pas la permission de supprimer cet utilisateur",
+        [API_ERROR_CODES.ERROR_DELETING_USER]:
+            "Erreur lors de la suppression de l'utilisateur",
     };
 
     return errorMap[message] || message;
@@ -57,22 +66,24 @@ function translateApiErrorLocal(message: string): string {
 
 // Helper function to get authorization headers
 function getAuthHeaders() {
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('auth_token');
+    if (typeof window !== "undefined") {
+        const token = localStorage.getItem("auth_token");
         return token ? { Authorization: `Bearer ${token}` } : {};
     }
     return {};
 }
 
 // Get user profile - we'll need to extract user ID from the stored user data or token
-export async function getUserProfileAction(): Promise<UserResponse<UserProfile>> {
+export async function getUserProfileAction(): Promise<
+    UserResponse<UserProfile>
+> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        
+
         // Get user ID from stored session data
         let userId: string | null = null;
-        if (typeof window !== 'undefined') {
-            const userData = localStorage.getItem('user_data');
+        if (typeof window !== "undefined") {
+            const userData = localStorage.getItem("user_data");
             if (userData) {
                 try {
                     const user = JSON.parse(userData);
@@ -102,11 +113,15 @@ export async function getUserProfileAction(): Promise<UserResponse<UserProfile>>
             data: response.data.user,
         };
     } catch (error: unknown) {
-        console.error("Erreur lors de la récupération du profil utilisateur:", error);
+        console.error(
+            "Erreur lors de la récupération du profil utilisateur:",
+            error
+        );
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la récupération du profil"
             ),
         };
@@ -137,7 +152,8 @@ export async function updateProfileAction(
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la mise à jour du profil"
             ),
         };
@@ -164,11 +180,15 @@ export async function updateEducationAction(
             data: response.data.user,
         };
     } catch (error: unknown) {
-        console.error("Erreur lors de la mise à jour des informations d'études:", error);
+        console.error(
+            "Erreur lors de la mise à jour des informations d'études:",
+            error
+        );
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la mise à jour des informations d'études"
             ),
         };
@@ -199,7 +219,8 @@ export async function updateSubscriptionAction(
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la mise à jour de l'abonnement"
             ),
         };
@@ -230,7 +251,8 @@ export async function updatePreferencesAction(
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la mise à jour des préférences"
             ),
         };
@@ -261,7 +283,8 @@ export async function deleteAccountAction(
         return {
             success: false,
             error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data?.message ||
+                (error as AxiosError<{ message: string }>).response?.data
+                    ?.message ||
                     "Une erreur est survenue lors de la suppression du compte"
             ),
         };

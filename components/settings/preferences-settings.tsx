@@ -88,7 +88,10 @@ export function PreferencesSettings({
         setIsDeleting(true);
 
         try {
-            const result = await deleteAccountAction({ confirmPassword: "" }, userId);
+            const result = await deleteAccountAction(
+                { confirmPassword: "" },
+                userId
+            );
 
             if (result.success) {
                 // Redirect to home or login page

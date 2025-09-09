@@ -66,9 +66,10 @@ export function NavUser() {
     }
 
     // Use new user data structure
-    const displayName = userProfile.firstName && userProfile.lastName
-        ? `${userProfile.firstName} ${userProfile.lastName}`
-        : userProfile.username || userProfile.email || "User";
+    const displayName =
+        userProfile.firstName && userProfile.lastName
+            ? `${userProfile.firstName} ${userProfile.lastName}`
+            : userProfile.username || userProfile.email || "User";
 
     const initials = displayName
         .split(" ")
@@ -78,9 +79,10 @@ export function NavUser() {
         .slice(0, 2);
 
     // Show educational info if available
-    const educationInfo = userProfile.grade || userProfile.levelOfStudy 
-        ? `${userProfile.grade || ''} ${userProfile.levelOfStudy || ''}`.trim()
-        : userProfile.institution || '';
+    const educationInfo =
+        userProfile.grade || userProfile.levelOfStudy
+            ? `${userProfile.grade || ""} ${userProfile.levelOfStudy || ""}`.trim()
+            : userProfile.institution || "";
 
     const handleSignOut = async () => {
         await logout();
@@ -114,7 +116,9 @@ export function NavUser() {
                                     }`}
                                 >
                                     <AvatarImage
-                                        src={getImageDisplaySrc(userProfile.profilePic)}
+                                        src={getImageDisplaySrc(
+                                            userProfile.profilePic
+                                        )}
                                         alt={displayName}
                                     />
                                     <AvatarFallback
@@ -143,7 +147,9 @@ export function NavUser() {
                                         {displayName}
                                     </span>
                                     <span className="truncate text-xs text-gray-600">
-                                        {userProfile.username ? `@${userProfile.username}` : userProfile.email}
+                                        {userProfile.username
+                                            ? `@${userProfile.username}`
+                                            : userProfile.email}
                                     </span>
                                 </div>
                             )}
@@ -164,7 +170,9 @@ export function NavUser() {
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage
-                                        src={getImageDisplaySrc(userProfile.profilePic)}
+                                        src={getImageDisplaySrc(
+                                            userProfile.profilePic
+                                        )}
                                         alt={displayName}
                                     />
                                     <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-sm font-semibold">
@@ -176,7 +184,9 @@ export function NavUser() {
                                         {displayName}
                                     </span>
                                     <span className="truncate text-xs text-gray-600">
-                                        {userProfile.username ? `@${userProfile.username}` : userProfile.email}
+                                        {userProfile.username
+                                            ? `@${userProfile.username}`
+                                            : userProfile.email}
                                     </span>
                                     {educationInfo && (
                                         <span className="truncate text-xs text-blue-600 flex items-center gap-1 mt-0.5">

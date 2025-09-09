@@ -104,30 +104,37 @@ export const userSettingsSchema = z.object({
         .string()
         .min(2, "Le prénom doit contenir au moins 2 caractères"),
     lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    username: z.string().min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
+    username: z
+        .string()
+        .min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
     profilePic: z
         .string()
         .optional()
-        .refine((val) => {
-            if (!val || val === "") return true;
-            
-            // Check if it's a base64 image
-            const base64Regex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
-            if (base64Regex.test(val)) {
-                // Check base64 size limit (approximately 2MB when encoded)
-                const base64Size = (val.length * 3) / 4;
-                return base64Size <= 2 * 1024 * 1024;
+        .refine(
+            val => {
+                if (!val || val === "") return true;
+
+                // Check if it's a base64 image
+                const base64Regex =
+                    /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
+                if (base64Regex.test(val)) {
+                    // Check base64 size limit (approximately 2MB when encoded)
+                    const base64Size = (val.length * 3) / 4;
+                    return base64Size <= 2 * 1024 * 1024;
+                }
+
+                // Check if it's a valid URL
+                return z.string().url().safeParse(val).success;
+            },
+            {
+                message:
+                    "Photo de profil invalide (URL ou image max 2MB requise)",
             }
-            
-            // Check if it's a valid URL
-            return z.string().url().safeParse(val).success;
-        }, {
-            message: "Photo de profil invalide (URL ou image max 2MB requise)",
-        }),
+        ),
 
     // Education (updated field names to match new API)
     grade: z.string().min(1, "La classe/grade est requise"),
-    levelOfStudy: z.string().min(1, "Le niveau d'études est requis"), 
+    levelOfStudy: z.string().min(1, "Le niveau d'études est requis"),
     institution: z.string().optional(),
 });
 
@@ -136,26 +143,33 @@ export const profileSettingsSchema = z.object({
         .string()
         .min(2, "Le prénom doit contenir au moins 2 caractères"),
     lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    username: z.string().min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
+    username: z
+        .string()
+        .min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères"),
     profilePic: z
         .string()
         .optional()
-        .refine((val) => {
-            if (!val || val === "") return true;
-            
-            // Check if it's a base64 image
-            const base64Regex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
-            if (base64Regex.test(val)) {
-                // Check base64 size limit (approximately 2MB when encoded)
-                const base64Size = (val.length * 3) / 4;
-                return base64Size <= 2 * 1024 * 1024;
+        .refine(
+            val => {
+                if (!val || val === "") return true;
+
+                // Check if it's a base64 image
+                const base64Regex =
+                    /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
+                if (base64Regex.test(val)) {
+                    // Check base64 size limit (approximately 2MB when encoded)
+                    const base64Size = (val.length * 3) / 4;
+                    return base64Size <= 2 * 1024 * 1024;
+                }
+
+                // Check if it's a valid URL
+                return z.string().url().safeParse(val).success;
+            },
+            {
+                message:
+                    "Photo de profil invalide (URL ou image max 2MB requise)",
             }
-            
-            // Check if it's a valid URL
-            return z.string().url().safeParse(val).success;
-        }, {
-            message: "Photo de profil invalide (URL ou image max 2MB requise)",
-        }),
+        ),
 });
 
 export const educationSettingsSchema = z.object({
@@ -172,11 +186,13 @@ export const subscriptionSettingsSchema = z.object({
 
 // Preferences schema - basic structure for UI compatibility
 export const preferencesSettingsSchema = z.object({
-    notifications: z.object({
-        email: z.boolean(),
-        push: z.boolean(),
-        weeklyReport: z.boolean(),
-    }).optional(),
+    notifications: z
+        .object({
+            email: z.boolean(),
+            push: z.boolean(),
+            weeklyReport: z.boolean(),
+        })
+        .optional(),
     profileVisibility: z.string().optional(),
     dataSharing: z.boolean().optional(),
 });
@@ -228,19 +244,22 @@ export interface ApiResponse<T = unknown> {
 export const API_ERROR_CODES = {
     // Auth errors
     INVALID_CREDENTIALS: "Invalid credentials",
-    EMAIL_USERNAME_REQUIRED: "Email or username and password are required", 
+    EMAIL_USERNAME_REQUIRED: "Email or username and password are required",
     LOGIN_FAILED: "Login failed.",
-    REGISTRATION_REQUIRED_FIELDS: "Email, password, first name, and last name are required",
+    REGISTRATION_REQUIRED_FIELDS:
+        "Email, password, first name, and last name are required",
     EMAIL_USERNAME_TAKEN: "Email or username already taken",
     REGISTRATION_FAILED: "Registration failed.",
-    
+
     // User management errors
-    NO_PERMISSION_VIEW: "You do not have permission to see this user information.",
+    NO_PERMISSION_VIEW:
+        "You do not have permission to see this user information.",
     USER_NOT_FOUND: "User not found",
     ERROR_GETTING_USER: "Error getting user",
     NO_VALID_FIELDS: "No valid fields to update.",
-    NO_PERMISSION_UPDATE: "You do not have permission to update this user information.",
+    NO_PERMISSION_UPDATE:
+        "You do not have permission to update this user information.",
     ERROR_UPDATING_USER: "Error updating user",
     NO_PERMISSION_DELETE: "You do not have permission to delete this user.",
-    ERROR_DELETING_USER: "Error deleting user"
+    ERROR_DELETING_USER: "Error deleting user",
 } as const;

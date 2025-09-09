@@ -29,7 +29,9 @@ export function AccountSettings({
 }: AccountSettingsProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [persistentError, setPersistentError] = useState<string | null>(null);
-    const [confirmationStep, setConfirmationStep] = useState<"initial" | "confirm">("initial");
+    const [confirmationStep, setConfirmationStep] = useState<
+        "initial" | "confirm"
+    >("initial");
     const router = useRouter();
 
     const {
@@ -104,11 +106,14 @@ export function AccountSettings({
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-5 h-5 text-blue-600" />
-                        <span className="font-medium text-blue-800">Sécurité du compte</span>
+                        <span className="font-medium text-blue-800">
+                            Sécurité du compte
+                        </span>
                     </div>
                     <p className="text-sm text-blue-700">
-                        Votre compte est sécurisé avec une authentification par cookies HTTP-only. 
-                        L&apos;adresse email ne peut pas être modifiée pour des raisons de sécurité.
+                        Votre compte est sécurisé avec une authentification par
+                        cookies HTTP-only. L&apos;adresse email ne peut pas être
+                        modifiée pour des raisons de sécurité.
                     </p>
                 </div>
 
@@ -130,13 +135,27 @@ export function AccountSettings({
                                                 Attention : Action irréversible
                                             </h4>
                                             <p className="text-sm text-yellow-700">
-                                                La suppression de votre compte entraînera la perte définitive de :
+                                                La suppression de votre compte
+                                                entraînera la perte définitive
+                                                de :
                                             </p>
                                             <ul className="text-sm text-yellow-700 mt-2 ml-4 list-disc">
-                                                <li>Toutes vos données personnelles</li>
-                                                <li>Votre historique d&apos;activité</li>
-                                                <li>Vos cours et matériaux sauvegardés</li>
-                                                <li>Votre abonnement (sans remboursement)</li>
+                                                <li>
+                                                    Toutes vos données
+                                                    personnelles
+                                                </li>
+                                                <li>
+                                                    Votre historique
+                                                    d&apos;activité
+                                                </li>
+                                                <li>
+                                                    Vos cours et matériaux
+                                                    sauvegardés
+                                                </li>
+                                                <li>
+                                                    Votre abonnement (sans
+                                                    remboursement)
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -152,7 +171,10 @@ export function AccountSettings({
                                 </Button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <form
+                                onSubmit={handleSubmit(onSubmit)}
+                                className="space-y-4"
+                            >
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                                     <div className="flex items-start gap-3">
                                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -161,8 +183,9 @@ export function AccountSettings({
                                                 Confirmation de suppression
                                             </h4>
                                             <p className="text-sm text-red-700">
-                                                Pour confirmer la suppression de votre compte, 
-                                                veuillez saisir votre mot de passe actuel.
+                                                Pour confirmer la suppression de
+                                                votre compte, veuillez saisir
+                                                votre mot de passe actuel.
                                             </p>
                                         </div>
                                     </div>
@@ -188,7 +211,9 @@ export function AccountSettings({
                                     />
                                     {errors.confirmPassword && (
                                         <p className="text-sm text-red-500 flex items-center gap-1">
-                                            <span className="w-4 h-4 text-xs">⚠</span>
+                                            <span className="w-4 h-4 text-xs">
+                                                ⚠
+                                            </span>
                                             {errors.confirmPassword.message}
                                         </p>
                                     )}

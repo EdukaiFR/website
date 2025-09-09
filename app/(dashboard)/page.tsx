@@ -14,17 +14,20 @@ import { useUserProfile } from "@/contexts/UserContext";
 
 export default function Home() {
     const { userProfile, loading } = useUserProfile();
-    
+
     // Détermine le nom à afficher
     const getDisplayName = () => {
         if (!userProfile) return "";
-        
+
         // Si le username est une adresse email ou identique à l'email
-        if (userProfile.username.includes("@") || userProfile.username === userProfile.email) {
+        if (
+            userProfile.username.includes("@") ||
+            userProfile.username === userProfile.email
+        ) {
             // Affiche firstName et première lettre du lastName
             return `${userProfile.firstName} ${userProfile.lastName.charAt(0)}.`;
         }
-        
+
         // Sinon affiche le username
         return userProfile.username;
     };

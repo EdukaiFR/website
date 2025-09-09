@@ -19,7 +19,10 @@ const getFileIcon = (contentType: string, isZip?: boolean) => {
         case "archive":
             return <Archive className="w-5 h-5" />;
         case "image":
-            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            {
+                /* eslint-disable-next-line jsx-a11y/alt-text */
+            }
+            /* eslint-disable-next-line @next/next/no-img-element */
             return <Image className="w-5 h-5" />;
         case "text":
             return <FileText className="w-5 h-5" />;

@@ -1,21 +1,21 @@
 // Ticket Status Enum
 export enum TicketStatus {
     NEW = "NEW",
-    TRIAGED = "TRIAGED", 
+    TRIAGED = "TRIAGED",
     IN_PROGRESS = "IN_PROGRESS",
     RESOLVED = "RESOLVED",
     CLOSED = "CLOSED",
     REOPENED = "REOPENED",
     REJECTED = "REJECTED",
-    DUPLICATE = "DUPLICATE"
+    DUPLICATE = "DUPLICATE",
 }
 
 // Ticket Priority Enum
 export enum TicketPriority {
     P0 = "P0", // Critique
-    P1 = "P1", // Élevée  
+    P1 = "P1", // Élevée
     P2 = "P2", // Normale
-    P3 = "P3"  // Faible
+    P3 = "P3", // Faible
 }
 
 // Ticket Type Enum
@@ -24,7 +24,7 @@ export enum TicketType {
     FEATURE = "FEATURE",
     SUPPORT = "SUPPORT",
     IMPROVEMENT = "IMPROVEMENT",
-    OTHER = "OTHER"
+    OTHER = "OTHER",
 }
 
 // Ticket Category Enum
@@ -33,15 +33,15 @@ export enum TicketCategory {
     BILLING = "BILLING",
     ACCOUNT = "ACCOUNT",
     PLATFORM = "PLATFORM",
-    OTHER = "OTHER"
+    OTHER = "OTHER",
 }
 
 // Ticket Severity Enum
 export enum TicketSeverity {
     LOW = "LOW",
-    MEDIUM = "MEDIUM", 
+    MEDIUM = "MEDIUM",
     HIGH = "HIGH",
-    CRITICAL = "CRITICAL"
+    CRITICAL = "CRITICAL",
 }
 
 // Base Ticket Interface
@@ -128,20 +128,20 @@ export interface PaginationInfo {
 // File Upload Constants
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 export const ALLOWED_MIME_TYPES = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'application/pdf',
-    'text/plain'
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "application/pdf",
+    "text/plain",
 ] as const;
 
-export type AllowedMimeType = typeof ALLOWED_MIME_TYPES[number];
+export type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
 
 // Attachment Types
 export enum AttachmentKind {
-    IMAGE = 'IMAGE',
-    DOCUMENT = 'DOCUMENT',
-    OTHER = 'OTHER'
+    IMAGE = "IMAGE",
+    DOCUMENT = "DOCUMENT",
+    OTHER = "OTHER",
 }
 
 export interface TicketAttachment {
@@ -156,8 +156,8 @@ export interface TicketAttachment {
 
 // Comment Visibility Enum
 export enum CommentVisibility {
-    PUBLIC = 'PUBLIC',
-    INTERNAL = 'INTERNAL'
+    PUBLIC = "PUBLIC",
+    INTERNAL = "INTERNAL",
 }
 
 // Constants
@@ -200,7 +200,7 @@ export interface GetTicketsParams {
     page?: number;
     limit?: number;
     sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
+    sortOrder?: "asc" | "desc";
     search?: string;
 }
 
@@ -300,13 +300,24 @@ export interface TicketFilterOptions {
 }
 
 // Ticket Action Types
-export type TicketAction = 
-    | { type: 'ASSIGN'; assignedTo: string }
-    | { type: 'CHANGE_STATUS'; status: TicketStatus }
-    | { type: 'CHANGE_PRIORITY'; priority: TicketPriority }
-    | { type: 'ADD_TAG'; tag: string }
-    | { type: 'REMOVE_TAG'; tag: string }
-    | { type: 'ADD_COMMENT'; comment: AddCommentRequest };
+export type TicketAction =
+    | { type: "ASSIGN"; assignedTo: string }
+    | { type: "CHANGE_STATUS"; status: TicketStatus }
+    | { type: "CHANGE_PRIORITY"; priority: TicketPriority }
+    | { type: "ADD_TAG"; tag: string }
+    | { type: "REMOVE_TAG"; tag: string }
+    | { type: "ADD_COMMENT"; comment: AddCommentRequest };
 
 // Utility type for ticket updates
-export type TicketUpdate = Partial<Pick<Ticket, 'title' | 'description' | 'status' | 'priority' | 'type' | 'assignedTo' | 'tags'>>;
+export type TicketUpdate = Partial<
+    Pick<
+        Ticket,
+        | "title"
+        | "description"
+        | "status"
+        | "priority"
+        | "type"
+        | "assignedTo"
+        | "tags"
+    >
+>;

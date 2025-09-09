@@ -7,7 +7,7 @@
  */
 export function isBase64Image(str: string): boolean {
     if (!str) return false;
-    
+
     const base64Regex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
     return base64Regex.test(str);
 }
@@ -17,7 +17,7 @@ export function isBase64Image(str: string): boolean {
  */
 export function isUrl(str: string): boolean {
     if (!str) return false;
-    
+
     try {
         new URL(str);
         return true;
@@ -31,31 +31,31 @@ export function isUrl(str: string): boolean {
  */
 export function convertFileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
-        if (!file.type.startsWith('image/')) {
-            reject(new Error('Le fichier doit être une image'));
+        if (!file.type.startsWith("image/")) {
+            reject(new Error("Le fichier doit être une image"));
             return;
         }
 
         const maxSize = 2 * 1024 * 1024; // 2MB
         if (file.size > maxSize) {
-            reject(new Error('L\'image ne peut pas dépasser 2MB'));
+            reject(new Error("L'image ne peut pas dépasser 2MB"));
             return;
         }
 
         const reader = new FileReader();
-        
+
         reader.onload = () => {
-            if (typeof reader.result === 'string') {
+            if (typeof reader.result === "string") {
                 resolve(reader.result);
             } else {
-                reject(new Error('Erreur lors de la lecture du fichier'));
+                reject(new Error("Erreur lors de la lecture du fichier"));
             }
         };
-        
+
         reader.onerror = () => {
-            reject(new Error('Erreur lors de la lecture du fichier'));
+            reject(new Error("Erreur lors de la lecture du fichier"));
         };
-        
+
         reader.readAsDataURL(file);
     });
 }
@@ -63,17 +63,19 @@ export function convertFileToBase64(file: File): Promise<string> {
 /**
  * Returns the appropriate src attribute for an image
  */
-export function getImageDisplaySrc(profilePic?: string | null): string | undefined {
+export function getImageDisplaySrc(
+    profilePic?: string | null
+): string | undefined {
     if (!profilePic) return undefined;
-    
+
     if (isBase64Image(profilePic)) {
         return profilePic;
     }
-    
+
     if (isUrl(profilePic)) {
         return profilePic;
     }
-    
+
     return undefined;
 }
 
@@ -81,7 +83,7 @@ export function getImageDisplaySrc(profilePic?: string | null): string | undefin
  * Validates image file type
  */
 export function isValidImageType(file: File): boolean {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     return allowedTypes.includes(file.type);
 }
 
@@ -90,12 +92,12 @@ export function isValidImageType(file: File): boolean {
  */
 export function getImageExtension(file: File): string {
     switch (file.type) {
-        case 'image/jpeg':
-        case 'image/jpg':
-            return 'jpg';
-        case 'image/png':
-            return 'png';
+        case "image/jpeg":
+        case "image/jpg":
+            return "jpg";
+        case "image/png":
+            return "png";
         default:
-            return 'jpg';
+            return "jpg";
     }
 }
