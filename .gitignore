@@ -18,24 +18,18 @@ CLAUDE.md
 # production
 /build
 
-# misc
+# MacOS
 .DS_Store
+
+# env & keys
 *.pem
 *.log
 *.env
+*.env.production
+*.env.production.local
+*.env.test.local
 *.env.local
 *.env.development.local
-*.env.test.local
-*.env.production.local
-
-# vercel
-.vercel
-
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # vercel
 .vercel
