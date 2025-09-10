@@ -21,9 +21,11 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
 ## 📸 Aperçu
 
-![DARK  My Lessons - Open one - Quizz Multiplayer - Create - Play 3](https://github.com/user-attachments/assets/e9236864-dcd3-40cb-9f84-b2dd37247aa2)
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/b1a9534a-79b7-4c68-835f-87551e909cdd" />
 
-![DARK  My Lessons - Open one](https://github.com/user-attachments/assets/1ac70d5d-6a8d-4a4a-9f7d-be3c44f2732c)
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/0349d70a-a5db-48fe-9248-d723444ffd07" />
+
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/c526ddfc-3859-4764-9a5e-f1d94f212e96" />
 
 ## 📖 Utilisation
 
