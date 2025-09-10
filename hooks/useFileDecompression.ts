@@ -9,12 +9,11 @@ export const useFileDecompression = () => {
             data: string | ArrayBuffer,
             filename: string
         ): Promise<ProcessedFile[]> => {
-            console.log("📦 Starting ZIP decompression...");
-
             try {
-                const zip = await JSZip.loadAsync(data);
-                console.log("✅ ZIP loaded successfully");
-
+                const zip = await JSZip.loadAsync(
+                    data,
+                    typeof data === "string" ? { base64: true } : undefined
+                );
                 const unzippedFiles: UnzippedFile[] = [];
 
                 for (const [relativePath, zipEntry] of Object.entries(
@@ -75,7 +74,6 @@ export const useFileDecompression = () => {
 
                 return [];
             } catch (error) {
-                console.error("❌ ZIP decompression failed:", error);
                 throw error;
             }
         },
