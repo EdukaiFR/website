@@ -177,7 +177,7 @@ export function AdminTicketCard({
                                     value={ticket.status}
                                     onValueChange={value =>
                                         onStatusChange(
-                                            ticket._id,
+                                            ticket.id,
                                             value as TicketStatus
                                         )
                                     }
@@ -226,7 +226,7 @@ export function AdminTicketCard({
                                     value={ticket.priority}
                                     onValueChange={value =>
                                         onPriorityChange(
-                                            ticket._id,
+                                            ticket.id,
                                             value as TicketPriority
                                         )
                                     }
@@ -260,13 +260,13 @@ export function AdminTicketCard({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => onAssign(ticket._id)}
+                                    onClick={() => onAssign(ticket.id)}
                                     disabled={isUpdating}
                                     className="w-full h-8 text-xs"
                                 >
                                     <User className="w-3 h-3 mr-1" />
-                                    {ticket.assignees?.length
-                                        ? `${ticket.assignees.length} assigné(s)`
+                                    {ticket.assignedTo
+                                        ? "1 assigné"
                                         : "Assigner"}
                                 </Button>
                             </div>
@@ -283,7 +283,7 @@ export function AdminTicketCard({
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => onClose(ticket._id)}
+                                            onClick={() => onClose(ticket.id)}
                                             disabled={isUpdating}
                                             className="h-7 px-3 text-xs text-red-600 border-red-200 hover:bg-red-50"
                                         >
@@ -296,7 +296,7 @@ export function AdminTicketCard({
                                             size="sm"
                                             onClick={() =>
                                                 onStatusChange(
-                                                    ticket._id,
+                                                    ticket.id,
                                                     TicketStatus.IN_PROGRESS
                                                 )
                                             }
@@ -315,7 +315,7 @@ export function AdminTicketCard({
                                             size="sm"
                                             onClick={() =>
                                                 onStatusChange(
-                                                    ticket._id,
+                                                    ticket.id,
                                                     TicketStatus.RESOLVED
                                                 )
                                             }
@@ -353,19 +353,16 @@ export function AdminTicketCard({
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                         <User className="w-4 h-4" />
                         <span>
-                            Rapporté par {ticket.reporter.name} (
-                            {ticket.reporter.email})
+                            Rapporté par {ticket.reporter?.name} (
+                            {ticket.reporter?.email})
                         </span>
                     </div>
 
                     {/* Assignees */}
-                    {ticket.assignees && ticket.assignees.length > 0 && (
+                    {ticket.assignedTo && (
                         <div className="flex items-center gap-2 text-xs text-gray-600">
                             <Settings className="w-4 h-4" />
-                            <span>
-                                Assigné à:{" "}
-                                {ticket.assignees.map(a => a.name).join(", ")}
-                            </span>
+                            <span>Assigné à: {ticket.assignedTo}</span>
                         </div>
                     )}
 

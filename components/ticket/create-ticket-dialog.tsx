@@ -24,11 +24,14 @@ import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks";
 import type {
     CreateTicketRequest,
-    TicketCategory,
     TicketPriority,
+    TicketCategory,
     TicketSeverity,
 } from "@/lib/types/ticket";
-import { TicketPriority as TicketPriorityEnum } from "@/lib/types/ticket";
+import {
+    TicketPriority as TicketPriorityEnum,
+    TicketType as TicketTypeEnum,
+} from "@/lib/types/ticket";
 
 export interface CreateTicketDialogProps {
     open: boolean;
@@ -107,6 +110,7 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             const ticketData: CreateTicketRequest = {
                 title: title.trim(),
                 description: description.trim(),
+                type: TicketTypeEnum.SUPPORT, // Default type
                 context,
                 ...(category && { category: category as TicketCategory }),
                 ...(severity && {

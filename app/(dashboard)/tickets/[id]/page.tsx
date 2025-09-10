@@ -111,11 +111,12 @@ export default function TicketDetailPage() {
         if (!newComment.trim() || !currentTicket) return;
 
         const comment: AddCommentRequest = {
+            content: newComment.trim(),
             body: newComment.trim(),
             visibility: commentVisibility,
         };
 
-        const result = await addComment(currentTicket._id, comment);
+        const result = await addComment(currentTicket.id, comment);
         if (result) {
             setNewComment("");
             setCommentVisibility(CommentVisibilityEnum.PUBLIC); // Reset to public
@@ -404,7 +405,7 @@ export default function TicketDetailPage() {
                                                     <p className="font-semibold text-gray-900">
                                                         {
                                                             currentTicket
-                                                                .reporter.name
+                                                                .reporter?.name
                                                         }
                                                     </p>
                                                 </div>
@@ -482,7 +483,8 @@ export default function TicketDetailPage() {
                                                             handleCopyUrl(
                                                                 currentTicket
                                                                     .context
-                                                                    .pageUrl
+                                                                    ?.pageUrl ||
+                                                                    ""
                                                             )
                                                         }
                                                         className="h-8 px-2 hover:bg-green-100/50"
@@ -499,7 +501,8 @@ export default function TicketDetailPage() {
                                                     <a
                                                         href={
                                                             currentTicket
-                                                                .context.pageUrl
+                                                                .context
+                                                                ?.pageUrl || "#"
                                                         }
                                                         target="_blank"
                                                         rel="noopener noreferrer"
@@ -507,12 +510,14 @@ export default function TicketDetailPage() {
                                                     >
                                                         {
                                                             currentTicket
-                                                                .context.pageUrl
+                                                                .context
+                                                                ?.pageUrl
                                                         }
                                                     </a>
                                                 </div>
                                             </div>
-                                            {currentTicket.context.viewport && (
+                                            {currentTicket.context
+                                                ?.viewport && (
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                         <Monitor className="w-5 h-5 text-white" />

@@ -2,14 +2,15 @@ import { useState } from "react";
 import { ticketToast } from "@/lib/toast";
 import { useSession, useRolePermissions } from "@/hooks";
 import type { TicketService } from "@/services/ticket";
-import type {
-    Ticket,
-    TicketComment,
-    CreateTicketRequest,
-    GetTicketsParams,
-    UpdateTicketRequest,
-    AddCommentRequest,
-    PaginationInfo,
+import {
+    type Ticket,
+    type TicketComment,
+    type CreateTicketRequest,
+    type GetTicketsParams,
+    type UpdateTicketRequest,
+    type AddCommentRequest,
+    type PaginationInfo,
+    TicketStatus,
 } from "@/lib/types/ticket";
 
 export function useTicket(ticketService: TicketService) {
@@ -73,10 +74,10 @@ export function useTicket(ticketService: TicketService) {
             setTicketError(null);
 
             // Apply user-based filtering if user cannot view all tickets
-            let filteredParams = { ...params };
+            const filteredParams = { ...params };
             if (!permissions.canViewAllTickets && user?.id) {
                 // For regular users, only show their own tickets
-                filteredParams.reporter = user.id;
+                filteredParams.userId = user.id;
             }
 
             const response = await ticketService.getTickets(filteredParams);
@@ -86,7 +87,7 @@ export function useTicket(ticketService: TicketService) {
                 setPagination(response.data.pagination);
                 return response.data.tickets;
             } else {
-                ticketToast.loadAllError();
+                ticketToast.loadError();
                 setTicketError(
                     "Échec du chargement des tickets. Veuillez réessayer."
                 );
@@ -94,7 +95,7 @@ export function useTicket(ticketService: TicketService) {
             }
         } catch (error) {
             console.error("Erreur lors du chargement des tickets:", error);
-            ticketToast.loadAllError();
+            ticketToast.loadError();
             setTicketError(
                 "Échec du chargement des tickets. Veuillez réessayer."
             );
@@ -113,7 +114,7 @@ export function useTicket(ticketService: TicketService) {
             const response = await ticketService.getTicketById(ticketId);
 
             if (response && response.data) {
-                setCurrentTicket(response.data.ticket);
+                setCurrentTicket(response.data);
                 setComments(response.data.comments);
                 return response.data;
             } else {
@@ -149,10 +150,10 @@ export function useTicket(ticketService: TicketService) {
 
             // Check if user has permission to modify this ticket
             const ticket =
-                tickets.find(t => t._id === ticketId) || currentTicket;
+                tickets.find(t => t.id === ticketId) || currentTicket;
             const canModify =
                 permissions.canModifyAnyTicket ||
-                (ticket && ticket.reporter.userId === user?.id);
+                (ticket && ticket.reporter?.userId === user?.id);
 
             if (!canModify) {
                 ticketToast.updateError(
@@ -169,20 +170,21 @@ export function useTicket(ticketService: TicketService) {
 
             if (response && response.data) {
                 ticketToast.updateSuccess();
+                const updatedTicket = response.data;
 
                 // Update current ticket if it's the same one
-                if (currentTicket && currentTicket._id === ticketId) {
-                    setCurrentTicket(response.data);
+                if (currentTicket && currentTicket.id === ticketId) {
+                    setCurrentTicket(updatedTicket);
                 }
 
                 // Update ticket in the list if it exists
                 setTickets(prev =>
                     prev.map(ticket =>
-                        ticket._id === ticketId ? response.data : ticket
+                        ticket.id === ticketId ? updatedTicket : ticket
                     )
                 );
 
-                return response.data;
+                return updatedTicket;
             } else {
                 ticketToast.updateError();
                 setTicketError(
@@ -207,7 +209,7 @@ export function useTicket(ticketService: TicketService) {
 
     // Close a ticket (Admin function)
     const closeTicket = async (ticketId: string) => {
-        return updateTicket(ticketId, { status: "closed" as any });
+        return updateTicket(ticketId, { status: TicketStatus.CLOSED });
     };
 
     // Bulk update tickets (Admin function)
@@ -247,14 +249,15 @@ export function useTicket(ticketService: TicketService) {
             const response = await ticketService.addComment(ticketId, comment);
 
             if (response && response.data) {
-                ticketToast.commentSuccess();
+                ticketToast.addCommentSuccess();
+                const newComment = response.data;
 
                 // Add comment to current comments list
-                setComments(prev => [...prev, response.data]);
+                setComments(prev => [...prev, newComment]);
 
-                return response.data;
+                return newComment;
             } else {
-                ticketToast.commentError();
+                ticketToast.addCommentError();
                 setTicketError(
                     "Échec de l'ajout du commentaire. Veuillez réessayer."
                 );
@@ -265,7 +268,7 @@ export function useTicket(ticketService: TicketService) {
                 `Erreur lors de l'ajout du commentaire au ticket ${ticketId}:`,
                 error
             );
-            ticketToast.commentError();
+            ticketToast.addCommentError();
             setTicketError(
                 "Échec de l'ajout du commentaire. Veuillez réessayer."
             );
@@ -287,13 +290,17 @@ export function useTicket(ticketService: TicketService) {
                 ticketToast.reopenSuccess();
 
                 // Update current ticket status if it's the same one
-                if (currentTicket && currentTicket._id === ticketId) {
+                if (
+                    currentTicket &&
+                    currentTicket.id === ticketId &&
+                    response.data
+                ) {
                     setCurrentTicket(prev =>
                         prev
                             ? {
                                   ...prev,
-                                  status: response.data.status,
-                                  updatedAt: response.data.updatedAt,
+                                  status: response.data!.status,
+                                  updatedAt: response.data!.updatedAt,
                               }
                             : null
                     );
@@ -302,7 +309,7 @@ export function useTicket(ticketService: TicketService) {
                 // Update ticket in the list
                 setTickets(prev =>
                     prev.map(ticket =>
-                        ticket._id === ticketId
+                        ticket.id === ticketId && response.data
                             ? {
                                   ...ticket,
                                   status: response.data.status,
@@ -354,7 +361,7 @@ export function useTicket(ticketService: TicketService) {
     // Refresh current ticket (useful for polling updates)
     const refreshCurrentTicket = async () => {
         if (currentTicket) {
-            return await loadTicketById(currentTicket._id);
+            return await loadTicketById(currentTicket.id);
         }
         return null;
     };

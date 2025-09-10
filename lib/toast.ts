@@ -418,42 +418,28 @@ export const fileToast = {
     noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
 };
 
+// Ticket toast functions
 export const ticketToast = {
-    createSuccess: () => showToast.success(toastMessages.ticket.createSuccess),
+    createSuccess: () => showToast.success("Ticket créé avec succès."),
     createError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.createError),
-    loadError: () => showToast.error(toastMessages.ticket.loadError),
-    loadAllError: () => showToast.error(toastMessages.ticket.loadAllError),
-    updateSuccess: () => showToast.success(toastMessages.ticket.updateSuccess),
+        showToast.error(error || "Erreur lors de la création du ticket."),
+    updateSuccess: () => showToast.success("Ticket mis à jour avec succès."),
     updateError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.updateError),
-    reopenSuccess: () => showToast.success(toastMessages.ticket.reopenSuccess),
-    reopenError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.reopenError),
-    commentSuccess: () =>
-        showToast.success(toastMessages.ticket.commentSuccess),
-    commentError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.commentError),
-    statusUpdateSuccess: () =>
-        showToast.success(toastMessages.ticket.statusUpdateSuccess),
-    statusUpdateError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.statusUpdateError),
-    priorityUpdateSuccess: () =>
-        showToast.success(toastMessages.ticket.priorityUpdateSuccess),
-    priorityUpdateError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.priorityUpdateError),
-    fileUploadSuccess: () =>
-        showToast.success(toastMessages.ticket.fileUploadSuccess),
-    fileUploadError: (error?: string) =>
-        showToast.error(error || toastMessages.ticket.fileUploadError),
-    fileTooLargeError: () =>
-        showToast.error(toastMessages.ticket.fileTooLargeError),
-    fileTypeNotSupportedError: () =>
-        showToast.error(toastMessages.ticket.fileTypeNotSupportedError),
-    duplicateTicketWarning: (ticketId?: string) =>
-        showToast.warning(
-            `${toastMessages.ticket.duplicateTicketWarning}${
-                ticketId ? ` (${ticketId})` : ""
-            }`
-        ),
+        showToast.error(error || "Erreur lors de la mise à jour du ticket."),
+    deleteSuccess: () => showToast.success("Ticket supprimé avec succès."),
+    deleteError: () =>
+        showToast.error("Erreur lors de la suppression du ticket."),
+    loadError: () => showToast.error("Erreur lors du chargement des tickets."),
+    assignSuccess: () => showToast.success("Ticket assigné avec succès."),
+    assignError: () =>
+        showToast.error("Erreur lors de l'assignation du ticket."),
+    closeSuccess: () => showToast.success("Ticket fermé avec succès."),
+    closeError: () => showToast.error("Erreur lors de la fermeture du ticket."),
+    reopenSuccess: () => showToast.success("Ticket rouvert avec succès."),
+    reopenError: () =>
+        showToast.error("Erreur lors de la réouverture du ticket."),
+    addCommentSuccess: () =>
+        showToast.success("Commentaire ajouté avec succès."),
+    addCommentError: () =>
+        showToast.error("Erreur lors de l'ajout du commentaire."),
 };

@@ -2,6 +2,7 @@ import { LevelBadge } from "@/components/badge/LevelBadge";
 import { OwnerBadge } from "@/components/badge/OwnerBadge";
 import { SubjectBadge } from "@/components/badge/SubjectBadge";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/useSession";
 import {
     BicepsFlexed,
     CircleStop,
@@ -28,6 +29,12 @@ export const Header = ({
     selectedTab,
 }: HeaderProps) => {
     const course = courseData as CourseData;
+    const { user } = useSession();
+    
+    // Get display name: use username to match sidebar
+    const getDisplayName = () => {
+        return user?.username || "Utilisateur";
+    };
 
     return (
         <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-4 sm:p-6 lg:p-8 text-white shadow-2xl">
@@ -108,7 +115,7 @@ export const Header = ({
                         text={(course?.subject as string) || "Matière"}
                     />
                     <LevelBadge text={(course?.level as string) || "Niveau"} />
-                    <OwnerBadge owner={"TristanH"} />
+                    <OwnerBadge owner={getDisplayName()} />
                 </div>
             </div>
 

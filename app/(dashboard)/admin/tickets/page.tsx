@@ -89,10 +89,10 @@ export default function AdminTicketsPage() {
                 ...params,
             });
 
-            if (response) {
-                setTickets(response.data.tickets);
+            if (response && response.data) {
+                setTickets(response.data.tickets || []);
                 setStatistics(response.data.statistics);
-                setTotalPages(response.data.pagination.pages);
+                setTotalPages(response.data.pagination?.pages || 1);
             }
         } catch (error) {
             console.error("Failed to load admin tickets:", error);

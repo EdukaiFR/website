@@ -78,7 +78,7 @@ export const getAttachmentKind = (mimeType: string): AttachmentKind => {
         mimeType === "text/csv" ||
         mimeType === "application/json"
     ) {
-        return AttachmentKind.LOG;
+        return AttachmentKind.DOCUMENT;
     } else {
         return AttachmentKind.OTHER;
     }
@@ -102,11 +102,13 @@ export const convertFilesToAttachments = async (
             const base64Data = await convertFileToBase64(file);
 
             const attachment: TicketAttachment = {
+                id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 filename: file.name,
                 mimeType: file.type,
                 size: file.size,
                 kind: getAttachmentKind(file.type),
-                data: base64Data,
+                url: base64Data, // Using base64 data as URL for now
+                uploadedAt: new Date().toISOString(),
             };
 
             attachments.push(attachment);

@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import axios, { AxiosError } from "axios";
 import {
@@ -6,51 +6,111 @@ import {
     EducationSettingsFormValues,
     SubscriptionSettingsFormValues,
     PreferencesSettingsFormValues,
-    CustomEducationRequestFormValues,
+    DeleteAccountFormValues,
+    API_ERROR_CODES,
 } from "@/lib/schemas/user";
-import { translateApiError } from "@/lib/toast";
+// translateApiError is imported but we use our local version
 
 // Types for user responses
-export interface UserResponse {
+export interface UserResponse<T = unknown> {
     success: boolean;
     error?: string;
-    data?: unknown;
+    data?: T;
 }
 
+// Updated UserProfile to match the new API structure
 export interface UserProfile {
-    id: string;
+    _id: string;
+    email: string;
+    username: string;
     firstName: string;
     lastName: string;
-    email: string;
-    dateOfBirth?: string;
-    educationLevel: "college" | "lycee" | "superieur";
-    currentClass: string;
-    specialization?: string;
-    subscriptionPlan: "free" | "premium" | "student";
-    notifications: {
-        email: boolean;
-        push: boolean;
-        weeklyReport: boolean;
-    };
-    profileVisibility: "public" | "friends" | "private";
-    dataSharing: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    profilePic?: string;
+    grade: string;
+    levelOfStudy: string;
+    institution?: string;
+    accountPlan: "free" | "premium";
+    role: "user" | "admin" | "moderator";
 }
 
-// Get user profile
-export async function getUserProfileAction(): Promise<UserResponse> {
+// Helper function to translate API error messages
+function translateApiErrorLocal(message: string): string {
+    const errorMap: Record<string, string> = {
+        [API_ERROR_CODES.INVALID_CREDENTIALS]: "Identifiants invalides",
+        [API_ERROR_CODES.EMAIL_USERNAME_REQUIRED]:
+            "Email ou nom d'utilisateur et mot de passe requis",
+        [API_ERROR_CODES.LOGIN_FAILED]: "Échec de la connexion",
+        [API_ERROR_CODES.REGISTRATION_REQUIRED_FIELDS]:
+            "Email, mot de passe, prénom et nom sont requis",
+        [API_ERROR_CODES.EMAIL_USERNAME_TAKEN]:
+            "Email ou nom d'utilisateur déjà utilisé",
+        [API_ERROR_CODES.REGISTRATION_FAILED]: "Échec de l'inscription",
+        [API_ERROR_CODES.NO_PERMISSION_VIEW]:
+            "Vous n'avez pas la permission de voir ces informations utilisateur",
+        [API_ERROR_CODES.USER_NOT_FOUND]: "Utilisateur non trouvé",
+        [API_ERROR_CODES.ERROR_GETTING_USER]:
+            "Erreur lors de la récupération de l'utilisateur",
+        [API_ERROR_CODES.NO_VALID_FIELDS]: "Aucun champ valide à mettre à jour",
+        [API_ERROR_CODES.NO_PERMISSION_UPDATE]:
+            "Vous n'avez pas la permission de mettre à jour ces informations utilisateur",
+        [API_ERROR_CODES.ERROR_UPDATING_USER]:
+            "Erreur lors de la mise à jour de l'utilisateur",
+        [API_ERROR_CODES.NO_PERMISSION_DELETE]:
+            "Vous n'avez pas la permission de supprimer cet utilisateur",
+        [API_ERROR_CODES.ERROR_DELETING_USER]:
+            "Erreur lors de la suppression de l'utilisateur",
+    };
+
+    return errorMap[message] || message;
+}
+
+// Helper function to get authorization headers
+function getAuthHeaders() {
+    if (typeof window !== "undefined") {
+        const token = localStorage.getItem("auth_token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    }
+    return {};
+}
+
+// Get user profile - we'll need to extract user ID from the stored user data or token
+export async function getUserProfileAction(): Promise<
+    UserResponse<UserProfile>
+> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        // Make actual API call to get user profile
-        const response = await axios.get(`${apiUrl}/user/profile`, {
+        // Get user ID from stored session data
+        let userId: string | null = null;
+        if (typeof window !== "undefined") {
+            const userData = localStorage.getItem("user_data");
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    userId = user.id || user._id;
+                } catch (e) {
+                    console.error("Error parsing user data:", e);
+                }
+            }
+        }
+
+        if (!userId) {
+            return {
+                success: false,
+                error: "Utilisateur non authentifié",
+            };
+        }
+
+        const response = await axios.get(`${apiUrl}/users/${userId}`, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: response.data.user,
         };
     } catch (error: unknown) {
         console.error(
@@ -59,7 +119,7 @@ export async function getUserProfileAction(): Promise<UserResponse> {
         );
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la récupération du profil"
@@ -70,24 +130,28 @@ export async function getUserProfileAction(): Promise<UserResponse> {
 
 // Update profile settings
 export async function updateProfileAction(
-    data: ProfileSettingsFormValues
-): Promise<UserResponse> {
+    data: ProfileSettingsFormValues,
+    userId: string
+): Promise<UserResponse<UserProfile>> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        const response = await axios.put(`${apiUrl}/user/profile`, data, {
+        const response = await axios.patch(`${apiUrl}/users/${userId}`, data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: response.data.user,
         };
     } catch (error: unknown) {
         console.error("Erreur lors de la mise à jour du profil:", error);
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la mise à jour du profil"
@@ -98,20 +162,22 @@ export async function updateProfileAction(
 
 // Update education settings
 export async function updateEducationAction(
-    data: EducationSettingsFormValues
-): Promise<UserResponse> {
+    data: EducationSettingsFormValues,
+    userId: string
+): Promise<UserResponse<UserProfile>> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        // Handle custom requests if present - these will be sent to the backend
-        // The backend will handle getting the user info from the session
-        const response = await axios.put(`${apiUrl}/user/education`, data, {
+        const response = await axios.patch(`${apiUrl}/users/${userId}`, data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: response.data.user,
         };
     } catch (error: unknown) {
         console.error(
@@ -120,7 +186,7 @@ export async function updateEducationAction(
         );
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la mise à jour des informations d'études"
@@ -131,24 +197,28 @@ export async function updateEducationAction(
 
 // Update subscription settings
 export async function updateSubscriptionAction(
-    data: SubscriptionSettingsFormValues
-): Promise<UserResponse> {
+    data: SubscriptionSettingsFormValues,
+    userId: string
+): Promise<UserResponse<UserProfile>> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        const response = await axios.put(`${apiUrl}/user/subscription`, data, {
+        const response = await axios.patch(`${apiUrl}/users/${userId}`, data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: response.data.user,
         };
     } catch (error: unknown) {
         console.error("Erreur lors de la mise à jour de l'abonnement:", error);
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la mise à jour de l'abonnement"
@@ -159,24 +229,28 @@ export async function updateSubscriptionAction(
 
 // Update preferences settings
 export async function updatePreferencesAction(
-    data: PreferencesSettingsFormValues
-): Promise<UserResponse> {
+    data: PreferencesSettingsFormValues,
+    userId: string
+): Promise<UserResponse<UserProfile>> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        const response = await axios.put(`${apiUrl}/user/preferences`, data, {
+        const response = await axios.patch(`${apiUrl}/users/${userId}`, data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: response.data.user,
         };
     } catch (error: unknown) {
         console.error("Erreur lors de la mise à jour des préférences:", error);
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la mise à jour des préférences"
@@ -186,69 +260,33 @@ export async function updatePreferencesAction(
 }
 
 // Delete user account
-export async function deleteAccountAction(): Promise<UserResponse> {
+export async function deleteAccountAction(
+    data: DeleteAccountFormValues,
+    userId: string
+): Promise<UserResponse> {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        const response = await axios.delete(`${apiUrl}/user/account`, {
+        await axios.delete(`${apiUrl}/users/${userId}`, {
+            headers: {
+                ...getAuthHeaders(),
+            },
             withCredentials: true,
         });
 
         return {
             success: true,
-            data: response.data,
+            data: { message: "Compte supprimé avec succès" },
         };
     } catch (error: unknown) {
         console.error("Erreur lors de la suppression du compte:", error);
         return {
             success: false,
-            error: translateApiError(
+            error: translateApiErrorLocal(
                 (error as AxiosError<{ message: string }>).response?.data
                     ?.message ||
                     "Une erreur est survenue lors de la suppression du compte"
             ),
-        };
-    }
-}
-
-// Notify admin of custom education request
-export async function notifyAdminCustomRequest(
-    data: CustomEducationRequestFormValues
-): Promise<UserResponse> {
-    try {
-        // TODO: Implement actual admin notification (email, database, etc.)
-
-        // For now, just console.log as requested
-        console.log("🔔 ADMIN NOTIFICATION - Custom Education Request:", {
-            timestamp: new Date().toISOString(),
-            type:
-                data.type === "class"
-                    ? "Demande de classe/cursus personnalisé"
-                    : "Demande de spécialisation personnalisée",
-            educationLevel: data.educationLevel,
-            requestedValue: data.requestedValue,
-            user: {
-                name: data.userName,
-                email: data.userEmail,
-            },
-            urgency: "normal",
-            needsReview: true,
-        });
-
-        // Simulate notification processing
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        return {
-            success: true,
-            data: {
-                message: "Demande envoyée aux administrateurs",
-            },
-        };
-    } catch (error) {
-        console.error("Erreur lors de la notification admin:", error);
-        return {
-            success: false,
-            error: "Une erreur est survenue lors de l'envoi de la demande",
         };
     }
 }
