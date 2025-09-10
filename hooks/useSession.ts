@@ -21,9 +21,10 @@ export function useSession() {
 
         // Initialize user state from localStorage after hydration
         const storedUser = sessionStorage.getUser();
+        const token = sessionStorage.getToken();
+
         setUser(storedUser);
 
-        const token = sessionStorage.getToken();
         if (token && !storedUser) {
             // Validate token and get user data
             validateSession();

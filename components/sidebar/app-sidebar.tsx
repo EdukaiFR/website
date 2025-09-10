@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import * as React from "react";
 
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavSecondary } from "@/components/sidebar/nav-secondary";
@@ -20,7 +20,7 @@ import {
 import { useLinks } from "@/hooks/use-links";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { upLinks, downLinks } = useLinks();
+    const { upLinks, downLinks, adminLinks } = useLinks();
 
     return (
         <Sidebar variant="inset" collapsible="icon" {...props}>
@@ -36,22 +36,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 href="/"
                                 className="flex items-center gap-3 w-full"
                             >
-                                <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
-                                    <div className="bg-blue-600 text-white flex aspect-square size-5 items-center justify-center rounded-lg group-data-[collapsible=icon]:size-8">
-                                        <Image
-                                            src="/EdukaiLogo.svg"
-                                            alt="Logo Edukai"
-                                            width={12}
-                                            height={12}
-                                            className="filter brightness-0 invert group-data-[collapsible=icon]:w-4 group-data-[collapsible=icon]:h-4"
-                                        />
-                                    </div>
+                                <div className=" w-12 h-12 flex items-center justify-center">
+                                    <Image
+                                        src="/LOGO - Edukai v2.svg"
+                                        alt="Logo Edukai"
+                                        width={24}
+                                        height={24}
+                                        className="w-10 h-10 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:h-8 rounded-full"
+                                    />
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                                    <span className="truncate font-semibold text-sm text-gray-800">
+                                    <span className="truncate font-bold text-lg text-blue-600">
                                         Edukai
                                     </span>
-                                    <span className="truncate text-xs text-gray-600">
+                                    <span className="truncate text-xs text-gray-900">
                                         Révise mieux, pas plus
                                     </span>
                                 </div>
@@ -60,8 +58,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
+            <hr className="border-t border-gray-300 my-2" />
             <SidebarContent>
                 <NavMain items={upLinks} />
+                {adminLinks.length > 0 && (
+                    <>
+                        <hr className="border-t border-gray-300 my-2" />
+                        <NavSecondary
+                            items={adminLinks}
+                            title="Administration"
+                        />
+                    </>
+                )}
                 <NavSecondary items={downLinks} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
+import { USER_ROLES, UserRole } from "./hooks/useRole";
 
 interface JwtToken {
     userId: string;
     iat: number;
     exp: number;
-    role?: string;
+    role?: UserRole;
 }
 
 export function middleware(req: NextRequest) {
@@ -14,7 +15,7 @@ export function middleware(req: NextRequest) {
     const cookie = req.cookies.get("auth_token");
 
     let decodedToken: JwtToken | undefined;
-    let userRole: string | undefined;
+    let userRole: UserRole | undefined;
 
     const adminRoutes = ["/admin"];
 
@@ -32,14 +33,15 @@ export function middleware(req: NextRequest) {
                 console.log("Token expired, redirecting...");
                 return NextResponse.redirect(new URL("/auth", req.url));
             }
+
+            userRole = decodedToken.role;
         } catch (error) {
             return NextResponse.redirect(new URL("/auth", req.url));
         }
     }
 
     if (adminRoutes.some(route => pathname.startsWith(route))) {
-        if (userRole != "admin") {
-            console.log("Redirecting to unauthorized");
+        if (userRole !== USER_ROLES.ADMIN) {
             return NextResponse.redirect(new URL("/unauthorized", req.url));
         }
     }
@@ -49,7 +51,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        //      Match all routes except
-        "/((?!api|static|.*\\..*|_next|auth).*)", //      /api, /static, file extensions, /_next, and /auth
-    ],
+        "/((?!api|static|.*\\..*|_next|auth).*)", // /api, /static, file extensions, /_next, and /auth
+    ]
 };

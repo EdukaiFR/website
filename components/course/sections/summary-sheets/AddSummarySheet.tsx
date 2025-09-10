@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Plus, Upload, FileText, X } from "lucide-react";
-import { FormProvider, useForm } from "react-hook-form";
 import { fileToast } from "@/lib/toast";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, FileText, Plus, Upload, X } from "lucide-react";
 import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 
 const fileSchema = z.custom<File>(value => {
     return value instanceof File;

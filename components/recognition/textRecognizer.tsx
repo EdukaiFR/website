@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
 import { fileToast } from "@/lib/toast";
+import { useEffect, useState } from "react";
 import Tesseract from "tesseract.js";
 
 const TextRecognizer = ({

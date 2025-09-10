@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { CounterBadge } from "@/components/badge/CounterBadge";
@@ -13,10 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCourse } from "@/hooks";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 // Define the extended course type for the table
 interface ExtendedCourseData {

@@ -161,3 +161,24 @@ body {
 .text-primary {
     color: #2d6bcf;
 }
+
+/* Animation personnalisée pour la rotation douce gauche-droite du pingouin */
+@keyframes rotate-gentle {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate3d(0, 0, 0) rotate(-8deg);
+    }
+    75% {
+        transform: translate3d(0, 0, 0) rotate(8deg);
+    }
+}
+
+.animate-rotate-gentle {
+    animation: rotate-gentle 3s ease-in-out infinite;
+    /* Optimisations de performance */
+    will-change: transform;
+    transform-origin: center center;
+}
