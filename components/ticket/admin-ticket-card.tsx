@@ -353,7 +353,8 @@ export function AdminTicketCard({
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                         <User className="w-4 h-4" />
                         <span>
-                            Rapporté par utilisateur (ID: {ticket.userId})
+                            Rapporté par {ticket.reporter?.name} (
+                            {ticket.reporter?.email})
                         </span>
                     </div>
 

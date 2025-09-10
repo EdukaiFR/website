@@ -508,8 +508,11 @@ export default function TicketDetailPage() {
                                                         rel="noopener noreferrer"
                                                         className="text-sm text-gray-700 hover:text-green-600 transition-colors break-all"
                                                     >
-                                                        {currentTicket.context
-                                                            ?.pageUrl || "N/A"}
+                                                        {
+                                                            currentTicket
+                                                                .context
+                                                                ?.pageUrl
+                                                        }
                                                     </a>
                                                 </div>
                                             </div>

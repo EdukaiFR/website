@@ -59,8 +59,8 @@ export default function AdminTicketsPage() {
 
     // Redirect non-admin users
     useEffect(() => {
-        // Attendre que la session soit complètement chargée ET que l'utilisateur soit défini
-        if (!session.loading && session.user && !isAdmin) {
+        // Redirect if not authenticated or not admin
+        if (!session.loading && (!session.user || !isAdmin)) {
             router.push("/tickets");
             return;
         }

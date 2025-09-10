@@ -61,7 +61,17 @@ export function useTicketService(): TicketService {
     const getTickets = async (params?: GetTicketsParams) => {
         try {
             const queryString = params
-                ? new URLSearchParams(params as any).toString()
+                ? new URLSearchParams(
+                      Object.entries(params).reduce(
+                          (acc, [key, value]) => {
+                              if (value !== undefined && value !== null) {
+                                  acc[key] = String(value);
+                              }
+                              return acc;
+                          },
+                          {} as Record<string, string>
+                      )
+                  ).toString()
                 : "";
 
             const url = queryString
@@ -151,7 +161,11 @@ export function useTicketService(): TicketService {
     const adminGetAllTickets = async (params?: AdminGetTicketsParams) => {
         try {
             const queryString = params
-                ? new URLSearchParams(params as any).toString()
+                ? new URLSearchParams(
+                      Object.entries(params)
+                          .filter(([_, value]) => value !== undefined)
+                          .map(([key, value]) => [key, String(value)])
+                  ).toString()
                 : "";
 
             const url = queryString

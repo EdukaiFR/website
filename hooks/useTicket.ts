@@ -2,14 +2,15 @@ import { useState } from "react";
 import { ticketToast } from "@/lib/toast";
 import { useSession, useRolePermissions } from "@/hooks";
 import type { TicketService } from "@/services/ticket";
-import type {
-    Ticket,
-    TicketComment,
-    CreateTicketRequest,
-    GetTicketsParams,
-    UpdateTicketRequest,
-    AddCommentRequest,
-    PaginationInfo,
+import {
+    type Ticket,
+    type TicketComment,
+    type CreateTicketRequest,
+    type GetTicketsParams,
+    type UpdateTicketRequest,
+    type AddCommentRequest,
+    type PaginationInfo,
+    TicketStatus,
 } from "@/lib/types/ticket";
 
 export function useTicket(ticketService: TicketService) {
@@ -73,7 +74,7 @@ export function useTicket(ticketService: TicketService) {
             setTicketError(null);
 
             // Apply user-based filtering if user cannot view all tickets
-            let filteredParams = { ...params };
+            const filteredParams = { ...params };
             if (!permissions.canViewAllTickets && user?.id) {
                 // For regular users, only show their own tickets
                 filteredParams.userId = user.id;
@@ -208,7 +209,7 @@ export function useTicket(ticketService: TicketService) {
 
     // Close a ticket (Admin function)
     const closeTicket = async (ticketId: string) => {
-        return updateTicket(ticketId, { status: "closed" as any });
+        return updateTicket(ticketId, { status: TicketStatus.CLOSED });
     };
 
     // Bulk update tickets (Admin function)
