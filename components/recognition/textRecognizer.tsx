@@ -1,34 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import Tesseract from 'tesseract.js';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { fileToast } from "@/lib/toast";
+import { useEffect, useState } from "react";
+import Tesseract from "tesseract.js";
 
-const TextRecognizer = ({ selectedImage, onTextRecognized }: { selectedImage: File | null, onTextRecognized: (text: string) => void }) => {
-  const [processing, setProcessing] = useState(false);
+const TextRecognizer = ({
+    selectedImage,
+    onTextRecognized,
+    setIsRecognizing,
+    fileId,
+}: {
+    selectedImage: File | null;
+    onTextRecognized: (text: string) => void;
+    setIsRecognizing: (isRecognizing: boolean) => void;
+    fileId: string;
+}) => {
+    const [processing, setProcessing] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [hasProcessed, setHasProcessed] = useState(false);
 
-  useEffect(() => {
-    const recognizeText = async () => {
-      if (selectedImage) {
-        setProcessing(true);
-        try {
-          console.log("Recognizing text...");
-          const result = await Tesseract.recognize(selectedImage, 'fra', {
-            logger: (m) => console.log(m),
-          });
-          onTextRecognized(result.data.text);
-        } catch (error) {
-          console.error('Error recognizing text:', error);
-        } finally {
-          setProcessing(false);
-        }
-      }
-    };
-    recognizeText();
-  }, [selectedImage, onTextRecognized]);
+    useEffect(() => {
+        const recognizeText = async () => {
+            if (selectedImage && !processing && !hasProcessed) {
+                setHasProcessed(true); // Mark as processed immediately to prevent re-processing
+                setProcessing(true);
+                setIsRecognizing(true);
+                setProgress(0);
 
-  return (
-    <div>
-      {processing ? <p>Processing...</p> : <p>Processed !</p>}
-    </div>
-  );
+                try {
+                    const result = await Tesseract.recognize(
+                        selectedImage,
+                        "fra",
+                        {
+                            logger: m => {
+                                if (m.status === "recognizing text") {
+                                    const progressPercent = Math.round(
+                                        m.progress * 100
+                                    );
+                                    setProgress(progressPercent);
+                                    console.log(
+                                        `OCR Progress (${fileId}): ${progressPercent}%`
+                                    );
+                                }
+                            },
+                        }
+                    );
+                    onTextRecognized(result.data.text);
+                    console.log("Final text: ", result.data.text);
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la reconnaissance de texte:",
+                        error
+                    );
+                    fileToast.recognitionError();
+                    setHasProcessed(false); // Reset on error so it can be retried
+                } finally {
+                    setProcessing(false);
+                    setIsRecognizing(false);
+                }
+            }
+        };
+
+        recognizeText();
+    }, [selectedImage, fileId]);
+
+    return (
+        <div>
+            {processing ? (
+                <p className="text-xs text-blue-600 font-medium">
+                    Analyse en cours... {progress}%
+                </p>
+            ) : (
+                <p className="text-xs text-gray-500">Importé !</p>
+            )}
+        </div>
+    );
 };
 
 export { TextRecognizer };

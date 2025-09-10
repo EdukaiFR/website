@@ -1,0 +1,1 @@
+export { SimilarCourses } from "./SimilarCourses";

@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+public
+*.md
+*.lock
+*.log
+package-lock.json
+pnpm-lock.yaml
+next-env.d.ts 

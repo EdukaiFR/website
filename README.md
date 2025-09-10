@@ -21,14 +21,16 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
 ## 📸 Aperçu
 
-![DARK  My Lessons - Open one - Quizz Multiplayer - Create - Play 3](https://github.com/user-attachments/assets/e9236864-dcd3-40cb-9f84-b2dd37247aa2)
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/b1a9534a-79b7-4c68-835f-87551e909cdd" />
 
-![DARK  My Lessons - Open one](https://github.com/user-attachments/assets/1ac70d5d-6a8d-4a4a-9f7d-be3c44f2732c)
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/0349d70a-a5db-48fe-9248-d723444ffd07" />
 
+<img width="1710" height="1073" alt="image" src="https://github.com/user-attachments/assets/c526ddfc-3859-4764-9a5e-f1d94f212e96" />
 
 ## 📖 Utilisation
 
 1. **Clonez le projet :**
+
    ```bash
     # via SSH
     git clone git@github.com:EdukaiFR/website.git
@@ -41,36 +43,40 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
 2. **Choisissez une méthode d'installation & démarrage :**
 
-    **Option 1: Via Docker 🐳 (recommandée)**
+   **Option 1: Via Docker 🐳 (recommandée)**
 
-    1. Construire l'image
-        ```bash
-        docker build -t edukai-website .
-        ```
-    2. Lancer le conteneur
-        ```bash
-        docker run -it -p 3000:3000 edukai-website
-        ```
+   1. Construire l'image
+      ```bash
+      docker build -t edukai-website .
+      ```
+   2. Lancer le conteneur
+      ```bash
+      docker run -it -p 3000:3000 edukai-website
+      ```
 
-    **Option 2: Installation & démarrage locaux**
-    1. Installer les dependances
-        ```bash
-        npm install
-        ```
-    2. **Lancer l'application:**
+   **Option 2: Installation & démarrage locaux**
 
-        Mode **dev** :
-        ```bash
-        npm run dev
-        ```
-        Mode **production** :
-        ```bash
-        npm run build && npm run start
-        ```
+   1. Installer les dependances
+      ```bash
+      npm install
+      ```
+   2. **Lancer l'application:**
+
+      Mode **dev** :
+
+      ```bash
+      npm run dev
+      ```
+
+      Mode **production** :
+
+      ```bash
+      npm run build && npm run start
+      ```
 
 3. **Accédez à l'application :**
 
-   L'application est lancée sur le port 3000 de votre machine (```http://localhost:3000```).<br>
+   L'application est lancée sur le port 3000 de votre machine (`http://localhost:3000`).<br>
 
 ## 👥 Équipe
 
@@ -87,7 +93,7 @@ Nous sommes tous motivés par le même objectif : aider les étudiants à appren
 
 ## 🤝 Contribuer
 
-Les contributions sont les bienvenues ! Si vous souhaitez apporter des modifications ou des améliorations, n'hésitez pas à soumettre une *pull request*. Nous sommes impatients de collaborer avec d'autres passionnés de l'éducation et de la technologie.
+Les contributions sont les bienvenues ! Si vous souhaitez apporter des modifications ou des améliorations, n'hésitez pas à soumettre une _pull request_. Nous sommes impatients de collaborer avec d'autres passionnés de l'éducation et de la technologie.
 
 ## 📄 Licence
 

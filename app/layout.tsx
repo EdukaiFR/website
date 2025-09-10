@@ -1,43 +1,52 @@
-import { Toaster } from "@/components/ui/sonner";
+// app/layout.tsx
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Header } from "./components/Header/Header";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { ThemeProvider } from "@/components/theme-provider";
+import { UserProvider } from "@/contexts/UserContext";
+import { constructMetadata, generateStructuredData } from "@/lib/seo";
+import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Edukai",
-  description: "Révise mieux, pas plus.",
+    ...constructMetadata(),
+    icons: {
+        icon: "/favicon.ico",
+        apple: "/apple-touch-icon.png",
+    },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-[5%] min-h-screen w-full flex flex-col relative`}
-      >
-        <div className="flex items-center justify-center">
-          <Header />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <Toaster />
-          {children}
-        </div>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: ReactNode }) {
+    const organizationData = generateStructuredData("Organization");
+    const websiteData = generateStructuredData("WebSite");
+
+    return (
+        <html lang="fr">
+            <head>
+                <Script
+                    id="organization-structured-data"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(organizationData),
+                    }}
+                />
+                <Script
+                    id="website-structured-data"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(websiteData),
+                    }}
+                />
+            </head>
+            <body className="w-full min-h-screen font-satoshi">
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="light"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <UserProvider>{children}</UserProvider>
+                </ThemeProvider>
+            </body>
+        </html>
+    );
 }
