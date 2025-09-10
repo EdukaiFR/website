@@ -1,0 +1,30 @@
+name: Deploy app to VPS (pre-prod)
+
+on:
+  push:
+    branches:
+      - dev
+      - feat/ci
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd betatest/website-dev-betatest1/
+          git pull
+          npm install
+          npm run build
+          pm2 reload beta-frontend
+
