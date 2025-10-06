@@ -10,7 +10,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: process.env.CI ? [['html'], ['json', { outputFile: 'test-results/results.json' }]] : 'html',
 
   use: {
     baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
