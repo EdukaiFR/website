@@ -198,7 +198,7 @@ export class FileProcessor {
                         canvas.width = viewport.width;
 
                         await page.render({
-                            canvasContext: context,
+                            canvas: canvas,
                             viewport: viewport,
                         }).promise;
 
