@@ -30,7 +30,7 @@ export const Header = ({
 }: HeaderProps) => {
     const course = courseData as CourseData;
     const { user } = useSession();
-    
+
     // Get display name: use username to match sidebar
     const getDisplayName = () => {
         return user?.username || "Utilisateur";
