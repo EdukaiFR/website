@@ -40,6 +40,23 @@ function normalizeText(text: string): string {
         .toLowerCase();
 }
 
+// Smart search function that handles multiple criteria and partial matches
+function matchesSearch(subject: Subject, searchTerms: string[], getLevelLabel: (code: string) => string): boolean {
+    return searchTerms.every(term => {
+        const normalizedTerm = normalizeText(term);
+        return (
+            // Search in title
+            normalizeText(subject.title).includes(normalizedTerm) ||
+            // Search in code (partial match)
+            normalizeText(subject.code).includes(normalizedTerm) ||
+            // Search in level label
+            normalizeText(getLevelLabel(subject.level)).includes(normalizedTerm) ||
+            // Smart code search: "FRA" matches all "FRA-*" codes
+            (subject.code.toLowerCase().startsWith(normalizedTerm + "-"))
+        );
+    });
+}
+
 export function SubjectCombobox({
     subjects,
     groupedSubjects,
@@ -61,6 +78,10 @@ export function SubjectCombobox({
     const filteredGroups = React.useMemo(() => {
         if (!search) return groupedSubjects || {};
 
+        // Split search into terms (by spaces) for multi-criteria search
+        const searchTerms = search.trim().split(/\s+/).filter(term => term.length > 0);
+        if (searchTerms.length === 0) return groupedSubjects || {};
+
         const filtered: Record<string, Subject[]> = {};
         Object.entries(groupedSubjects || {}).forEach(([level, levelSubjects]) => {
             // Add defensive check for levelSubjects
@@ -68,17 +89,15 @@ export function SubjectCombobox({
                 return;
             }
 
-            const normalizedSearch = normalizeText(search);
             const matchingSubjects = levelSubjects.filter(subject =>
-                normalizeText(subject.title).includes(normalizedSearch) ||
-                normalizeText(subject.code).includes(normalizedSearch)
+                matchesSearch(subject, searchTerms, getLevelLabel)
             );
             if (matchingSubjects.length > 0) {
                 filtered[level] = matchingSubjects;
             }
         });
         return filtered;
-    }, [groupedSubjects, search]);
+    }, [groupedSubjects, search, getLevelLabel]);
 
     const hasResults = Object.keys(filteredGroups).length > 0;
 
