@@ -32,6 +32,14 @@ interface SubjectComboboxProps {
     getLevelLabel: (levelCode: string) => string;
 }
 
+// Helper function to normalize text for search (remove accents)
+function normalizeText(text: string): string {
+    return text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+}
+
 export function SubjectCombobox({
     subjects,
     groupedSubjects,
@@ -60,9 +68,10 @@ export function SubjectCombobox({
                 return;
             }
 
+            const normalizedSearch = normalizeText(search);
             const matchingSubjects = levelSubjects.filter(subject =>
-                subject.title.toLowerCase().includes(search.toLowerCase()) ||
-                subject.code.toLowerCase().includes(search.toLowerCase())
+                normalizeText(subject.title).includes(normalizedSearch) ||
+                normalizeText(subject.code).includes(normalizedSearch)
             );
             if (matchingSubjects.length > 0) {
                 filtered[level] = matchingSubjects;
@@ -112,9 +121,7 @@ export function SubjectCombobox({
                         {!hasResults && search && (
                             <CommandEmpty>Aucune matière trouvée.</CommandEmpty>
                         )}
-                        {hasResults && (
-                            <>
-                                {Object.entries(filteredGroups)
+                        {hasResults && Object.entries(filteredGroups)
                                 .sort(([a], [b]) => {
                                     // Sort levels in a logical order
                                     const levelOrder = [
@@ -165,9 +172,10 @@ export function SubjectCombobox({
                                     );
                                 })
                                 .filter(Boolean)}
-                            </>
-                        )}
-                        <CommandSeparator />
+
+                        {/* Always show the separator and add button */}
+                        {(hasResults || search) && <CommandSeparator />}
+
                         <CommandGroup>
                             <CommandItem
                                 onSelect={() => {
