@@ -42,17 +42,18 @@ function normalizeText(text: string): string {
 
 // Smart search function that handles multiple criteria and partial matches
 function matchesSearch(subject: Subject, searchTerms: string[], getLevelLabel: (code: string) => string): boolean {
+    // For multi-word search, ALL terms must match somewhere
     return searchTerms.every(term => {
         const normalizedTerm = normalizeText(term);
+
+        // Check if term matches in any of these fields
         return (
-            // Search in title
+            // Search in title (partial match)
             normalizeText(subject.title).includes(normalizedTerm) ||
             // Search in code (partial match)
             normalizeText(subject.code).includes(normalizedTerm) ||
             // Search in level label
-            normalizeText(getLevelLabel(subject.level)).includes(normalizedTerm) ||
-            // Smart code search: "FRA" matches all "FRA-*" codes
-            (subject.code.toLowerCase().startsWith(normalizedTerm + "-"))
+            normalizeText(getLevelLabel(subject.level)).includes(normalizedTerm)
         );
     });
 }
