@@ -46,15 +46,16 @@ function matchesSearch(subject: Subject, searchTerms: string[], getLevelLabel: (
     return searchTerms.every(term => {
         const normalizedTerm = normalizeText(term);
 
+        const titleNormalized = normalizeText(subject.title);
+        const codeNormalized = normalizeText(subject.code);
+        const levelNormalized = normalizeText(getLevelLabel(subject.level));
+
+        const titleMatch = titleNormalized.includes(normalizedTerm);
+        const codeMatch = codeNormalized.includes(normalizedTerm);
+        const levelMatch = levelNormalized.includes(normalizedTerm);
+
         // Check if term matches in any of these fields
-        return (
-            // Search in title (partial match)
-            normalizeText(subject.title).includes(normalizedTerm) ||
-            // Search in code (partial match)
-            normalizeText(subject.code).includes(normalizedTerm) ||
-            // Search in level label
-            normalizeText(getLevelLabel(subject.level)).includes(normalizedTerm)
-        );
+        return titleMatch || codeMatch || levelMatch;
     });
 }
 
@@ -97,6 +98,7 @@ export function SubjectCombobox({
                 filtered[level] = matchingSubjects;
             }
         });
+
         return filtered;
     }, [groupedSubjects, search, getLevelLabel]);
 
@@ -131,7 +133,7 @@ export function SubjectCombobox({
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[400px] p-0" align="start">
-                <Command>
+                <Command shouldFilter={false}>
                     <CommandInput
                         placeholder="Rechercher une matière..."
                         value={search}
@@ -168,7 +170,7 @@ export function SubjectCombobox({
                                             {levelSubjects.map(subject => (
                                                 <CommandItem
                                                 key={subject._id}
-                                                value={subject.code}
+                                                value={subject._id}
                                                 onSelect={() => {
                                                     onChange(subject.code);
                                                     setOpen(false);
