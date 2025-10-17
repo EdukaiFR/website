@@ -15,15 +15,18 @@ jobs:
 
     - name: SSH and Deploy
       uses: appleboy/ssh-action@master
+      env:
+        directory: /var/edukai/website-dev-latest
+        pm2_process_name: frontend-preprod-edukai
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         port: ${{ secrets.PORT }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
+        envs: directory,pm2_process_name
         script: |
-          cd betatest/website-dev-betatest1/
+          cd $directory
           git pull
           npm install
           npm run build
-          pm2 reload beta-frontend
-
+          pm2 reload $pm2_process_name
