@@ -46,8 +46,8 @@ export function SubjectCombobox({
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
 
-    // Find the selected subject
-    const selectedSubject = subjects.find(subject => subject.title === value);
+    // Find the selected subject by code (unique identifier)
+    const selectedSubject = subjects.find(subject => subject.code === value);
 
     // Filter subjects based on search
     const filteredGroups = React.useMemo(() => {
@@ -61,7 +61,8 @@ export function SubjectCombobox({
             }
 
             const matchingSubjects = levelSubjects.filter(subject =>
-                subject.title.toLowerCase().includes(search.toLowerCase())
+                subject.title.toLowerCase().includes(search.toLowerCase()) ||
+                subject.code.toLowerCase().includes(search.toLowerCase())
             );
             if (matchingSubjects.length > 0) {
                 filtered[level] = matchingSubjects;
@@ -140,16 +141,16 @@ export function SubjectCombobox({
                                             {levelSubjects.map(subject => (
                                                 <CommandItem
                                                 key={subject._id}
-                                                value={subject.title}
+                                                value={subject.code}
                                                 onSelect={() => {
-                                                    onChange(subject.title);
+                                                    onChange(subject.code);
                                                     setOpen(false);
                                                 }}
                                             >
                                                 <Check
                                                     className={cn(
                                                         "mr-2 h-4 w-4",
-                                                        value === subject.title
+                                                        value === subject.code
                                                             ? "opacity-100"
                                                             : "opacity-0"
                                                     )}
