@@ -30,6 +30,8 @@ interface SubjectComboboxProps {
     placeholder?: string;
     className?: string;
     getLevelLabel: (levelCode: string) => string;
+    selectedLevel?: string;
+    disabled?: boolean;
 }
 
 // Helper function to normalize text for search (remove accents)
@@ -41,7 +43,11 @@ function normalizeText(text: string): string {
 }
 
 // Smart search function that handles multiple criteria and partial matches
-function matchesSearch(subject: Subject, searchTerms: string[], getLevelLabel: (code: string) => string): boolean {
+function matchesSearch(
+    subject: Subject,
+    searchTerms: string[],
+    getLevelLabel: (code: string) => string
+): boolean {
     // For multi-word search, ALL terms must match somewhere
     return searchTerms.every(term => {
         const normalizedTerm = normalizeText(term);
@@ -69,23 +75,52 @@ export function SubjectCombobox({
     placeholder = "Sélectionner une matière...",
     className,
     getLevelLabel,
+    selectedLevel,
+    disabled = false,
 }: SubjectComboboxProps) {
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
 
+    // Filter subjects by selected level first
+    const levelFilteredSubjects = React.useMemo(() => {
+        if (!selectedLevel) return subjects;
+        return subjects.filter(subject => subject.level === selectedLevel);
+    }, [subjects, selectedLevel]);
+
+    // Create grouped subjects from filtered list
+    const levelFilteredGroups = React.useMemo(() => {
+        if (!selectedLevel) return groupedSubjects || {};
+
+        const filtered: Record<string, Subject[]> = {};
+        const levelLabel = getLevelLabel(selectedLevel);
+
+        if (groupedSubjects && groupedSubjects[levelLabel]) {
+            filtered[levelLabel] = groupedSubjects[levelLabel];
+        }
+
+        return filtered;
+    }, [groupedSubjects, selectedLevel, getLevelLabel]);
+
     // Find the selected subject by code (unique identifier)
-    const selectedSubject = subjects.find(subject => subject.code === value);
+    const selectedSubject = levelFilteredSubjects.find(
+        subject => subject.code === value
+    );
 
     // Filter subjects based on search
     const filteredGroups = React.useMemo(() => {
-        if (!search) return groupedSubjects || {};
+        const baseGroups = levelFilteredGroups;
+
+        if (!search) return baseGroups;
 
         // Split search into terms (by spaces) for multi-criteria search
-        const searchTerms = search.trim().split(/\s+/).filter(term => term.length > 0);
-        if (searchTerms.length === 0) return groupedSubjects || {};
+        const searchTerms = search
+            .trim()
+            .split(/\s+/)
+            .filter(term => term.length > 0);
+        if (searchTerms.length === 0) return baseGroups;
 
         const filtered: Record<string, Subject[]> = {};
-        Object.entries(groupedSubjects || {}).forEach(([level, levelSubjects]) => {
+        Object.entries(baseGroups).forEach(([level, levelSubjects]) => {
             // Add defensive check for levelSubjects
             if (!levelSubjects || !Array.isArray(levelSubjects)) {
                 return;
@@ -100,7 +135,7 @@ export function SubjectCombobox({
         });
 
         return filtered;
-    }, [groupedSubjects, search, getLevelLabel]);
+    }, [levelFilteredGroups, search, getLevelLabel]);
 
     const hasResults = Object.keys(filteredGroups).length > 0;
 
@@ -115,7 +150,12 @@ export function SubjectCombobox({
                         "w-full h-12 justify-between border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm font-normal text-left",
                         className
                     )}
-                    disabled={isLoading}
+                    disabled={
+                        isLoading ||
+                        disabled ||
+                        (!selectedLevel &&
+                            placeholder === "Sélectionner une matière...")
+                    }
                 >
                     <span
                         className={cn(
@@ -125,9 +165,11 @@ export function SubjectCombobox({
                     >
                         {isLoading
                             ? "Chargement..."
-                            : selectedSubject
-                              ? `${selectedSubject.title} (${getLevelLabel(selectedSubject.level)})`
-                              : placeholder}
+                            : !selectedLevel
+                              ? "Sélectionnez d'abord un niveau"
+                              : selectedSubject
+                                ? selectedSubject.title
+                                : placeholder}
                     </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -143,7 +185,8 @@ export function SubjectCombobox({
                         {!hasResults && search && (
                             <CommandEmpty>Aucune matière trouvée.</CommandEmpty>
                         )}
-                        {hasResults && Object.entries(filteredGroups)
+                        {hasResults &&
+                            Object.entries(filteredGroups)
                                 .sort(([a], [b]) => {
                                     // Sort levels in a logical order
                                     const levelOrder = [
@@ -161,36 +204,43 @@ export function SubjectCombobox({
                                 })
                                 .map(([level, levelSubjects]) => {
                                     // Add defensive check for levelSubjects
-                                    if (!levelSubjects || !Array.isArray(levelSubjects)) {
+                                    if (
+                                        !levelSubjects ||
+                                        !Array.isArray(levelSubjects)
+                                    ) {
                                         return null;
                                     }
 
                                     return (
-                                        <CommandGroup key={level} heading={level}>
+                                        <CommandGroup
+                                            key={level}
+                                            heading={level}
+                                        >
                                             {levelSubjects.map(subject => (
                                                 <CommandItem
-                                                key={subject._id}
-                                                value={subject._id}
-                                                onSelect={() => {
-                                                    onChange(subject.code);
-                                                    setOpen(false);
-                                                }}
-                                            >
-                                                <Check
-                                                    className={cn(
-                                                        "mr-2 h-4 w-4",
-                                                        value === subject.code
-                                                            ? "opacity-100"
-                                                            : "opacity-0"
-                                                    )}
-                                                />
-                                                <span>{subject.title}</span>
-                                                <span className="ml-auto text-xs text-muted-foreground">
-                                                    {subject.code}
-                                                </span>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
+                                                    key={subject._id}
+                                                    value={subject._id}
+                                                    onSelect={() => {
+                                                        onChange(subject.code);
+                                                        setOpen(false);
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            value ===
+                                                                subject.code
+                                                                ? "opacity-100"
+                                                                : "opacity-0"
+                                                        )}
+                                                    />
+                                                    <span>{subject.title}</span>
+                                                    <span className="ml-auto text-xs text-muted-foreground">
+                                                        {subject.code}
+                                                    </span>
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
                                     );
                                 })
                                 .filter(Boolean)}

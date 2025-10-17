@@ -93,16 +93,20 @@ export function useSubjects(subjectsService: SubjectsService) {
 
         // Map for text levels (from backend)
         const textMap: Record<string, string> = {
-            "primaire": "Primaire",
-            "collège": "Collège",
-            "lycée": "Lycée",
-            "terminale": "Terminale",
-            "postbac": "Post-Bac",
-            "autre": "Autre",
+            primaire: "Primaire",
+            collège: "Collège",
+            lycée: "Lycée",
+            terminale: "Terminale",
+            postbac: "Post-Bac",
+            autre: "Autre",
         };
 
         // Try numeric map first, then text map (lowercase), fallback to unknown
-        return numericMap[levelCode] || textMap[levelCode.toLowerCase()] || "Niveau inconnu";
+        return (
+            numericMap[levelCode] ||
+            textMap[levelCode.toLowerCase()] ||
+            "Niveau inconnu"
+        );
     };
 
     // Group subjects by level

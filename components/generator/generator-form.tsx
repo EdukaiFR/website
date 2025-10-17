@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FileUpload } from "./file-upload";
 import { SubjectCombobox } from "./subject-combobox";
+import { LevelCombobox } from "./level-combobox";
 import { NewSubjectDialog } from "./new-subject-dialog";
 import { useSubjects } from "@/hooks/useSubjects";
 import { useSubjectsService } from "@/services/subjects";
@@ -157,7 +158,53 @@ export function GeneratorForm({
                             />
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Subject Field */}
+                                {/* Level Field - Now comes first */}
+                                <FormField
+                                    control={form.control}
+                                    name="level"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800 font-semibold">
+                                                Niveau d&apos;étude
+                                            </FormLabel>
+                                            <FormControl>
+                                                <LevelCombobox
+                                                    subjects={subjects}
+                                                    value={field.value}
+                                                    onChange={newLevel => {
+                                                        field.onChange(
+                                                            newLevel
+                                                        );
+                                                        // Reset subject when level changes
+                                                        form.setValue(
+                                                            "subject",
+                                                            ""
+                                                        );
+                                                    }}
+                                                    onAddNew={() =>
+                                                        setShowNewSubjectDialog(
+                                                            true
+                                                        )
+                                                    }
+                                                    isLoading={
+                                                        isLoadingSubjects
+                                                    }
+                                                    placeholder="Sélectionner un niveau..."
+                                                    getLevelLabel={
+                                                        getLevelLabel
+                                                    }
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-gray-600">
+                                                Le niveau d&apos;étude de ton
+                                                cours.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {/* Subject Field - Now comes second and is filtered by level */}
                                 <FormField
                                     control={form.control}
                                     name="subject"
@@ -186,35 +233,16 @@ export function GeneratorForm({
                                                     getLevelLabel={
                                                         getLevelLabel
                                                     }
+                                                    selectedLevel={form.watch(
+                                                        "level"
+                                                    )}
+                                                    disabled={
+                                                        !form.watch("level")
+                                                    }
                                                 />
                                             </FormControl>
                                             <FormDescription className="text-gray-600">
                                                 La matière de ton cours.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Level Field */}
-                                <FormField
-                                    control={form.control}
-                                    name="level"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800 font-semibold">
-                                                Niveau
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Seconde"
-                                                    className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormDescription className="text-gray-600">
-                                                Le niveau d&apos;étude de ton
-                                                cours.
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -267,8 +295,12 @@ export function GeneratorForm({
                 onSubmit={async data => {
                     const newSubject = await createSubject(data);
                     if (newSubject) {
-                        // Set the newly created subject as the selected value
-                        form.setValue("subject", newSubject.title);
+                        // Set the newly created subject as the selected value using its code
+                        form.setValue("subject", newSubject.code);
+                        // If the level was not selected, set it from the new subject
+                        if (!form.watch("level")) {
+                            form.setValue("level", newSubject.level);
+                        }
                         setShowNewSubjectDialog(false);
                     }
                 }}

@@ -32,12 +32,20 @@ export function useSubjectsService(): SubjectsService {
                 });
 
                 // Check if response has items property (actual API structure)
-                if (response.data && typeof response.data === 'object' && 'items' in response.data) {
+                if (
+                    response.data &&
+                    typeof response.data === "object" &&
+                    "items" in response.data
+                ) {
                     return response.data.items as Subject[];
                 }
 
                 // Check if response.data is wrapped in another data property
-                if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+                if (
+                    response.data &&
+                    typeof response.data === "object" &&
+                    "data" in response.data
+                ) {
                     return response.data.data as Subject[];
                 }
 
@@ -47,12 +55,19 @@ export function useSubjectsService(): SubjectsService {
                 }
 
                 // If response.data has subjects property
-                if (response.data && typeof response.data === 'object' && 'subjects' in response.data) {
+                if (
+                    response.data &&
+                    typeof response.data === "object" &&
+                    "subjects" in response.data
+                ) {
                     return response.data.subjects as Subject[];
                 }
 
                 // Unexpected response structure
-                console.error("Unexpected response structure from /subjects endpoint:", response.data);
+                console.error(
+                    "Unexpected response structure from /subjects endpoint:",
+                    response.data
+                );
                 return null;
             } catch (error) {
                 console.error("Error fetching subjects:", error);
