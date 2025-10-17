@@ -80,7 +80,7 @@ export function SubjectCombobox({
                     role="combobox"
                     aria-expanded={open}
                     className={cn(
-                        "h-12 justify-between border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm",
+                        "w-full h-12 justify-between border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm font-normal text-left",
                         className
                     )}
                     disabled={isLoading}
