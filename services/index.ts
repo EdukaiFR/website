@@ -4,3 +4,4 @@ export * from "./course";
 export * from "./insights";
 export * from "./blob";
 export * from "./ticket";
+export * from "./subjects";

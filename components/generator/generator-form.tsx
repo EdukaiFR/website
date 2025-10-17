@@ -19,9 +19,13 @@ import {
 import type { FileProcessingState, GeneratorForm } from "@/lib/types/generator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sparkles } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FileUpload } from "./file-upload";
+import { SubjectCombobox } from "./subject-combobox";
+import { NewSubjectDialog } from "./new-subject-dialog";
+import { useSubjects } from "@/hooks/useSubjects";
+import { useSubjectsService } from "@/services/subjects";
 
 type GeneratorFormProps = {
     onSubmit: (
@@ -63,6 +67,18 @@ export function GeneratorForm({
     uploadedFileIds,
     setUploadedFileIds,
 }: GeneratorFormProps) {
+    const [showNewSubjectDialog, setShowNewSubjectDialog] = useState(false);
+
+    // Initialize subjects service and hook (the service itself is stateless and doesn't change)
+    const subjectsService = useSubjectsService();
+    const {
+        subjects,
+        groupedSubjects,
+        isLoading: isLoadingSubjects,
+        createSubject,
+        getLevelLabel,
+    } = useSubjects(subjectsService);
+
     const form = useForm<GeneratorFormSchemaType>({
         resolver: zodResolver(GeneratorFormSchema),
         defaultValues: {
@@ -108,121 +124,156 @@ export function GeneratorForm({
     }, [form, uploadedFileIds]);
 
     return (
-        <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm max-w-4xl mx-auto w-full">
-            <CardContent className="p-8">
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(handleFormSubmit)}
-                        className="flex flex-col gap-6"
-                    >
-                        {/* Title Field */}
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-800 font-semibold">
-                                        Titre
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Les équations du second degré"
-                                            className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription className="text-gray-600">
-                                        Renseigne le titre de ton cours.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Subject Field */}
-                            <FormField
-                                control={form.control}
-                                name="subject"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-800 font-semibold">
-                                            Matière
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Mathématiques"
-                                                className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormDescription className="text-gray-600">
-                                            La matière de ton cours.
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Level Field */}
-                            <FormField
-                                control={form.control}
-                                name="level"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-800 font-semibold">
-                                            Niveau
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Seconde"
-                                                className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormDescription className="text-gray-600">
-                                            Le niveau d&apos;étude de ton cours.
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        {/* File Upload Field */}
-                        <FormField
-                            control={form.control}
-                            name="files"
-                            render={() => (
-                                <FileUpload
-                                    selectedFiles={selectedFiles}
-                                    setSelectedFiles={setSelectedFiles}
-                                    onFilesChange={handleFilesChange}
-                                    onRecognizedText={onRecognizedText}
-                                    onTextRemoved={onTextRemoved}
-                                    fileProcessingStates={fileProcessingStates}
-                                    setFileProcessingStates={
-                                        setFileProcessingStates
-                                    }
-                                    processedFiles={processedFiles}
-                                    setProcessedFiles={setProcessedFiles}
-                                    uploadedFileIds={uploadedFileIds}
-                                    setUploadedFileIds={setUploadedFileIds}
-                                />
-                            )}
-                        />
-
-                        <Button
-                            disabled={!isInputFilled || isRecognizing}
-                            type="submit"
-                            className="h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+        <>
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm max-w-4xl mx-auto w-full">
+                <CardContent className="p-8">
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(handleFormSubmit)}
+                            className="flex flex-col gap-6"
                         >
-                            <Sparkles className="w-5 h-5 mr-2" />
-                            Lancer la génération
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
+                            {/* Title Field */}
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-800 font-semibold">
+                                            Titre
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Les équations du second degré"
+                                                className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription className="text-gray-600">
+                                            Renseigne le titre de ton cours.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Subject Field */}
+                                <FormField
+                                    control={form.control}
+                                    name="subject"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800 font-semibold">
+                                                Matière
+                                            </FormLabel>
+                                            <FormControl>
+                                                <SubjectCombobox
+                                                    subjects={subjects}
+                                                    groupedSubjects={
+                                                        groupedSubjects
+                                                    }
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    onAddNew={() =>
+                                                        setShowNewSubjectDialog(
+                                                            true
+                                                        )
+                                                    }
+                                                    isLoading={
+                                                        isLoadingSubjects
+                                                    }
+                                                    placeholder="Sélectionner une matière..."
+                                                    getLevelLabel={
+                                                        getLevelLabel
+                                                    }
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-gray-600">
+                                                La matière de ton cours.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {/* Level Field */}
+                                <FormField
+                                    control={form.control}
+                                    name="level"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800 font-semibold">
+                                                Niveau
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Seconde"
+                                                    className="h-12 border-blue-200/60 focus:border-blue-600 focus:ring-blue-600/20 bg-white/80 backdrop-blur-sm"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-gray-600">
+                                                Le niveau d&apos;étude de ton
+                                                cours.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            {/* File Upload Field */}
+                            <FormField
+                                control={form.control}
+                                name="files"
+                                render={() => (
+                                    <FileUpload
+                                        selectedFiles={selectedFiles}
+                                        setSelectedFiles={setSelectedFiles}
+                                        onFilesChange={handleFilesChange}
+                                        onRecognizedText={onRecognizedText}
+                                        onTextRemoved={onTextRemoved}
+                                        fileProcessingStates={
+                                            fileProcessingStates
+                                        }
+                                        setFileProcessingStates={
+                                            setFileProcessingStates
+                                        }
+                                        processedFiles={processedFiles}
+                                        setProcessedFiles={setProcessedFiles}
+                                        uploadedFileIds={uploadedFileIds}
+                                        setUploadedFileIds={setUploadedFileIds}
+                                    />
+                                )}
+                            />
+
+                            <Button
+                                disabled={!isInputFilled || isRecognizing}
+                                type="submit"
+                                className="h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                            >
+                                <Sparkles className="w-5 h-5 mr-2" />
+                                Lancer la génération
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
+
+            {/* New Subject Dialog */}
+            <NewSubjectDialog
+                open={showNewSubjectDialog}
+                onOpenChange={setShowNewSubjectDialog}
+                onSubmit={async data => {
+                    const newSubject = await createSubject(data);
+                    if (newSubject) {
+                        // Set the newly created subject as the selected value
+                        form.setValue("subject", newSubject.title);
+                        setShowNewSubjectDialog(false);
+                    }
+                }}
+                defaultLevel={form.watch("level")}
+            />
+        </>
     );
 }
