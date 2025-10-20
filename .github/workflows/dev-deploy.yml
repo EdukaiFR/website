@@ -16,8 +16,8 @@ jobs:
     - name: SSH and Deploy
       uses: appleboy/ssh-action@master
       env:
-        DIRECTORY: "/var/edukai/website-dev-latest"
-        PM2_PROCESS_NAME: "frontend-preprod-edukai"
+        DIRECTORY: "/var/edukai/preprod/website"
+        PM2_PROCESS_NAME: "preprod-website-edukai"
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
@@ -26,7 +26,7 @@ jobs:
         envs: DIRECTORY, PM2_PROCESS_NAME
         script: |
           cd ${DIRECTORY}
-          git pull
+          git pull origin dev
           npm install
           npm run build
           pm2 reload ${PM2_PROCESS_NAME}
