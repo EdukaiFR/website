@@ -1,0 +1,32 @@
+name: Deploy app to VPS (production)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@master
+      env:
+        DIRECTORY: "/var/edukai/beta/website"
+        PM2_PROCESS_NAME: "beta-website-edukai"
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        envs: DIRECTORY, PM2_PROCESS_NAME
+        script: |
+          cd ${DIRECTORY}
+          git pull origin main
+          npm install
+          npm run build
+          pm2 reload ${PM2_PROCESS_NAME}
