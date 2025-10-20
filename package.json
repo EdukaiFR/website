@@ -7,6 +7,7 @@
         "build": "next build",
         "build-force": "SKIP_LINT=true next build",
         "start": "next start",
+        "start-preprod": "next start -p 3030",
         "lint": "next lint",
         "lint:fix": "next lint --fix",
         "format": "prettier --write .",
