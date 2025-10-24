@@ -1,12 +1,12 @@
 import {
+    ChangePasswordFormValues,
+    ResetPasswordFormValues,
     SigninFormValues,
     SignupFormValues,
-    ResetPasswordFormValues,
-    ChangePasswordFormValues,
 } from "@/lib/schemas/auth";
-import { LoginCredentials, RegisterData } from "@/services/auth";
 import { sessionStorage } from "@/lib/session";
 import { translateApiError } from "@/lib/toast";
+import { LoginCredentials, RegisterData } from "@/services/auth";
 import axios, { AxiosError } from "axios";
 
 // Types for auth responses
