@@ -28,9 +28,9 @@ interface SharedCourse {
         username: string;
     };
     createdAt: string;
-    summarySheets: any[];
-    quizzes: any[];
-    exams: any[];
+    summarySheets: unknown[];
+    quizzes: unknown[];
+    exams: unknown[];
 }
 
 export default function SharedCoursePage() {
@@ -58,7 +58,7 @@ export default function SharedCoursePage() {
                         response.message || "Le cours partagé n'a pas été trouvé."
                     );
                 }
-            } catch (err) {
+            } catch {
                 setError("Une erreur est survenue lors du chargement.");
             } finally {
                 setLoading(false);
@@ -68,6 +68,7 @@ export default function SharedCoursePage() {
         if (shareToken) {
             fetchSharedCourse();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shareToken]);
 
     const handleAddToLibrary = async () => {
@@ -94,7 +95,7 @@ export default function SharedCoursePage() {
                     toast.error(response.message || "Erreur lors de l'ajout");
                 }
             }
-        } catch (error) {
+        } catch {
             toast.error("Une erreur est survenue");
         } finally {
             setIsAddingToLibrary(false);
@@ -124,11 +125,11 @@ export default function SharedCoursePage() {
                     </h1>
                     <p className="text-gray-600 mb-6">
                         {error ||
-                            "Le cours partagé n'existe pas ou le lien a été révoqué."}
+                            "Le cours partagé n&apos;existe pas ou le lien a été révoqué."}
                     </p>
                     <Button onClick={() => router.push("/")} className="w-full">
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Retour à l'accueil
+                        Retour à l&apos;accueil
                     </Button>
                 </div>
             </div>
