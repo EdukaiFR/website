@@ -65,9 +65,8 @@ export const ShareCourseDialog = ({
                         "Erreur lors du partage du cours"
                 );
             }
-        } catch (error) {
+        } catch {
             toast.error("Une erreur est survenue");
-            console.error("Error toggling share:", error);
         } finally {
             setIsLoading(false);
         }
@@ -84,7 +83,7 @@ export const ShareCourseDialog = ({
             setTimeout(() => {
                 setCopied(false);
             }, 2000);
-        } catch (error) {
+        } catch {
             toast.error("Erreur lors de la copie du lien");
         }
     };
@@ -182,8 +181,8 @@ export const ShareCourseDialog = ({
                                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                     <p className="text-sm text-gray-700">
                                         Un lien unique sera généré pour partager
-                                        ce cours avec d'autres personnes. Ils pourront
-                                        voir le contenu et l'ajouter à leur bibliothèque.
+                                        ce cours avec d&apos;autres personnes. Ils pourront
+                                        voir le contenu et l&apos;ajouter à leur bibliothèque.
                                     </p>
                                 </div>
 
