@@ -45,6 +45,9 @@ export interface CourseService {
         description: string,
         date: Date
     ) => Promise<{ message: string } | null>;
+    toggleShare: (courseId: string) => Promise<any>;
+    getSharedCourse: (shareToken: string) => Promise<any>;
+    duplicateSharedCourse: (shareToken: string) => Promise<any>;
 }
 
 export function useCourseService() {
@@ -265,6 +268,67 @@ export function useCourseService() {
         }
     };
 
+    const toggleShare = async (courseId: string) => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/courses/${courseId}/share`,
+                {},
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors du partage du cours.",
+            };
+        }
+    };
+
+    const getSharedCourse = async (shareToken: string) => {
+        try {
+            const response = await axios.get(
+                `${apiUrl}/courses/shared/${shareToken}`
+            );
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Le cours partagé n'a pas été trouvé ou le lien a été révoqué.",
+            };
+        }
+    };
+
+    const duplicateSharedCourse = async (shareToken: string) => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/courses/shared/${shareToken}/duplicate`,
+                {},
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors de l'ajout du cours à votre bibliothèque.",
+            };
+        }
+    };
+
     return {
         createCourse,
         getCourseById,
@@ -278,5 +342,8 @@ export function useCourseService() {
         getExamById,
         updateExamById,
         deleteExamById,
+        toggleShare,
+        getSharedCourse,
+        duplicateSharedCourse,
     };
 }

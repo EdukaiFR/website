@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date-format";
 import { BookOpen, Calendar, User, Eye, GraduationCap } from "lucide-react";
 import Link from "next/link";
+import { ShareCourseDialog } from "@/components/course/ShareCourseDialog";
 
 export type CourseCardProps = {
     id: string;
@@ -15,6 +16,7 @@ export type CourseCardProps = {
     author: string;
     createdAt: string;
     isPublished: boolean;
+    shareToken?: string;
 };
 
 export const CourseCard = ({
@@ -25,6 +27,7 @@ export const CourseCard = ({
     author,
     createdAt,
     isPublished,
+    shareToken,
 }: CourseCardProps) => {
     const getSubjectColor = (subject: string) => {
         const colors = {
@@ -132,15 +135,21 @@ export const CourseCard = ({
                                 {isPublished ? "Publié" : "Brouillon"}
                             </span>
                         </div>
-                        <Link href={`/library/${id}`}>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105 whitespace-nowrap"
-                            >
-                                Voir le cours
-                            </Button>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <ShareCourseDialog
+                                courseId={id}
+                                shareToken={shareToken}
+                            />
+                            <Link href={`/library/${id}`}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105 whitespace-nowrap"
+                                >
+                                    Voir le cours
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </CardContent>

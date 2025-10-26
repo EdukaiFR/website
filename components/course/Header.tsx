@@ -3,6 +3,7 @@ import { OwnerBadge } from "@/components/badge/OwnerBadge";
 import { SubjectBadge } from "@/components/badge/SubjectBadge";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
+import { ShareCourseDialog } from "./ShareCourseDialog";
 import {
     BicepsFlexed,
     CircleStop,
@@ -12,9 +13,11 @@ import {
 } from "lucide-react";
 
 type CourseData = {
+    _id?: string;
     title?: string;
     subject?: string;
     level?: string;
+    shareToken?: string;
 };
 
 export type HeaderProps = {
@@ -64,6 +67,13 @@ export const Header = ({
 
                     {/* Action Buttons - All on same line */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
+                        <div className="hidden sm:block">
+                            <ShareCourseDialog
+                                courseId={course._id || ""}
+                                shareToken={course.shareToken}
+                            />
+                        </div>
+
                         <Button
                             onClick={() => {
                                 if (selectedTab === "quiz") {
