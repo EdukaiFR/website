@@ -124,6 +124,7 @@ export const SummarySheets = ({
         }
     };
 
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("fr-FR", {
             day: "numeric",
@@ -373,6 +374,9 @@ export const SummarySheets = ({
                                                 size="sm"
                                                 variant="ghost"
                                                 className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+                                                onClick={() =>
+                                                    handleDelete(file)
+                                                }
                                             >
                                                 <Trash className="w-4 h-4" />
                                             </Button>

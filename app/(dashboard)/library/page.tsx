@@ -32,6 +32,7 @@ interface ExtendedCourseData {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
+    shareToken?: string;
 }
 
 // Type for API response that might have different property names
@@ -47,6 +48,7 @@ type ApiCourseData = {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
+    shareToken?: string;
 };
 
 export default function LibraryPage() {
@@ -350,6 +352,7 @@ export default function LibraryPage() {
                                     author: course.author,
                                     createdAt: course.createdAt,
                                     isPublished: course.isPublished,
+                                    shareToken: course.shareToken,
                                 }))}
                                 isLoading={false}
                             />
