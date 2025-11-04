@@ -32,7 +32,7 @@ interface ExtendedCourseData {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
-    shareToken?: string;
+    isShared?: boolean;
 }
 
 // Type for API response that might have different property names
@@ -42,13 +42,18 @@ type ApiCourseData = {
     title: string;
     subject: string;
     level: string;
-    author?: string;
+    author?: string | {
+        _id?: string;
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+    };
     isPublished?: boolean;
     createdAt?: string;
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
-    shareToken?: string;
+    isShared?: boolean;
 };
 
 export default function LibraryPage() {
@@ -185,7 +190,9 @@ export default function LibraryPage() {
                     (course: ApiCourseData) => ({
                         ...course,
                         id: course._id || course.id || "",
-                        author: course.author || "Unknown",
+                        author: typeof course.author === 'string'
+                            ? course.author
+                            : (course.author?.username || course.author?.firstName || "Unknown"),
                         isPublished: course.isPublished || false,
                         createdAt: course.createdAt || new Date().toISOString(),
                     })
@@ -352,7 +359,7 @@ export default function LibraryPage() {
                                     author: course.author,
                                     createdAt: course.createdAt,
                                     isPublished: course.isPublished,
-                                    shareToken: course.shareToken,
+                                    isShared: course.isShared,
                                 }))}
                                 isLoading={false}
                             />

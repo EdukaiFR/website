@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
-import { BookOpen, Calendar, User, Eye, GraduationCap } from "lucide-react";
+import { BookOpen, Calendar, Eye, GraduationCap, User, Globe, Lock } from "lucide-react";
 import Link from "next/link";
-import { ShareCourseDialog } from "@/components/course/ShareCourseDialog";
+import { useRouter } from "next/navigation";
 
 export type CourseCardProps = {
     id: string;
@@ -16,7 +16,7 @@ export type CourseCardProps = {
     author: string;
     createdAt: string;
     isPublished: boolean;
-    shareToken?: string;
+    isShared?: boolean;
 };
 
 export const CourseCard = ({
@@ -26,9 +26,11 @@ export const CourseCard = ({
     level,
     author,
     createdAt,
-    isPublished,
-    shareToken,
+    isPublished = true,
+    isShared = false,
 }: CourseCardProps) => {
+    const router = useRouter();
+
     const getSubjectColor = (subject: string) => {
         const colors = {
             Mathématiques: "bg-blue-100 text-blue-800 border-blue-200",
@@ -136,10 +138,26 @@ export const CourseCard = ({
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <ShareCourseDialog
-                                courseId={id}
-                                shareToken={shareToken}
-                            />
+                            <button
+                                onClick={() => router.push(`/library/${id}/settings`)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md transform hover:scale-105 ${
+                                    isShared
+                                        ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
+                                        : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+                                }`}
+                            >
+                                {isShared ? (
+                                    <>
+                                        <Globe className="w-3 h-3" />
+                                        Public
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-3 h-3" />
+                                        Privé
+                                    </>
+                                )}
+                            </button>
                             <Link href={`/library/${id}`}>
                                 <Button
                                     variant="outline"
