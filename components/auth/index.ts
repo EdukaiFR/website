@@ -7,6 +7,11 @@ export { ChangePasswordForm } from "./change-password-form";
 // Auth Container
 export { AuthContainer } from "./auth-container";
 
+// Auth Layout Components
+export { EdukaiHeader } from "./edukai-header";
+export { AuthPageLayout } from "./auth-page-layout";
+export { FeatureCard } from "./feature-card";
+
 // Types
 export type { SigninFormProps } from "./signin-form";
 export type { SignupFormProps } from "./signup-form";
