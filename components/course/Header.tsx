@@ -3,6 +3,7 @@ import { OwnerBadge } from "@/components/badge/OwnerBadge";
 import { SubjectBadge } from "@/components/badge/SubjectBadge";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
+import type { VisibilityType } from "@/lib/types/visibility";
 import {
     BicepsFlexed,
     CircleStop,
@@ -17,7 +18,7 @@ type CourseData = {
     title?: string;
     subject?: string;
     level?: string;
-    isShared?: boolean;
+    visibility?: VisibilityType;
     isOwner?: boolean;
     author?: {
         _id?: string;
