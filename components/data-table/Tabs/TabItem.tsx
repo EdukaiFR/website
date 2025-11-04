@@ -27,7 +27,8 @@ const TabItem = ({
             {value === "archived" && (
                 <Separator className="mr-2 h-4 mx-2" orientation="vertical" />
             )}
-            <div
+            <button
+                type="button"
                 className={cn(
                     "flex flex-row gap-2 items-center border-b-2 border-transparent hover:border-black pb-1 cursor-pointer ",
                     {
@@ -55,7 +56,7 @@ const TabItem = ({
                 >
                     {number}
                 </span>
-            </div>
+            </button>
         </>
     );
 };

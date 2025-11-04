@@ -1,10 +1,9 @@
 "use client";
 
-import { Users, Calendar, Trophy, Star, UserPlus, BookOpen, Search, Filter, X } from "lucide-react";
+import { Users, Calendar, Trophy, Star, UserPlus, BookOpen, Search, Filter, X, Loader2 } from "lucide-react";
 import { PublicCourseCard } from "@/components/club/PublicCourseCard";
 import { useCourseService } from "@/services";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 interface PublicCourse {
     _id: string;
@@ -32,8 +31,8 @@ export default function ClubEdukaiPage() {
     const { getPublicCourses } = useCourseService();
 
     // Extract unique subjects and levels from courses
-    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort();
-    const levels = Array.from(new Set(courses.map(c => c.level))).sort();
+    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort((a, b) => a.localeCompare(b, 'fr'));
+    const levels = Array.from(new Set(courses.map(c => c.level))).sort((a, b) => a.localeCompare(b, 'fr'));
 
     // Filter courses based on search and filters
     const filteredCourses = courses.filter(course => {
@@ -53,7 +52,65 @@ export default function ClubEdukaiPage() {
         setSelectedLevel("all");
     };
 
+    // Get empty state message based on whether courses exist
+    const getEmptyStateMessage = () => {
+        if (courses.length === 0) {
+            return "Il n'y a pas encore de cours publics disponibles. Revenez plus tard !";
+        }
+        return "Aucun cours ne correspond à vos critères. Essayez de modifier vos filtres.";
+    };
+
+    // Get empty state heading based on whether courses exist
+    const getEmptyStateHeading = () => {
+        return courses.length === 0 ? "Aucun cours public" : "Aucun résultat";
+    };
+
     const hasActiveFilters = searchQuery !== "" || selectedSubject !== "all" || selectedLevel !== "all";
+
+    // Render courses content based on loading and filtered courses state
+    const renderCoursesContent = () => {
+        if (loadingCourses) {
+            return (
+                <div className="flex items-center justify-center py-20">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                </div>
+            );
+        }
+
+        if (filteredCourses.length === 0) {
+            return (
+                <div className="text-center py-20">
+                    <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
+                        <BookOpen className="w-5 h-5" />
+                        {getEmptyStateHeading()}
+                    </div>
+                    <p className="text-gray-600 mt-4 max-w-md mx-auto">
+                        {getEmptyStateMessage()}
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCourses.map((course) => (
+                    <PublicCourseCard
+                        key={course._id}
+                        id={course._id}
+                        title={course.title}
+                        subject={course.subject}
+                        level={course.level}
+                        author={{
+                            firstName: course.author.firstName,
+                            lastName: course.author.lastName,
+                            username: course.author.username,
+                        }}
+                        createdAt={course.createdAt}
+                    />
+                ))}
+            </div>
+        );
+    };
 
     useEffect(() => {
         async function fetchPublicCourses() {
@@ -253,10 +310,11 @@ export default function ClubEdukaiPage() {
                         {showFilters && (
                             <div className="flex flex-col sm:flex-row gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200">
                                 <div className="flex-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="subject-filter" className="block text-sm font-medium text-gray-700 mb-2">
                                         Matière
                                     </label>
                                     <select
+                                        id="subject-filter"
                                         value={selectedSubject}
                                         onChange={(e) => setSelectedSubject(e.target.value)}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -270,10 +328,11 @@ export default function ClubEdukaiPage() {
                                     </select>
                                 </div>
                                 <div className="flex-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="level-filter" className="block text-sm font-medium text-gray-700 mb-2">
                                         Niveau
                                     </label>
                                     <select
+                                        id="level-filter"
                                         value={selectedLevel}
                                         onChange={(e) => setSelectedLevel(e.target.value)}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -292,37 +351,7 @@ export default function ClubEdukaiPage() {
 
                     {/* Courses Content */}
                     <div className="mt-8">
-                        {loadingCourses ? (
-                            <div className="flex items-center justify-center py-20">
-                                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-                            </div>
-                        ) : filteredCourses.length === 0 ? (
-                            <div className="text-center py-20">
-                                <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
-                                    <BookOpen className="w-5 h-5" />
-                                    {courses.length === 0 ? "Aucun cours public" : "Aucun résultat"}
-                                </div>
-                                <p className="text-gray-600 mt-4 max-w-md mx-auto">
-                                    {courses.length === 0
-                                        ? "Il n'y a pas encore de cours publics disponibles. Revenez plus tard !"
-                                        : "Aucun cours ne correspond à vos critères. Essayez de modifier vos filtres."}
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredCourses.map((course) => (
-                                    <PublicCourseCard
-                                        key={course._id}
-                                        id={course._id}
-                                        title={course.title}
-                                        subject={course.subject}
-                                        level={course.level}
-                                        author={course.author}
-                                        createdAt={course.createdAt}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        {renderCoursesContent()}
                     </div>
                 </div>
             </main>

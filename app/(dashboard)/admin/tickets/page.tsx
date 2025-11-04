@@ -190,7 +190,6 @@ export default function AdminTicketsPage() {
 
     // Handle ticket assignment (placeholder)
     const handleAssign = async (ticketId: string) => {
-        console.log("Assign ticket:", ticketId);
         // TODO: Implement assignment dialog
     };
 
@@ -221,6 +220,18 @@ export default function AdminTicketsPage() {
             setIsUpdating(prev => ({ ...prev, [ticketId]: false }));
         }
     };
+
+    // Get empty state message based on active filters
+    const getEmptyStateMessage = () => {
+        const hasFilters = searchTerm || statusFilter !== "all" || priorityFilter !== "all";
+        if (hasFilters) {
+            return "Aucun ticket ne correspond à vos critères de recherche.";
+        }
+        return "Aucun ticket n'a été trouvé dans le système.";
+    };
+
+    // Check if filters are active
+    const hasActiveFilters = searchTerm || statusFilter !== "all" || priorityFilter !== "all";
 
     // Don't render anything if still loading
     if (session.loading) {
@@ -385,9 +396,9 @@ export default function AdminTicketsPage() {
                 <div className="space-y-4">
                     {isLoading ? (
                         // Loading skeleton
-                        [...Array(LOADING_SKELETON_COUNT)].map((_, i) => (
+                        Array.from({ length: LOADING_SKELETON_COUNT }, (_, i) => (
                             <Card
-                                key={i}
+                                key={`skeleton-loading-${i}`}
                                 className="border-0 shadow-lg animate-pulse"
                             >
                                 <CardContent className="p-4 sm:p-6">
@@ -406,15 +417,9 @@ export default function AdminTicketsPage() {
                                     Aucun ticket trouvé
                                 </h3>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {searchTerm ||
-                                    statusFilter !== "all" ||
-                                    priorityFilter !== "all"
-                                        ? "Aucun ticket ne correspond à vos critères de recherche."
-                                        : "Aucun ticket n'a été trouvé dans le système."}
+                                    {getEmptyStateMessage()}
                                 </p>
-                                {(searchTerm ||
-                                    statusFilter !== "all" ||
-                                    priorityFilter !== "all") && (
+                                {hasActiveFilters && (
                                     <Button
                                         variant="outline"
                                         onClick={() => {
