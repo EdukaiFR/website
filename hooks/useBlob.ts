@@ -6,10 +6,6 @@ export function useBlob(blobService: BlobService) {
     const [error, setError] = useState<string | null>(null);
     const [fileId, setFileId] = useState("");
 
-    console.log(fileId);
-    console.log(isUploading);
-    console.log(error);
-
     async function uploadFile(file: File, fileType: string) {
         setIsUploading(true);
         setError(null);

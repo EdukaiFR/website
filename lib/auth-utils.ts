@@ -18,11 +18,9 @@ export function getCurrentUser() {
  */
 export function getCurrentUserId(): string | null {
     const user = getCurrentUser();
-    console.log("🔍 [Auth Utils] Debug - Full user object:", user);
 
     // Try both id and _id fields since the API might return either
     const userId = user?.id || user?._id || null;
-    console.log("🔍 [Auth Utils] Debug - Extracted userId:", userId);
 
     return userId;
 }

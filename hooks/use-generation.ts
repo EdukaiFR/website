@@ -87,7 +87,6 @@ export function useGeneration() {
     ) => {
         if (recognizedTexts.length === 0) return;
 
-        console.log("recognizedTexts", recognizedTexts);
         setGenerationLaunched(true);
 
         // Reset generation step
@@ -101,7 +100,6 @@ export function useGeneration() {
 
         if (!quizGeneration?.success && !sheetGeneration?.success) {
             // TODO: display message in a toast.
-            console.error("Failed to generate both quiz and summary sheet.");
             return;
         }
 
@@ -109,25 +107,17 @@ export function useGeneration() {
 
         if (courseId) {
             for (const fileId of Object.values(uploadedFileIds)) {
-                console.log(`Associating file: ${fileId}`);
                 await addFileToCourse(courseId, fileId);
             }
 
             if (quizGeneration?.success) {
                 await addQuizToCourse(courseId, quizGeneration.newQuizId);
-            } else {
-                // TODO: display message in a toast.
-                console.error("Failed to generate quiz.");
             }
 
             if (sheetGeneration?.success) {
                 await addSheetToCourse(courseId, sheetGeneration.newSheetId);
-            } else {
-                // TODO: display message in a toast.
-                console.error("Failed to generate summary sheet");
             }
         } else {
-            console.error("Failed to create course - courseId is undefined");
             return;
         }
 

@@ -225,8 +225,8 @@ export class FileProcessor {
                             extractedText += `\n--- Page ${pageNum} (OCR) ---\n${ocrResult.data.text}\n`;
                         }
                     }
-                } catch (ocrError) {
-                    console.warn(`OCR failed for page ${pageNum}:`, ocrError);
+                } catch {
+                    // OCR failed for this page, continue with next page
                 }
             }
 
