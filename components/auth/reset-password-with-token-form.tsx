@@ -5,12 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, KeyRound, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, XCircle, ArrowLeft, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { FormErrorAlert } from "@/components/ui/form-alert";
 import { verifyResetTokenAction, resetPasswordWithTokenAction } from "@/lib/actions/auth";
 import { getPasswordRequirements } from "@/lib/schemas/auth";
 import { showToast } from "@/lib/toast";
@@ -77,7 +74,7 @@ export default function ResetPasswordWithTokenForm() {
         } else {
           setError(response.error || "Token invalide ou expiré");
         }
-      } catch (err) {
+      } catch {
         setError("Une erreur est survenue lors de la vérification du token");
       } finally {
         setIsVerifying(false);
@@ -110,7 +107,7 @@ export default function ResetPasswordWithTokenForm() {
       } else {
         setError(response.error || "Une erreur est survenue");
       }
-    } catch (err) {
+    } catch {
       setError("Une erreur est survenue lors de la réinitialisation");
     } finally {
       setIsLoading(false);
@@ -120,195 +117,249 @@ export default function ResetPasswordWithTokenForm() {
   // Loading state while verifying token
   if (isVerifying) {
     return (
-      <Card className="w-full">
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-muted-foreground">Vérification du lien de réinitialisation...</p>
-        </CardContent>
-      </Card>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+          <p className="text-gray-600">Vérification du lien de réinitialisation...</p>
+        </div>
+      </div>
     );
   }
 
   // Invalid token state
   if (!isTokenValid) {
     return (
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <CardTitle>Lien invalide ou expiré</CardTitle>
-          <CardDescription className="text-base">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Error Header */}
+        <div className="text-center space-y-3 sm:space-y-4">
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+            <XCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            Lien invalide ou expiré
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto">
             {error || "Le lien de réinitialisation est invalide ou a expiré."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
+          </p>
+          <p className="text-sm text-gray-500">
             Les liens de réinitialisation expirent après 30 minutes pour des raisons de sécurité.
           </p>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-2">
-          <Button asChild className="w-full">
-            <Link href="/auth">
+        </div>
+
+        {/* Actions */}
+        <div className="space-y-3">
+          <Link href="/auth">
+            <Button className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base">
               Retour à la connexion
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" className="w-full">
-            <Link href="/auth?mode=forgot">
+            </Button>
+          </Link>
+          <Link href="/auth?mode=forgot">
+            <Button
+              variant="outline"
+              className="w-full h-11 sm:h-12 border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-base"
+            >
               Demander un nouveau lien
-            </Link>
-          </Button>
-        </CardFooter>
-      </Card>
+            </Button>
+          </Link>
+        </div>
+      </div>
     );
   }
 
   // Success state
   if (isSuccess) {
     return (
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <CardTitle>Mot de passe réinitialisé !</CardTitle>
-          <CardDescription className="text-base">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Success Header */}
+        <div className="text-center space-y-3 sm:space-y-4">
+          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            Mot de passe réinitialisé !
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto">
             Votre mot de passe a été modifié avec succès.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
+          </p>
+          <p className="text-sm text-gray-500">
             Vous allez être redirigé vers la page de connexion...
           </p>
-        </CardContent>
-        <CardFooter>
-          <Button asChild className="w-full">
-            <Link href="/auth">
-              Se connecter maintenant
-            </Link>
+        </div>
+
+        {/* Action */}
+        <Link href="/auth">
+          <Button className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base">
+            Se connecter maintenant
           </Button>
-        </CardFooter>
-      </Card>
+        </Link>
+      </div>
     );
   }
 
   // Reset form
   return (
-    <Card className="w-full">
-      <CardHeader className="text-center">
-        <KeyRound className="h-10 w-10 text-primary mx-auto mb-2" />
-        <CardTitle>Créer un nouveau mot de passe</CardTitle>
-        <CardDescription>
-          {maskedEmail && (
-            <span className="block mt-2">
-              Réinitialisation pour : <strong>{maskedEmail}</strong>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="text-center space-y-1 sm:space-y-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+          Créer un nouveau mot de passe
+        </h2>
+        {maskedEmail && (
+          <p className="text-sm sm:text-base text-gray-600">
+            Réinitialisation pour : <strong>{maskedEmail}</strong>
+          </p>
+        )}
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
+        {/* Error Display */}
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600 flex items-center gap-2">
+              <span className="text-red-500">⚠</span>
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* New Password Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="newPassword"
+            className="text-sm font-medium text-gray-700 flex items-center gap-2"
+          >
+            <Lock className="w-4 h-4" />
+            Nouveau mot de passe
+          </label>
+          <div className="relative">
+            <Input
+              {...register("newPassword")}
+              id="newPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              disabled={isLoading}
+              className={`pr-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                errors.newPassword
+                  ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200"
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={isLoading}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          {errors.newPassword && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <span className="w-4 h-4 text-xs">⚠</span>
+              {errors.newPassword.message}
+            </p>
+          )}
+        </div>
+
+        {/* Password Requirements */}
+        {newPassword && (
+          <div className="p-3 sm:p-4 bg-blue-50 border border-blue-100 rounded-xl space-y-2">
+            <p className="text-sm font-medium text-gray-700">
+              Exigences du mot de passe :
+            </p>
+            <div className="grid gap-1.5">
+              {passwordRequirements.map((req, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  {req.met ? (
+                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  )}
+                  <span className={req.met ? "text-green-700" : "text-gray-600"}>
+                    {req.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Confirm Password Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="confirmPassword"
+            className="text-sm font-medium text-gray-700 flex items-center gap-2"
+          >
+            <Lock className="w-4 h-4" />
+            Confirmer le mot de passe
+          </label>
+          <div className="relative">
+            <Input
+              {...register("confirmPassword")}
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="••••••••"
+              disabled={isLoading}
+              className={`pr-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                errors.confirmPassword
+                  ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200"
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              disabled={isLoading}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <span className="w-4 h-4 text-xs">⚠</span>
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base"
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Réinitialisation...
             </span>
+          ) : (
+            "Réinitialiser le mot de passe"
           )}
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          {error && <FormErrorAlert message={error} />}
+        </Button>
 
-          {/* New Password */}
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-            <div className="relative">
-              <Input
-                {...register("newPassword")}
-                id="newPassword"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                disabled={isLoading}
-                className={errors.newPassword ? "border-destructive" : ""}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                )}
-              </Button>
-            </div>
-            {errors.newPassword && (
-              <p className="text-sm text-destructive">{errors.newPassword.message}</p>
-            )}
-          </div>
-
-          {/* Password Requirements */}
-          {newPassword && (
-            <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm font-medium mb-2">Exigences du mot de passe :</p>
-              <div className="space-y-1">
-                {passwordRequirements.map((req, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    {req.met ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span className={req.met ? "text-green-600" : "text-muted-foreground"}>
-                      {req.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Confirm Password */}
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-            <div className="relative">
-              <Input
-                {...register("confirmPassword")}
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="••••••••"
-                disabled={isLoading}
-                className={errors.confirmPassword ? "border-destructive" : ""}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                disabled={isLoading}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                )}
-              </Button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-2">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Réinitialisation...
-              </>
-            ) : (
-              "Réinitialiser le mot de passe"
-            )}
+        {/* Cancel Button */}
+        <Link href="/auth">
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full h-11 sm:h-12 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 text-base"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Annuler et retourner à la connexion
           </Button>
-          <Button asChild variant="ghost" className="w-full">
-            <Link href="/auth">
-              Annuler et retourner à la connexion
-            </Link>
-          </Button>
-        </CardFooter>
+        </Link>
       </form>
-    </Card>
+    </div>
   );
 }
