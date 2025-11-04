@@ -102,19 +102,20 @@ export async function signupAction(
 
 // Reset password action (request password reset email)
 export async function resetPasswordAction(
-    data: ResetPasswordFormValues
+    _data: ResetPasswordFormValues
 ): Promise<AuthResponse> {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
         const response = await axios.post(`${apiUrl}/auth/forgot-password`, {
-            email: data.email,
+            email: _data.email,
         });
 
         return {
             success: true,
             data: {
-                message: response.data.message ||
+                message:
+                    response.data.message ||
                     "Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.",
             },
         };
@@ -134,7 +135,7 @@ export async function resetPasswordAction(
             success: false,
             error: translateApiError(
                 axiosError.response?.data?.message ||
-                "Une erreur est survenue lors de la réinitialisation"
+                    "Une erreur est survenue lors de la réinitialisation"
             ),
         };
     }
@@ -146,7 +147,6 @@ export async function changePasswordAction(
 ): Promise<AuthResponse> {
     try {
         // TODO: Implement actual password change logic
-        console.log("Change password attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -182,7 +182,9 @@ export async function verifyResetTokenAction(
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
-        const response = await axios.get(`${apiUrl}/auth/verify-reset-token/${token}`);
+        const response = await axios.get(
+            `${apiUrl}/auth/verify-reset-token/${token}`
+        );
 
         return {
             success: response.data.isValid,
@@ -197,7 +199,7 @@ export async function verifyResetTokenAction(
             success: false,
             error: translateApiError(
                 axiosError.response?.data?.message ||
-                "Le lien de réinitialisation est invalide ou expiré"
+                    "Le lien de réinitialisation est invalide ou expiré"
             ),
         };
     }
@@ -219,7 +221,8 @@ export async function resetPasswordWithTokenAction(
         return {
             success: true,
             data: {
-                message: response.data.message ||
+                message:
+                    response.data.message ||
                     "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
             },
         };
@@ -231,7 +234,7 @@ export async function resetPasswordWithTokenAction(
             success: false,
             error: translateApiError(
                 axiosError.response?.data?.message ||
-                "Une erreur est survenue lors de la réinitialisation du mot de passe"
+                    "Une erreur est survenue lors de la réinitialisation du mot de passe"
             ),
         };
     }
@@ -241,7 +244,6 @@ export async function resetPasswordWithTokenAction(
 export async function signoutAction(): Promise<AuthResponse> {
     try {
         // TODO: Implement actual signout logic (clear tokens, etc.)
-        console.log("Signout attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));
