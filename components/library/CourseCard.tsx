@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
+import type { VisibilityType } from "@/lib/types/visibility";
+import { Visibility } from "@/lib/types/visibility";
 import { BookOpen, Calendar, Eye, GraduationCap, User, Globe, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,7 +18,7 @@ export type CourseCardProps = {
     author: string;
     createdAt: string;
     isPublished: boolean;
-    isShared?: boolean;
+    visibility?: VisibilityType;
 };
 
 export const CourseCard = ({
@@ -27,7 +29,7 @@ export const CourseCard = ({
     author,
     createdAt,
     isPublished = true,
-    isShared = false,
+    visibility = Visibility.PRIVATE,
 }: CourseCardProps) => {
     const router = useRouter();
 
@@ -141,12 +143,12 @@ export const CourseCard = ({
                             <button
                                 onClick={() => router.push(`/library/${id}/settings`)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md transform hover:scale-105 ${
-                                    isShared
+                                    visibility === Visibility.PUBLIC
                                         ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
                                         : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
                                 }`}
                             >
-                                {isShared ? (
+                                {visibility === Visibility.PUBLIC ? (
                                     <>
                                         <Globe className="w-3 h-3" />
                                         Public

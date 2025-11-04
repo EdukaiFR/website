@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/course/Header";
 import { LoadingState } from "@/components/course/components";
 import { useCourseLogic } from "@/hooks/course";
+import { Visibility } from "@/lib/types/visibility";
 import { useCourseService } from "@/services";
 import { ArrowLeft, Globe, Lock, Loader2, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -17,14 +18,14 @@ export default function CourseSettingsPage() {
 
     const { courseData, setSelectedTab, selectedTab } = useCourseLogic();
     const [saving, setSaving] = useState(false);
-    const [isShared, setIsShared] = useState(false);
+    const [isPublic, setIsPublic] = useState(false);
 
     const { toggleShare } = useCourseService();
 
-    // Initialize isShared from courseData
+    // Initialize isPublic from courseData
     useEffect(() => {
         if (courseData) {
-            setIsShared(courseData.isShared || false);
+            setIsPublic(courseData.visibility === Visibility.PUBLIC);
 
             // Redirect if not owner
             if (courseData.isOwner === false) {
@@ -39,7 +40,8 @@ export default function CourseSettingsPage() {
         if (!courseData) return;
 
         // Only save if changed
-        if (isShared === courseData.isShared) {
+        const currentVisibility = courseData.visibility === Visibility.PUBLIC;
+        if (isPublic === currentVisibility) {
             toast.info("Aucune modification à enregistrer");
             return;
         }
@@ -50,7 +52,7 @@ export default function CourseSettingsPage() {
 
             if (response.status === "success") {
                 toast.success(
-                    isShared
+                    isPublic
                         ? "Cours rendu public avec succès !"
                         : "Cours rendu privé avec succès !"
                 );
@@ -58,14 +60,14 @@ export default function CourseSettingsPage() {
                 window.location.reload();
             } else {
                 // Revert on error
-                setIsShared(courseData.isShared || false);
+                setIsPublic(currentVisibility);
                 toast.error(
                     response.message || "Erreur lors de la modification"
                 );
             }
         } catch (error) {
             console.error("Error toggling share:", error);
-            setIsShared(courseData.isShared || false);
+            setIsPublic(currentVisibility);
             toast.error("Une erreur est survenue");
         } finally {
             setSaving(false);
@@ -76,7 +78,7 @@ export default function CourseSettingsPage() {
         return <LoadingState />;
     }
 
-    const hasChanges = isShared !== courseData.isShared;
+    const hasChanges = isPublic !== (courseData.visibility === Visibility.PUBLIC);
 
     return (
         <div className="course-content flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
@@ -126,12 +128,12 @@ export default function CourseSettingsPage() {
                             <div className="flex items-center gap-3">
                                 <div
                                     className={`p-2 rounded-lg ${
-                                        isShared
+                                        isPublic
                                             ? "bg-green-100"
                                             : "bg-gray-100"
                                     }`}
                                 >
-                                    {isShared ? (
+                                    {isPublic ? (
                                         <Globe className="w-5 h-5 text-green-600" />
                                     ) : (
                                         <Lock className="w-5 h-5 text-gray-600" />
@@ -139,10 +141,10 @@ export default function CourseSettingsPage() {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-gray-900">
-                                        {isShared ? "Public" : "Privé"}
+                                        {isPublic ? "Public" : "Privé"}
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        {isShared
+                                        {isPublic
                                             ? "Visible dans le Club Edukai"
                                             : "Uniquement visible par vous"}
                                     </p>
@@ -151,14 +153,14 @@ export default function CourseSettingsPage() {
 
                             {/* Custom Slider */}
                             <button
-                                onClick={() => setIsShared(!isShared)}
+                                onClick={() => setIsPublic(!isPublic)}
                                 className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                                    isShared ? "bg-blue-600" : "bg-gray-300"
+                                    isPublic ? "bg-blue-600" : "bg-gray-300"
                                 }`}
                             >
                                 <span
                                     className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
-                                        isShared
+                                        isPublic
                                             ? "translate-x-7"
                                             : "translate-x-1"
                                     }`}
@@ -196,7 +198,7 @@ export default function CourseSettingsPage() {
                         <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                             <Button
                                 variant="outline"
-                                onClick={() => setIsShared(courseData.isShared || false)}
+                                onClick={() => setIsPublic(courseData.visibility === Visibility.PUBLIC)}
                             >
                                 Annuler
                             </Button>

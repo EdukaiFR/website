@@ -19,6 +19,8 @@ import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import type { VisibilityType } from "@/lib/types/visibility";
+
 // Define the extended course type for the table
 interface ExtendedCourseData {
     _id?: string;
@@ -32,7 +34,7 @@ interface ExtendedCourseData {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
-    isShared?: boolean;
+    visibility?: VisibilityType;
 }
 
 // Type for API response that might have different property names
@@ -53,7 +55,7 @@ type ApiCourseData = {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
-    isShared?: boolean;
+    visibility?: VisibilityType;
 };
 
 export default function LibraryPage() {
@@ -200,9 +202,6 @@ export default function LibraryPage() {
                 setUserCourses(extendedCourses);
             } else {
                 // If response is null or not an array, set empty array
-                console.warn(
-                    "Failed to load courses or received invalid response"
-                );
                 setUserCourses([]);
             }
         };
@@ -359,7 +358,7 @@ export default function LibraryPage() {
                                     author: course.author,
                                     createdAt: course.createdAt,
                                     isPublished: course.isPublished,
-                                    isShared: course.isShared,
+                                    visibility: course.visibility,
                                 }))}
                                 isLoading={false}
                             />
