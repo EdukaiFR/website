@@ -270,11 +270,13 @@ export const Statistics = ({
         if (diffInDays === 1) return `Hier à ${timeString}`;
         if (diffInDays < 7) return `Il y a ${diffInDays} jours à ${timeString}`;
 
-        return date.toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        }) + ` à ${timeString}`;
+        return (
+            date.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }) + ` à ${timeString}`
+        );
     };
 
     const getScoreColor = (score: number) => {
@@ -516,40 +518,40 @@ export const Statistics = ({
                                 Évolution des performances
                             </span>
                         </CardTitle>
-                        <CardDescription className="text-gray-600 font-medium ml-14">Vos 10 derniers quiz</CardDescription>
+                        <CardDescription className="text-gray-600 font-medium ml-14">
+                            Vos 10 derniers quiz
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
-                            {stats.recentPerformance.map(
-                                (performance) => (
-                                    <div
-                                        key={`${performance.attempt}-${performance.date}`}
-                                        className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-1.5 bg-blue-100 rounded-lg">
-                                                <Trophy className="w-3 h-3 text-blue-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-800">
-                                                    Quiz #{performance.attempt}
-                                                </p>
-                                                <div className="flex items-center gap-1 text-xs text-gray-500">
-                                                    <Calendar className="w-3 h-3" />
-                                                    {formatDate(performance.date)}
-                                                </div>
-                                            </div>
+                            {stats.recentPerformance.map(performance => (
+                                <div
+                                    key={`${performance.attempt}-${performance.date}`}
+                                    className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-blue-100 rounded-lg">
+                                            <Trophy className="w-3 h-3 text-blue-600" />
                                         </div>
-                                        <div
-                                            className={`px-2 py-1 rounded-md border text-xs font-semibold ${getScoreColor(
-                                                performance.score
-                                            )}`}
-                                        >
-                                            {Math.round(performance.score)}%
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-800">
+                                                Quiz #{performance.attempt}
+                                            </p>
+                                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                <Calendar className="w-3 h-3" />
+                                                {formatDate(performance.date)}
+                                            </div>
                                         </div>
                                     </div>
-                                )
-                            )}
+                                    <div
+                                        className={`px-2 py-1 rounded-md border text-xs font-semibold ${getScoreColor(
+                                            performance.score
+                                        )}`}
+                                    >
+                                        {Math.round(performance.score)}%
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </CardContent>
                 </Card>
@@ -582,7 +584,9 @@ export const Statistics = ({
                                             <span className="text-sm font-semibold text-gray-800">
                                                 Excellent
                                             </span>
-                                            <p className="text-xs text-gray-500">90-100%</p>
+                                            <p className="text-xs text-gray-500">
+                                                90-100%
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -590,14 +594,22 @@ export const Statistics = ({
                                             {stats.scoreDistribution.excellent}
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            {Math.round((stats.scoreDistribution.excellent / stats.totalQuizzes) * 100)}%
+                                            {Math.round(
+                                                (stats.scoreDistribution
+                                                    .excellent /
+                                                    stats.totalQuizzes) *
+                                                    100
+                                            )}
+                                            %
                                         </div>
                                     </div>
                                 </div>
                                 <div className="relative h-2.5 bg-green-100 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500"
-                                        style={{ width: `${(stats.scoreDistribution.excellent / stats.totalQuizzes) * 100}%` }}
+                                        style={{
+                                            width: `${(stats.scoreDistribution.excellent / stats.totalQuizzes) * 100}%`,
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -613,7 +625,9 @@ export const Statistics = ({
                                             <span className="text-sm font-semibold text-gray-800">
                                                 Bien
                                             </span>
-                                            <p className="text-xs text-gray-500">70-89%</p>
+                                            <p className="text-xs text-gray-500">
+                                                70-89%
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -621,14 +635,21 @@ export const Statistics = ({
                                             {stats.scoreDistribution.good}
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            {Math.round((stats.scoreDistribution.good / stats.totalQuizzes) * 100)}%
+                                            {Math.round(
+                                                (stats.scoreDistribution.good /
+                                                    stats.totalQuizzes) *
+                                                    100
+                                            )}
+                                            %
                                         </div>
                                     </div>
                                 </div>
                                 <div className="relative h-2.5 bg-blue-100 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
-                                        style={{ width: `${(stats.scoreDistribution.good / stats.totalQuizzes) * 100}%` }}
+                                        style={{
+                                            width: `${(stats.scoreDistribution.good / stats.totalQuizzes) * 100}%`,
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -644,7 +665,9 @@ export const Statistics = ({
                                             <span className="text-sm font-semibold text-gray-800">
                                                 Moyen
                                             </span>
-                                            <p className="text-xs text-gray-500">50-69%</p>
+                                            <p className="text-xs text-gray-500">
+                                                50-69%
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -652,14 +675,22 @@ export const Statistics = ({
                                             {stats.scoreDistribution.average}
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            {Math.round((stats.scoreDistribution.average / stats.totalQuizzes) * 100)}%
+                                            {Math.round(
+                                                (stats.scoreDistribution
+                                                    .average /
+                                                    stats.totalQuizzes) *
+                                                    100
+                                            )}
+                                            %
                                         </div>
                                     </div>
                                 </div>
                                 <div className="relative h-2.5 bg-yellow-100 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500"
-                                        style={{ width: `${(stats.scoreDistribution.average / stats.totalQuizzes) * 100}%` }}
+                                        style={{
+                                            width: `${(stats.scoreDistribution.average / stats.totalQuizzes) * 100}%`,
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -675,7 +706,9 @@ export const Statistics = ({
                                             <span className="text-sm font-semibold text-gray-800">
                                                 À améliorer
                                             </span>
-                                            <p className="text-xs text-gray-500">&lt;50%</p>
+                                            <p className="text-xs text-gray-500">
+                                                &lt;50%
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -683,14 +716,22 @@ export const Statistics = ({
                                             {stats.scoreDistribution.needsWork}
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            {Math.round((stats.scoreDistribution.needsWork / stats.totalQuizzes) * 100)}%
+                                            {Math.round(
+                                                (stats.scoreDistribution
+                                                    .needsWork /
+                                                    stats.totalQuizzes) *
+                                                    100
+                                            )}
+                                            %
                                         </div>
                                     </div>
                                 </div>
                                 <div className="relative h-2.5 bg-red-100 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500"
-                                        style={{ width: `${(stats.scoreDistribution.needsWork / stats.totalQuizzes) * 100}%` }}
+                                        style={{
+                                            width: `${(stats.scoreDistribution.needsWork / stats.totalQuizzes) * 100}%`,
+                                        }}
                                     />
                                 </div>
                             </div>
