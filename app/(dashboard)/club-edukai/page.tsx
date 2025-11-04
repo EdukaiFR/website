@@ -1,8 +1,124 @@
 "use client";
 
-import { Users, Calendar, Trophy, Star, UserPlus } from "lucide-react";
+import { Users, Calendar, Trophy, Star, UserPlus, BookOpen, FileText, Search, Filter, X } from "lucide-react";
+import { PublicCourseCard } from "@/components/club/PublicCourseCard";
+import { PublicSheetCard } from "@/components/club/PublicSheetCard";
+import { useCourseService, useSummarySheetService } from "@/services";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+
+type TabType = "courses" | "sheets";
+
+interface PublicCourse {
+    _id: string;
+    title: string;
+    subject: string;
+    level: string;
+    author: {
+        firstName: string;
+        lastName: string;
+        username: string;
+    };
+    createdAt: string;
+}
+
+interface PublicSheet {
+    _id: string;
+    title?: string;
+    author: {
+        firstName: string;
+        lastName: string;
+        username: string;
+    };
+    createdAt: string;
+}
 
 export default function ClubEdukaiPage() {
+    const [activeTab, setActiveTab] = useState<TabType>("courses");
+    const [courses, setCourses] = useState<PublicCourse[]>([]);
+    const [sheets, setSheets] = useState<PublicSheet[]>([]);
+    const [loadingCourses, setLoadingCourses] = useState(true);
+    const [loadingSheets, setLoadingSheets] = useState(true);
+
+    // Filters state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedSubject, setSelectedSubject] = useState<string>("all");
+    const [selectedLevel, setSelectedLevel] = useState<string>("all");
+    const [showFilters, setShowFilters] = useState(false);
+
+    const { getPublicCourses } = useCourseService();
+    const { getPublicSheets } = useSummarySheetService();
+
+    // Extract unique subjects and levels from courses
+    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort();
+    const levels = Array.from(new Set(courses.map(c => c.level))).sort();
+
+    // Filter courses based on search and filters
+    const filteredCourses = courses.filter(course => {
+        const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            course.author.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            course.author.lastName.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSubject = selectedSubject === "all" || course.subject === selectedSubject;
+        const matchesLevel = selectedLevel === "all" || course.level === selectedLevel;
+
+        return matchesSearch && matchesSubject && matchesLevel;
+    });
+
+    // Filter sheets based on search
+    const filteredSheets = sheets.filter(sheet => {
+        const matchesSearch = (sheet.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+                            sheet.author.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            sheet.author.lastName.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesSearch;
+    });
+
+    // Reset filters
+    const resetFilters = () => {
+        setSearchQuery("");
+        setSelectedSubject("all");
+        setSelectedLevel("all");
+    };
+
+    const hasActiveFilters = searchQuery !== "" || selectedSubject !== "all" || selectedLevel !== "all";
+
+    useEffect(() => {
+        async function fetchPublicCourses() {
+            setLoadingCourses(true);
+            try {
+                const response = await getPublicCourses();
+                if (response.status === "success") {
+                    setCourses(response.items || []);
+                }
+            } catch (error) {
+                console.error("Error fetching public courses:", error);
+            } finally {
+                setLoadingCourses(false);
+            }
+        }
+
+        fetchPublicCourses();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        async function fetchPublicSheets() {
+            setLoadingSheets(true);
+            try {
+                const response = await getPublicSheets();
+                if (response.status === "success") {
+                    setSheets(response.items || []);
+                }
+            } catch (error) {
+                console.error("Error fetching public sheets:", error);
+            } finally {
+                setLoadingSheets(false);
+            }
+        }
+
+        fetchPublicSheets();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
             {/* Beautiful Header Section */}
@@ -124,19 +240,204 @@ export default function ClubEdukaiPage() {
                 </div>
             </header>
 
-            {/* Content Area - Ready for future content */}
+            {/* Content Area with Tabs */}
             <main className="flex-1 relative z-10 bg-blue-50/50">
                 <div className="container mx-auto px-6 py-12">
-                    {/* Future content will go here */}
-                    <div className="text-center py-20">
-                        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
-                            <Users className="w-5 h-5" />
-                            Contenu à venir
+                    {/* Tabs Navigation */}
+                    <div className="flex items-center justify-center mb-8 gap-4">
+                        <button
+                            onClick={() => setActiveTab("courses")}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                                activeTab === "courses"
+                                    ? "bg-blue-600 text-white shadow-lg scale-105"
+                                    : "bg-white/70 text-gray-700 hover:bg-white hover:shadow-md"
+                            }`}
+                        >
+                            <BookOpen className="w-5 h-5" />
+                            <span>Cours publics</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                activeTab === "courses"
+                                    ? "bg-white/20 text-white"
+                                    : "bg-blue-100 text-blue-600"
+                            }`}>
+                                {hasActiveFilters && activeTab === "courses" ? `${filteredCourses.length}/${courses.length}` : courses.length}
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("sheets")}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                                activeTab === "sheets"
+                                    ? "bg-purple-600 text-white shadow-lg scale-105"
+                                    : "bg-white/70 text-gray-700 hover:bg-white hover:shadow-md"
+                            }`}
+                        >
+                            <FileText className="w-5 h-5" />
+                            <span>Fiches de révision</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                activeTab === "sheets"
+                                    ? "bg-white/20 text-white"
+                                    : "bg-purple-100 text-purple-600"
+                            }`}>
+                                {searchQuery && activeTab === "sheets" ? `${filteredSheets.length}/${sheets.length}` : sheets.length}
+                            </span>
+                        </button>
+                    </div>
+
+                    {/* Search and Filters */}
+                    <div className="mt-6 space-y-4">
+                        {/* Search Bar */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder={activeTab === "courses" ? "Rechercher un cours, un auteur..." : "Rechercher une fiche, un auteur..."}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/70 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            {activeTab === "courses" && (
+                                <button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap ${
+                                        showFilters || hasActiveFilters
+                                            ? "bg-blue-600 text-white shadow-lg"
+                                            : "bg-white/70 text-gray-700 hover:bg-white hover:shadow-md"
+                                    }`}
+                                >
+                                    <Filter className="w-5 h-5" />
+                                    <span>Filtres</span>
+                                    {hasActiveFilters && (
+                                        <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                                            {[selectedSubject !== "all", selectedLevel !== "all"].filter(Boolean).length}
+                                        </span>
+                                    )}
+                                </button>
+                            )}
+                            {hasActiveFilters && (
+                                <button
+                                    onClick={resetFilters}
+                                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-all duration-300 whitespace-nowrap"
+                                >
+                                    <X className="w-5 h-5" />
+                                    <span>Réinitialiser</span>
+                                </button>
+                            )}
                         </div>
-                        <p className="text-gray-600 mt-4 max-w-md mx-auto">
-                            Cette section sera bientôt remplie avec du contenu
-                            passionnant sur le Club Edukai.
-                        </p>
+
+                        {/* Filter Dropdowns (only for courses) */}
+                        {activeTab === "courses" && showFilters && (
+                            <div className="flex flex-col sm:flex-row gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Matière
+                                    </label>
+                                    <select
+                                        value={selectedSubject}
+                                        onChange={(e) => setSelectedSubject(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                        <option value="all">Toutes les matières</option>
+                                        {subjects.map((subject) => (
+                                            <option key={subject} value={subject}>
+                                                {subject}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Niveau
+                                    </label>
+                                    <select
+                                        value={selectedLevel}
+                                        onChange={(e) => setSelectedLevel(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                        <option value="all">Tous les niveaux</option>
+                                        {levels.map((level) => (
+                                            <option key={level} value={level}>
+                                                {level}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="mt-8">
+                        {activeTab === "courses" && (
+                            <div>
+                                {loadingCourses ? (
+                                    <div className="flex items-center justify-center py-20">
+                                        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                                    </div>
+                                ) : filteredCourses.length === 0 ? (
+                                    <div className="text-center py-20">
+                                        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
+                                            <BookOpen className="w-5 h-5" />
+                                            {courses.length === 0 ? "Aucun cours public" : "Aucun résultat"}
+                                        </div>
+                                        <p className="text-gray-600 mt-4 max-w-md mx-auto">
+                                            {courses.length === 0
+                                                ? "Il n'y a pas encore de cours publics disponibles. Revenez plus tard !"
+                                                : "Aucun cours ne correspond à vos critères. Essayez de modifier vos filtres."}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {filteredCourses.map((course) => (
+                                            <PublicCourseCard
+                                                key={course._id}
+                                                id={course._id}
+                                                title={course.title}
+                                                subject={course.subject}
+                                                level={course.level}
+                                                author={course.author}
+                                                createdAt={course.createdAt}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "sheets" && (
+                            <div>
+                                {loadingSheets ? (
+                                    <div className="flex items-center justify-center py-20">
+                                        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                                    </div>
+                                ) : filteredSheets.length === 0 ? (
+                                    <div className="text-center py-20">
+                                        <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-600 rounded-full px-6 py-3 text-lg font-medium">
+                                            <FileText className="w-5 h-5" />
+                                            {sheets.length === 0 ? "Aucune fiche publique" : "Aucun résultat"}
+                                        </div>
+                                        <p className="text-gray-600 mt-4 max-w-md mx-auto">
+                                            {sheets.length === 0
+                                                ? "Il n'y a pas encore de fiches de révision publiques. Revenez plus tard !"
+                                                : "Aucune fiche ne correspond à votre recherche."}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {filteredSheets.map((sheet) => (
+                                            <PublicSheetCard
+                                                key={sheet._id}
+                                                id={sheet._id}
+                                                title={sheet.title}
+                                                author={sheet.author}
+                                                createdAt={sheet.createdAt}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>
