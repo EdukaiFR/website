@@ -3,7 +3,6 @@ import { OwnerBadge } from "@/components/badge/OwnerBadge";
 import { SubjectBadge } from "@/components/badge/SubjectBadge";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
-import { ShareCourseDialog } from "./ShareCourseDialog";
 import {
     BicepsFlexed,
     CircleStop,
@@ -11,13 +10,21 @@ import {
     Settings,
     BookOpen,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type CourseData = {
     _id?: string;
     title?: string;
     subject?: string;
     level?: string;
-    shareToken?: string;
+    isShared?: boolean;
+    isOwner?: boolean;
+    author?: {
+        _id?: string;
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+    };
 };
 
 export type HeaderProps = {
@@ -33,11 +40,17 @@ export const Header = ({
 }: HeaderProps) => {
     const course = courseData as CourseData;
     const { user } = useSession();
-    
+    const router = useRouter();
+
     // Get display name: use username to match sidebar
     const getDisplayName = () => {
         return user?.username || "Utilisateur";
     };
+
+    // Check if user is the owner (frontend fallback if backend isOwner is incorrect)
+    const isUserOwner = course.isOwner ||
+        (user?.email && course.author?.username === user.email) ||
+        (user?.username && course.author?.username === user.username);
 
     return (
         <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-4 sm:p-6 lg:p-8 text-white shadow-2xl">
@@ -67,13 +80,6 @@ export const Header = ({
 
                     {/* Action Buttons - All on same line */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
-                        <div className="hidden sm:block">
-                            <ShareCourseDialog
-                                courseId={course._id || ""}
-                                shareToken={course.shareToken}
-                            />
-                        </div>
-
                         <Button
                             onClick={() => {
                                 if (selectedTab === "quiz") {
@@ -110,12 +116,15 @@ export const Header = ({
                             <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                         </Button>
 
-                        <Button
-                            size="icon"
-                            className="h-10 w-10 sm:h-12 sm:w-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex-shrink-0"
-                        >
-                            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </Button>
+                        {isUserOwner && (
+                            <Button
+                                size="icon"
+                                onClick={() => router.push(`/library/${course._id}/settings`)}
+                                className="h-10 w-10 sm:h-12 sm:w-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex-shrink-0"
+                            >
+                                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </Button>
+                        )}
                     </div>
                 </div>
 

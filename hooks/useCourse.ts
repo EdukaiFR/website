@@ -4,12 +4,21 @@ import type { CourseService } from "@/services";
 import { useState } from "react";
 
 interface CourseData {
+    _id?: string;
     title: string;
     subject: string;
     level: string;
     quizzes: string[];
     exams: string[];
     summarySheets: [];
+    isOwner?: boolean;
+    isShared?: boolean;
+    author?: {
+        _id?: string;
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+    };
 }
 
 interface ExamData {
