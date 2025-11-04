@@ -107,9 +107,9 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
 
                         {/* List of recent quizzes */}
                         <div className="space-y-2 flex-1">
-                            {recentQuizzes.map((quiz, index) => (
+                            {recentQuizzes.map((quiz) => (
                                 <div
-                                    key={index}
+                                    key={quiz.createdAt}
                                     className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"
                                 >
                                     <div className="flex items-center gap-3">

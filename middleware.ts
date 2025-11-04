@@ -48,6 +48,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        "/((?!api|static|.*\\..*|_next|auth|reset-password|shared).*)", // /api, /static, file extensions, /_next, /auth, /reset-password, and /shared
+        String.raw`/((?!api|static|.*\..*|_next|auth|reset-password|shared).*)`, // /api, /static, file extensions, /_next, /auth, /reset-password, and /shared
     ],
 };
