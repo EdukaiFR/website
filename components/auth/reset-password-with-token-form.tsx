@@ -1,27 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-    Eye,
-    EyeOff,
-    CheckCircle,
-    XCircle,
-    ArrowLeft,
-    Lock,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    verifyResetTokenAction,
     resetPasswordWithTokenAction,
+    verifyResetTokenAction,
 } from "@/lib/actions/auth";
 import { getPasswordRequirements } from "@/lib/schemas/auth";
 import { showToast } from "@/lib/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    ArrowLeft,
+    CheckCircle,
+    Eye,
+    EyeOff,
+    Lock,
+    XCircle,
+} from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 // Schema for password reset with token
 const resetPasswordSchema = z
