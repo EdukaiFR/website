@@ -1,4 +1,5 @@
 import type { SummarySheetService, BlobService } from "@/services";
+import type { SummarySheetData } from "@/lib/types/library";
 import { useState } from "react";
 
 interface SummarySheet {
