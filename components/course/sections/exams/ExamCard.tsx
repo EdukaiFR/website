@@ -38,22 +38,46 @@ export const ExamCard = ({
     const isUrgent = daysLeft <= 7;
     const isPassed = daysLeft < 0;
 
+    const getCardGradient = () => {
+        if (isPassed) {
+            return "from-gray-50 to-gray-100 opacity-75";
+        }
+        if (isUrgent) {
+            return "from-red-50 via-pink-50 to-orange-50 border border-red-100";
+        }
+        return "from-blue-50 via-indigo-50 to-purple-50 bg-white/80";
+    };
+
+    const getIconBackgroundColor = () => {
+        if (isPassed) {
+            return "bg-gray-200";
+        }
+        if (isUrgent) {
+            return "bg-gradient-to-r from-red-500 to-pink-500";
+        }
+        return "bg-gradient-to-r from-blue-500 to-indigo-500";
+    };
+
+    const getTitleTextColor = () => {
+        if (isPassed) {
+            return "text-gray-600";
+        }
+        if (isUrgent) {
+            return "text-red-700";
+        }
+        return "text-blue-700";
+    };
+
     return (
         <div className="group relative">
             {/* Modern Card Container - Responsive Size */}
             <div
                 className={`
-        relative overflow-hidden rounded-3xl bg-gradient-to-br backdrop-blur-sm 
-        border-0 shadow-lg hover:shadow-2xl transition-all duration-300 
+        relative overflow-hidden rounded-3xl bg-gradient-to-br backdrop-blur-sm
+        border-0 shadow-lg hover:shadow-2xl transition-all duration-300
         transform hover:scale-[1.02] hover:-translate-y-1
         w-full h-80 sm:h-80 p-4 sm:p-6 flex flex-col justify-between
-        ${
-            isPassed
-                ? "from-gray-50 to-gray-100 opacity-75"
-                : isUrgent
-                  ? "from-red-50 via-pink-50 to-orange-50 border border-red-100"
-                  : "from-blue-50 via-indigo-50 to-purple-50 bg-white/80"
-        }
+        ${getCardGradient()}
       `}
             >
                 {/* Background Pattern */}
@@ -69,13 +93,7 @@ export const ExamCard = ({
                             <div
                                 className={`
                 p-1 sm:p-2 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0
-                ${
-                    isPassed
-                        ? "bg-gray-200"
-                        : isUrgent
-                          ? "bg-gradient-to-r from-red-500 to-pink-500"
-                          : "bg-gradient-to-r from-blue-500 to-indigo-500"
-                }
+                ${getIconBackgroundColor()}
               `}
                             >
                                 <Calendar className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-white" />
@@ -83,13 +101,7 @@ export const ExamCard = ({
                             <h4
                                 className={`
                 text-sm sm:text-lg font-bold leading-tight break-words flex-1 min-w-0 w-full
-                ${
-                    isPassed
-                        ? "text-gray-600"
-                        : isUrgent
-                          ? "text-red-700"
-                          : "text-blue-700"
-                }
+                ${getTitleTextColor()}
               `}
                                 style={{
                                     display: "-webkit-box",

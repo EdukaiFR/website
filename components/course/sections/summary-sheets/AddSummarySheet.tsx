@@ -46,7 +46,7 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
         form.setValue("files", [...watchedFiles, ...files]);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
@@ -109,17 +109,13 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                         >
                             <div className="space-y-4">
                                 {/* Custom Drag & Drop Area */}
-                                <div
-                                    className={`p-6 border-2 border-dashed rounded-2xl transition-colors duration-200 cursor-pointer ${
+                                <label
+                                    htmlFor="file-input"
+                                    className={`block p-6 border-2 border-dashed rounded-2xl transition-colors duration-200 cursor-pointer ${
                                         isDragActive
                                             ? "border-blue-400 bg-blue-50"
                                             : "border-gray-200 bg-gray-50/50 hover:bg-gray-50"
                                     }`}
-                                    onClick={() =>
-                                        document
-                                            .getElementById("file-input")
-                                            ?.click()
-                                    }
                                     onDragOver={e => {
                                         e.preventDefault();
                                         setIsDragActive(true);
@@ -151,7 +147,7 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                                         accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.svg,.doc,.docx"
                                         onChange={handleFileChange}
                                     />
-                                </div>
+                                </label>
 
                                 <div className="text-xs text-gray-500 text-center space-y-1">
                                     <p>

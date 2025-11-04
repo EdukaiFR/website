@@ -106,7 +106,7 @@ export function FileUpload({
         });
     };
 
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(true);
     };
@@ -115,7 +115,7 @@ export function FileUpload({
         setIsDragActive(false);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
@@ -158,16 +158,15 @@ export function FileUpload({
                 Fichiers
             </FormLabel>
             <FormControl>
-                <div
+                <label
+                    htmlFor="file-input"
+                    aria-label="Sélectionner des fichiers à uploader"
                     className={clsx(
-                        "relative border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
+                        "block relative border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
                         isDragActive
                             ? "border-blue-600 bg-blue-50 shadow-lg scale-[1.02]"
                             : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
                     )}
-                    onClick={() =>
-                        document.getElementById("file-input")?.click()
-                    }
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -191,7 +190,7 @@ export function FileUpload({
                             PDF, TXT, PNG, JPG, JPEG, PPT
                         </p>
                     </div>
-                </div>
+                </label>
             </FormControl>
             <FormDescription className="text-gray-600">
                 Sélectionnes tes fichiers

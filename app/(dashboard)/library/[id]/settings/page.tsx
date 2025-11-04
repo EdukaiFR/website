@@ -57,7 +57,7 @@ export default function CourseSettingsPage() {
                         : "Cours rendu privé avec succès !"
                 );
                 // Reload the page to refresh course data
-                window.location.reload();
+                globalThis.location.reload();
             } else {
                 // Revert on error
                 setIsPublic(currentVisibility);

@@ -48,6 +48,7 @@ export const useFileDecompression = () => {
                             });
                         } catch (error) {
                             // Skip files that cannot be extracted
+                            console.debug("Failed to extract file from ZIP:", error);
                         }
                     }
                 }

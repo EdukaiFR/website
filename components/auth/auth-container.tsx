@@ -21,7 +21,6 @@ export function AuthContainer({
     const [mode, setMode] = useState<AuthMode>(initialMode);
 
     const handleAuthSuccess = () => {
-        console.log("Auth success for mode:", mode);
         onAuthSuccess?.();
     };
 

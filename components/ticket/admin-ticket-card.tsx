@@ -170,7 +170,7 @@ export function AdminTicketCard({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             {/* Status Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">
+                                <label htmlFor={`status-${ticket.id}`} className="text-xs font-medium text-gray-700">
                                     Statut
                                 </label>
                                 <Select
@@ -183,7 +183,7 @@ export function AdminTicketCard({
                                     }
                                     disabled={isUpdating}
                                 >
-                                    <SelectTrigger className="h-8 text-xs">
+                                    <SelectTrigger id={`status-${ticket.id}`} className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -219,7 +219,7 @@ export function AdminTicketCard({
 
                             {/* Priority Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">
+                                <label htmlFor={`priority-${ticket.id}`} className="text-xs font-medium text-gray-700">
                                     Priorité
                                 </label>
                                 <Select
@@ -232,7 +232,7 @@ export function AdminTicketCard({
                                     }
                                     disabled={isUpdating}
                                 >
-                                    <SelectTrigger className="h-8 text-xs">
+                                    <SelectTrigger id={`priority-${ticket.id}`} className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -254,10 +254,11 @@ export function AdminTicketCard({
 
                             {/* Assignment Control */}
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-700">
+                                <label htmlFor={`assignedTo-${ticket.id}`} className="text-xs font-medium text-gray-700">
                                     Assignation
                                 </label>
                                 <Button
+                                    id={`assignedTo-${ticket.id}`}
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onAssign(ticket.id)}

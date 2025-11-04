@@ -273,7 +273,7 @@ export default function TicketsPage() {
                         // Loading skeleton
                         [...Array(3)].map((_, i) => (
                             <Card
-                                key={i}
+                                key={`loading-skeleton-${i}`}
                                 className="border-0 shadow-lg animate-pulse"
                             >
                                 <CardContent className="p-6">

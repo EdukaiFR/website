@@ -818,7 +818,11 @@ export default function TicketDetailPage() {
                                     </div>
 
                                     <div className="space-y-4">
+                                        <label htmlFor="message-input" className="sr-only">
+                                            Votre message
+                                        </label>
                                         <Textarea
+                                            id="message-input"
                                             placeholder="Tapez votre message ici..."
                                             value={newComment}
                                             onChange={e =>
