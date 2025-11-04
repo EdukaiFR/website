@@ -17,7 +17,7 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                     </span>
-                    <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+                    <span className="text-sm font-semibold text-blue-700">
                         Plateforme d'apprentissage
                     </span>
                 </div>
@@ -35,8 +35,7 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                         tes cours en{" "}
                         <span className="font-bold text-blue-600">
                             20 secondes
-                        </span>
-                        .
+                        </span>.
                     </p>
                 </div>
 

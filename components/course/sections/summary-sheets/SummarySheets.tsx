@@ -32,11 +32,6 @@ export interface SummarySheetProps {
     onRefresh?: () => void;
 }
 
-// TODO: remove the whole file.source logic for summary sheets, I'm not sure
-// we need that property, especially because the backend just returns 1 type of
-// entity from the /summary-sheets endpoint, so it only creates unnecessary complexity.
-// Summary sheets should be one and only one entity : the LLM generated markdown documents
-
 export const SummarySheets = ({
     isPrivateView,
     user_id,
@@ -45,7 +40,7 @@ export const SummarySheets = ({
     onRefresh,
 }: SummarySheetProps) => {
     const typedSummarySheets: SummarySheetData[] =
-        summarySheets && summarySheets.length > 0 ? summarySheets : [];
+        summarySheets?.length > 0 ? summarySheets : [];
 
     const [localSummarySheets, setLocalSummarySheets] =
         useState<SummarySheetData[]>(typedSummarySheets);
@@ -64,7 +59,7 @@ export const SummarySheets = ({
         return sheets.map((file, index) => ({
             ...file,
             name:
-                file.name && file.name.trim().length > 0
+                file.name?.trim().length > 0
                     ? file.name
                     : `Fiche ${index + 1}`,
         }));

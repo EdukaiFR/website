@@ -26,7 +26,7 @@ export function useCourseLogic() {
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
-    const [selectedTab, setSelectedTabState] = useState<string>(tabFromUrl);
+    const [selectedTabState, setSelectedTabState] = useState<string>(tabFromUrl);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -198,7 +198,7 @@ export function useCourseLogic() {
     useEffect(() => {
         const loadInsightsForTab = async () => {
             if (
-                (selectedTab === "statistics" || selectedTab === "overview") &&
+                (selectedTabState === "statistics" || selectedTabState === "overview") &&
                 quizId
             ) {
                 // Only load if we truly don't have any insights data yet
@@ -212,11 +212,11 @@ export function useCourseLogic() {
         };
 
         loadInsightsForTab();
-    }, [selectedTab, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
+    }, [selectedTabState, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
 
     return {
         courseId,
-        selectedTab,
+        selectedTab: selectedTabState,
         setSelectedTab,
         courseData,
         quizData,

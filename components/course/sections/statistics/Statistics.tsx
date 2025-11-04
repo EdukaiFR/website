@@ -339,7 +339,7 @@ export const Statistics = ({
             }>;
         };
 
-        if (typedData && typedData.items && typedData.items.length > 0) {
+        if (typedData?.items?.length > 0) {
             // We have real insights data
             return {
                 items: typedData.items,
@@ -521,9 +521,9 @@ export const Statistics = ({
                     <CardContent>
                         <div className="space-y-2">
                             {stats.recentPerformance.map(
-                                (performance, index) => (
+                                (performance) => (
                                     <div
-                                        key={index}
+                                        key={`${performance.attempt}-${performance.date}`}
                                         className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"
                                     >
                                         <div className="flex items-center gap-3">

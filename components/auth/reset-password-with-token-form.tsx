@@ -297,9 +297,9 @@ export default function ResetPasswordWithTokenForm() {
                             Exigences du mot de passe :
                         </p>
                         <div className="grid gap-1.5">
-                            {passwordRequirements.map((req, index) => (
+                            {passwordRequirements.map((req) => (
                                 <div
-                                    key={index}
+                                    key={req.label}
                                     className="flex items-center gap-2 text-sm"
                                 >
                                     {req.met ? (
