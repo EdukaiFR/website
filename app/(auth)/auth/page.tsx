@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { AuthContainer } from "@/components/auth";
+import {
+    AuthContainer,
+    EdukaiHeader,
+    FeatureCard,
+} from "@/components/auth";
 
 export default function Authpage() {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -37,25 +41,7 @@ export default function Authpage() {
                 <div className="flex flex-col items-center justify-center w-full lg:order-1 order-2">
                     <Card className="w-full max-w-md shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
                         <CardContent className="p-4 sm:p-6 lg:p-8">
-                            {/* Header */}
-                            <div className="flex items-center justify-center mb-6 sm:mb-8">
-                                <div className="flex items-center gap-2 sm:gap-3">
-                                    <div className="relative">
-                                        <Image
-                                            src="/EdukaiLogo.svg"
-                                            alt="Logo Edukai"
-                                            width={32}
-                                            height={32}
-                                            className="sm:w-10 sm:h-10 rounded-full"
-                                        />
-                                    </div>
-                                    <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                        Edukai
-                                    </h1>
-                                </div>
-                            </div>
-
-                            {/* Auth Container */}
+                            <EdukaiHeader />
                             <AuthContainer
                                 initialMode="login"
                                 onAuthSuccess={handleAuthSuccess}
@@ -135,74 +121,26 @@ export default function Authpage() {
                                 >
                                     <div className="flex justify-center items-end h-full px-2 sm:px-4 pb-4 sm:pb-6 lg:pb-8">
                                         <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 max-w-xs sm:max-w-sm lg:max-w-md w-full">
-                                            <div className="bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4 border border-white/20 shadow-lg transform hover:scale-105 transition-all duration-300">
-                                                <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">
-                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-400/20 rounded-full flex items-center justify-center">
-                                                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-400 rounded-full"></div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">
-                                                            IA Avancée
-                                                        </p>
-                                                        <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">
-                                                            Questions
-                                                            personnalisées par
-                                                            l&apos;IA
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4 border border-white/20 shadow-lg transform hover:scale-105 transition-all duration-300">
-                                                <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">
-                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-400/20 rounded-full flex items-center justify-center">
-                                                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full"></div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">
-                                                            Rapide
-                                                        </p>
-                                                        <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">
-                                                            Résultats en moins
-                                                            de 20s
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4 border border-white/20 shadow-lg transform hover:scale-105 transition-all duration-300">
-                                                <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">
-                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-pink-400/20 rounded-full flex items-center justify-center">
-                                                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-pink-400 rounded-full"></div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">
-                                                            Adaptatif
-                                                        </p>
-                                                        <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">
-                                                            S&apos;adapte à ton
-                                                            niveau d&apos;étude
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4 border border-white/20 shadow-lg transform hover:scale-105 transition-all duration-300">
-                                                <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">
-                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-400/20 rounded-full flex items-center justify-center">
-                                                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-purple-400 rounded-full"></div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-white font-bold text-xs sm:text-sm drop-shadow-md">
-                                                            Intelligent
-                                                        </p>
-                                                        <p className="text-white/80 text-xs drop-shadow-sm hidden sm:block">
-                                                            Analyse tes points
-                                                            faibles
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <FeatureCard
+                                                color="yellow"
+                                                title="IA Avancée"
+                                                description="Questions personnalisées par l'IA"
+                                            />
+                                            <FeatureCard
+                                                color="green"
+                                                title="Rapide"
+                                                description="Résultats en moins de 20s"
+                                            />
+                                            <FeatureCard
+                                                color="pink"
+                                                title="Adaptatif"
+                                                description="S'adapte à ton niveau d'étude"
+                                            />
+                                            <FeatureCard
+                                                color="purple"
+                                                title="Intelligent"
+                                                description="Analyse tes points faibles"
+                                            />
                                         </div>
                                     </div>
                                 </div>
