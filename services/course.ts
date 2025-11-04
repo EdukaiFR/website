@@ -46,8 +46,7 @@ export interface CourseService {
         date: Date
     ) => Promise<{ message: string } | null>;
     toggleShare: (courseId: string) => Promise<any>;
-    getSharedCourse: (shareToken: string) => Promise<any>;
-    duplicateSharedCourse: (shareToken: string) => Promise<any>;
+    getPublicCourses: () => Promise<any>;
 }
 
 export function useCourseService() {
@@ -289,11 +288,9 @@ export function useCourseService() {
         }
     };
 
-    const getSharedCourse = async (shareToken: string) => {
+    const getPublicCourses = async () => {
         try {
-            const response = await axios.get(
-                `${apiUrl}/courses/shared/${shareToken}`
-            );
+            const response = await axios.get(`${apiUrl}/courses/public`);
 
             return response.data;
         } catch (error: any) {
@@ -303,28 +300,7 @@ export function useCourseService() {
 
             return {
                 status: "failure",
-                message: "Le cours partagé n'a pas été trouvé ou le lien a été révoqué.",
-            };
-        }
-    };
-
-    const duplicateSharedCourse = async (shareToken: string) => {
-        try {
-            const response = await axios.post(
-                `${apiUrl}/courses/shared/${shareToken}/duplicate`,
-                {},
-                { withCredentials: true }
-            );
-
-            return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
-            }
-
-            return {
-                status: "failure",
-                message: "Une erreur est survenue lors de l'ajout du cours à votre bibliothèque.",
+                message: "Une erreur est survenue lors de la récupération des cours publics.",
             };
         }
     };
@@ -343,7 +319,6 @@ export function useCourseService() {
         updateExamById,
         deleteExamById,
         toggleShare,
-        getSharedCourse,
-        duplicateSharedCourse,
+        getPublicCourses,
     };
 }
