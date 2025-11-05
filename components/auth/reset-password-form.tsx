@@ -127,13 +127,12 @@ export function ResetPasswordForm({
     return (
         <div className="space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="text-center space-y-1 sm:space-y-2">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            <div className="text-center space-y-2 sm:space-y-3">
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                     Mot de passe oublié ?
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600">
-                    Pas de problème ! Entrez votre email et nous vous enverrons
-                    un lien de réinitialisation.
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                    Pas de souci ! Indique ton email et reçois un lien pour créer un nouveau mot de passe
                 </p>
             </div>
 
@@ -157,13 +156,13 @@ export function ResetPasswordForm({
                             type="email"
                             placeholder="ton.email@exemple.com"
                             {...register("email")}
-                            className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                            className={`pl-11 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                 errors.email
                                     ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                     : "border-gray-200"
                             }`}
                         />
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                     {errors.email && (
                         <p className="text-sm text-red-500 flex items-center gap-1">
