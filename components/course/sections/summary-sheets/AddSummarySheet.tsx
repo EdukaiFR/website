@@ -68,6 +68,39 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
         form.setValue("files", updatedFiles);
     };
 
+    const processFile = async (file: File, index: number, total: number) => {
+        console.log(`\n[AddSummarySheet] Processing file ${index + 1}/${total}:`, file.name);
+        console.log(`[AddSummarySheet] File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+        console.log(`[AddSummarySheet] File type: ${file.type}`);
+
+        // Étape 1: Upload le fichier
+        console.log(`[AddSummarySheet] Step 1: Uploading file "${file.name}" to blob service...`);
+        const uploadResponse = await blobService.uploadFile(file, "summary");
+        console.log(`[AddSummarySheet] Upload response:`, uploadResponse);
+
+        if (uploadResponse?.status !== "success") {
+            console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
+            console.error(`[AddSummarySheet] Upload response status:`, uploadResponse?.status);
+            throw new Error("Upload failed");
+        }
+
+        const fileId = uploadResponse.items._id;
+        console.log(`[AddSummarySheet] ✅ File uploaded successfully. File ID: ${fileId}`);
+
+        // Étape 2: Lier le fichier au cours
+        console.log(`[AddSummarySheet] Step 2: Linking file "${file.name}" (ID: ${fileId}) to course ${courseId}...`);
+        const linkResponse = await courseService.addFileToCourse(courseId, fileId);
+        console.log(`[AddSummarySheet] Link response:`, linkResponse);
+
+        if (linkResponse?.status !== "success") {
+            console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
+            console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
+            throw new Error("Link failed");
+        }
+
+        console.log(`[AddSummarySheet] ✅ File "${file.name}" successfully linked to course`);
+    };
+
     const onSubmit = async (data: FormData) => {
         console.log("=== [AddSummarySheet] Starting upload process ===");
         console.log("[AddSummarySheet] Number of files to upload:", data.files.length);
@@ -80,43 +113,11 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
 
             // Upload chaque fichier
             for (let i = 0; i < data.files.length; i++) {
-                const file = data.files[i];
-                console.log(`\n[AddSummarySheet] Processing file ${i + 1}/${data.files.length}:`, file.name);
-                console.log(`[AddSummarySheet] File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-                console.log(`[AddSummarySheet] File type: ${file.type}`);
-
                 try {
-                    // Étape 1: Upload le fichier
-                    console.log(`[AddSummarySheet] Step 1: Uploading file "${file.name}" to blob service...`);
-                    const uploadResponse = await blobService.uploadFile(file, "summary");
-                    console.log(`[AddSummarySheet] Upload response:`, uploadResponse);
-
-                    if (!uploadResponse || uploadResponse.status !== "success") {
-                        console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
-                        console.error(`[AddSummarySheet] Upload response status:`, uploadResponse?.status);
-                        errorCount++;
-                        continue;
-                    }
-
-                    const fileId = uploadResponse.items._id;
-                    console.log(`[AddSummarySheet] ✅ File uploaded successfully. File ID: ${fileId}`);
-
-                    // Étape 2: Lier le fichier au cours
-                    console.log(`[AddSummarySheet] Step 2: Linking file "${file.name}" (ID: ${fileId}) to course ${courseId}...`);
-                    const linkResponse = await courseService.addFileToCourse(courseId, fileId);
-                    console.log(`[AddSummarySheet] Link response:`, linkResponse);
-
-                    if (!linkResponse || linkResponse.status !== "success") {
-                        console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
-                        console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
-                        errorCount++;
-                        continue;
-                    }
-
-                    console.log(`[AddSummarySheet] ✅ File "${file.name}" successfully linked to course`);
+                    await processFile(data.files[i], i, data.files.length);
                     successCount++;
                 } catch (error) {
-                    console.error(`[AddSummarySheet] ❌ Error processing file "${file.name}":`, error);
+                    console.error(`[AddSummarySheet] ❌ Error processing file "${data.files[i].name}":`, error);
                     errorCount++;
                 }
             }

@@ -129,7 +129,7 @@ export const SummarySheets = ({
             link.download = file.name;
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+            link.remove();
             return;
         }
 
@@ -154,7 +154,7 @@ export const SummarySheets = ({
                     link.download = file.name;
                     document.body.appendChild(link);
                     link.click();
-                    document.body.removeChild(link);
+                    link.remove();
                     return;
                 }
 

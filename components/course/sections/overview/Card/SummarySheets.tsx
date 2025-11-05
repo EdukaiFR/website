@@ -97,7 +97,7 @@ export const SummarySheets = ({
                 link.download = currentSheet.name;
                 document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
+                link.remove();
 
                 toast.success("Téléchargement", {
                     description: "Le fichier a été téléchargé.",
@@ -142,7 +142,7 @@ export const SummarySheets = ({
                     link.download = sheet.name;
                     document.body.appendChild(link);
                     link.click();
-                    document.body.removeChild(link);
+                    link.remove();
                     uploadedFileCount++;
                     // Small delay between downloads
                     await new Promise(resolve => setTimeout(resolve, 300));
@@ -196,7 +196,7 @@ export const SummarySheets = ({
                         link.download = summary_sheet.name;
                         document.body.appendChild(link);
                         link.click();
-                        document.body.removeChild(link);
+                        link.remove();
                         return;
                     }
 
@@ -226,7 +226,7 @@ export const SummarySheets = ({
                         a.click();
 
                         window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
+                        a.remove();
                     }
                 } catch (error) {
                     console.error(
@@ -356,7 +356,8 @@ export const SummarySheets = ({
                 </Button>
 
                 {/* Summary Sheet Card */}
-                <div
+                <button
+                    type="button"
                     className="flex-1 min-w-0 cursor-pointer"
                     onClick={() =>
                         handleOpenModal(
@@ -365,7 +366,7 @@ export const SummarySheets = ({
                     }
                 >
                     <SummarySheetCard summary_sheet={showSummarySheet} />
-                </div>
+                </button>
 
                 <Button
                     onClick={() =>
@@ -545,9 +546,9 @@ export const SummarySheets = ({
                                     {/* Pagination dots */}
                                     <div className="flex items-center gap-3 flex-1">
                                         {summary_sheets.length > 1 ? (
-                                            summary_sheets.map((_, index) => (
+                                            summary_sheets.map((sheet, index) => (
                                                 <button
-                                                    key={index}
+                                                    key={sheet._id}
                                                     onClick={() =>
                                                         setModalSheetIndex(
                                                             index

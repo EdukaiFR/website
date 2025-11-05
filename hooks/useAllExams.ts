@@ -23,7 +23,7 @@ export function useAllExams() {
                 // Get all exams directly from the new API endpoint
                 const examsResponse = await courseService.getAllExams();
 
-                if (!examsResponse || examsResponse.status !== "success") {
+                if (examsResponse?.status !== "success") {
                     setAllExams([]);
                     setLoading(false);
                     return;

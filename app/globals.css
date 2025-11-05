@@ -295,6 +295,6 @@ body {
 
 [data-sonner-toast] [data-close-button]:hover {
     background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
+    color: #1d4ed8;
     transform: scale(1.1);
 }

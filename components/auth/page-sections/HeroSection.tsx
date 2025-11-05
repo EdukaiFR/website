@@ -1,8 +1,8 @@
-import { Instagram } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { features } from "@/config/auth/features.config";
 
 interface HeroSectionProps {
-    mounted: boolean;
+    readonly mounted: boolean;
 }
 
 export function HeroSection({ mounted }: HeroSectionProps) {
@@ -32,11 +32,7 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 max-w-xl leading-relaxed">
                         Edukai génère des questions personnalisées à partir de
-                        tes cours en{" "}
-                        <span className="font-bold text-blue-600">
-                            20 secondes
-                        </span>
-                        .
+                        tes cours en <span className="font-bold text-blue-600">20 secondes</span>.
                     </p>
                 </div>
 
@@ -65,7 +61,7 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm"
                     >
-                        <Instagram className="w-4 h-4" />
+                        <Share2 className="w-4 h-4" />
                         <span>Suivez-nous sur Instagram</span>
                     </a>
                 </div>

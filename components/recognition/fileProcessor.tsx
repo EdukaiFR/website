@@ -79,36 +79,25 @@ const FileProcessorComponent = ({
         processFile();
     }, [selectedFile, fileId]);
 
-    const getFileTypeIcon = () => {
-        if (!selectedFile) return null;
-        const type = FileProcessor.getFileType(selectedFile);
-        switch (type) {
-            case "pdf":
-                return "📄";
-            case "image":
-                return "🖼️";
-            case "text":
-                return "📝";
-            default:
-                return "📁";
-        }
+    // Use a stable wrapper to prevent double rendering
+    const getStatusText = () => {
+        if (!processing) return "Importé !";
+        if (progress) return `${progress.message} ${progress.progress}%`;
+        return "Traitement en cours...";
     };
 
-    // Use a stable wrapper to prevent double rendering
+    const getStatusClassName = () => {
+        return processing
+            ? "text-xs text-blue-600 font-medium"
+            : "text-xs text-gray-500";
+    };
+
     return (
         <span
-            className={
-                !processing
-                    ? "text-xs text-gray-500"
-                    : "text-xs text-blue-600 font-medium"
-            }
+            className={getStatusClassName()}
             data-file-id={fileId}
         >
-            {!processing
-                ? "Importé !"
-                : progress
-                  ? `${progress.message} ${progress.progress}%`
-                  : "Traitement en cours..."}
+            {getStatusText()}
         </span>
     );
 };

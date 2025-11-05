@@ -85,10 +85,21 @@ export const ExamCard = ({
         }
     };
 
+    const getLabelText = () => {
+        if (isPassed) {
+            return `jour${Math.abs(daysLeft) > 1 ? "s" : ""} passé${Math.abs(daysLeft) > 1 ? "s" : ""}`;
+        }
+        if (isToday) {
+            return "C'est aujourd'hui !";
+        }
+        return `jour${daysLeft > 1 ? "s" : ""} restant${daysLeft > 1 ? "s" : ""}`;
+    };
+
     return (
         <div className="flex items-center justify-center w-full h-full">
-            <div
-                className="relative w-full h-full bg-white rounded-lg shadow-lg border border-[#E3E3E7] overflow-hidden flex flex-col hover:shadow-xl transition-all duration-200 cursor-pointer"
+            <button
+                type="button"
+                className="relative w-full h-full bg-white rounded-lg shadow-lg border border-[#E3E3E7] overflow-hidden flex flex-col hover:shadow-xl transition-all duration-200 cursor-pointer text-left"
                 onClick={handleCardClick}
             >
                 {/* Status Badge */}
@@ -125,11 +136,7 @@ export const ExamCard = ({
                     >
                         <Clock className="w-5 h-5" />
                         <span className="text-base font-semibold">
-                            {isPassed
-                                ? `jour${Math.abs(daysLeft) > 1 ? "s" : ""} passé${Math.abs(daysLeft) > 1 ? "s" : ""}`
-                                : isToday
-                                  ? "C'est aujourd'hui !"
-                                  : `jour${daysLeft > 1 ? "s" : ""} restant${daysLeft > 1 ? "s" : ""}`}
+                            {getLabelText()}
                         </span>
                     </div>
 
@@ -149,7 +156,7 @@ export const ExamCard = ({
                         })}
                     </p>
                 </div>
-            </div>
+            </button>
 
             {/* Dialog */}
             <ExamDialog

@@ -40,8 +40,6 @@ type FileUploadProps = {
     >;
 };
 
-type FileIndexMap = { [fileId: string]: number };
-
 const MAX_CONCURRENT_PROCESSING = 2;
 const MAX_FILES = 5;
 
@@ -58,7 +56,6 @@ export function FileUpload({
     setUploadedFileIds,
 }: FileUploadProps) {
     const [isDragActive, setIsDragActive] = useState(false);
-    const [fileIndexMap, setFileIndexMap] = useState<FileIndexMap>({});
     const isRecognizing = Object.values(fileProcessingStates).some(Boolean);
     const currentlyProcessingCount =
         Object.values(fileProcessingStates).filter(Boolean).length;
@@ -127,7 +124,6 @@ export function FileUpload({
             const file = filesToAdd[index];
             const fileIndex = selectedFiles.length + index;
             const localFileId = `${file.name}-${file.size}-${fileIndex}`;
-            setFileIndexMap(prev => ({ ...prev, [localFileId]: fileIndex }));
             handleFileUpload(file, localFileId, fileIndex);
         }
     };
@@ -167,7 +163,6 @@ export function FileUpload({
             const file = filesToAdd[index];
             const fileIndex = selectedFiles.length + index;
             const localFileId = `${file.name}-${file.size}-${fileIndex}`;
-            setFileIndexMap(prev => ({ ...prev, [localFileId]: fileIndex }));
             handleFileUpload(file, localFileId, fileIndex);
         }
     };
