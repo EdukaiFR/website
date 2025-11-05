@@ -1,19 +1,19 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, GraduationCap, Save, School } from "lucide-react";
 import { useState } from "react";
-import { GraduationCap, School, Building2, Save } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { PersistentAlert } from "@/components/ui/persistent-alert";
+import { updateEducationAction } from "@/lib/actions/user";
 import {
     educationSettingsSchema,
     type EducationSettingsFormValues,
 } from "@/lib/schemas/user";
-import { updateEducationAction } from "@/lib/actions/user";
 
 export interface EducationSettingsProps {
     initialData?: EducationSettingsFormValues;
@@ -76,7 +76,7 @@ export function EducationSettings({
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-gray-800">
                     <GraduationCap className="w-5 h-5" />
-                    Informations d&apos;études
+                    Informations d'études
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -118,7 +118,7 @@ export function EducationSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Votre classe actuelle ou niveau d&apos;études (ex:
+                            Votre classe actuelle ou niveau d'études (ex:
                             Terminale S, L3 Informatique, M1 Finance).
                         </p>
                     </div>
@@ -130,7 +130,7 @@ export function EducationSettings({
                             className="text-sm font-medium text-gray-700 flex items-center gap-2"
                         >
                             <GraduationCap className="w-4 h-4" />
-                            Niveau d&apos;études *
+                            Niveau d'études *
                         </label>
                         <Input
                             id="levelOfStudy"
@@ -150,7 +150,7 @@ export function EducationSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Type d&apos;établissement ou niveau général (ex:
+                            Type d'établissement ou niveau général (ex:
                             Lycée, Université, École supérieure).
                         </p>
                     </div>
@@ -185,7 +185,7 @@ export function EducationSettings({
                                     <strong>Aide :</strong> Ces informations
                                     nous aident à personnaliser votre expérience
                                     et à vous proposer du contenu adapté à votre
-                                    niveau d&apos;études.
+                                    niveau d'études.
                                 </p>
                             </div>
                         </div>
@@ -208,7 +208,7 @@ export function EducationSettings({
                         <Button
                             type="submit"
                             disabled={isLoading || !isDirty}
-                            className="px-6 h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <span className="flex items-center gap-2">

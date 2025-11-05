@@ -1,11 +1,14 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
-import { BookOpen, Calendar, User, Eye, GraduationCap } from "lucide-react";
+import type { VisibilityType } from "@/lib/types/visibility";
+import { Visibility } from "@/lib/types/visibility";
+import { BookOpen, Calendar, Eye, GraduationCap, User, Globe, Lock } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export type CourseCardProps = {
     id: string;
@@ -15,6 +18,7 @@ export type CourseCardProps = {
     author: string;
     createdAt: string;
     isPublished: boolean;
+    visibility?: VisibilityType;
 };
 
 export const CourseCard = ({
@@ -24,8 +28,11 @@ export const CourseCard = ({
     level,
     author,
     createdAt,
-    isPublished,
+    isPublished = true,
+    visibility = Visibility.PRIVATE,
 }: CourseCardProps) => {
+    const router = useRouter();
+
     const getSubjectColor = (subject: string) => {
         const colors = {
             Mathématiques: "bg-blue-100 text-blue-800 border-blue-200",
@@ -132,15 +139,37 @@ export const CourseCard = ({
                                 {isPublished ? "Publié" : "Brouillon"}
                             </span>
                         </div>
-                        <Link href={`/library/${id}`}>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105 whitespace-nowrap"
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => router.push(`/library/${id}/settings`)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md transform hover:scale-105 ${
+                                    visibility === Visibility.PUBLIC
+                                        ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
+                                        : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+                                }`}
                             >
-                                Voir le cours
-                            </Button>
-                        </Link>
+                                {visibility === Visibility.PUBLIC ? (
+                                    <>
+                                        <Globe className="w-3 h-3" />
+                                        Public
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-3 h-3" />
+                                        Privé
+                                    </>
+                                )}
+                            </button>
+                            <Link href={`/library/${id}`}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 hover:shadow-md transform hover:scale-105 whitespace-nowrap"
+                                >
+                                    Voir le cours
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </CardContent>

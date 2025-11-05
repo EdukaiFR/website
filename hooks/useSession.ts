@@ -46,10 +46,6 @@ export function useSession() {
             setLoading(false);
         } catch (error: any) {
             // If refresh fails, clear session and continue
-            console.warn(
-                "Validation du token échouée, nettoyage de la session:",
-                error.message
-            );
             sessionStorage.clearSession();
             setUser(null);
             setLoading(false);

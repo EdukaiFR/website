@@ -74,12 +74,12 @@ export const Exam = ({
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                        <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                             <Calendar className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-base font-semibold text-gray-800">
+                        <span className="text-base font-semibold text-gray-800">
                             Examens prévus
-                        </h3>
+                        </span>
                     </div>
 
                     {/* Action Button - Full width on mobile, auto on desktop */}
@@ -106,6 +106,21 @@ export const Exam = ({
                             Ajouter un examen
                         </Button>
                     )}
+                </div>
+
+                {/* Empty State */}
+                <div className="flex flex-col items-center justify-center gap-3 flex-1 text-center py-6">
+                    <div className="p-3 bg-blue-50 rounded-2xl">
+                        <Calendar className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-gray-800 mb-1">
+                            Aucun examen prévu
+                        </p>
+                        <p className="text-xs text-gray-600">
+                            Ajoute un examen pour mieux organiser tes révisions.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -134,12 +149,12 @@ export const Exam = ({
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4 flex-shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                         <Calendar className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-800">
+                    <span className="text-base font-semibold text-gray-800">
                         Examens prévus
-                    </h3>
+                    </span>
                     <CounterBadge counter={typedExams.length} />
                 </div>
 

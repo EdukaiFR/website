@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useSession } from "@/hooks/useSession";
 import { UserProfile, getUserProfileAction } from "@/lib/actions/user";
 
@@ -82,14 +82,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, [user, sessionLoading]);
 
+    const contextValue = useMemo(
+        () => ({
+            userProfile,
+            loading: loading || sessionLoading,
+            refreshUserProfile,
+        }),
+        [userProfile, loading, sessionLoading, refreshUserProfile]
+    );
+
     return (
-        <UserContext.Provider
-            value={{
-                userProfile,
-                loading: loading || sessionLoading,
-                refreshUserProfile,
-            }}
-        >
+        <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>
     );

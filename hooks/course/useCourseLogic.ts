@@ -4,7 +4,7 @@ import {
     useInsightsService,
     useQuizService,
 } from "@/services";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SummarySheetData } from "@/lib/types/library";
@@ -12,16 +12,35 @@ import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 export function useCourseLogic() {
     const params = useParams();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const courseId = params?.id?.toString() || "";
 
     const { storageUserId } = useSessionStorage();
 
+    // Get tab from URL or default to "overview"
+    const tabFromUrl = searchParams.get("tab") || "overview";
+
     // State
     const [quizId, setQuizId] = useState<string>("");
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
-    const [isSummarySheetsVisible, setSummarySheetsVisible] =
-        useState<boolean>(false);
-    const [selectedTab, setSelectedTab] = useState("overview");
+    const [isSummarySheetsVisible, setSummarySheetsVisible] = useState<boolean>(false);
+    const [selectedTab, setSelectedTabState] = useState<string>(tabFromUrl);
+
+    // Wrapper to update both state and URL
+    const setSelectedTab = (tab: string) => {
+        setSelectedTabState(tab);
+        // Update URL without reloading the page
+        const newUrl = `/library/${courseId}?tab=${tab}`;
+        router.push(newUrl, { scroll: false });
+    };
+
+    // Sync state with URL on mount and URL changes
+    useEffect(() => {
+        if (tabFromUrl) {
+            setSelectedTabState(tabFromUrl);
+        }
+    }, [tabFromUrl]);
 
     // Services
     const courseService = useCourseService();
@@ -157,7 +176,12 @@ export function useCourseLogic() {
     const loadSummarySheets = async () => {
         if (courseId && loadCourseSummarySheets) {
             const data = await loadCourseSummarySheets(courseId);
-            setSummarySheetsData(data.items);
+
+            // Backend now returns both AI-generated and user-uploaded sheets
+            // with proper structure including type and source fields
+            const sheets = data?.items || [];
+
+            setSummarySheetsData(sheets);
         }
     };
 
@@ -201,5 +225,6 @@ export function useCourseLogic() {
         updateExam,
         deleteExam,
         loadCourseFiles,
+        loadSummarySheets,
     };
 }

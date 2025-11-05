@@ -75,6 +75,5 @@ export const base64ToBlob = (base64: string): Blob => {
         bytes[i] = binaryString.charCodeAt(i);
     }
 
-    console.log("Finished decoding this !");
     return new Blob([bytes.buffer], { type: mimeType });
 };

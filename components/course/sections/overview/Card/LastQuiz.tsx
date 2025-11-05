@@ -16,7 +16,7 @@ export type LastQuizProps = {
 };
 
 export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
-    // Fonction pour formater la date
+    // Function to format the date
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -34,7 +34,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         });
     };
 
-    // Fonction pour la couleur du score
+    // Function for score color
     const getScoreColor = (score: number) => {
         if (score >= 80) return "text-green-600 bg-green-50 border-green-200";
         if (score >= 60)
@@ -42,10 +42,10 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         return "text-red-600 bg-red-50 border-red-200";
     };
 
-    // Prendre les 3 derniers quiz
+    // Take the last 3 quizzes
     const recentQuizzes = lastQuiz.slice(-3).reverse();
 
-    // Vérifier si on a des données d'insights agrégées mais pas les détails
+    // Check if we have aggregated insights data but not the details
     const hasAggregatedData = insights_data && insights_data.insightsCount > 0;
     const hasDetailedData = lastQuiz && lastQuiz.length > 0;
 
@@ -53,19 +53,19 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                     <Clock className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-base font-semibold text-gray-800">
+                <span className="text-base font-semibold text-gray-800">
                     Tes derniers quiz
-                </h3>
+                </span>
             </div>
 
             {/* Content */}
             <div className="flex flex-col gap-3 h-full">
                 {hasDetailedData ? (
                     <>
-                        {/* Stats rapides */}
+                        {/* Quick stats */}
                         {insights_data && insights_data.insightsCount > 0 && (
                             <div className="flex gap-2 mb-3">
                                 <div className="flex-1 p-2 bg-blue-50/80 rounded-lg text-center">
@@ -92,7 +92,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                             </div>
                         )}
 
-                        {/* Liste des derniers quiz */}
+                        {/* List of recent quizzes */}
                         <div className="space-y-2 flex-1">
                             {recentQuizzes.map((quiz, index) => (
                                 <div
@@ -124,7 +124,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                         </div>
                     </>
                 ) : hasAggregatedData ? (
-                    /* Affichage des stats agrégées quand on n'a pas les détails */
+                    /* Display aggregated stats when we don't have the details */
                     <div className="flex flex-col gap-3">
                         <div className="flex flex-col gap-2 mb-3">
                             <div className="flex-1 p-3 bg-blue-50/80 rounded-lg text-center">
@@ -160,7 +160,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                                 Aucun quiz lancé
                             </p>
                             <p className="text-xs text-gray-500">
-                                Tu n&apos;as pas encore lancé de quiz.
+                                Tu n'as pas encore lancé de quiz.
                             </p>
                         </div>
                     </div>

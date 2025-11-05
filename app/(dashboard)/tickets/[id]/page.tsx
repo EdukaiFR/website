@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -12,32 +10,33 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { AuthGuard } from "@/components/auth/AuthGuard";
-import {
-    ArrowLeft,
-    Clock,
-    CheckCircle,
-    AlertCircle,
-    XCircle,
-    MessageSquare,
-    Send,
-    Calendar,
-    User,
-    Globe,
-    Monitor,
-    RefreshCw,
-    Paperclip,
-    Copy,
-    Shield,
-    UserCircle,
-    ExternalLink,
-} from "lucide-react";
-import { useTicketService } from "@/services";
-import { useTicket, useIsAdmin, useRolePermissions } from "@/hooks";
-import { cn } from "@/lib/utils";
-import { TicketStatus, TicketPriority } from "@/lib/types/ticket";
-import { CommentVisibility as CommentVisibilityEnum } from "@/lib/types/ticket";
+import { Textarea } from "@/components/ui/textarea";
+import { useIsAdmin, useRolePermissions, useTicket } from "@/hooks";
 import type { AddCommentRequest } from "@/lib/types/ticket";
+import { CommentVisibility as CommentVisibilityEnum, TicketPriority, TicketStatus } from "@/lib/types/ticket";
+import { cn } from "@/lib/utils";
+import { useTicketService } from "@/services";
+import {
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Copy,
+    ExternalLink,
+    Globe,
+    MessageSquare,
+    Monitor,
+    Paperclip,
+    RefreshCw,
+    Send,
+    Shield,
+    User,
+    UserCircle,
+    XCircle,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function TicketDetailPage() {
     const params = useParams();
@@ -94,7 +93,7 @@ export default function TicketDetailPage() {
         return {
             initials,
             bgColor: isSupportUser
-                ? "bg-gradient-to-r from-blue-500 to-indigo-500"
+                ? "bg-gradient-to-r from-blue-600 to-blue-500"
                 : "bg-gradient-to-r from-gray-400 to-gray-500",
             textColor: "text-white",
         };
@@ -186,7 +185,7 @@ export default function TicketDetailPage() {
     if (isLoadingTicket) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                     {/* Decorative background elements */}
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
                     <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -207,7 +206,7 @@ export default function TicketDetailPage() {
     if (!currentTicket) {
         return (
             <AuthGuard>
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                     {/* Decorative background elements */}
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
                     <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -223,11 +222,11 @@ export default function TicketDetailPage() {
                                     Ticket non trouvé
                                 </h2>
                                 <p className="text-gray-600 mb-8">
-                                    Le ticket demandé n&apos;existe pas ou
-                                    n&apos;est plus accessible.
+                                    Le ticket demandé n'existe pas ou
+                                    n'est plus accessible.
                                 </p>
                                 <Button
-                                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                                    className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300"
                                     onClick={() => router.push("/tickets")}
                                 >
                                     <ArrowLeft className="w-4 h-4 mr-2" />
@@ -247,7 +246,7 @@ export default function TicketDetailPage() {
 
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                 {/* Decorative background elements */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
                 <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -283,7 +282,7 @@ export default function TicketDetailPage() {
 
                     {/* Ticket Details */}
                     <Card className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
-                        <CardHeader className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-t-2xl p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+                        <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white rounded-t-2xl p-4 sm:p-6 lg:p-8 relative overflow-hidden">
                             {/* Decorative elements */}
                             <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
                             <div className="absolute bottom-4 right-8 w-16 h-16 bg-purple-300/20 rounded-full blur-lg"></div>
@@ -411,7 +410,7 @@ export default function TicketDetailPage() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                                                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                                                     <Calendar className="w-5 h-5 text-white" />
                                                 </div>
                                                 <div>
@@ -818,7 +817,11 @@ export default function TicketDetailPage() {
                                     </div>
 
                                     <div className="space-y-4">
+                                        <label htmlFor="message-input" className="sr-only">
+                                            Votre message
+                                        </label>
                                         <Textarea
+                                            id="message-input"
                                             placeholder="Tapez votre message ici..."
                                             value={newComment}
                                             onChange={e =>
@@ -881,7 +884,7 @@ export default function TicketDetailPage() {
                                                     !newComment.trim() ||
                                                     isAddingComment
                                                 }
-                                                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                                className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                             >
                                                 <Send
                                                     className={cn(

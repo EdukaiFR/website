@@ -4,6 +4,8 @@ export interface SummarySheetService {
     generateSheet: (recognizedText: string[]) => Promise<any>;
     getSheetById: (sheetId: string) => Promise<any>;
     deleteSheetById: (sheetId: string) => Promise<any>;
+    toggleShare: (sheetId: string) => Promise<any>;
+    getPublicSheets: () => Promise<any>;
 }
 
 export function useSummarySheetService(): SummarySheetService {
@@ -66,5 +68,43 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    return { generateSheet, getSheetById, deleteSheetById };
+    const toggleShare = async (sheetId: string) => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/summary-sheets/${sheetId}/share`,
+                {},
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors du partage de la fiche.",
+            };
+        }
+    };
+
+    const getPublicSheets = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/summary-sheets/public`);
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors de la récupération des fiches publiques.",
+            };
+        }
+    };
+
+    return { generateSheet, getSheetById, deleteSheetById, toggleShare, getPublicSheets };
 }

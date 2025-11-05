@@ -20,7 +20,6 @@ export function middleware(req: NextRequest) {
     const adminRoutes = ["/admin"];
 
     if (!cookie) {
-        console.log("There's no cookie ! Redirecting to /auth");
         return NextResponse.redirect(new URL("/auth", req.url));
     }
 
@@ -30,7 +29,6 @@ export function middleware(req: NextRequest) {
             const isTokenExpired = Date.now() >= decodedToken.exp * 1000;
 
             if (isTokenExpired) {
-                console.log("Token expired, redirecting...");
                 return NextResponse.redirect(new URL("/auth", req.url));
             }
 

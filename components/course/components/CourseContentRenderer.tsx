@@ -18,6 +18,7 @@ type Exam = {
 interface CourseContentRendererProps {
     selectedTab: string;
     courseId: string;
+    courseTitle?: string;
     examsData: unknown;
     summarySheetsData: SummarySheetData[];
     storageUserId: string;
@@ -36,11 +37,13 @@ interface CourseContentRendererProps {
     insightsData: unknown;
     quizData: unknown;
     loadCourseFiles: (courseId: string) => Promise<unknown>;
+    refreshSummarySheets?: () => void;
 }
 
 export function CourseContentRenderer({
     selectedTab,
     courseId,
+    courseTitle,
     examsData,
     createExam,
     getExams,
@@ -54,6 +57,7 @@ export function CourseContentRenderer({
     storageUserId,
     quizData,
     loadCourseFiles,
+    refreshSummarySheets,
 }: CourseContentRendererProps) {
     return (
         <div className="flex-1 min-h-0 w-full max-w-full">
@@ -61,6 +65,7 @@ export function CourseContentRenderer({
                 <Overview
                     overview={null}
                     course_id={courseId}
+                    course_title={courseTitle}
                     examsData={examsData as unknown[]}
                     createExam={createExam}
                     getExams={getExams}
@@ -74,6 +79,7 @@ export function CourseContentRenderer({
                             insights?: { score: number; createdAt: string }[];
                         }
                     }
+                    summarySheetsData={summarySheetsData}
                 />
             )}
             {selectedTab === "summarySheets" && (
@@ -81,6 +87,7 @@ export function CourseContentRenderer({
                     user_id={storageUserId}
                     course_id={courseId}
                     summarySheets={summarySheetsData}
+                    onRefresh={refreshSummarySheets}
                 />
             )}
             {selectedTab === "exams" && (

@@ -4,18 +4,18 @@
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { fileToast } from "@/lib/toast";
+import { useBlobService, useCourseService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, FileText, Plus, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const fileSchema = z.custom<File>(value => {
@@ -26,11 +26,19 @@ const formSchema = z.object({
     files: z.array(fileSchema).min(1, { message: "Files are required." }),
 });
 
-export type AddSummarySheetProps = object;
+export type AddSummarySheetProps = {
+    courseId: string;
+    onUploadSuccess?: () => void;
+};
 
-export const AddSummarySheet = (props: AddSummarySheetProps) => {
+export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetProps) => {
     type FormData = z.infer<typeof formSchema>;
     const [isDragActive, setIsDragActive] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const blobService = useBlobService();
+    const courseService = useCourseService();
 
     const form = useForm<FormData>({
         resolver: zodResolver(formSchema),
@@ -46,7 +54,7 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
         form.setValue("files", [...watchedFiles, ...files]);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
@@ -60,28 +68,84 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
         form.setValue("files", updatedFiles);
     };
 
+    const processFile = async (file: File, index: number, total: number) => {
+        // Step 1: Upload the file
+        const uploadResponse = await blobService.uploadFile(file, "summary");
+
+        if (uploadResponse?.status !== "success") {
+            console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
+            console.error(`[AddSummarySheet] Upload response status:`, uploadResponse?.status);
+            throw new Error("Upload failed");
+        }
+
+        const fileId = uploadResponse.items._id;
+
+        // Step 2: Link the file to the course
+        const linkResponse = await courseService.addFileToCourse(courseId, fileId);
+
+        if (linkResponse?.status !== "success") {
+            console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
+            console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
+            throw new Error("Link failed");
+        }
+    };
+
     const onSubmit = async (data: FormData) => {
         try {
-            // TODO: call hooks to add summarySheet(s)
-            console.log("Files to upload:", data.files);
-            fileToast.uploadSuccess();
+            setIsUploading(true);
+            let successCount = 0;
+            let errorCount = 0;
+
+            // Upload each file
+            for (let i = 0; i < data.files.length; i++) {
+                try {
+                    await processFile(data.files[i], i, data.files.length);
+                    successCount++;
+                } catch (error) {
+                    console.error(`[AddSummarySheet] ❌ Error processing file "${data.files[i].name}":`, error);
+                    errorCount++;
+                }
+            }
+
+            if (successCount > 0) {
+                toast.success(
+                    `${successCount} fiche${successCount > 1 ? "s" : ""} ajoutée${successCount > 1 ? "s" : ""} avec succès`
+                );
+
+                // Close the dialog and reset the form
+                setIsDialogOpen(false);
+                form.reset();
+
+                // Call the callback to refresh the list
+                if (onUploadSuccess) {
+                    onUploadSuccess();
+                } else {
+                    console.warn("[AddSummarySheet] No onUploadSuccess callback provided");
+                }
+            }
+
+            if (errorCount > 0) {
+                toast.error(
+                    `Erreur lors de l'ajout de ${errorCount} fichier${errorCount > 1 ? "s" : ""}`
+                );
+            }
         } catch (error: unknown) {
             console.error(
-                "Erreur lors de la soumission du formulaire de fichiers:",
+                "[AddSummarySheet] ❌ Fatal error during upload process:",
                 error
             );
-            fileToast.uploadError();
+            toast.error("Une erreur est survenue lors de l'upload des fichiers");
         } finally {
-            form.reset();
+            setIsUploading(false);
         }
     };
 
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="default"
-                    className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 px-4"
+                    className="h-10 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 px-4"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Ajouter des fichiers
@@ -90,10 +154,10 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
             <DialogContent className="sm:max-w-[480px] lg:max-w-[520px] p-0 border-0 bg-transparent shadow-none">
                 <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
                     <DialogHeader className="text-center mb-8">
-                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl w-fit">
+                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit">
                             <Upload className="w-6 h-6 text-white" />
                         </div>
-                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                             Ajouter des fiches de révision
                         </DialogTitle>
                         <DialogDescription className="text-gray-600 mt-2 text-sm leading-relaxed">
@@ -109,17 +173,13 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                         >
                             <div className="space-y-4">
                                 {/* Custom Drag & Drop Area */}
-                                <div
-                                    className={`p-6 border-2 border-dashed rounded-2xl transition-colors duration-200 cursor-pointer ${
+                                <label
+                                    htmlFor="file-input"
+                                    className={`block p-6 border-2 border-dashed rounded-2xl transition-colors duration-200 cursor-pointer ${
                                         isDragActive
                                             ? "border-blue-400 bg-blue-50"
                                             : "border-gray-200 bg-gray-50/50 hover:bg-gray-50"
                                     }`}
-                                    onClick={() =>
-                                        document
-                                            .getElementById("file-input")
-                                            ?.click()
-                                    }
                                     onDragOver={e => {
                                         e.preventDefault();
                                         setIsDragActive(true);
@@ -151,7 +211,7 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                                         accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.svg,.doc,.docx"
                                         onChange={handleFileChange}
                                     />
-                                </div>
+                                </label>
 
                                 <div className="text-xs text-gray-500 text-center space-y-1">
                                     <p>
@@ -206,23 +266,30 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                             )}
 
                             <div className="flex flex-col gap-3 pt-4">
-                                <DialogClose asChild>
-                                    <Button
-                                        disabled={!watchedFiles.length}
-                                        type="submit"
-                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Check className="w-4 h-4 mr-2" />
-                                        Ajouter{" "}
-                                        {watchedFiles.length > 0
-                                            ? `${watchedFiles.length} fichier${
-                                                  watchedFiles.length > 1
-                                                      ? "s"
-                                                      : ""
-                                              }`
-                                            : "les fichiers"}
-                                    </Button>
-                                </DialogClose>
+                                <Button
+                                    disabled={!watchedFiles.length || isUploading}
+                                    type="submit"
+                                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isUploading ? (
+                                        <>
+                                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Upload en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check className="w-4 h-4 mr-2" />
+                                            Ajouter{" "}
+                                            {watchedFiles.length > 0
+                                                ? `${watchedFiles.length} fichier${
+                                                      watchedFiles.length > 1
+                                                          ? "s"
+                                                          : ""
+                                                  }`
+                                                : "les fichiers"}
+                                        </>
+                                    )}
+                                </Button>
                             </div>
                         </form>
                     </FormProvider>

@@ -74,12 +74,12 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
     return (
         <div className="space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="text-center space-y-1 sm:space-y-2">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                    Créer ton compte
+            <div className="text-center space-y-2 sm:space-y-3">
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+                    Commence ton aventure
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600">
-                    Rejoins Edukai et révolutionne tes révisions
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                    Crée ton compte gratuitement et transforme ta façon de réviser
                 </p>
             </div>
 
@@ -104,13 +104,13 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                                 type="text"
                                 placeholder="John"
                                 {...register("firstName")}
-                                className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                                className={`pl-11 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                     errors.firstName
                                         ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                         : "border-gray-200"
                                 }`}
                             />
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <User className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
                         {errors.firstName && (
                             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -134,13 +134,13 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                                 type="text"
                                 placeholder="Doe"
                                 {...register("lastName")}
-                                className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                                className={`pl-11 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                     errors.lastName
                                         ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                         : "border-gray-200"
                                 }`}
                             />
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <User className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
                         {errors.lastName && (
                             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -166,13 +166,13 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                             type="email"
                             placeholder="john.doe@exemple.com"
                             {...register("email")}
-                            className={`pl-10 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                            className={`pl-11 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                 errors.email
                                     ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                     : "border-gray-200"
                             }`}
                         />
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                     {errors.email && (
                         <p className="text-sm text-red-500 flex items-center gap-1">
@@ -197,17 +197,17 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                             type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
                             {...register("password")}
-                            className={`pl-10 pr-12 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                            className={`pl-11 pr-12 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                 errors.password
                                     ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                     : "border-gray-200"
                             }`}
                         />
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-lg hover:bg-blue-50"
                         >
                             {showPassword ? (
                                 <EyeOff className="w-5 h-5" />
@@ -278,19 +278,19 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="••••••••"
                             {...register("confirmPassword")}
-                            className={`pl-10 pr-12 h-11 sm:h-12 border-2 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base ${
+                            className={`pl-11 pr-12 h-12 sm:h-13 border-2 rounded-xl transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base bg-gray-50/50 focus:bg-white ${
                                 errors.confirmPassword
                                     ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                     : "border-gray-200"
                             }`}
                         />
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <button
                             type="button"
                             onClick={() =>
                                 setShowConfirmPassword(!showConfirmPassword)
                             }
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-lg hover:bg-blue-50"
                         >
                             {showConfirmPassword ? (
                                 <EyeOff className="w-5 h-5" />
@@ -320,7 +320,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                 <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base"
+                    className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base"
                 >
                     {isLoading ? (
                         <span className="flex items-center gap-2">

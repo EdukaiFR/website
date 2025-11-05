@@ -59,6 +59,9 @@ export type ExamDialogProps = {
     updateCourseData: () => void;
     deleteExam: (examId: string, courseId: string) => void;
     isEditing?: boolean;
+    triggerRef?: React.RefObject<HTMLButtonElement>;
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
 };
 
 export const ExamDialog = ({
@@ -70,6 +73,9 @@ export const ExamDialog = ({
     exam,
     deleteExam,
     isEditing = false,
+    triggerRef,
+    isOpen,
+    onOpenChange,
 }: ExamDialogProps) => {
     const form = useForm<ExamFormData>({
         resolver: zodResolver(formSchema),
@@ -102,7 +108,7 @@ export const ExamDialog = ({
             console.error("Error submitting form: ", error);
             toast("Erreur", {
                 description:
-                    "Une erreur s'est produite lors de la création de l&apos;examen.",
+                    "Une erreur s'est produite lors de la création de l'examen.",
             });
         } finally {
             form.reset();
@@ -111,29 +117,33 @@ export const ExamDialog = ({
     };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button
-                    variant={"ghost"}
-                    className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0 lg:whitespace-nowrap"
-                >
-                    {isEditing ? (
-                        <span>Modifier</span>
-                    ) : (
-                        <>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Ajouter un examen
-                        </>
-                    )}
-                </Button>
-            </DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            {/* Only render trigger button if not in controlled mode */}
+            {(isOpen === undefined || onOpenChange === undefined) && (
+                <DialogTrigger asChild>
+                    <Button
+                        ref={triggerRef}
+                        variant={"ghost"}
+                        className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0 lg:whitespace-nowrap"
+                    >
+                        {isEditing ? (
+                            <span>Modifier</span>
+                        ) : (
+                            <>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Ajouter un examen
+                            </>
+                        )}
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[480px] lg:max-w-[520px] p-0 border-0 bg-transparent shadow-none">
                 <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
                     <DialogHeader className="text-center mb-8">
-                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl w-fit">
+                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit">
                             <CalendarIcon className="w-6 h-6 text-white" />
                         </div>
-                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                             {isEditing
                                 ? "Modifier l'examen"
                                 : "Créer un nouvel examen"}
@@ -156,7 +166,7 @@ export const ExamDialog = ({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-semibold text-gray-700 mb-2 block">
-                                            Nom de l&apos;examen
+                                            Nom de l'examen
                                         </FormLabel>
                                         <FormControl>
                                             <div className="relative">
@@ -168,7 +178,7 @@ export const ExamDialog = ({
                                             </div>
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Le nom de l&apos;examen que tu
+                                            Le nom de l'examen que tu
                                             souhaites créer
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
@@ -196,7 +206,7 @@ export const ExamDialog = ({
                                             />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Ajoute des détails sur ce qu&apos;il
+                                            Ajoute des détails sur ce qu'il
                                             faut réviser
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
@@ -210,7 +220,7 @@ export const ExamDialog = ({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-semibold text-gray-700 mb-2 block">
-                                            Date de l&apos;examen
+                                            Date de l'examen
                                         </FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
@@ -265,7 +275,7 @@ export const ExamDialog = ({
                                         </Popover>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
                                             La date prévue pour le déroulement
-                                            de l&apos;examen
+                                            de l'examen
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
                                     </FormItem>
@@ -277,7 +287,7 @@ export const ExamDialog = ({
                                     <Button
                                         disabled={!form.formState.isValid}
                                         type="submit"
-                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <Check className="w-4 h-4 mr-2" />
                                         {isEditing
@@ -301,7 +311,7 @@ export const ExamDialog = ({
                                             }}
                                         >
                                             <Trash className="w-4 h-4 mr-2" />
-                                            Supprimer l&apos;examen
+                                            Supprimer l'examen
                                         </Button>
                                     </DialogClose>
                                 )}

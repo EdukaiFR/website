@@ -16,14 +16,14 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Met à jour l'état et l'URL lorsqu'un onglet est sélectionné
+    // Update state and URL when a tab is selected
     const handleTabChange = (tab: string) => {
         setSelectedTab(tab);
         const newUrl = `${pathname}?tab=${tab}`;
         router.push(newUrl, { scroll: false });
     };
 
-    // Synchronisation avec l'URL au chargement ou lorsque l'URL change
+    // Synchronize with URL on load or when URL changes
     useEffect(() => {
         const tabFromUrl = searchParams.get("tab");
         if (tabFromUrl && tabFromUrl !== selectedTab) {
@@ -31,11 +31,11 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
         }
     }, [searchParams, selectedTab, setSelectedTab]);
 
-    // Styles communs pour les boutons (identiques sur mobile et desktop)
+    // Common styles for buttons (identical on mobile and desktop)
     const getButtonStyles = (isSelected: boolean) =>
         `transition-all duration-200 ${
             isSelected
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700"
+                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:from-blue-700 hover:to-blue-600"
                 : "bg-white/80 text-gray-700 border border-blue-200/60 hover:bg-blue-50 hover:border-blue-300 shadow-sm"
         } px-6 py-2 rounded-xl font-medium backdrop-blur-sm whitespace-nowrap flex-shrink-0`;
 

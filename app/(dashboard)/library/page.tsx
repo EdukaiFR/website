@@ -19,6 +19,8 @@ import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import type { VisibilityType } from "@/lib/types/visibility";
+
 // Define the extended course type for the table
 interface ExtendedCourseData {
     _id?: string;
@@ -32,6 +34,7 @@ interface ExtendedCourseData {
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
+    visibility?: VisibilityType;
 }
 
 // Type for API response that might have different property names
@@ -41,12 +44,18 @@ type ApiCourseData = {
     title: string;
     subject: string;
     level: string;
-    author?: string;
+    author?: string | {
+        _id?: string;
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+    };
     isPublished?: boolean;
     createdAt?: string;
     quizzes: string[];
     exams: string[];
     summarySheets: unknown[];
+    visibility?: VisibilityType;
 };
 
 export default function LibraryPage() {
@@ -112,7 +121,7 @@ export default function LibraryPage() {
 
         let result = [...courses];
 
-        // Filtrage par filtre sélectionné (subject, level, title)
+        // Filter by selected filter (subject, level, title)
         if (filter.type && filter.value) {
             result = result.filter(course => {
                 if (filter.type === "title")
@@ -131,7 +140,7 @@ export default function LibraryPage() {
             });
         }
 
-        // Filtrage par recherche libre (sur plusieurs champs si besoin)
+        // Filter by free text search (on multiple fields if needed)
         if (search) {
             const loweredSearch = search.toLowerCase();
             result = result.filter(
@@ -183,7 +192,9 @@ export default function LibraryPage() {
                     (course: ApiCourseData) => ({
                         ...course,
                         id: course._id || course.id || "",
-                        author: course.author || "Unknown",
+                        author: typeof course.author === 'string'
+                            ? course.author
+                            : (course.author?.username || course.author?.firstName || "Unknown"),
                         isPublished: course.isPublished || false,
                         createdAt: course.createdAt || new Date().toISOString(),
                     })
@@ -191,9 +202,6 @@ export default function LibraryPage() {
                 setUserCourses(extendedCourses);
             } else {
                 // If response is null or not an array, set empty array
-                console.warn(
-                    "Failed to load courses or received invalid response"
-                );
                 setUserCourses([]);
             }
         };
@@ -350,6 +358,7 @@ export default function LibraryPage() {
                                     author: course.author,
                                     createdAt: course.createdAt,
                                     isPublished: course.isPublished,
+                                    visibility: course.visibility,
                                 }))}
                                 isLoading={false}
                             />

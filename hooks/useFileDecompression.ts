@@ -47,10 +47,8 @@ export const useFileDecompression = () => {
                                 size: content.length,
                             });
                         } catch (error) {
-                            console.warn(
-                                `⚠️ Could not extract file ${relativePath}:`,
-                                error
-                            );
+                            // Skip files that cannot be extracted
+                            console.debug("Failed to extract file from ZIP:", error);
                         }
                     }
                 }

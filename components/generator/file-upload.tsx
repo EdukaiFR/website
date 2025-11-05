@@ -15,6 +15,7 @@ import { useState } from "react";
 
 import { FileProcessorComponent } from "@/components/recognition";
 import { useBlob } from "@/hooks";
+import { showToast } from "@/lib/toast";
 import { useBlobService } from "@/services";
 
 type FileUploadProps = {
@@ -40,6 +41,7 @@ type FileUploadProps = {
 };
 
 const MAX_CONCURRENT_PROCESSING = 2;
+const MAX_FILES = 5;
 
 export function FileUpload({
     selectedFiles,
@@ -76,7 +78,11 @@ export function FileUpload({
         return processedFiles.has(fileId);
     };
 
-    const handleFileUpload = async (file: File, localFileId: string) => {
+    const handleFileUpload = async (
+        file: File,
+        localFileId: string,
+        fileIndex: number
+    ) => {
         try {
             const uploadResponse = await uploadFile(file, "course");
             if (uploadResponse?.newFileId) {
@@ -89,24 +95,40 @@ export function FileUpload({
             }
         } catch (error) {
             console.error("An error occured uploading files", error);
+            // Remove file from list on upload error
+            removeFile(fileIndex);
         }
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
-        const newFiles = [...selectedFiles, ...files];
+
+        // Check if adding these files would exceed the maximum
+        const remainingSlots = MAX_FILES - selectedFiles.length;
+        if (remainingSlots <= 0) {
+            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            return;
+        }
+
+        // Only take files up to the maximum
+        const filesToAdd = files.slice(0, remainingSlots);
+        if (files.length > remainingSlots) {
+            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+        }
+
+        const newFiles = [...selectedFiles, ...filesToAdd];
         setSelectedFiles(newFiles);
         onFilesChange(newFiles);
 
-        files.forEach((file, index) => {
-            const localFileId = `${file.name}-${file.size}-${
-                selectedFiles.length + index
-            }`;
-            handleFileUpload(file, localFileId);
-        });
+        for (let index = 0; index < filesToAdd.length; index++) {
+            const file = filesToAdd[index];
+            const fileIndex = selectedFiles.length + index;
+            const localFileId = `${file.name}-${file.size}-${fileIndex}`;
+            handleFileUpload(file, localFileId, fileIndex);
+        }
     };
 
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(true);
     };
@@ -115,13 +137,34 @@ export function FileUpload({
         setIsDragActive(false);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
-        const newFiles = [...selectedFiles, ...files];
+
+        // Check if adding these files would exceed the maximum
+        const remainingSlots = MAX_FILES - selectedFiles.length;
+        if (remainingSlots <= 0) {
+            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            return;
+        }
+
+        // Only take files up to the maximum
+        const filesToAdd = files.slice(0, remainingSlots);
+        if (files.length > remainingSlots) {
+            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+        }
+
+        const newFiles = [...selectedFiles, ...filesToAdd];
         setSelectedFiles(newFiles);
         onFilesChange(newFiles);
+
+        for (let index = 0; index < filesToAdd.length; index++) {
+            const file = filesToAdd[index];
+            const fileIndex = selectedFiles.length + index;
+            const localFileId = `${file.name}-${file.size}-${fileIndex}`;
+            handleFileUpload(file, localFileId, fileIndex);
+        }
     };
 
     const removeFile = (index: number) => {
@@ -158,16 +201,15 @@ export function FileUpload({
                 Fichiers
             </FormLabel>
             <FormControl>
-                <div
+                <label
+                    htmlFor="file-input"
+                    aria-label="Sélectionner des fichiers à uploader"
                     className={clsx(
-                        "relative border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
+                        "block relative border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
                         isDragActive
                             ? "border-blue-600 bg-blue-50 shadow-lg scale-[1.02]"
                             : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
                     )}
-                    onClick={() =>
-                        document.getElementById("file-input")?.click()
-                    }
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -181,7 +223,7 @@ export function FileUpload({
                         onChange={handleFileChange}
                     />
                     <div className="flex flex-col items-center justify-center">
-                        <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4">
+                        <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl mb-4">
                             <CloudUpload className="w-8 h-8 text-white" />
                         </div>
                         <p className="text-lg font-semibold text-gray-800 mb-2">
@@ -191,7 +233,7 @@ export function FileUpload({
                             PDF, TXT, PNG, JPG, JPEG, PPT
                         </p>
                     </div>
-                </div>
+                </label>
             </FormControl>
             <FormDescription className="text-gray-600">
                 Sélectionnes tes fichiers
@@ -201,10 +243,15 @@ export function FileUpload({
             {/* File Preview */}
             {selectedFiles.length > 0 && (
                 <div className="mt-6 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-gray-800 mb-3">
-                            Fichiers sélectionnés :
-                        </h4>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-800">
+                                Fichiers sélectionnés :
+                            </h4>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {selectedFiles.length}/{MAX_FILES}
+                            </span>
+                        </div>
                         {isRecognizing && (
                             <div className="text-sm text-blue-600 font-medium">
                                 {currentlyProcessingCount} analyse
@@ -253,7 +300,7 @@ export function FileUpload({
                                                 </span>
                                             ) : shouldQueue ? (
                                                 <span className="text-orange-600 font-medium">
-                                                    En file d&apos;attente...
+                                                    En file d'attente...
                                                 </span>
                                             ) : (
                                                 <FileProcessorComponent
@@ -275,6 +322,9 @@ export function FileUpload({
                                                             fileId,
                                                             processing
                                                         )
+                                                    }
+                                                    onError={() =>
+                                                        removeFile(index)
                                                     }
                                                 />
                                             )}

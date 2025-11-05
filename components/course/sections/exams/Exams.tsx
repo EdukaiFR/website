@@ -1,8 +1,5 @@
 import { CounterBadge } from "@/components/badge/CounterBadge";
 
-import { useState } from "react";
-import { ExamDialog } from "./ExamDialog";
-import { ExamCard } from "./ExamCard";
 import {
     Select,
     SelectContent,
@@ -10,6 +7,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
+import { ExamCard } from "./ExamCard";
+import { ExamDialog } from "./ExamDialog";
 
 type Exam = {
     _id: string;
@@ -125,8 +125,8 @@ export const Exams = ({
                         <div className="text-2xl sm:text-4xl mb-4">📚</div>
                         <p className="text-muted-foreground text-sm sm:text-base">
                             {examFilter === "upcoming"
-                                ? "Vous n&apos;avez pas d'examen prévu"
-                                : "Vous n&apos;avez pas encore créé d'examen"}
+                                ? "Vous n'avez pas d'examen prévu"
+                                : "Vous n'avez pas encore créé d'examen"}
                         </p>
                     </div>
                 </div>

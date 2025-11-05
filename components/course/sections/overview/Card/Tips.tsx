@@ -23,25 +23,25 @@ export const Tips = ({ tips }: TipsProps) => {
             <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200/60 rounded-2xl p-4 flex flex-col h-full shadow-lg hover:shadow-xl transition-all duration-200">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center">
                         <Lightbulb className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-amber-800">
+                    <span className="text-base font-semibold text-amber-800">
                         Astuces
-                    </h3>
+                    </span>
                 </div>
 
-                {/* Empty State */}
+                {/* Empty State - Coming Soon */}
                 <div className="flex flex-col items-center justify-center gap-3 h-full text-center">
                     <div className="p-3 bg-amber-100 rounded-2xl">
                         <Sparkles className="w-6 h-6 text-amber-600" />
                     </div>
                     <div>
                         <p className="text-sm font-medium text-amber-800 mb-1">
-                            Aucune astuce disponible
+                            Bientôt disponible
                         </p>
                         <p className="text-xs text-amber-600">
-                            Les astuces apparaîtront ici pour t&apos;aider dans
+                            Les astuces arriveront prochainement pour t'aider dans
                             tes révisions.
                         </p>
                     </div>
@@ -55,14 +55,14 @@ export const Tips = ({ tips }: TipsProps) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center">
                         <Lightbulb className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-amber-800">
+                    <span className="text-base font-semibold text-amber-800">
                         Astuces
-                    </h3>
+                    </span>
                 </div>
-                <div className="p-2 bg-amber-100 rounded-xl">
+                <div className="p-2 bg-amber-100 rounded-xl flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-amber-600" />
                 </div>
             </div>

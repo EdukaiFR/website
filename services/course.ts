@@ -45,6 +45,20 @@ export interface CourseService {
         description: string,
         date: Date
     ) => Promise<{ message: string } | null>;
+    getAllExams: () => Promise<{
+        items: Array<{
+            _id: string;
+            title: string;
+            date: string;
+            courseId: string | null;
+            courseTitle: string | null;
+            courseSubject: string | null;
+        }>;
+        message: string;
+        status: string;
+    } | null>;
+    toggleShare: (courseId: string) => Promise<any>;
+    getPublicCourses: () => Promise<any>;
 }
 
 export function useCourseService() {
@@ -160,10 +174,16 @@ export function useCourseService() {
             return response.data;
         } catch (error) {
             console.error(
-                `An error occurred adding file ${fileId} to
-        course ${courseId}`,
+                `[CourseService] ❌ Error adding file ${fileId} to course ${courseId}:`,
                 error
             );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
             return null;
         }
     };
@@ -179,9 +199,16 @@ export function useCourseService() {
             return response.data;
         } catch (error) {
             console.error(
-                `An error occurred fetching course ${courseId} summary sheets`,
+                `[CourseService] ❌ Error fetching course ${courseId} summary sheets:`,
                 error
             );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
             return null;
         }
     };
@@ -265,6 +292,56 @@ export function useCourseService() {
         }
     };
 
+    const toggleShare = async (courseId: string) => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/courses/${courseId}/share`,
+                {},
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors du partage du cours.",
+            };
+        }
+    };
+
+    const getPublicCourses = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/courses/public`);
+
+            return response.data;
+        } catch (error: any) {
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors de la récupération des cours publics.",
+            };
+        }
+    };
+
+    const getAllExams = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/exams`, {
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("An error occurred fetching all exams.", error);
+            return null;
+        }
+    };
+
     return {
         createCourse,
         getCourseById,
@@ -278,5 +355,8 @@ export function useCourseService() {
         getExamById,
         updateExamById,
         deleteExamById,
+        getAllExams,
+        toggleShare,
+        getPublicCourses,
     };
 }

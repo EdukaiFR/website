@@ -29,6 +29,7 @@ export default function MyCourses() {
         updateExam,
         deleteExam,
         loadCourseFiles,
+        loadSummarySheets,
     } = useCourseLogic();
 
     // Loading state
@@ -65,6 +66,7 @@ export default function MyCourses() {
             <CourseContentRenderer
                 selectedTab={selectedTab}
                 courseId={courseId}
+                courseTitle={courseData?.title}
                 examsData={examsData}
                 createExam={createExam}
                 getExams={getExams}
@@ -78,6 +80,7 @@ export default function MyCourses() {
                 summarySheetsData={summarySheetsData}
                 loadCourseFiles={loadCourseFiles}
                 storageUserId={storageUserId}
+                refreshSummarySheets={loadSummarySheets}
             />
         </div>
     );

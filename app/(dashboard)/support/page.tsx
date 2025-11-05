@@ -3,33 +3,33 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
-    LifeBuoy,
-    Search,
-    MessageCircle,
     BookOpen,
-    Settings,
-    HelpCircle,
-    Mail,
-    Clock,
     CheckCircle2,
-    Send,
-    ExternalLink,
-    User,
-    FileText,
-    Zap,
-    Shield,
-    CreditCard,
-    Smartphone,
     ChevronDown,
+    Clock,
+    CreditCard,
+    ExternalLink,
+    FileText,
+    HelpCircle,
+    LifeBuoy,
+    Mail,
+    MessageCircle,
+    Search,
+    Send,
+    Settings,
+    Shield,
+    Smartphone,
+    User,
+    Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -128,7 +128,7 @@ const faqs: FAQ[] = [
         id: "3",
         question:
             "Quelle est la différence entre la version gratuite et Premium ?",
-        answer: "La version gratuite te permet de créer 3 cours par mois avec des fonctionnalités de base. Premium débloque la création illimitée, l&apos;IA avancée, les statistiques détaillées, le partage de cours, et l'accès prioritaire aux nouvelles fonctionnalités.",
+        answer: "La version gratuite te permet de créer 3 cours par mois avec des fonctionnalités de base. Premium débloque la création illimitée, l'IA avancée, les statistiques détaillées, le partage de cours, et l'accès prioritaire aux nouvelles fonctionnalités.",
         category: "subscription",
         helpful: 56,
     },
@@ -142,7 +142,7 @@ const faqs: FAQ[] = [
     {
         id: "5",
         question: "L'application fonctionne-t-elle hors ligne ?",
-        answer: "Tu peux consulter tes cours téléchargés hors ligne sur l&apos;application mobile. Cependant, la création de nouveaux cours et la synchronisation nécessitent une connexion internet.",
+        answer: "Tu peux consulter tes cours téléchargés hors ligne sur l'application mobile. Cependant, la création de nouveaux cours et la synchronisation nécessitent une connexion internet.",
         category: "mobile",
         helpful: 33,
     },
@@ -246,7 +246,7 @@ export default function SupportPage() {
     return (
         <div className="flex flex-col gap-6 px-4 lg:px-8 py-4 lg:py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
             {/* Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 lg:p-8 text-white shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-6 lg:p-8 text-white shadow-xl">
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
@@ -258,7 +258,7 @@ export default function SupportPage() {
                         </Badge>
                     </div>
                     <h1 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
-                        Centre d&apos;assistance
+                        Centre d'assistance
                     </h1>
                     <p className="text-blue-100 text-sm sm:text-base lg:text-lg max-w-2xl">
                         Trouve des réponses rapides ou contacte notre équipe
@@ -283,7 +283,7 @@ export default function SupportPage() {
                         <p className="text-gray-600 text-xs lg:text-sm mb-4">
                             Discute avec notre équipe en temps réel
                         </p>
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base">
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base">
                             Ouvrir le chat
                         </Button>
                     </CardContent>
@@ -417,7 +417,7 @@ export default function SupportPage() {
                                 Aucune question trouvée
                             </h3>
                             <p className="text-gray-500 text-sm lg:text-base">
-                                Essaie avec d&apos;autres mots-clés ou contacte
+                                Essaie avec d'autres mots-clés ou contacte
                                 notre équipe.
                             </p>
                         </div>
@@ -505,7 +505,7 @@ export default function SupportPage() {
                 <CardHeader className="p-4 lg:p-6">
                     <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
                         <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
-                        Contacter l&apos;équipe support
+                        Contacter l'équipe support
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 lg:p-6 pt-0">
@@ -637,7 +637,7 @@ export default function SupportPage() {
 
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base h-10 lg:h-11"
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base h-10 lg:h-11"
                         >
                             <Send className="w-4 h-4 mr-2" />
                             Envoyer le message
@@ -663,7 +663,7 @@ export default function SupportPage() {
                                 window.open("/guide-utilisateur", "_blank")
                             }
                         >
-                            <span>Guide d&apos;utilisation complet</span>
+                            <span>Guide d'utilisation complet</span>
                             <ExternalLink className="w-4 h-4" />
                         </Button>
                         <Button

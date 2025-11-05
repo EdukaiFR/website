@@ -1,20 +1,20 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertTriangle, Shield, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2, Shield, AlertTriangle } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { PersistentAlert } from "@/components/ui/persistent-alert";
+import { deleteAccountAction } from "@/lib/actions/user";
 import {
     deleteAccountSchema,
     type DeleteAccountFormValues,
 } from "@/lib/schemas/user";
-import { deleteAccountAction } from "@/lib/actions/user";
 
 export interface AccountSettingsProps {
     userId: string;
@@ -112,7 +112,7 @@ export function AccountSettings({
                     </div>
                     <p className="text-sm text-blue-700">
                         Votre compte est sécurisé avec une authentification par
-                        cookies HTTP-only. L&apos;adresse email ne peut pas être
+                        cookies HTTP-only. L'adresse email ne peut pas être
                         modifiée pour des raisons de sécurité.
                     </p>
                 </div>
@@ -146,7 +146,7 @@ export function AccountSettings({
                                                 </li>
                                                 <li>
                                                     Votre historique
-                                                    d&apos;activité
+                                                    d'activité
                                                 </li>
                                                 <li>
                                                     Vos cours et matériaux

@@ -3,6 +3,7 @@ import axios from "axios";
 export interface BlobService {
     uploadFile: (file: File, fileType: string) => Promise<unknown>;
     getFileById: (fileId: string) => Promise<unknown>;
+    deleteFile: (fileId: string) => Promise<unknown>;
 }
 
 export function useBlobService() {
@@ -27,7 +28,15 @@ export function useBlobService() {
 
             return response.data;
         } catch (error) {
-            console.error("An error ocurred uploading the file", error);
+            console.error("[BlobService] ❌ Error uploading file:", error);
+            if (axios.isAxiosError(error)) {
+                console.error("[BlobService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
+            throw error;
         }
     };
 
@@ -42,5 +51,34 @@ export function useBlobService() {
         }
     };
 
-    return { uploadFile, getFileById };
+    const deleteFile = async (fileId: string) => {
+        try {
+            const response = await axios.delete(
+                `${apiUrl}/blob/files/${fileId}`,
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            console.error("[BlobService] ❌ Error deleting file:", error);
+            if (axios.isAxiosError(error)) {
+                console.error("[BlobService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
+
+            if (error?.response?.data) {
+                return error.response.data;
+            }
+
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors de la suppression du fichier.",
+            };
+        }
+    };
+
+    return { uploadFile, getFileById, deleteFile };
 }

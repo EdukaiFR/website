@@ -2,7 +2,7 @@ import { WandSparkles } from "lucide-react";
 
 export function GeneratorHeader() {
     return (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-8 text-white shadow-xl">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
@@ -17,8 +17,8 @@ export function GeneratorHeader() {
                     Bienvenue dans le générateur
                 </h1>
                 <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
-                    Remplis les champs ci-dessous puis clique sur &apos;Lancer
-                    la génération&apos;.
+                    Remplis les champs ci-dessous puis clique sur 'Lancer
+                    la génération'.
                 </p>
             </div>
             {/* Decorative elements */}

@@ -1,40 +1,89 @@
 "use client";
 
+import { useUserProfile } from "@/contexts/UserContext";
+import { useAllExams } from "@/hooks/useAllExams";
+import { getDaysLeft } from "@/lib/date-format";
+import { useCourseService } from "@/services";
 import {
-    Calendar,
-    Target,
     Activity,
     BookOpen,
-    Trophy,
+    Calendar,
     Clock,
+    Target,
     TrendingUp,
-    Star,
+    Trophy,
 } from "lucide-react";
-import { useUserProfile } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+interface CourseData {
+    _id: string;
+    title: string;
+    subject: string;
+    level: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
 
 export default function Home() {
     const { userProfile, loading } = useUserProfile();
+    const router = useRouter();
+    const { allExams, loading: examsLoading } = useAllExams();
+    const courseService = useCourseService();
+    const [recentCourses, setRecentCourses] = useState<CourseData[]>([]);
+    const [coursesLoading, setCoursesLoading] = useState(true);
 
-    // Détermine le nom à afficher
+    useEffect(() => {
+        const fetchRecentCourses = async () => {
+            try {
+                setCoursesLoading(true);
+                const response = await courseService.getCourses();
+                if (response && "items" in response) {
+                    const courses = response.items as CourseData[];
+                    // Sort by update date (most recent first) and limit to 4
+                    const sortedCourses = courses.toSorted((a, b) => {
+                        const dateA = new Date(
+                            a.updatedAt || a.createdAt || 0
+                        ).getTime();
+                        const dateB = new Date(
+                            b.updatedAt || b.createdAt || 0
+                        ).getTime();
+                        return dateB - dateA;
+                    }).slice(0, 4);
+                    setRecentCourses(sortedCourses);
+                }
+            } catch (error) {
+                console.error("Error fetching recent courses:", error);
+            } finally {
+                setCoursesLoading(false);
+            }
+        };
+
+        fetchRecentCourses();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Determine the name to display
     const getDisplayName = () => {
         if (!userProfile) return "";
 
-        // Si le username est une adresse email ou identique à l'email
+        // If the username is an email address or identical to the email
         if (
             userProfile.username.includes("@") ||
             userProfile.username === userProfile.email
         ) {
-            // Affiche firstName et première lettre du lastName
+            // Display firstName and first letter of lastName
             return `${userProfile.firstName} ${userProfile.lastName.charAt(0)}.`;
         }
 
-        // Sinon affiche le username
+        // Otherwise display the username
         return userProfile.username;
     };
     return (
-        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
             {/* Beautiful Header Section */}
-            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
+            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
 
@@ -55,7 +104,7 @@ export default function Home() {
                             </div>
 
                             <h1 className="text-2xl lg:text-4xl font-bold mb-6 leading-tight">
-                                Bienvenue
+                                Bienvenue{" "}
                                 <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
                                     {loading ? (
                                         <span className="inline-block animate-pulse bg-yellow-300/30 rounded h-10 w-32"></span>
@@ -68,15 +117,29 @@ export default function Home() {
                             <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
                                 Voici un petit résumé de ton compte et de tes
                                 progrès récents dans ton parcours
-                                d&apos;apprentissage.
+                                d'apprentissage.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <button className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl hover:transform hover:scale-105">
+                                <button
+                                    onClick={() => router.push("/library")}
+                                    className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
+                                >
                                     <BookOpen className="w-6 h-6" />
-                                    Continuer l&apos;Apprentissage
+                                    Continuer l'Apprentissage
                                 </button>
-                                <button className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200">
+                                <button
+                                    onClick={() =>
+                                        toast.warning(
+                                            "Fonctionnalité en développement",
+                                            {
+                                                description:
+                                                    "La gestion des objectifs arrive bientôt ! Restez connecté.",
+                                            }
+                                        )
+                                    }
+                                    className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
+                                >
                                     <Target className="w-6 h-6" />
                                     Voir les Objectifs
                                 </button>
@@ -108,7 +171,7 @@ export default function Home() {
                                         45h
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Temps d&apos;Étude
+                                        Temps d'Étude
                                     </div>
                                 </div>
 
@@ -167,143 +230,216 @@ export default function Home() {
                                     <Calendar className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-800">
+                                    <p className="text-xl font-bold text-gray-800">
                                         Examens à Venir
-                                    </h3>
+                                    </p>
                                     <p className="text-gray-600 text-sm">
                                         Prochaines échéances
                                     </p>
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="p-4 bg-red-50 rounded-xl border border-red-100">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-semibold text-gray-800">
-                                            Mathématiques
-                                        </span>
-                                        <span className="text-red-600 text-sm">
-                                            Dans 3 jours
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-semibold text-gray-800">
-                                            Histoire
-                                        </span>
-                                        <span className="text-orange-600 text-sm">
-                                            Dans 1 semaine
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                {(() => {
+                                    if (examsLoading) {
+                                        return (
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <div className="flex justify-center items-center">
+                                                    <span className="text-gray-500 text-sm">
+                                                        Chargement...
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
 
-                        {/* Objectives */}
-                        <div className="md:col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                                    <Target className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800">
-                                        Tes Objectifs
-                                    </h3>
-                                    <p className="text-gray-600 text-sm">
-                                        Progresse vers tes buts
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="font-semibold text-gray-800">
-                                            Terminer 5 cours
-                                        </span>
-                                        <span className="text-blue-600 text-sm">
-                                            3/5
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-blue-200 rounded-full h-2">
-                                        <div
-                                            className="bg-blue-600 h-2 rounded-full"
-                                            style={{ width: "60%" }}
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="font-semibold text-gray-800">
-                                            50h d&apos;étude
-                                        </span>
-                                        <span className="text-green-600 text-sm">
-                                            45/50h
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-green-200 rounded-full h-2">
-                                        <div
-                                            className="bg-green-600 h-2 rounded-full"
-                                            style={{ width: "90%" }}
-                                        ></div>
-                                    </div>
-                                </div>
+                                    if (allExams.length === 0) {
+                                        return (
+                                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                                <div className="flex flex-col items-center gap-2 text-center">
+                                                    <Calendar className="w-6 h-6 text-blue-600" />
+                                                    <span className="font-semibold text-gray-800 text-sm">
+                                                        Aucun examen prévu
+                                                    </span>
+                                                    <span className="text-gray-600 text-xs">
+                                                        Ajoute des examens dans tes
+                                                        cours pour les voir ici
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    return allExams.slice(0, 2).map(exam => {
+                                        const daysLeft = getDaysLeft(exam.date);
+                                        const isUrgent = daysLeft <= 7;
+                                        const bgColor = isUrgent
+                                            ? "bg-red-50"
+                                            : "bg-orange-50";
+                                        const borderColor = isUrgent
+                                            ? "border-red-100"
+                                            : "border-orange-100";
+                                        const textColor = isUrgent
+                                            ? "text-red-600"
+                                            : "text-orange-600";
+
+                                        const getDaysLeftText = () => {
+                                            if (daysLeft === 0) return "Aujourd'hui";
+                                            if (daysLeft === 1) return "Demain";
+                                            return `Dans ${daysLeft} jours`;
+                                        };
+
+                                        return (
+                                            <button
+                                                key={exam._id}
+                                                type="button"
+                                                className={`w-full text-left p-4 ${bgColor} rounded-xl border ${borderColor} hover:shadow-md transition-all duration-200 cursor-pointer`}
+                                                onClick={() => {
+                                                    if (exam.courseId) {
+                                                        router.push(
+                                                            `/library/${exam.courseId}`
+                                                        );
+                                                    } else {
+                                                        router.push(`/library`);
+                                                    }
+                                                }}
+                                            >
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <div className="flex-1 min-w-0 space-y-1">
+                                                        {exam.courseTitle ? (
+                                                            <>
+                                                                <span className="font-semibold text-gray-800 block truncate">
+                                                                    {
+                                                                        exam.courseTitle
+                                                                    }
+                                                                </span>
+                                                                <span className="text-sm text-gray-700 block truncate">
+                                                                    {exam.courseSubject &&
+                                                                        `${exam.courseSubject} • `}
+                                                                    {exam.title}
+                                                                </span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="font-semibold text-gray-800 block truncate">
+                                                                {exam.title}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <span
+                                                        className={`${textColor} text-sm font-medium whitespace-nowrap flex-shrink-0`}
+                                                    >
+                                                        {getDaysLeftText()}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        );
+                                    });
+                                })()}
                             </div>
                         </div>
 
                         {/* Recent Activity */}
-                        <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
+                        <div className="md:col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                                     <Activity className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-800">
-                                        Activité Récente
-                                    </h3>
+                                    <p className="text-xl font-bold text-gray-800">
+                                        Cours Récents
+                                    </p>
                                     <p className="text-gray-600 text-sm">
-                                        Tes dernières actions
+                                        Tes derniers cours
                                     </p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                    <div className="flex items-center gap-3">
-                                        <Star className="w-5 h-5 text-purple-600" />
-                                        <div>
-                                            <p className="font-semibold text-gray-800">
-                                                Cours complété
-                                            </p>
-                                            <p className="text-gray-600 text-sm">
-                                                Algèbre linéaire - Il y a 2h
-                                            </p>
+                            {(() => {
+                                if (coursesLoading) {
+                                    return (
+                                        <div className="flex justify-center items-center py-8">
+                                            <span className="text-gray-500 text-sm">
+                                                Chargement...
+                                            </span>
                                         </div>
+                                    );
+                                }
+
+                                if (recentCourses.length === 0) {
+                                    return (
+                                        <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                                            <div className="p-3 bg-purple-50 rounded-2xl">
+                                                <BookOpen className="w-6 h-6 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-800 mb-1">
+                                                    Aucun cours disponible
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    Crée ton premier cours pour
+                                                    commencer !
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        {recentCourses.map(course => (
+                                            <button
+                                                key={course._id}
+                                                type="button"
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/library/${course._id}`
+                                                    )
+                                                }
+                                                className="w-full text-left p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-gray-800 truncate">
+                                                            {course.title}
+                                                        </p>
+                                                        <p className="text-gray-600 text-sm truncate">
+                                                            {course.subject}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Objectives */}
+                        <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
+                                    <Target className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                    <div className="flex items-center gap-3">
-                                        <BookOpen className="w-5 h-5 text-blue-600" />
-                                        <div>
-                                            <p className="font-semibold text-gray-800">
-                                                Nouveau cours démarré
-                                            </p>
-                                            <p className="text-gray-600 text-sm">
-                                                Géométrie - Hier
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <p className="text-xl font-bold text-gray-800">
+                                        Tes Objectifs
+                                    </p>
+                                    <p className="text-gray-600 text-sm">
+                                        Progresse vers tes buts
+                                    </p>
                                 </div>
-                                <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                                    <div className="flex items-center gap-3">
-                                        <Trophy className="w-5 h-5 text-green-600" />
-                                        <div>
-                                            <p className="font-semibold text-gray-800">
-                                                Badge obtenu
-                                            </p>
-                                            <p className="text-gray-600 text-sm">
-                                                Mathématicien - Il y a 3 jours
-                                            </p>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                                <div className="p-3 bg-blue-50 rounded-2xl">
+                                    <Target className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-800 mb-1">
+                                        Objectifs non disponibles
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        La fonctionnalité de suivi des objectifs
+                                        arrive bientôt !
+                                    </p>
                                 </div>
                             </div>
                         </div>

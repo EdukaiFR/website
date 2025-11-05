@@ -14,7 +14,7 @@ interface ErrorProps {
     reset: () => void;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function AppError({ error, reset }: ErrorProps) {
     useEffect(() => {
         // Log structuré pour le debugging et monitoring
         logError(error);

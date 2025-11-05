@@ -61,7 +61,7 @@ export function LoadingUi({ step, idCourse }: LoadingUiProps) {
     return (
         <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
             {/* Modern Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-8 text-white shadow-xl">
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
@@ -110,7 +110,7 @@ export function LoadingUi({ step, idCourse }: LoadingUiProps) {
                             </div>
                             <Button
                                 onClick={handleRedirect}
-                                className="h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                                className="h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                             >
                                 Voir mon cours
                                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -127,7 +127,7 @@ export function LoadingUi({ step, idCourse }: LoadingUiProps) {
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                     <div
-                                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
+                                        className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-500 ease-out"
                                         style={{ width: `${progress}%` }}
                                     />
                                 </div>
@@ -136,7 +136,7 @@ export function LoadingUi({ step, idCourse }: LoadingUiProps) {
                             {/* Current Step */}
                             {currentStep && (
                                 <div className="text-center space-y-4">
-                                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4">
+                                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center mb-4">
                                         <currentStep.icon className="w-8 h-8 text-white animate-pulse" />
                                     </div>
                                     <div>

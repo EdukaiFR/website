@@ -1,13 +1,12 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Bell, Eye, Save, Settings, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Settings, Save, Bell, Eye, Shield, Trash2 } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import {
     Select,
     SelectContent,
@@ -15,14 +14,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+    deleteAccountAction,
+    updatePreferencesAction,
+} from "@/lib/actions/user";
 import {
     preferencesSettingsSchema,
     type PreferencesSettingsFormValues,
 } from "@/lib/schemas/user";
-import {
-    updatePreferencesAction,
-    deleteAccountAction,
-} from "@/lib/actions/user";
 
 export interface PreferencesSettingsProps {
     initialData?: PreferencesSettingsFormValues;
@@ -298,7 +298,7 @@ export function PreferencesSettings({
                                                 </label>
                                                 <p className="text-xs text-gray-500 break-words">
                                                     Aider à améliorer
-                                                    l&apos;application en
+                                                    l'application en
                                                     partageant des données
                                                     anonymes
                                                 </p>
@@ -336,7 +336,7 @@ export function PreferencesSettings({
                             <Button
                                 type="submit"
                                 disabled={isLoading || !isDirty}
-                                className="px-6 h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">

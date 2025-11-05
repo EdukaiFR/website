@@ -1,7 +1,7 @@
 "use client";
 
-import { CourseCard, CourseCardProps } from "./CourseCard";
 import { BookOpen, Search } from "lucide-react";
+import { CourseCard, CourseCardProps } from "./CourseCard";
 
 interface CourseGridProps {
     courses: CourseCardProps[];
@@ -32,7 +32,7 @@ export const CourseGrid = ({ courses, isLoading = false }: CourseGridProps) => {
                     Aucun cours trouvé
                 </h3>
                 <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    Il semblerait qu&apos;aucun cours ne corresponde à vos
+                    Il semblerait qu'aucun cours ne corresponde à vos
                     critères de recherche. Essayez de modifier vos filtres ou
                     votre recherche.
                 </p>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useSheet } from "@/hooks";
 import { generateMarkdownPdf } from "@/lib/summary-sheets/md2pdf";
 import { SummarySheetData } from "@/lib/types/library";
-import { useSummarySheetService } from "@/services";
+import { useBlobService, useSummarySheetService } from "@/services";
 import {
     Calendar,
     Download,
@@ -28,12 +28,14 @@ export interface SummarySheetProps {
     user_id: string;
     course_id: string;
     summarySheets: SummarySheetData[] | [];
+    onRefresh?: () => void;
 }
 
 export const SummarySheets = ({
     user_id,
     course_id,
     summarySheets,
+    onRefresh,
 }: SummarySheetProps) => {
     const typedSummarySheets: SummarySheetData[] =
         summarySheets && summarySheets.length > 0 ? summarySheets : [];
@@ -48,28 +50,57 @@ export const SummarySheets = ({
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     const summarySheetsService = useSummarySheetService();
+    const blobService = useBlobService();
     const { error, deleteSheetById } = useSheet(summarySheetsService);
 
-    const filteredFiles = localSummarySheets.filter(file =>
-        file.content.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredFiles = localSummarySheets.filter(file => {
+        const searchLower = searchTerm.toLowerCase();
+
+        // For AI-generated sheets, search in content
+        if (file.source === "ai" && "content" in file) {
+            return file.content.toLowerCase().includes(searchLower);
+        }
+
+        // For user-uploaded files, search in name
+        if (file.source === "file" && "name" in file) {
+            return file.name.toLowerCase().includes(searchLower);
+        }
+
+        return false;
+    });
 
     useEffect(() => {
         setLocalSummarySheets(typedSummarySheets);
-    }, [typedSummarySheets]);
+    }, [summarySheets]);
 
     const handleDelete = async (file: SummarySheetData) => {
         try {
-            const { status, message } = await deleteSheetById(file._id);
-            if (status === "success") {
+            let response;
+
+            // Use different service based on file source
+            if (file.source === "file") {
+                // User-uploaded file - use blob service
+                response = await blobService.deleteFile(file._id);
+            } else {
+                // AI-generated sheet - use summary sheet service
+                response = await deleteSheetById(file._id);
+            }
+
+            if (response?.status === "success") {
                 setLocalSummarySheets(prevSheets =>
                     prevSheets.filter(sheet => sheet._id !== file._id)
                 );
-                toast.success(message);
+                toast.success(response.message || "Fichier supprimé avec succès");
+
+                // Refresh the list from backend
+                if (onRefresh) {
+                    onRefresh();
+                }
             } else {
-                toast.error(message);
+                toast.error(response?.message || "Erreur lors de la suppression");
             }
         } catch (error) {
+            console.error("[SummarySheets] Error in handleDelete:", error);
             toast.error(
                 "Erreur lors de la suppression de la fiche de révision"
             );
@@ -77,7 +108,21 @@ export const SummarySheets = ({
     };
 
     const handleDownload = async (file: SummarySheetData) => {
-        await generateMarkdownPdf(course_id, file.content);
+        // For uploaded files, download directly
+        if (file.source === "file" && "name" in file) {
+            const link = document.createElement("a");
+            link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${file._id}`;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            return;
+        }
+
+        // For AI-generated sheets, generate PDF from markdown
+        if (file.source === "ai" && "content" in file) {
+            await generateMarkdownPdf(course_id, file.content);
+        }
     };
 
     function delay(ms: number) {
@@ -87,7 +132,22 @@ export const SummarySheets = ({
         try {
             const downloadPromises = filteredFiles.map(async (file, index) => {
                 await delay(index * 500);
-                await generateMarkdownPdf(course_id, file.content);
+
+                // For uploaded files, download directly
+                if (file.source === "file" && "name" in file) {
+                    const link = document.createElement("a");
+                    link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${file._id}`;
+                    link.download = file.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    return;
+                }
+
+                // For AI-generated sheets, generate PDF from markdown
+                if (file.source === "ai" && "content" in file) {
+                    await generateMarkdownPdf(course_id, file.content);
+                }
             });
 
             await Promise.all(downloadPromises);
@@ -124,6 +184,7 @@ export const SummarySheets = ({
         }
     };
 
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("fr-FR", {
             day: "numeric",
@@ -135,33 +196,35 @@ export const SummarySheets = ({
     return (
         <div className="w-full flex flex-col min-h-[calc(100vh-12rem)] sm:min-h-[65vh] gap-4 sm:gap-6 overflow-auto">
             {/* Header Section */}
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border-0 shadow-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                        <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex-shrink-0">
-                            <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-100/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                            <FileText className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
-                            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
+                            <h1 className="text-2xl font-bold text-gray-800">
                                 Fiches de révision
                             </h1>
-                            <p className="text-gray-600 text-xs sm:text-sm">
+                            <p className="text-gray-600 text-sm mt-1">
                                 Gérez vos documents de révision
                             </p>
                         </div>
-                        <CounterBadge
-                            counter={filteredFiles.length}
-                            type="élements"
-                            size="sm"
-                        />
+                        <div className="hidden sm:block">
+                            <CounterBadge
+                                counter={filteredFiles.length}
+                                type="élements"
+                                size="sm"
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         {filteredFiles.length > 0 && (
                             <Button
                                 variant="outline"
                                 onClick={handleBulkDownload}
-                                className="h-10 border-green-200 hover:bg-green-50 text-green-700 font-medium rounded-xl"
+                                className="h-11 border-green-200/60 bg-green-50 hover:bg-green-100 text-green-700 font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
                             >
                                 <DownloadCloud className="w-4 h-4 mr-2" />
                                 <span className="hidden sm:inline">
@@ -172,30 +235,30 @@ export const SummarySheets = ({
                                 </span>
                             </Button>
                         )}
-                        <AddSummarySheet />
+                        <AddSummarySheet courseId={course_id} onUploadSuccess={onRefresh} />
                     </div>
                 </div>
 
                 {/* Search and View Toggle */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
+                <div className="flex flex-col sm:flex-row gap-4 mt-6">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
                             placeholder="Rechercher une fiche..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="pl-10 h-10 bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            className="pl-10 h-11 bg-white/90 backdrop-blur-sm border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
                         />
                     </div>
-                    <div className="flex bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
+                    <div className="flex bg-blue-50/50 backdrop-blur-sm rounded-xl p-1.5 border border-blue-100/50 w-full sm:w-auto shadow-sm">
                         <Button
                             variant={viewMode === "grid" ? "default" : "ghost"}
                             size="sm"
                             onClick={() => setViewMode("grid")}
-                            className={`rounded-lg flex-1 sm:flex-none ${
+                            className={`rounded-lg flex-1 sm:flex-none transition-all duration-200 ${
                                 viewMode === "grid"
-                                    ? "bg-white shadow-sm text-blue-600"
-                                    : "text-gray-600 hover:text-gray-800"
+                                    ? "bg-gradient-to-r from-blue-600 to-blue-500 shadow-md text-white hover:from-blue-700 hover:to-blue-600"
+                                    : "text-gray-600 hover:text-gray-800 hover:bg-white/50"
                             }`}
                         >
                             <Grid className="w-4 h-4" />
@@ -204,10 +267,10 @@ export const SummarySheets = ({
                             variant={viewMode === "list" ? "default" : "ghost"}
                             size="sm"
                             onClick={() => setViewMode("list")}
-                            className={`rounded-lg flex-1 sm:flex-none ${
+                            className={`rounded-lg flex-1 sm:flex-none transition-all duration-200 ${
                                 viewMode === "list"
-                                    ? "bg-white shadow-sm text-blue-600"
-                                    : "text-gray-600 hover:text-gray-800"
+                                    ? "bg-gradient-to-r from-blue-600 to-blue-500 shadow-md text-white hover:from-blue-700 hover:to-blue-600"
+                                    : "text-gray-600 hover:text-gray-800 hover:bg-white/50"
                             }`}
                         >
                             <List className="w-4 h-4" />
@@ -219,22 +282,22 @@ export const SummarySheets = ({
             {/* Content Section */}
             <div className="flex-1">
                 {filteredFiles.length === 0 ? (
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-12 border-0 shadow-lg text-center">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-blue-100/50 shadow-xl text-center">
                         <div className="max-w-md mx-auto">
-                            <div className="p-4 bg-blue-50 rounded-2xl w-fit mx-auto mb-6">
-                                <FileText className="w-12 h-12 text-blue-600" />
+                            <div className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl w-fit mx-auto mb-6 shadow-sm">
+                                <FileText className="w-14 h-14 text-blue-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                            <h3 className="text-xl font-bold text-gray-800 mb-3">
                                 {searchTerm
                                     ? "Aucun fichier trouvé"
                                     : "Aucune fiche de révision"}
                             </h3>
-                            <p className="text-gray-600 text-sm mb-6">
+                            <p className="text-gray-600 mb-8 leading-relaxed">
                                 {searchTerm
                                     ? "Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers."
                                     : "Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage."}
                             </p>
-                            {!searchTerm && <AddSummarySheet />}
+                            {!searchTerm && <AddSummarySheet courseId={course_id} onUploadSuccess={onRefresh} />}
                         </div>
                     </div>
                 ) : (
@@ -248,24 +311,24 @@ export const SummarySheets = ({
                         {filteredFiles.map((file, index) => (
                             <div
                                 key={file._id}
-                                className={`bg-white/70 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-200 group ${
+                                className={`bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 shadow-xl hover:shadow-2xl transition-all duration-300 group ${
                                     viewMode === "grid"
-                                        ? "p-4 sm:p-6"
-                                        : "p-3 sm:p-4"
+                                        ? "p-6"
+                                        : "p-4"
                                 }`}
                             >
                                 {viewMode === "grid" ? (
                                     // Grid View
                                     <div className="flex flex-col h-full">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                                                <FileText className="w-6 h-6 text-blue-600" />
+                                        <div className="flex items-start justify-between mb-5">
+                                            <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm">
+                                                <FileText className="w-7 h-7 text-blue-600" />
                                             </div>
-                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 w-8 p-0 bg-white/80 hover:bg-white rounded-lg"
+                                                    className="h-9 w-9 p-0 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg shadow-sm transition-all duration-200"
                                                     onClick={() =>
                                                         handlePreviewFile(file)
                                                     }
@@ -275,7 +338,7 @@ export const SummarySheets = ({
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 w-8 p-0 bg-white/80 hover:bg-white rounded-lg"
+                                                    className="h-9 w-9 p-0 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg shadow-sm transition-all duration-200"
                                                     onClick={() =>
                                                         handleDownload(file)
                                                     }
@@ -285,7 +348,7 @@ export const SummarySheets = ({
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+                                                    className="h-9 w-9 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg shadow-sm transition-all duration-200"
                                                     onClick={() =>
                                                         handleDelete(file)
                                                     }
@@ -296,22 +359,22 @@ export const SummarySheets = ({
                                         </div>
 
                                         <div className="flex-1">
-                                            <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
-                                                FicheRevision-{index + 1}
+                                            <h3 className="font-bold text-gray-800 mb-4 line-clamp-2 text-lg">
+                                                Fiche {index + 1}
                                             </h3>
 
-                                            <div className="space-y-2 text-sm text-gray-600">
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
-                                                    <span>
+                                            <div className="space-y-2.5 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2 bg-blue-50/50 rounded-lg p-2">
+                                                    <Calendar className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                                                    <span className="truncate">
                                                         {formatDate(
                                                             file.createdAt
                                                         )}
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <User className="w-4 h-4" />
-                                                    <span>
+                                                <div className="flex items-center gap-2 bg-purple-50/50 rounded-lg p-2">
+                                                    <User className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                                                    <span className="truncate">
                                                         {user_id === file.author
                                                             ? "Vous"
                                                             : "Auteur Inconnu"}
@@ -322,24 +385,24 @@ export const SummarySheets = ({
                                     </div>
                                 ) : (
                                     // List View
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4 flex-1">
-                                            <div className="p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-                                                <FileText className="w-5 h-5 text-blue-600" />
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                                            <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm">
+                                                <FileText className="w-6 h-6 text-blue-600" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-gray-800 truncate">
-                                                    FicheRevision-{index + 1}
+                                                <h3 className="font-bold text-gray-800 truncate text-base mb-1.5">
+                                                    Fiche {index + 1}
                                                 </h3>
-                                                <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                                                    <span className="flex items-center gap-1">
-                                                        <Calendar className="w-3 h-3" />
+                                                <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                    <span className="flex items-center gap-1.5 bg-blue-50/50 rounded-lg px-2 py-1">
+                                                        <Calendar className="w-3.5 h-3.5 text-blue-600" />
                                                         {formatDate(
                                                             file.createdAt
                                                         )}
                                                     </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <User className="w-3 h-3" />
+                                                    <span className="flex items-center gap-1.5 bg-purple-50/50 rounded-lg px-2 py-1">
+                                                        <User className="w-3.5 h-3.5 text-purple-600" />
                                                         {user_id === file.author
                                                             ? "Vous"
                                                             : "Auteur Inconnu"}
@@ -348,11 +411,11 @@ export const SummarySheets = ({
                                             </div>
                                         </div>
 
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 flex-shrink-0">
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg"
+                                                className="h-10 w-10 p-0 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg shadow-sm transition-all duration-200"
                                                 onClick={() =>
                                                     handlePreviewFile(file)
                                                 }
@@ -362,7 +425,7 @@ export const SummarySheets = ({
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg"
+                                                className="h-10 w-10 p-0 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg shadow-sm transition-all duration-200"
                                                 onClick={() =>
                                                     handleDownload(file)
                                                 }
@@ -372,7 +435,10 @@ export const SummarySheets = ({
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+                                                className="h-10 w-10 p-0 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg shadow-sm transition-all duration-200"
+                                                onClick={() =>
+                                                    handleDelete(file)
+                                                }
                                             >
                                                 <Trash className="w-4 h-4" />
                                             </Button>

@@ -39,7 +39,7 @@ export const EndQuizCard = ({
         >
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
                     <Trophy className="w-4 h-4 text-white" />
                 </div>
                 <h3 className="text-base font-semibold text-gray-800">
@@ -81,7 +81,7 @@ export const EndQuizCard = ({
             {/* Restart Button */}
             <Button
                 onClick={restartFct}
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Relancer le quiz

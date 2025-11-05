@@ -119,7 +119,7 @@ export const PossibleAnswers = ({
                     <Button
                         onClick={onSubmitQuestion}
                         disabled={selectedAnswer === "" || processing}
-                        className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                        className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
                     >
                         {processing ? (
                             <div className="flex items-center gap-2">
@@ -136,7 +136,7 @@ export const PossibleAnswers = ({
                     <Button
                         onClick={onNextQuestion}
                         disabled={processing}
-                        className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     >
                         <span className="mr-2">Question suivante</span>
                         <ArrowRight className="w-4 h-4" />

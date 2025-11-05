@@ -1,12 +1,139 @@
 "use client";
 
-import { Users, Calendar, Trophy, Star, UserPlus } from "lucide-react";
+import { PublicCourseCard } from "@/components/club/PublicCourseCard";
+import { useCourseService } from "@/services";
+import { BookOpen, Calendar, Filter, Loader2, Search, Star, Trophy, UserPlus, Users, X } from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface PublicCourse {
+    _id: string;
+    title: string;
+    subject: string;
+    level: string;
+    author: {
+        firstName: string;
+        lastName: string;
+        username: string;
+    };
+    createdAt: string;
+}
 
 export default function ClubEdukaiPage() {
+    const [courses, setCourses] = useState<PublicCourse[]>([]);
+    const [loadingCourses, setLoadingCourses] = useState(true);
+
+    // Filters state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedSubject, setSelectedSubject] = useState<string>("all");
+    const [selectedLevel, setSelectedLevel] = useState<string>("all");
+    const [showFilters, setShowFilters] = useState(false);
+
+    const { getPublicCourses } = useCourseService();
+
+    // Extract unique subjects and levels from courses
+    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort((a, b) => a.localeCompare(b, 'fr'));
+    const levels = Array.from(new Set(courses.map(c => c.level))).sort((a, b) => a.localeCompare(b, 'fr'));
+
+    // Filter courses based on search and filters
+    const filteredCourses = courses.filter(course => {
+        const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            course.author.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            course.author.lastName.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSubject = selectedSubject === "all" || course.subject === selectedSubject;
+        const matchesLevel = selectedLevel === "all" || course.level === selectedLevel;
+
+        return matchesSearch && matchesSubject && matchesLevel;
+    });
+
+    // Reset filters
+    const resetFilters = () => {
+        setSearchQuery("");
+        setSelectedSubject("all");
+        setSelectedLevel("all");
+    };
+
+    // Get empty state message based on whether courses exist
+    const getEmptyStateMessage = () => {
+        if (courses.length === 0) {
+            return "Il n'y a pas encore de cours publics disponibles. Revenez plus tard !";
+        }
+        return "Aucun cours ne correspond à vos critères. Essayez de modifier vos filtres.";
+    };
+
+    // Get empty state heading based on whether courses exist
+    const getEmptyStateHeading = () => {
+        return courses.length === 0 ? "Aucun cours public" : "Aucun résultat";
+    };
+
+    const hasActiveFilters = searchQuery !== "" || selectedSubject !== "all" || selectedLevel !== "all";
+
+    // Render courses content based on loading and filtered courses state
+    const renderCoursesContent = () => {
+        if (loadingCourses) {
+            return (
+                <div className="flex items-center justify-center py-20">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                </div>
+            );
+        }
+
+        if (filteredCourses.length === 0) {
+            return (
+                <div className="text-center py-20">
+                    <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
+                        <BookOpen className="w-5 h-5" />
+                        {getEmptyStateHeading()}
+                    </div>
+                    <p className="text-gray-600 mt-4 max-w-md mx-auto">
+                        {getEmptyStateMessage()}
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCourses.map((course) => (
+                    <PublicCourseCard
+                        key={course._id}
+                        id={course._id}
+                        title={course.title}
+                        subject={course.subject}
+                        level={course.level}
+                        author={{
+                            firstName: course.author.firstName,
+                            lastName: course.author.lastName,
+                            username: course.author.username,
+                        }}
+                        createdAt={course.createdAt}
+                    />
+                ))}
+            </div>
+        );
+    };
+
+    useEffect(() => {
+        async function fetchPublicCourses() {
+            setLoadingCourses(true);
+            try {
+                const response = await getPublicCourses();
+                if (response.status === "success") {
+                    setCourses(response.items || []);
+                }
+            } catch (error) {
+                console.error("Error fetching public courses:", error);
+            } finally {
+                setLoadingCourses(false);
+            }
+        }
+
+        fetchPublicCourses();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return (
-        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
             {/* Beautiful Header Section */}
-            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
+            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
 
@@ -35,7 +162,7 @@ export default function ClubEdukaiPage() {
 
                             <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
                                 Rejoignez une communauté passionnée
-                                d&apos;apprenants et développez vos compétences
+                                d'apprenants et développez vos compétences
                                 ensemble dans un environnement collaboratif et
                                 bienveillant.
                             </p>
@@ -124,19 +251,107 @@ export default function ClubEdukaiPage() {
                 </div>
             </header>
 
-            {/* Content Area - Ready for future content */}
+            {/* Content Area */}
             <main className="flex-1 relative z-10 bg-blue-50/50">
                 <div className="container mx-auto px-6 py-12">
-                    {/* Future content will go here */}
-                    <div className="text-center py-20">
-                        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-6 py-3 text-lg font-medium">
-                            <Users className="w-5 h-5" />
-                            Contenu à venir
+                    {/* Title */}
+                    <div className="flex items-center justify-center mb-8">
+                        <div className="flex items-center gap-3 bg-white/70 backdrop-blur-sm px-6 py-3 rounded-xl shadow-md">
+                            <BookOpen className="w-6 h-6 text-blue-600" />
+                            <h2 className="text-xl font-bold text-gray-900">Cours publics</h2>
+                            <span className="px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-600">
+                                {hasActiveFilters ? `${filteredCourses.length}/${courses.length}` : courses.length}
+                            </span>
                         </div>
-                        <p className="text-gray-600 mt-4 max-w-md mx-auto">
-                            Cette section sera bientôt remplie avec du contenu
-                            passionnant sur le Club Edukai.
-                        </p>
+                    </div>
+
+                    {/* Search and Filters */}
+                    <div className="mt-6 space-y-4">
+                        {/* Search Bar */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Rechercher un cours, un auteur..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/70 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap ${
+                                    showFilters || hasActiveFilters
+                                        ? "bg-blue-600 text-white shadow-lg"
+                                        : "bg-white/70 text-gray-700 hover:bg-white hover:shadow-md"
+                                }`}
+                            >
+                                <Filter className="w-5 h-5" />
+                                <span>Filtres</span>
+                                {hasActiveFilters && (
+                                    <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                                        {[selectedSubject !== "all", selectedLevel !== "all"].filter(Boolean).length}
+                                    </span>
+                                )}
+                            </button>
+                            {hasActiveFilters && (
+                                <button
+                                    onClick={resetFilters}
+                                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-all duration-300 whitespace-nowrap"
+                                >
+                                    <X className="w-5 h-5" />
+                                    <span>Réinitialiser</span>
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Filter Dropdowns */}
+                        {showFilters && (
+                            <div className="flex flex-col sm:flex-row gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200">
+                                <div className="flex-1">
+                                    <label htmlFor="subject-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Matière
+                                    </label>
+                                    <select
+                                        id="subject-filter"
+                                        value={selectedSubject}
+                                        onChange={(e) => setSelectedSubject(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                        <option value="all">Toutes les matières</option>
+                                        {subjects.map((subject) => (
+                                            <option key={subject} value={subject}>
+                                                {subject}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex-1">
+                                    <label htmlFor="level-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Niveau
+                                    </label>
+                                    <select
+                                        id="level-filter"
+                                        value={selectedLevel}
+                                        onChange={(e) => setSelectedLevel(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                        <option value="all">Tous les niveaux</option>
+                                        {levels.map((level) => (
+                                            <option key={level} value={level}>
+                                                {level}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Courses Content */}
+                    <div className="mt-8">
+                        {renderCoursesContent()}
                     </div>
                 </div>
             </main>

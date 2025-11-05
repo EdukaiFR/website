@@ -1,4 +1,5 @@
-import { examsValue, resumeFilesValue } from "@/public/mocks/default-value";
+import { SummarySheetData } from "@/lib/types/library";
+import { examsValue } from "@/public/mocks/default-value";
 import { Exam } from "./Card/Exam";
 import { LastQuiz } from "./Card/LastQuiz";
 import { Ranking } from "./Card/Ranking";
@@ -8,6 +9,7 @@ import { Tips } from "./Card/Tips";
 
 export type OverviewProps = {
     course_id: string;
+    course_title?: string;
     overview: unknown;
     examsData?: unknown[];
     createExam?: (
@@ -28,10 +30,12 @@ export type OverviewProps = {
             createdAt: string;
         }>;
     };
+    summarySheetsData?: SummarySheetData[];
 };
 
 export const Overview = ({
     course_id,
+    course_title,
     overview,
     examsData,
     createExam,
@@ -40,8 +44,8 @@ export const Overview = ({
     updateExam,
     deleteExam,
     insights_data,
+    summarySheetsData,
 }: OverviewProps) => {
-    console.log(overview);
     return (
         <div className="w-full h-full overflow-auto max-w-full">
             {/* Mobile: Single column, Tablet+: Two columns */}
@@ -75,7 +79,10 @@ export const Overview = ({
                             />
                         </div>
                         <div className="min-h-96 lg:h-[32rem] w-full min-w-0">
-                            <SummarySheets summary_sheets={resumeFilesValue} />
+                            <SummarySheets
+                                summary_sheets={summarySheetsData || []}
+                                courseTitle={course_title}
+                            />
                         </div>
                     </div>
                 </div>
@@ -83,7 +90,7 @@ export const Overview = ({
                 {/* Right Sidebar */}
                 <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 xl:w-[32%] order-1 xl:order-2 w-full max-w-full min-w-0">
                     <div className="h-80 lg:h-60 w-full">
-                        <Tips tips={["Astuce 1"]} />
+                        <Tips tips={[]} />
                     </div>
                     <div className="h-96 lg:h-[32rem] w-full">
                         <Ranking ranking={[]} />
