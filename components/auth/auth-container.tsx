@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { SigninForm } from "./signin-form";
 import { SignupForm } from "./signup-form";
 import { ResetPasswordForm } from "./reset-password-form";
@@ -30,33 +29,41 @@ export function AuthContainer({
     };
 
     const renderAuthForm = () => {
-        switch (mode) {
-            case "login":
-                return (
-                    <SigninForm
-                        onSuccess={handleAuthSuccess}
-                        onError={handleAuthError}
-                        onForgotPassword={() => setMode("forgot")}
-                    />
-                );
-            case "register":
-                return (
-                    <SignupForm
-                        onSuccess={handleAuthSuccess}
-                        onError={handleAuthError}
-                    />
-                );
-            case "forgot":
-                return (
-                    <ResetPasswordForm
-                        onSuccess={handleAuthSuccess}
-                        onError={handleAuthError}
-                        onBack={() => setMode("login")}
-                    />
-                );
-            default:
-                return null;
-        }
+        const formContent = (() => {
+            switch (mode) {
+                case "login":
+                    return (
+                        <SigninForm
+                            onSuccess={handleAuthSuccess}
+                            onError={handleAuthError}
+                            onForgotPassword={() => setMode("forgot")}
+                        />
+                    );
+                case "register":
+                    return (
+                        <SignupForm
+                            onSuccess={handleAuthSuccess}
+                            onError={handleAuthError}
+                        />
+                    );
+                case "forgot":
+                    return (
+                        <ResetPasswordForm
+                            onSuccess={handleAuthSuccess}
+                            onError={handleAuthError}
+                            onBack={() => setMode("login")}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        })();
+
+        return (
+            <div className="transition-all duration-300 ease-in-out">
+                {formContent}
+            </div>
+        );
     };
 
     const renderFooterNavigation = () => {
@@ -67,32 +74,26 @@ export function AuthContainer({
         return (
             <div className="mt-6 sm:mt-8 text-center">
                 {mode === "login" && (
-                    <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
-                            Pas encore de compte ?
-                        </p>
-                        <Button
-                            variant="ghost"
+                    <p className="text-sm text-gray-600">
+                        Pas encore de compte ?{" "}
+                        <button
                             onClick={() => setMode("register")}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base"
+                            className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
                         >
                             Créer un compte gratuitement
-                        </Button>
-                    </div>
+                        </button>
+                    </p>
                 )}
                 {mode === "register" && (
-                    <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
-                            Déjà un compte ?
-                        </p>
-                        <Button
-                            variant="ghost"
+                    <p className="text-sm text-gray-600">
+                        Déjà un compte ?{" "}
+                        <button
                             onClick={() => setMode("login")}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium text-sm sm:text-base"
+                            className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
                         >
                             Se connecter
-                        </Button>
-                    </div>
+                        </button>
+                    </p>
                 )}
             </div>
         );
