@@ -182,3 +182,102 @@ body {
     will-change: transform;
     transform-origin: center center;
 }
+
+/* Modern Toast Styles with Gradient Progress Bar */
+[data-sonner-toast] {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-sonner-toast]::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+    animation: toast-progress linear forwards;
+    animation-duration: var(--duration, 4000ms);
+    transform-origin: left;
+}
+
+@keyframes toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* Success Toast */
+[data-sonner-toast][data-type="success"]::before {
+    background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+}
+
+/* Error Toast */
+[data-sonner-toast][data-type="error"]::before {
+    background: linear-gradient(90deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
+}
+
+/* Warning Toast */
+[data-sonner-toast][data-type="warning"]::before {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
+}
+
+/* Info Toast */
+[data-sonner-toast][data-type="info"]::before {
+    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+}
+
+/* Toast Icon Styling - Colored icons without background */
+[data-icon] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+/* Success Icon - Green color */
+[data-sonner-toast][data-type="success"] [data-icon] {
+    color: #10b981;
+}
+
+/* Error Icon - Red color */
+[data-sonner-toast][data-type="error"] [data-icon] {
+    color: #ef4444;
+}
+
+/* Warning Icon - Orange color */
+[data-sonner-toast][data-type="warning"] [data-icon] {
+    color: #f59e0b;
+}
+
+/* Info Icon - Blue color */
+[data-sonner-toast][data-type="info"] [data-icon] {
+    color: #3b82f6;
+}
+
+/* Default/Loading Icon - Gray color */
+[data-sonner-toast]:not([data-type]) [data-icon] {
+    color: #6b7280;
+}
+
+/* Icon size adjustment */
+[data-icon] svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Toast Close Button Hover Effect */
+[data-sonner-toast] [data-close-button] {
+    transition: all 0.2s ease;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    transform: scale(1.1);
+}

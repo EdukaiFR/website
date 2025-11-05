@@ -72,7 +72,11 @@ export default function Authpage() {
         console.log("Authentication successful");
         const urlParams = new URLSearchParams(window.location.search);
         const redirectTo = urlParams.get("redirect") || "/";
-        window.location.href = redirectTo;
+
+        // Delay redirect to allow toast to be visible
+        setTimeout(() => {
+            window.location.href = redirectTo;
+        }, 1500); // 1.5 seconds delay
     };
 
     const handleAuthError = (error: string) => {
