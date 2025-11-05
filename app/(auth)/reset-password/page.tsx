@@ -15,7 +15,7 @@ export default function ResetPasswordPage() {
     return (
         <Suspense
             fallback={
-                <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+                <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-blue-100 to-white">
                     <div className="text-center">
                         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent" />
                         <p className="mt-2 text-gray-600">Chargement...</p>

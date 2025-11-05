@@ -759,7 +759,7 @@ export const Statistics = ({
                                 </div>
                             </div>
 
-                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                                 <Zap className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                                 <div className="text-2xl font-bold text-blue-600">
                                     {stats.streakData.best}

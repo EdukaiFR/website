@@ -180,7 +180,7 @@ export function FileUpload({
                         onChange={handleFileChange}
                     />
                     <div className="flex flex-col items-center justify-center">
-                        <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4">
+                        <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl mb-4">
                             <CloudUpload className="w-8 h-8 text-white" />
                         </div>
                         <p className="text-lg font-semibold text-gray-800 mb-2">

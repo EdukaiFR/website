@@ -95,7 +95,7 @@ export function AdminTicketCard({
                     <div className="flex items-center gap-3">
                         {/* Ticket ID */}
                         <Link href={`/tickets/${ticket.publicId}`}>
-                            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full px-3 py-1.5 text-white text-xs font-medium shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full px-3 py-1.5 text-white text-xs font-medium shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                                 <div className="w-1.5 h-1.5 bg-white rounded-full opacity-80"></div>
                                 #{ticket.publicId}
                             </div>

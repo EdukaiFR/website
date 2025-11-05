@@ -205,7 +205,7 @@ export function ProfilePictureUpload({
                                 </>
                             ) : (
                                 <>
-                                    <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl mb-3">
+                                    <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl mb-3">
                                         <CloudUpload className="w-6 h-6 text-white" />
                                     </div>
                                     <p className="text-sm font-semibold text-gray-800 mb-1">

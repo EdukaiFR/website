@@ -33,9 +33,9 @@ export function SubscriptionSettings({
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* Beta Notice */}
-                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-white border border-blue-200/50 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-white border border-blue-200/50 rounded-xl p-6">
                     <div className="flex items-start gap-4">
-                        <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex-shrink-0">
+                        <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg flex-shrink-0">
                             <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1 space-y-3">

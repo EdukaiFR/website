@@ -13,7 +13,7 @@ export function EdukaiHeader() {
                         className="sm:w-10 sm:h-10 rounded-full"
                     />
                 </div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                     Edukai
                 </h1>
             </div>

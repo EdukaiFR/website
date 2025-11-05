@@ -2,7 +2,7 @@ import { WandSparkles } from "lucide-react";
 
 export function GeneratorHeader() {
     return (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-8 text-white shadow-xl">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">

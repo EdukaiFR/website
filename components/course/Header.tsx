@@ -54,7 +54,7 @@ export const Header = ({
         (user?.username && course.author?.username === user.username);
 
     return (
-        <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-4 sm:p-6 lg:p-8 text-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 p-4 sm:p-6 lg:p-8 text-white shadow-2xl">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-20">
                 <div className="absolute top-0 right-0 w-32 sm:w-48 lg:w-64 h-32 sm:h-48 lg:h-64 bg-gradient-to-bl from-white/30 to-transparent rounded-full -translate-y-8 sm:-translate-y-16 lg:-translate-y-24 translate-x-8 sm:translate-x-16 lg:translate-x-24"></div>

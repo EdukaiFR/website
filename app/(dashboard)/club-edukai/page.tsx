@@ -131,9 +131,9 @@ export default function ClubEdukaiPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
-        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
             {/* Beautiful Header Section */}
-            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
+            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
 

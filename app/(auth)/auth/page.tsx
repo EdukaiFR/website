@@ -53,7 +53,7 @@ export default function Authpage() {
 
                 {/* Right side - Hero Section with Slider */}
                 <div className="relative flex flex-col items-center justify-center w-full lg:order-2 order-1 h-48 sm:h-64 lg:h-[600px]">
-                    <div className="relative w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="relative w-full h-full bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl">
                         {/* Background Pattern */}
                         <div className="absolute inset-0 bg-pattern opacity-20"></div>
 

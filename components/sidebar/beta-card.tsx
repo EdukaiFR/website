@@ -15,7 +15,7 @@ export function BetaCard() {
 
     return (
         <div className="mx-2 mb-2 relative">
-            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-white rounded-xl p-4 border border-blue-200/50 shadow-md hover:shadow-lg transition-all duration-300">
+            <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-white rounded-xl p-4 border border-blue-200/50 shadow-md hover:shadow-lg transition-all duration-300">
                 {/* Close Button */}
                 <button
                     onClick={() => setIsVisible(false)}
@@ -44,7 +44,7 @@ export function BetaCard() {
                 </div>
 
                 {/* CTA Button */}
-                <button className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full">
+                <button className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full">
                     <span className="text-white text-xs font-medium">
                         Donner un retour
                     </span>

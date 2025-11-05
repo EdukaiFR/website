@@ -215,7 +215,7 @@ export function GeneratorForm({
                         <Button
                             disabled={!isInputFilled || isRecognizing}
                             type="submit"
-                            className="h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                            className="h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
                         >
                             <Sparkles className="w-5 h-5 mr-2" />
                             Lancer la génération

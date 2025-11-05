@@ -173,7 +173,7 @@ export default function NotificationsPage() {
     return (
         <div className="flex flex-col gap-6 px-4 lg:px-8 py-4 lg:py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
             {/* Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 lg:p-8 text-white shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-6 lg:p-8 text-white shadow-xl">
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
@@ -213,7 +213,7 @@ export default function NotificationsPage() {
                                 onClick={() => setFilter("all")}
                                 className={`text-xs lg:text-sm h-8 lg:h-9 ${
                                     filter === "all"
-                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                                        ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
                                         : "border-gray-200 text-gray-700 hover:bg-gray-50"
                                 }`}
                             >
@@ -227,7 +227,7 @@ export default function NotificationsPage() {
                                 onClick={() => setFilter("unread")}
                                 className={`text-xs lg:text-sm h-8 lg:h-9 ${
                                     filter === "unread"
-                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                                        ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
                                         : "border-gray-200 text-gray-700 hover:bg-gray-50"
                                 }`}
                             >
@@ -348,7 +348,7 @@ export default function NotificationsPage() {
                                                     notification.actionLabel && (
                                                         <Button
                                                             size="sm"
-                                                            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-xs lg:text-sm h-8 lg:h-9"
+                                                            className="bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-xs lg:text-sm h-8 lg:h-9"
                                                             onClick={() => {
                                                                 markAsRead(
                                                                     notification.id

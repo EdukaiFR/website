@@ -92,7 +92,7 @@ export function ChangePasswordForm({
                 <div className="space-y-3">
                     <Button
                         onClick={() => setIsSuccess(false)}
-                        className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
+                        className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
                     >
                         Changer à nouveau
                     </Button>
@@ -313,7 +313,7 @@ export function ChangePasswordForm({
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base"
+                        className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base"
                     >
                         {isLoading ? (
                             <span className="flex items-center gap-2">
