@@ -77,7 +77,7 @@ export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) =
         };
 
         // Only generate preview for PDFs and only on client side
-        if (typeof window !== "undefined" && contentType === "application/pdf") {
+        if (globalThis.window !== undefined && contentType === "application/pdf") {
             generatePDFPreview();
         } else if (contentType !== "application/pdf") {
             setLoading(false);

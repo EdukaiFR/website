@@ -1,12 +1,12 @@
 import {
     CheckCircle2,
+    LucideIcon,
     Sparkles,
     Star,
     TrendingUp,
     Users,
     Zap,
 } from "lucide-react";
-import { LucideIcon } from "lucide-react";
 
 export interface FallingIconConfig {
     Icon: LucideIcon;

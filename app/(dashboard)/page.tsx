@@ -42,17 +42,15 @@ export default function Home() {
                 if (response && "items" in response) {
                     const courses = response.items as CourseData[];
                     // Trier par date de mise à jour (plus récent en premier) et limiter à 4
-                    const sortedCourses = courses
-                        .sort((a, b) => {
-                            const dateA = new Date(
-                                a.updatedAt || a.createdAt || 0
-                            ).getTime();
-                            const dateB = new Date(
-                                b.updatedAt || b.createdAt || 0
-                            ).getTime();
-                            return dateB - dateA;
-                        })
-                        .slice(0, 4);
+                    const sortedCourses = courses.toSorted((a, b) => {
+                        const dateA = new Date(
+                            a.updatedAt || a.createdAt || 0
+                        ).getTime();
+                        const dateB = new Date(
+                            b.updatedAt || b.createdAt || 0
+                        ).getTime();
+                        return dateB - dateA;
+                    }).slice(0, 4);
                     setRecentCourses(sortedCourses);
                 }
             } catch (error) {
@@ -106,7 +104,7 @@ export default function Home() {
                             </div>
 
                             <h1 className="text-2xl lg:text-4xl font-bold mb-6 leading-tight">
-                                Bienvenue
+                                Bienvenue{" "}
                                 <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
                                     {loading ? (
                                         <span className="inline-block animate-pulse bg-yellow-300/30 rounded h-10 w-32"></span>
@@ -241,29 +239,37 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                {examsLoading ? (
-                                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                        <div className="flex justify-center items-center">
-                                            <span className="text-gray-500 text-sm">
-                                                Chargement...
-                                            </span>
-                                        </div>
-                                    </div>
-                                ) : allExams.length === 0 ? (
-                                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                        <div className="flex flex-col items-center gap-2 text-center">
-                                            <Calendar className="w-6 h-6 text-blue-600" />
-                                            <span className="font-semibold text-gray-800 text-sm">
-                                                Aucun examen prévu
-                                            </span>
-                                            <span className="text-gray-600 text-xs">
-                                                Ajoute des examens dans tes
-                                                cours pour les voir ici
-                                            </span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    allExams.slice(0, 2).map(exam => {
+                                {(() => {
+                                    if (examsLoading) {
+                                        return (
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <div className="flex justify-center items-center">
+                                                    <span className="text-gray-500 text-sm">
+                                                        Chargement...
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (allExams.length === 0) {
+                                        return (
+                                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                                <div className="flex flex-col items-center gap-2 text-center">
+                                                    <Calendar className="w-6 h-6 text-blue-600" />
+                                                    <span className="font-semibold text-gray-800 text-sm">
+                                                        Aucun examen prévu
+                                                    </span>
+                                                    <span className="text-gray-600 text-xs">
+                                                        Ajoute des examens dans tes
+                                                        cours pour les voir ici
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    return allExams.slice(0, 2).map(exam => {
                                         const daysLeft = getDaysLeft(exam.date);
                                         const isUrgent = daysLeft <= 7;
                                         const bgColor = isUrgent
@@ -276,10 +282,17 @@ export default function Home() {
                                             ? "text-red-600"
                                             : "text-orange-600";
 
+                                        const getDaysLeftText = () => {
+                                            if (daysLeft === 0) return "Aujourd'hui";
+                                            if (daysLeft === 1) return "Demain";
+                                            return `Dans ${daysLeft} jours`;
+                                        };
+
                                         return (
-                                            <div
+                                            <button
                                                 key={exam._id}
-                                                className={`p-4 ${bgColor} rounded-xl border ${borderColor} hover:shadow-md transition-all duration-200 cursor-pointer`}
+                                                type="button"
+                                                className={`w-full text-left p-4 ${bgColor} rounded-xl border ${borderColor} hover:shadow-md transition-all duration-200 cursor-pointer`}
                                                 onClick={() => {
                                                     if (exam.courseId) {
                                                         router.push(
@@ -314,17 +327,13 @@ export default function Home() {
                                                     <span
                                                         className={`${textColor} text-sm font-medium whitespace-nowrap flex-shrink-0`}
                                                     >
-                                                        {daysLeft === 0
-                                                            ? "Aujourd'hui"
-                                                            : daysLeft === 1
-                                                              ? "Demain"
-                                                              : `Dans ${daysLeft} jours`}
+                                                        {getDaysLeftText()}
                                                     </span>
                                                 </div>
-                                            </div>
+                                            </button>
                                         );
-                                    })
-                                )}
+                                    });
+                                })()}
                             </div>
                         </div>
 
@@ -343,54 +352,65 @@ export default function Home() {
                                     </p>
                                 </div>
                             </div>
-                            {coursesLoading ? (
-                                <div className="flex justify-center items-center py-8">
-                                    <span className="text-gray-500 text-sm">
-                                        Chargement...
-                                    </span>
-                                </div>
-                            ) : recentCourses.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-                                    <div className="p-3 bg-purple-50 rounded-2xl">
-                                        <BookOpen className="w-6 h-6 text-purple-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-800 mb-1">
-                                            Aucun cours disponible
-                                        </p>
-                                        <p className="text-xs text-gray-500">
-                                            Crée ton premier cours pour
-                                            commencer !
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {recentCourses.map(course => (
-                                        <div
-                                            key={course._id}
-                                            onClick={() =>
-                                                router.push(
-                                                    `/library/${course._id}`
-                                                )
-                                            }
-                                            className="p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-semibold text-gray-800 truncate">
-                                                        {course.title}
-                                                    </p>
-                                                    <p className="text-gray-600 text-sm truncate">
-                                                        {course.subject}
-                                                    </p>
-                                                </div>
+                            {(() => {
+                                if (coursesLoading) {
+                                    return (
+                                        <div className="flex justify-center items-center py-8">
+                                            <span className="text-gray-500 text-sm">
+                                                Chargement...
+                                            </span>
+                                        </div>
+                                    );
+                                }
+
+                                if (recentCourses.length === 0) {
+                                    return (
+                                        <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                                            <div className="p-3 bg-purple-50 rounded-2xl">
+                                                <BookOpen className="w-6 h-6 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-800 mb-1">
+                                                    Aucun cours disponible
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    Crée ton premier cours pour
+                                                    commencer !
+                                                </p>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
+                                    );
+                                }
+
+                                return (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        {recentCourses.map(course => (
+                                            <button
+                                                key={course._id}
+                                                type="button"
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/library/${course._id}`
+                                                    )
+                                                }
+                                                className="w-full text-left p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-gray-800 truncate">
+                                                            {course.title}
+                                                        </p>
+                                                        <p className="text-gray-600 text-sm truncate">
+                                                            {course.subject}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* Objectives */}

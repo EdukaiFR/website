@@ -1,5 +1,4 @@
-import { CheckCircle2 } from "lucide-react";
-import { LucideIcon } from "lucide-react";
+import { CheckCircle2, LucideIcon } from "lucide-react";
 
 export interface FeatureConfig {
     text: string;

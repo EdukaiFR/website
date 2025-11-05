@@ -31,7 +31,7 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
     const getFileExtension = () => {
         if (isUploadedFile && "name" in summary_sheet) {
             const parts = summary_sheet.name.split(".");
-            return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : "FILE";
+            return parts.length > 1 ? parts.at(-1)?.toUpperCase() || "FILE" : "FILE";
         }
         return "";
     };

@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 
 interface AuthCardProps {
-    mounted: boolean;
-    onAuthSuccess: () => void;
-    onAuthError: (error: string) => void;
+    readonly mounted: boolean;
+    readonly onAuthSuccess: () => void;
+    readonly onAuthError: (error: string) => void;
 }
 
 export function AuthCard({
