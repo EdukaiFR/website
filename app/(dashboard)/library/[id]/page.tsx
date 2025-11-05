@@ -65,6 +65,7 @@ export default function MyCourses() {
             <CourseContentRenderer
                 selectedTab={selectedTab}
                 courseId={courseId}
+                courseTitle={courseData?.title}
                 examsData={examsData}
                 createExam={createExam}
                 getExams={getExams}

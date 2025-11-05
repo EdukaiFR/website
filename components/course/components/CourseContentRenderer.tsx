@@ -18,6 +18,7 @@ type Exam = {
 interface CourseContentRendererProps {
     selectedTab: string;
     courseId: string;
+    courseTitle?: string;
     examsData: unknown;
     summarySheetsData: SummarySheetData[];
     storageUserId: string;
@@ -41,6 +42,7 @@ interface CourseContentRendererProps {
 export function CourseContentRenderer({
     selectedTab,
     courseId,
+    courseTitle,
     examsData,
     createExam,
     getExams,
@@ -61,6 +63,7 @@ export function CourseContentRenderer({
                 <Overview
                     overview={null}
                     course_id={courseId}
+                    course_title={courseTitle}
                     examsData={examsData as unknown[]}
                     createExam={createExam}
                     getExams={getExams}
@@ -74,6 +77,7 @@ export function CourseContentRenderer({
                             insights?: { score: number; createdAt: string }[];
                         }
                     }
+                    summarySheetsData={summarySheetsData}
                 />
             )}
             {selectedTab === "summarySheets" && (
