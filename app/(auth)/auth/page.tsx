@@ -70,12 +70,14 @@ export default function Authpage() {
 
     const handleAuthSuccess = () => {
         console.log("Authentication successful");
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(
+            globalThis.location?.search || ""
+        );
         const redirectTo = urlParams.get("redirect") || "/";
 
         // Delay redirect to allow toast to be visible
         setTimeout(() => {
-            window.location.href = redirectTo;
+            globalThis.location.href = redirectTo;
         }, 1500); // 1.5 seconds delay
     };
 
@@ -105,7 +107,7 @@ export default function Authpage() {
                         const { Icon, delay, duration, left } = item;
                         return (
                             <Icon
-                                key={index}
+                                key={`falling-icon-${index}-${delay}-${left}`}
                                 className="absolute w-6 h-6 text-blue-400/30"
                                 style={{
                                     left,
@@ -118,25 +120,6 @@ export default function Authpage() {
                 </div>
             </div>
 
-            {/* CSS Animation for falling icons */}
-            <style jsx>{`
-                @keyframes fall {
-                    0% {
-                        transform: translateY(-50px) rotate(0deg);
-                        opacity: 0;
-                    }
-                    10% {
-                        opacity: 0.7;
-                    }
-                    90% {
-                        opacity: 0.7;
-                    }
-                    100% {
-                        transform: translateY(100vh) rotate(360deg);
-                        opacity: 0;
-                    }
-                }
-            `}</style>
 
             <div className="relative z-10 w-full min-h-screen">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
@@ -178,9 +161,9 @@ export default function Authpage() {
 
                             {/* Features List */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {features.map((feature, index) => (
+                                {features.map((feature) => (
                                     <div
-                                        key={index}
+                                        key={feature.text}
                                         className="flex items-center gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-2xl border border-blue-100/50 hover:bg-white/90 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group"
                                     >
                                         <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:scale-110 transition-transform shadow-md">
@@ -191,6 +174,7 @@ export default function Authpage() {
                                         </span>
                                     </div>
                                 ))}
+
                             </div>
 
                             {/* Instagram Link - Discret */}

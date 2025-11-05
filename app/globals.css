@@ -144,8 +144,7 @@ body {
 .text-medium-muted {
     font-family: "Satoshi-Medium", sans-serif;
     font-weight: 500;
-    color: #3678ff;
-    opacity: 0.75;
+    color: #2563eb;
 }
 
 .satoshi-bold {
@@ -181,6 +180,24 @@ body {
     /* Optimisations de performance */
     will-change: transform;
     transform-origin: center center;
+}
+
+/* Animation for falling icons on auth page */
+@keyframes fall {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
 }
 
 /* Modern Toast Styles with Gradient Progress Bar */
@@ -262,7 +279,7 @@ body {
 
 /* Default/Loading Icon - Gray color */
 [data-sonner-toast]:not([data-type]) [data-icon] {
-    color: #6b7280;
+    color: #4b5563;
 }
 
 /* Icon size adjustment */
