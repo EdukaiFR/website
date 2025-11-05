@@ -10,7 +10,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
     console.log(course_id);
 
     return (
-        <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30 rounded-3xl p-8 relative overflow-hidden">
+        <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-blue-50/30 via-blue-100/20 to-blue-50/30 rounded-3xl p-8 relative overflow-hidden">
             {/* Background animated elements */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full animate-pulse"></div>
@@ -33,7 +33,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
             <div className="relative z-10 text-center space-y-8 max-w-lg">
                 {/* Icon with animation */}
                 <div className="relative">
-                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl transform hover:scale-105 transition-transform duration-300">
+                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl transform hover:scale-105 transition-transform duration-300">
                         <Target className="w-12 h-12 text-white" />
                     </div>
                     {/* Floating sparkles */}
@@ -44,7 +44,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
 
                 {/* Title with gradient */}
                 <div className="space-y-4">
-                    <h1 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+                    <h1 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent leading-tight">
                         Bientôt disponible
                     </h1>
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-700">
@@ -60,7 +60,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
                 </p>
 
                 {/* Coming soon badge */}
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full border border-blue-200/50 shadow-sm">
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-full border border-blue-200/50 shadow-sm">
                     <Clock className="w-5 h-5 text-blue-600 animate-pulse" />
                     <span className="text-blue-700 font-semibold">
                         En développement

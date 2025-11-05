@@ -47,7 +47,7 @@ export function NavMain({
                   group relative flex items-center transition-all duration-200 
                   ${
                       isActive
-                          ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25"
                           : "text-gray-700 hover:bg-gray-100/80 hover:text-gray-900"
                   }
                   ${

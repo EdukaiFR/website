@@ -40,7 +40,7 @@ export default function NavBarComp({
               whitespace-nowrap min-w-0 max-w-[60px] sm:max-w-none
               ${
                   selectedTab === tab.tab
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-sm"
                       : "text-gray-600 hover:text-blue-600 hover:bg-blue-50/80"
               }
             `}

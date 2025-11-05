@@ -35,7 +35,7 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
     const getButtonStyles = (isSelected: boolean) =>
         `transition-all duration-200 ${
             isSelected
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700"
+                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:from-blue-700 hover:to-blue-600"
                 : "bg-white/80 text-gray-700 border border-blue-200/60 hover:bg-blue-50 hover:border-blue-300 shadow-sm"
         } px-6 py-2 rounded-xl font-medium backdrop-blur-sm whitespace-nowrap flex-shrink-0`;
 

@@ -124,7 +124,7 @@ export default function CourseSettingsPage() {
                         </div>
 
                         {/* Toggle Switch */}
-                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                             <div className="flex items-center gap-3">
                                 <div
                                     className={`p-2 rounded-lg ${

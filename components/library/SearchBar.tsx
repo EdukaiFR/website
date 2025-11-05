@@ -26,7 +26,7 @@ export const SearchBar = ({ setSearch }: SearchBarProps) => {
                 }}
             />
             {/* Subtle glow effect */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/5 to-indigo-600/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/5 to-blue-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </div>
     );
 };

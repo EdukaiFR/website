@@ -214,7 +214,7 @@ export const Quiz = ({
                         <div className="mb-6">
                             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
+                                    className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-500 ease-out"
                                     style={{
                                         width: `${
                                             (answeredQuestionsCount /

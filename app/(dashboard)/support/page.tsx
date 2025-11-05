@@ -246,7 +246,7 @@ export default function SupportPage() {
     return (
         <div className="flex flex-col gap-6 px-4 lg:px-8 py-4 lg:py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
             {/* Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 lg:p-8 text-white shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-6 lg:p-8 text-white shadow-xl">
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
@@ -283,7 +283,7 @@ export default function SupportPage() {
                         <p className="text-gray-600 text-xs lg:text-sm mb-4">
                             Discute avec notre équipe en temps réel
                         </p>
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base">
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base">
                             Ouvrir le chat
                         </Button>
                     </CardContent>
@@ -637,7 +637,7 @@ export default function SupportPage() {
 
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base h-10 lg:h-11"
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm lg:text-base h-10 lg:h-11"
                         >
                             <Send className="w-4 h-4 mr-2" />
                             Envoyer le message

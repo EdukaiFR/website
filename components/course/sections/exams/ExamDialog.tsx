@@ -130,10 +130,10 @@ export const ExamDialog = ({
             <DialogContent className="sm:max-w-[480px] lg:max-w-[520px] p-0 border-0 bg-transparent shadow-none">
                 <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
                     <DialogHeader className="text-center mb-8">
-                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl w-fit">
+                        <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit">
                             <CalendarIcon className="w-6 h-6 text-white" />
                         </div>
-                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                             {isEditing
                                 ? "Modifier l'examen"
                                 : "Créer un nouvel examen"}
@@ -277,7 +277,7 @@ export const ExamDialog = ({
                                     <Button
                                         disabled={!form.formState.isValid}
                                         type="submit"
-                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <Check className="w-4 h-4 mr-2" />
                                         {isEditing

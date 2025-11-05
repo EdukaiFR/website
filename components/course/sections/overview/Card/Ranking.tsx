@@ -26,7 +26,7 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
             >
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
                         <Crown className="w-4 h-4 text-white" />
                     </div>
                     <h3 className="text-base font-semibold text-gray-800">
@@ -56,7 +56,7 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
                         <Crown className="w-4 h-4 text-white" />
                     </div>
                     <h3 className="text-base font-semibold text-gray-800">
@@ -69,7 +69,7 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
             </div>
 
             {/* User Score Section */}
-            <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/50">
+            <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200/50">
                 <p className="text-xs text-gray-500 mb-1">Ton score</p>
                 <p className="text-lg font-bold text-blue-600">1236 pts</p>
             </div>
