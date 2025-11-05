@@ -9,13 +9,14 @@ import {
     Clock,
     TrendingUp,
     Star,
-    Bell,
 } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function Home() {
     const { userProfile, loading } = useUserProfile();
+    const router = useRouter();
 
     // Détermine le nom à afficher
     const getDisplayName = () => {
@@ -74,71 +75,27 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <button className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl hover:transform hover:scale-105">
+                                <button
+                                    onClick={() => router.push("/library")}
+                                    className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
+                                >
                                     <BookOpen className="w-6 h-6" />
                                     Continuer l&apos;Apprentissage
                                 </button>
-                                <button className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200">
-                                    <Target className="w-6 h-6" />
-                                    Voir les Objectifs
-                                </button>
                                 <button
-                                    onClick={() => {
-                                        const toasts = [
-                                            () =>
-                                                toast.success(
-                                                    "Cours sauvegardé !",
-                                                    {
-                                                        description:
-                                                            "Votre progression a été enregistrée avec succès.",
-                                                    }
-                                                ),
-                                            () =>
-                                                toast.error(
-                                                    "Erreur de connexion",
-                                                    {
-                                                        description:
-                                                            "Impossible de se connecter au serveur.",
-                                                    }
-                                                ),
-                                            () =>
-                                                toast.warning(
-                                                    "Attention !",
-                                                    {
-                                                        description:
-                                                            "Vous avez atteint 80% de votre quota.",
-                                                    }
-                                                ),
-                                            () =>
-                                                toast.info(
-                                                    "Nouvelle fonctionnalité",
-                                                    {
-                                                        description:
-                                                            "Découvrez le mode révision rapide !",
-                                                    }
-                                                ),
-                                            () =>
-                                                toast(
-                                                    "Notification simple",
-                                                    {
-                                                        description:
-                                                            "Un message informatif basique.",
-                                                    }
-                                                ),
-                                        ];
-                                        const randomToast =
-                                            toasts[
-                                                Math.floor(
-                                                    Math.random() *
-                                                        toasts.length
-                                                )
-                                            ];
-                                        randomToast();
-                                    }}
+                                    onClick={() =>
+                                        toast.warning(
+                                            "Fonctionnalité en développement",
+                                            {
+                                                description:
+                                                    "La gestion des objectifs arrive bientôt ! Restez connecté.",
+                                            }
+                                        )
+                                    }
                                     className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
                                 >
-                                    <Bell className="w-6 h-6" />
-                                    Tester Toast
+                                    <Target className="w-6 h-6" />
+                                    Voir les Objectifs
                                 </button>
                             </div>
                         </div>
