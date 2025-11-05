@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    reactStrictMode: false, // Disable Strict Mode to prevent double rendering
     eslint: {
         // Warning: This disables ESLint during production builds
         // Only use temporarily to resolve critical issues

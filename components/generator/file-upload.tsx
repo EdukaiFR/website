@@ -39,6 +39,8 @@ type FileUploadProps = {
     >;
 };
 
+type FileIndexMap = { [fileId: string]: number };
+
 const MAX_CONCURRENT_PROCESSING = 2;
 
 export function FileUpload({
@@ -54,6 +56,7 @@ export function FileUpload({
     setUploadedFileIds,
 }: FileUploadProps) {
     const [isDragActive, setIsDragActive] = useState(false);
+    const [fileIndexMap, setFileIndexMap] = useState<FileIndexMap>({});
     const isRecognizing = Object.values(fileProcessingStates).some(Boolean);
     const currentlyProcessingCount =
         Object.values(fileProcessingStates).filter(Boolean).length;
@@ -76,7 +79,11 @@ export function FileUpload({
         return processedFiles.has(fileId);
     };
 
-    const handleFileUpload = async (file: File, localFileId: string) => {
+    const handleFileUpload = async (
+        file: File,
+        localFileId: string,
+        fileIndex: number
+    ) => {
         try {
             const uploadResponse = await uploadFile(file, "course");
             if (uploadResponse?.newFileId) {
@@ -89,6 +96,8 @@ export function FileUpload({
             }
         } catch (error) {
             console.error("An error occured uploading files", error);
+            // Remove file from list on upload error
+            removeFile(fileIndex);
         }
     };
 
@@ -99,10 +108,10 @@ export function FileUpload({
         onFilesChange(newFiles);
 
         files.forEach((file, index) => {
-            const localFileId = `${file.name}-${file.size}-${
-                selectedFiles.length + index
-            }`;
-            handleFileUpload(file, localFileId);
+            const fileIndex = selectedFiles.length + index;
+            const localFileId = `${file.name}-${file.size}-${fileIndex}`;
+            setFileIndexMap(prev => ({ ...prev, [localFileId]: fileIndex }));
+            handleFileUpload(file, localFileId, fileIndex);
         });
     };
 
@@ -274,6 +283,9 @@ export function FileUpload({
                                                             fileId,
                                                             processing
                                                         )
+                                                    }
+                                                    onError={() =>
+                                                        removeFile(index)
                                                     }
                                                 />
                                             )}
