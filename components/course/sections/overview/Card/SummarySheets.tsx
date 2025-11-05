@@ -50,6 +50,13 @@ export const SummarySheets = ({
         };
     }, [isModalOpen]);
 
+    // Update showSummarySheet when summary_sheets changes (e.g., after initial load)
+    useEffect(() => {
+        if (summary_sheets && summary_sheets.length > 0 && !showSummarySheet) {
+            setShowSummarySheet(summary_sheets[0]);
+        }
+    }, [summary_sheets, showSummarySheet]);
+
     const getArrayForShowSummarySheetInSummarySheets = () => {
         if (!showSummarySheet || !summary_sheets) return -1;
         return summary_sheets.findIndex(
