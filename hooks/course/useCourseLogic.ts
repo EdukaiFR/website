@@ -4,7 +4,7 @@ import {
     useInsightsService,
     useQuizService,
 } from "@/services";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SummarySheetData } from "@/lib/types/library";
@@ -12,16 +12,34 @@ import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 export function useCourseLogic() {
     const params = useParams();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const courseId = params?.id?.toString() || "";
 
     const { storageUserId } = useSessionStorage();
+
+    // Get tab from URL or default to "overview"
+    const tabFromUrl = searchParams.get("tab") || "overview";
 
     // State
     const [quizId, setQuizId] = useState<string>("");
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
-    const [selectedTab, setSelectedTab] = useState("overview");
+    const [selectedTab, setSelectedTabState] = useState(tabFromUrl);
+
+    // Wrapper to update both state and URL
+    const setSelectedTab = (tab: string) => {
+        setSelectedTabState(tab);
+        // Update URL without reloading the page
+        const newUrl = `/library/${courseId}?tab=${tab}`;
+        router.push(newUrl, { scroll: false });
+    };
+
+    // Sync state with URL on mount and URL changes
+    useEffect(() => {
+        setSelectedTabState(tabFromUrl);
+    }, [tabFromUrl]);
 
     // Services
     const courseService = useCourseService();
@@ -155,9 +173,29 @@ export function useCourseLogic() {
     }, [isSummarySheetsVisible]);
 
     const loadSummarySheets = async () => {
+        console.log("[useCourseLogic] loadSummarySheets called");
+        console.log("[useCourseLogic] Course ID:", courseId);
+
         if (courseId && loadCourseSummarySheets) {
+            console.log("[useCourseLogic] Loading summary sheets (AI + uploaded files) for course:", courseId);
             const data = await loadCourseSummarySheets(courseId);
-            setSummarySheetsData(data.items);
+            console.log("[useCourseLogic] Summary sheets data received:", data);
+            console.log("[useCourseLogic] Number of items:", data?.items?.length || 0);
+
+            // Backend now returns both AI-generated and user-uploaded sheets
+            // with proper structure including type and source fields
+            const sheets = data?.items || [];
+
+            console.log("[useCourseLogic] AI-generated sheets:", sheets.filter((s: any) => s.source === 'ai').length);
+            console.log("[useCourseLogic] User-uploaded sheets:", sheets.filter((s: any) => s.source === 'file').length);
+
+            setSummarySheetsData(sheets);
+            console.log("[useCourseLogic] ✅ Summary sheets state updated");
+        } else {
+            console.warn("[useCourseLogic] Cannot load summary sheets:", {
+                hasCourseId: !!courseId,
+                hasLoadFunction: !!loadCourseSummarySheets,
+            });
         }
     };
 
@@ -201,5 +239,6 @@ export function useCourseLogic() {
         updateExam,
         deleteExam,
         loadCourseFiles,
+        loadSummarySheets,
     };
 }

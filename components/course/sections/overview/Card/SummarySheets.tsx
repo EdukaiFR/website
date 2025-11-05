@@ -90,19 +90,34 @@ export const SummarySheets = ({
             const currentSheet = summary_sheets[modalSheetIndex];
             if (!currentSheet) return;
 
-            // Dynamic import to avoid SSR issues
-            const { generateMarkdownPdf } = await import(
-                "@/lib/summary-sheets/md2pdf"
-            );
+            // For uploaded files, download directly
+            if (currentSheet.source === "file" && "name" in currentSheet) {
+                const link = document.createElement("a");
+                link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`;
+                link.download = currentSheet.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
-            // Format: courseName-ficheResume
-            const fileName = `${courseTitle}-fiche-resume`;
+                toast.success("Téléchargement", {
+                    description: "Le fichier a été téléchargé.",
+                });
+                return;
+            }
 
-            await generateMarkdownPdf(fileName, currentSheet.content);
+            // For AI-generated sheets, generate PDF from markdown
+            if (currentSheet.source === "ai" && "content" in currentSheet) {
+                const { generateMarkdownPdf } = await import(
+                    "@/lib/summary-sheets/md2pdf"
+                );
 
-            toast.success("Téléchargement", {
-                description: "La fiche de révision a été téléchargée.",
-            });
+                const fileName = `${courseTitle}-fiche-resume`;
+                await generateMarkdownPdf(fileName, currentSheet.content);
+
+                toast.success("Téléchargement", {
+                    description: "La fiche de révision a été téléchargée.",
+                });
+            }
         } catch (error) {
             console.error("Erreur lors du téléchargement :", error);
             toast.error("Erreur", {
@@ -114,23 +129,45 @@ export const SummarySheets = ({
 
     const handleDownloadAllSheets = async () => {
         try {
-            const { generateMarkdownPdf } = await import(
-                "@/lib/summary-sheets/md2pdf"
-            );
+            let aiSheetCount = 0;
+            let uploadedFileCount = 0;
 
             for (let i = 0; i < summary_sheets.length; i++) {
                 const sheet = summary_sheets[i];
-                // Format: courseName-ficheResume-1, courseName-ficheResume-2, etc.
-                const fileName =
-                    summary_sheets.length > 1
-                        ? `${courseTitle}-fiche-resume-${i + 1}`
-                        : `${courseTitle}-fiche-resume`;
 
-                await generateMarkdownPdf(fileName, sheet.content);
+                // Handle uploaded files
+                if (sheet.source === "file" && "name" in sheet) {
+                    const link = document.createElement("a");
+                    link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${sheet._id}`;
+                    link.download = sheet.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    uploadedFileCount++;
+                    // Small delay between downloads
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    continue;
+                }
+
+                // Handle AI-generated sheets
+                if (sheet.source === "ai" && "content" in sheet) {
+                    const { generateMarkdownPdf } = await import(
+                        "@/lib/summary-sheets/md2pdf"
+                    );
+
+                    const fileName =
+                        summary_sheets.length > 1
+                            ? `${courseTitle}-fiche-resume-${i + 1}`
+                            : `${courseTitle}-fiche-resume`;
+
+                    await generateMarkdownPdf(fileName, sheet.content);
+                    aiSheetCount++;
+                }
             }
 
+            const totalCount = aiSheetCount + uploadedFileCount;
             toast.success("Téléchargement", {
-                description: `${summary_sheets.length} fiche(s) de révision téléchargée(s).`,
+                description: `${totalCount} fichier(s) téléchargé(s).`,
             });
         } catch (error) {
             console.error("Erreur lors du téléchargement :", error);
@@ -151,35 +188,49 @@ export const SummarySheets = ({
             }
 
             const downloads = summary_sheets.map(async summary_sheet => {
-                if (!summary_sheet?.content) {
-                    console.warn(
-                        "Fichier sans URL ignoré :",
-                        summary_sheet?.title ?? "inconnu"
-                    );
-                    return;
-                }
-
                 try {
-                    const response = await fetch(summary_sheet.content);
-                    if (!response.ok)
-                        throw new Error(
-                            `Échec du téléchargement : ${summary_sheet.title}`
-                        );
+                    // Handle user-uploaded files
+                    if (summary_sheet.source === "file" && "name" in summary_sheet) {
+                        const link = document.createElement("a");
+                        link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${summary_sheet._id}`;
+                        link.download = summary_sheet.name;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        return;
+                    }
 
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
+                    // Handle AI-generated sheets
+                    if (summary_sheet.source === "ai" && "content" in summary_sheet) {
+                        if (!summary_sheet.content) {
+                            console.warn(
+                                "Fichier sans contenu ignoré :",
+                                summary_sheet?.title ?? "inconnu"
+                            );
+                            return;
+                        }
 
-                    a.href = url;
-                    a.download = summary_sheet.title || "fiche_revision";
-                    document.body.appendChild(a);
-                    a.click();
+                        const response = await fetch(summary_sheet.content);
+                        if (!response.ok)
+                            throw new Error(
+                                `Échec du téléchargement : ${summary_sheet.title}`
+                            );
 
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+
+                        a.href = url;
+                        a.download = summary_sheet.title || "fiche_revision";
+                        document.body.appendChild(a);
+                        a.click();
+
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    }
                 } catch (error) {
                     console.error(
-                        `Erreur lors du téléchargement de ${summary_sheet.title} :`,
+                        `Erreur lors du téléchargement :`,
                         error
                     );
                 }
@@ -395,23 +446,98 @@ export const SummarySheets = ({
                                     <div className="flex items-center gap-4">
                                         <FileText className="w-8 h-8 text-blue-600" />
                                         <p className="text-2xl font-bold text-blue-600">
-                                            {summary_sheets[modalSheetIndex]
-                                                ?.title || "Fiche de révision"}
+                                            {(() => {
+                                                const currentSheet = summary_sheets[modalSheetIndex];
+                                                if (currentSheet?.source === "file" && "name" in currentSheet) {
+                                                    return currentSheet.name;
+                                                }
+                                                if (currentSheet?.source === "ai" && "title" in currentSheet) {
+                                                    return currentSheet.title || "Fiche de révision";
+                                                }
+                                                return "Fiche de révision";
+                                            })()}
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Content - Scrollable */}
                                 <div className="flex-1 overflow-auto px-12 py-8">
-                                    <div
-                                        className="prose prose-lg max-w-none"
-                                        dangerouslySetInnerHTML={{
-                                            __html: marked.parse(
-                                                summary_sheets[modalSheetIndex]
-                                                    ?.content || ""
-                                            ) as string,
-                                        }}
-                                    />
+                                    {(() => {
+                                        const currentSheet = summary_sheets[modalSheetIndex];
+
+                                        // For AI-generated sheets, display markdown content
+                                        if (currentSheet?.source === "ai" && "content" in currentSheet) {
+                                            return (
+                                                <div
+                                                    className="prose prose-lg max-w-none"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: marked.parse(currentSheet.content) as string,
+                                                    }}
+                                                />
+                                            );
+                                        }
+
+                                        // For uploaded files, display preview or download option
+                                        if (currentSheet?.source === "file" && "contentType" in currentSheet) {
+                                            const isPDF = currentSheet.contentType === "application/pdf";
+                                            const isImage = currentSheet.contentType.startsWith("image/");
+
+                                            if (isPDF) {
+                                                return (
+                                                    <div className="flex items-center justify-center h-full">
+                                                        <iframe
+                                                            src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
+                                                            className="w-full h-full border-0 rounded-lg"
+                                                            title={currentSheet.name}
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (isImage) {
+                                                return (
+                                                    <div className="flex items-center justify-center h-full">
+                                                        <img
+                                                            src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
+                                                            alt={currentSheet.name}
+                                                            className="max-w-full max-h-full object-contain rounded-lg"
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+
+                                            // For other file types
+                                            return (
+                                                <div className="flex flex-col items-center justify-center h-full gap-6">
+                                                    <div className="p-8 bg-blue-50 rounded-2xl">
+                                                        <FileText className="w-20 h-20 text-blue-600" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-semibold text-gray-800 mb-2">
+                                                            {currentSheet.name}
+                                                        </p>
+                                                        <p className="text-gray-600">
+                                                            {currentSheet.contentType}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        onClick={() => {
+                                                            const link = document.createElement("a");
+                                                            link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`;
+                                                            link.download = currentSheet.name;
+                                                            link.click();
+                                                        }}
+                                                        className="h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6"
+                                                    >
+                                                        <Download className="w-5 h-5 mr-2" />
+                                                        Télécharger le fichier
+                                                    </Button>
+                                                </div>
+                                            );
+                                        }
+
+                                        return null;
+                                    })()}
                                 </div>
 
                                 {/* Footer with pagination dots and download buttons */}

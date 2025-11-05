@@ -165,37 +165,65 @@ export function useCourseService() {
     };
 
     const addFileToCourse = async (courseId: string, fileId: string) => {
+        console.log(`[CourseService] addFileToCourse called`);
+        console.log(`[CourseService] Course ID: ${courseId}`);
+        console.log(`[CourseService] File ID: ${fileId}`);
+        console.log(`[CourseService] API URL: ${apiUrl}`);
+
         try {
+            console.log(`[CourseService] Making POST request to: ${apiUrl}/courses/${courseId}/addFile`);
             const response = await axios.post(
                 `${apiUrl}/courses/${courseId}/addFile`,
                 { fileId: fileId },
                 { withCredentials: true }
             );
+            console.log(`[CourseService] ✅ File linked successfully. Response:`, response.data);
             return response.data;
         } catch (error) {
             console.error(
-                `An error occurred adding file ${fileId} to
-        course ${courseId}`,
+                `[CourseService] ❌ Error adding file ${fileId} to course ${courseId}:`,
                 error
             );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
             return null;
         }
     };
 
     const getCourseSummarySheets = async (courseId: string) => {
+        console.log(`[CourseService] getCourseSummarySheets called`);
+        console.log(`[CourseService] Course ID: ${courseId}`);
+        console.log(`[CourseService] API URL: ${apiUrl}`);
+
         try {
+            console.log(`[CourseService] Making GET request to: ${apiUrl}/courses/${courseId}/summary-sheets`);
             const response = await axios.get(
                 `${apiUrl}/courses/${courseId}/summary-sheets`,
                 {
                     withCredentials: true,
                 }
             );
+            console.log(`[CourseService] ✅ Summary sheets fetched successfully`);
+            console.log(`[CourseService] Response status: ${response.status}`);
+            console.log(`[CourseService] Response data:`, response.data);
             return response.data;
         } catch (error) {
             console.error(
-                `An error occurred fetching course ${courseId} summary sheets`,
+                `[CourseService] ❌ Error fetching course ${courseId} summary sheets:`,
                 error
             );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
             return null;
         }
     };

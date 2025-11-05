@@ -4,18 +4,18 @@
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { fileToast } from "@/lib/toast";
+import { useBlobService, useCourseService } from "@/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, FileText, Plus, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const fileSchema = z.custom<File>(value => {
@@ -26,11 +26,19 @@ const formSchema = z.object({
     files: z.array(fileSchema).min(1, { message: "Files are required." }),
 });
 
-export type AddSummarySheetProps = object;
+export type AddSummarySheetProps = {
+    courseId: string;
+    onUploadSuccess?: () => void;
+};
 
-export const AddSummarySheet = (props: AddSummarySheetProps) => {
+export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetProps) => {
     type FormData = z.infer<typeof formSchema>;
     const [isDragActive, setIsDragActive] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const blobService = useBlobService();
+    const courseService = useCourseService();
 
     const form = useForm<FormData>({
         resolver: zodResolver(formSchema),
@@ -61,23 +69,103 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
     };
 
     const onSubmit = async (data: FormData) => {
+        console.log("=== [AddSummarySheet] Starting upload process ===");
+        console.log("[AddSummarySheet] Number of files to upload:", data.files.length);
+        console.log("[AddSummarySheet] Course ID:", courseId);
+
         try {
-            // TODO: call hooks to add summarySheet(s)
-            console.log("Files to upload:", data.files);
-            fileToast.uploadSuccess();
+            setIsUploading(true);
+            let successCount = 0;
+            let errorCount = 0;
+
+            // Upload chaque fichier
+            for (let i = 0; i < data.files.length; i++) {
+                const file = data.files[i];
+                console.log(`\n[AddSummarySheet] Processing file ${i + 1}/${data.files.length}:`, file.name);
+                console.log(`[AddSummarySheet] File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+                console.log(`[AddSummarySheet] File type: ${file.type}`);
+
+                try {
+                    // Étape 1: Upload le fichier
+                    console.log(`[AddSummarySheet] Step 1: Uploading file "${file.name}" to blob service...`);
+                    const uploadResponse = await blobService.uploadFile(file, "summary");
+                    console.log(`[AddSummarySheet] Upload response:`, uploadResponse);
+
+                    if (!uploadResponse || uploadResponse.status !== "success") {
+                        console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
+                        console.error(`[AddSummarySheet] Upload response status:`, uploadResponse?.status);
+                        errorCount++;
+                        continue;
+                    }
+
+                    const fileId = uploadResponse.items._id;
+                    console.log(`[AddSummarySheet] ✅ File uploaded successfully. File ID: ${fileId}`);
+
+                    // Étape 2: Lier le fichier au cours
+                    console.log(`[AddSummarySheet] Step 2: Linking file "${file.name}" (ID: ${fileId}) to course ${courseId}...`);
+                    const linkResponse = await courseService.addFileToCourse(courseId, fileId);
+                    console.log(`[AddSummarySheet] Link response:`, linkResponse);
+
+                    if (!linkResponse || linkResponse.status !== "success") {
+                        console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
+                        console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
+                        errorCount++;
+                        continue;
+                    }
+
+                    console.log(`[AddSummarySheet] ✅ File "${file.name}" successfully linked to course`);
+                    successCount++;
+                } catch (error) {
+                    console.error(`[AddSummarySheet] ❌ Error processing file "${file.name}":`, error);
+                    errorCount++;
+                }
+            }
+
+            // Afficher les résultats
+            console.log("\n=== [AddSummarySheet] Upload process completed ===");
+            console.log(`[AddSummarySheet] Success count: ${successCount}`);
+            console.log(`[AddSummarySheet] Error count: ${errorCount}`);
+
+            if (successCount > 0) {
+                console.log(`[AddSummarySheet] Showing success toast for ${successCount} file(s)`);
+                toast.success(
+                    `${successCount} fiche${successCount > 1 ? "s" : ""} ajoutée${successCount > 1 ? "s" : ""} avec succès`
+                );
+
+                // Fermer le dialog et réinitialiser le formulaire
+                console.log("[AddSummarySheet] Closing dialog and resetting form");
+                setIsDialogOpen(false);
+                form.reset();
+
+                // Appeler le callback pour rafraîchir la liste
+                if (onUploadSuccess) {
+                    console.log("[AddSummarySheet] Calling onUploadSuccess callback to refresh list");
+                    onUploadSuccess();
+                } else {
+                    console.warn("[AddSummarySheet] No onUploadSuccess callback provided");
+                }
+            }
+
+            if (errorCount > 0) {
+                console.log(`[AddSummarySheet] Showing error toast for ${errorCount} file(s)`);
+                toast.error(
+                    `Erreur lors de l'ajout de ${errorCount} fichier${errorCount > 1 ? "s" : ""}`
+                );
+            }
         } catch (error: unknown) {
             console.error(
-                "Erreur lors de la soumission du formulaire de fichiers:",
+                "[AddSummarySheet] ❌ Fatal error during upload process:",
                 error
             );
-            fileToast.uploadError();
+            toast.error("Une erreur est survenue lors de l'upload des fichiers");
         } finally {
-            form.reset();
+            console.log("[AddSummarySheet] Setting isUploading to false");
+            setIsUploading(false);
         }
     };
 
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="default"
@@ -202,23 +290,30 @@ export const AddSummarySheet = (props: AddSummarySheetProps) => {
                             )}
 
                             <div className="flex flex-col gap-3 pt-4">
-                                <DialogClose asChild>
-                                    <Button
-                                        disabled={!watchedFiles.length}
-                                        type="submit"
-                                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Check className="w-4 h-4 mr-2" />
-                                        Ajouter{" "}
-                                        {watchedFiles.length > 0
-                                            ? `${watchedFiles.length} fichier${
-                                                  watchedFiles.length > 1
-                                                      ? "s"
-                                                      : ""
-                                              }`
-                                            : "les fichiers"}
-                                    </Button>
-                                </DialogClose>
+                                <Button
+                                    disabled={!watchedFiles.length || isUploading}
+                                    type="submit"
+                                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isUploading ? (
+                                        <>
+                                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Upload en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check className="w-4 h-4 mr-2" />
+                                            Ajouter{" "}
+                                            {watchedFiles.length > 0
+                                                ? `${watchedFiles.length} fichier${
+                                                      watchedFiles.length > 1
+                                                          ? "s"
+                                                          : ""
+                                                  }`
+                                                : "les fichiers"}
+                                        </>
+                                    )}
+                                </Button>
                             </div>
                         </form>
                     </FormProvider>
