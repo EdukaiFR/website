@@ -44,7 +44,7 @@ const FileProcessorComponent = ({
                     onTextRecognized(result.text);
                 } catch (error) {
                     console.error(
-                        `Erreur lors du traitement du fichier ${fileId}:`,
+                        `Error processing file ${fileId}:`,
                         error
                     );
                     fileToast.recognitionError();

@@ -13,8 +13,6 @@ export type SummarySheet = {
     origin: string;
 };
 
-// Create a function
-
 export const columns: ColumnDef<SummarySheet>[] = [
     {
         accessorKey: "alt",
@@ -70,7 +68,7 @@ export const columns: ColumnDef<SummarySheet>[] = [
             <div className="w-full flex justify-end items-center satoshi-medium">
                 Actions
             </div>
-        ), // Aligner le titre à droite
+        ), // Align the title to the right
         cell: ({ row }) => (
             <div className="flex items-center justify-end w-full gap-2">
                 <SummarySheetActions row={row} />

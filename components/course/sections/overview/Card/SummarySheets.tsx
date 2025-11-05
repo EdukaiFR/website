@@ -170,7 +170,7 @@ export const SummarySheets = ({
                 description: `${totalCount} fichier(s) téléchargé(s).`,
             });
         } catch (error) {
-            console.error("Erreur lors du téléchargement :", error);
+            console.error("Error during download:", error);
             toast.error("Erreur", {
                 description:
                     "Une erreur s'est produite lors du téléchargement.",
@@ -182,7 +182,7 @@ export const SummarySheets = ({
         try {
             if (!summary_sheets?.length) {
                 console.error(
-                    "Aucun fichier disponible pour le téléchargement."
+                    "No files available for download."
                 );
                 return;
             }
@@ -204,8 +204,8 @@ export const SummarySheets = ({
                     if (summary_sheet.source === "ai" && "content" in summary_sheet) {
                         if (!summary_sheet.content) {
                             console.warn(
-                                "Fichier sans contenu ignoré :",
-                                summary_sheet?.title ?? "inconnu"
+                                "File without content ignored:",
+                                summary_sheet?.title ?? "unknown"
                             );
                             return;
                         }
@@ -213,7 +213,7 @@ export const SummarySheets = ({
                         const response = await fetch(summary_sheet.content);
                         if (!response.ok)
                             throw new Error(
-                                `Échec du téléchargement : ${summary_sheet.title}`
+                                `Download failed: ${summary_sheet.title}`
                             );
 
                         const blob = await response.blob();
@@ -230,17 +230,17 @@ export const SummarySheets = ({
                     }
                 } catch (error) {
                     console.error(
-                        `Erreur lors du téléchargement :`,
+                        `Error during download:`,
                         error
                     );
                 }
             });
 
-            // Attendre que tous les téléchargements soient terminés
+            // Wait for all downloads to complete
             await Promise.all(downloads);
         } catch (error) {
             console.error(
-                "Erreur lors du processus de téléchargement :",
+                "Error during download process:",
                 error
             );
             toast("Erreur", {
