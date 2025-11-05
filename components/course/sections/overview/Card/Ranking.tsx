@@ -26,12 +26,12 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
             >
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                         <Crown className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-800">
+                    <span className="text-base font-semibold text-gray-800">
                         Classement
-                    </h3>
+                    </span>
                 </div>
 
                 {/* Empty State */}
@@ -56,14 +56,14 @@ export const Ranking = ({ ranking, className }: RankingProps) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                         <Crown className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-800">
+                    <span className="text-base font-semibold text-gray-800">
                         Classement
-                    </h3>
+                    </span>
                 </div>
-                <div className="p-2 bg-blue-50 rounded-xl">
+                <div className="p-2 bg-blue-50 rounded-xl flex items-center justify-center">
                     <Trophy className="w-4 h-4 text-blue-600" />
                 </div>
             </div>

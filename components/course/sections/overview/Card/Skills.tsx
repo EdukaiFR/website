@@ -9,12 +9,12 @@ export const Skills = (props: SkillsProps) => {
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col h-full border-0 shadow-lg hover:shadow-xl transition-all duration-200">
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                     <Target className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-base font-semibold text-gray-800">
+                <span className="text-base font-semibold text-gray-800">
                     Compétences
-                </h3>
+                </span>
             </div>
 
             {/* Empty State */}

@@ -163,7 +163,7 @@ export const Quiz = ({
             {isFinish ? (
                 <div className="w-full flex flex-col items-start h-full gap-4">
                     {/* Results Section */}
-                    <div className="flex flex-col lg:flex-row items-start gap-4 w-full">
+                    <div className="flex flex-col lg:flex-row items-stretch gap-4 w-full">
                         <div className="flex-1">
                             <EndQuizCard
                                 score={getPercentage(
@@ -171,12 +171,14 @@ export const Quiz = ({
                                     typedQuizData.length
                                 )}
                                 restartFct={restartQuiz}
+                                className="h-full"
                             />
                         </div>
                         <div className="flex-1">
                             <LastQuiz
                                 last_attemps={insights_data?.insights || []}
                                 insights_data={insights_data}
+                                className="h-full"
                             />
                         </div>
                     </div>

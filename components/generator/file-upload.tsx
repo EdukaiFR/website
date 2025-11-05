@@ -248,12 +248,12 @@ export function FileUpload({
             {/* File Preview */}
             {selectedFiles.length > 0 && (
                 <div className="mt-6 space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-gray-800 mb-3">
+                            <h4 className="font-semibold text-gray-800">
                                 Fichiers sélectionnés :
                             </h4>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-3">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 {selectedFiles.length}/{MAX_FILES}
                             </span>
                         </div>
