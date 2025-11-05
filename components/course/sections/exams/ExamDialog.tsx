@@ -59,6 +59,9 @@ export type ExamDialogProps = {
     updateCourseData: () => void;
     deleteExam: (examId: string, courseId: string) => void;
     isEditing?: boolean;
+    triggerRef?: React.RefObject<HTMLButtonElement>;
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
 };
 
 export const ExamDialog = ({
@@ -70,6 +73,9 @@ export const ExamDialog = ({
     exam,
     deleteExam,
     isEditing = false,
+    triggerRef,
+    isOpen,
+    onOpenChange,
 }: ExamDialogProps) => {
     const form = useForm<ExamFormData>({
         resolver: zodResolver(formSchema),
@@ -111,22 +117,26 @@ export const ExamDialog = ({
     };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button
-                    variant={"ghost"}
-                    className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0 lg:whitespace-nowrap"
-                >
-                    {isEditing ? (
-                        <span>Modifier</span>
-                    ) : (
-                        <>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Ajouter un examen
-                        </>
-                    )}
-                </Button>
-            </DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            {/* Only render trigger button if not in controlled mode */}
+            {(isOpen === undefined || onOpenChange === undefined) && (
+                <DialogTrigger asChild>
+                    <Button
+                        ref={triggerRef}
+                        variant={"ghost"}
+                        className="w-full lg:w-auto h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/60 hover:border-blue-300 font-medium rounded-xl transition-all duration-200 text-sm lg:flex-shrink-0 lg:whitespace-nowrap"
+                    >
+                        {isEditing ? (
+                            <span>Modifier</span>
+                        ) : (
+                            <>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Ajouter un examen
+                            </>
+                        )}
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[480px] lg:max-w-[520px] p-0 border-0 bg-transparent shadow-none">
                 <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
                     <DialogHeader className="text-center mb-8">
