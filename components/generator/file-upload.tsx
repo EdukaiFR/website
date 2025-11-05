@@ -16,6 +16,7 @@ import { useState } from "react";
 import { FileProcessorComponent } from "@/components/recognition";
 import { useBlob } from "@/hooks";
 import { useBlobService } from "@/services";
+import { showToast } from "@/lib/toast";
 
 type FileUploadProps = {
     selectedFiles: File[];
@@ -42,6 +43,7 @@ type FileUploadProps = {
 type FileIndexMap = { [fileId: string]: number };
 
 const MAX_CONCURRENT_PROCESSING = 2;
+const MAX_FILES = 5;
 
 export function FileUpload({
     selectedFiles,
@@ -103,16 +105,31 @@ export function FileUpload({
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
-        const newFiles = [...selectedFiles, ...files];
+
+        // Check if adding these files would exceed the maximum
+        const remainingSlots = MAX_FILES - selectedFiles.length;
+        if (remainingSlots <= 0) {
+            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            return;
+        }
+
+        // Only take files up to the maximum
+        const filesToAdd = files.slice(0, remainingSlots);
+        if (files.length > remainingSlots) {
+            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+        }
+
+        const newFiles = [...selectedFiles, ...filesToAdd];
         setSelectedFiles(newFiles);
         onFilesChange(newFiles);
 
-        files.forEach((file, index) => {
+        for (let index = 0; index < filesToAdd.length; index++) {
+            const file = filesToAdd[index];
             const fileIndex = selectedFiles.length + index;
             const localFileId = `${file.name}-${file.size}-${fileIndex}`;
             setFileIndexMap(prev => ({ ...prev, [localFileId]: fileIndex }));
             handleFileUpload(file, localFileId, fileIndex);
-        });
+        }
     };
 
     const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
@@ -128,9 +145,31 @@ export function FileUpload({
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
-        const newFiles = [...selectedFiles, ...files];
+
+        // Check if adding these files would exceed the maximum
+        const remainingSlots = MAX_FILES - selectedFiles.length;
+        if (remainingSlots <= 0) {
+            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            return;
+        }
+
+        // Only take files up to the maximum
+        const filesToAdd = files.slice(0, remainingSlots);
+        if (files.length > remainingSlots) {
+            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+        }
+
+        const newFiles = [...selectedFiles, ...filesToAdd];
         setSelectedFiles(newFiles);
         onFilesChange(newFiles);
+
+        for (let index = 0; index < filesToAdd.length; index++) {
+            const file = filesToAdd[index];
+            const fileIndex = selectedFiles.length + index;
+            const localFileId = `${file.name}-${file.size}-${fileIndex}`;
+            setFileIndexMap(prev => ({ ...prev, [localFileId]: fileIndex }));
+            handleFileUpload(file, localFileId, fileIndex);
+        }
     };
 
     const removeFile = (index: number) => {
@@ -210,9 +249,14 @@ export function FileUpload({
             {selectedFiles.length > 0 && (
                 <div className="mt-6 space-y-3">
                     <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-gray-800 mb-3">
-                            Fichiers sélectionnés :
-                        </h4>
+                        <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-800 mb-3">
+                                Fichiers sélectionnés :
+                            </h4>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-3">
+                                {selectedFiles.length}/{MAX_FILES}
+                            </span>
+                        </div>
                         {isRecognizing && (
                             <div className="text-sm text-blue-600 font-medium">
                                 {currentlyProcessingCount} analyse
