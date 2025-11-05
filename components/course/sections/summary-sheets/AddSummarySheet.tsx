@@ -69,7 +69,7 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
     };
 
     const processFile = async (file: File, index: number, total: number) => {
-        // Étape 1: Upload le fichier
+        // Step 1: Upload the file
         const uploadResponse = await blobService.uploadFile(file, "summary");
 
         if (uploadResponse?.status !== "success") {
@@ -80,7 +80,7 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
 
         const fileId = uploadResponse.items._id;
 
-        // Étape 2: Lier le fichier au cours
+        // Step 2: Link the file to the course
         const linkResponse = await courseService.addFileToCourse(courseId, fileId);
 
         if (linkResponse?.status !== "success") {
@@ -96,7 +96,7 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
             let successCount = 0;
             let errorCount = 0;
 
-            // Upload chaque fichier
+            // Upload each file
             for (let i = 0; i < data.files.length; i++) {
                 try {
                     await processFile(data.files[i], i, data.files.length);
@@ -112,11 +112,11 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
                     `${successCount} fiche${successCount > 1 ? "s" : ""} ajoutée${successCount > 1 ? "s" : ""} avec succès`
                 );
 
-                // Fermer le dialog et réinitialiser le formulaire
+                // Close the dialog and reset the form
                 setIsDialogOpen(false);
                 form.reset();
 
-                // Appeler le callback pour rafraîchir la liste
+                // Call the callback to refresh the list
                 if (onUploadSuccess) {
                     onUploadSuccess();
                 } else {

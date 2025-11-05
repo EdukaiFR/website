@@ -23,18 +23,18 @@ export interface RolePermissions {
 export function useUserRole(): UserRole {
     const { user, loading } = useSession();
 
-    // Si encore en chargement, ne pas résoudre le rôle tout de suite
+    // If still loading, don't resolve the role yet
     if (loading) {
         return USER_ROLES.USER;
     }
 
-    // Si la session a fini de charger
+    // If the session has finished loading
     if (!loading && user) {
         const role = (user.role as UserRole) || USER_ROLES.USER;
         return role;
     }
 
-    // Session chargée mais pas d'utilisateur (déconnecté)
+    // Session loaded but no user (disconnected)
     return USER_ROLES.USER;
 }
 

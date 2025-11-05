@@ -16,14 +16,14 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Met à jour l'état et l'URL lorsqu'un onglet est sélectionné
+    // Update state and URL when a tab is selected
     const handleTabChange = (tab: string) => {
         setSelectedTab(tab);
         const newUrl = `${pathname}?tab=${tab}`;
         router.push(newUrl, { scroll: false });
     };
 
-    // Synchronisation avec l'URL au chargement ou lorsque l'URL change
+    // Synchronize with URL on load or when URL changes
     useEffect(() => {
         const tabFromUrl = searchParams.get("tab");
         if (tabFromUrl && tabFromUrl !== selectedTab) {
@@ -31,7 +31,7 @@ export const NavBar = ({ tabs, setSelectedTab, selectedTab }: NavBarProps) => {
         }
     }, [searchParams, selectedTab, setSelectedTab]);
 
-    // Styles communs pour les boutons (identiques sur mobile et desktop)
+    // Common styles for buttons (identical on mobile and desktop)
     const getButtonStyles = (isSelected: boolean) =>
         `transition-all duration-200 ${
             isSelected

@@ -41,7 +41,7 @@ export default function Home() {
                 const response = await courseService.getCourses();
                 if (response && "items" in response) {
                     const courses = response.items as CourseData[];
-                    // Trier par date de mise à jour (plus récent en premier) et limiter à 4
+                    // Sort by update date (most recent first) and limit to 4
                     const sortedCourses = courses.toSorted((a, b) => {
                         const dateA = new Date(
                             a.updatedAt || a.createdAt || 0
@@ -64,20 +64,20 @@ export default function Home() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Détermine le nom à afficher
+    // Determine the name to display
     const getDisplayName = () => {
         if (!userProfile) return "";
 
-        // Si le username est une adresse email ou identique à l'email
+        // If the username is an email address or identical to the email
         if (
             userProfile.username.includes("@") ||
             userProfile.username === userProfile.email
         ) {
-            // Affiche firstName et première lettre du lastName
+            // Display firstName and first letter of lastName
             return `${userProfile.firstName} ${userProfile.lastName.charAt(0)}.`;
         }
 
-        // Sinon affiche le username
+        // Otherwise display the username
         return userProfile.username;
     };
     return (

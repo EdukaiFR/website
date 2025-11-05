@@ -121,7 +121,7 @@ export default function LibraryPage() {
 
         let result = [...courses];
 
-        // Filtrage par filtre sélectionné (subject, level, title)
+        // Filter by selected filter (subject, level, title)
         if (filter.type && filter.value) {
             result = result.filter(course => {
                 if (filter.type === "title")
@@ -140,7 +140,7 @@ export default function LibraryPage() {
             });
         }
 
-        // Filtrage par recherche libre (sur plusieurs champs si besoin)
+        // Filter by free text search (on multiple fields if needed)
         if (search) {
             const loweredSearch = search.toLowerCase();
             result = result.filter(
