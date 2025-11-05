@@ -164,15 +164,6 @@ export const FilePreviewDialog = ({
     };
 
     const renderFilePreview = () => {
-        // Debug info (you can remove this in production)
-        console.log("File debug info:", {
-            filename: file.alt,
-            src: file.src,
-            extension: getFileExtension(file.alt),
-            isImageDetected: isImage(file.alt, file.src),
-            isPDFDetected: isPDF(file.alt, file.src),
-        });
-
         // Image preview
         if (isImage(file.alt, file.src) && !imageError) {
             return (
@@ -185,7 +176,6 @@ export const FilePreviewDialog = ({
                             width={100}
                             height={100}
                             onError={(e: unknown) => {
-                                console.log(e);
                                 console.error(
                                     "Image failed to load:",
                                     file.src
@@ -193,10 +183,6 @@ export const FilePreviewDialog = ({
                                 setImageError(true);
                             }}
                             onLoad={() => {
-                                console.log(
-                                    "Image loaded successfully:",
-                                    file.src
-                                );
                                 setImageError(false);
                             }}
                         />
@@ -218,7 +204,6 @@ export const FilePreviewDialog = ({
                             setPdfError(true);
                         }}
                         onLoad={() => {
-                            console.log("PDF loaded successfully:", file.src);
                             setPdfError(false);
                         }}
                     />

@@ -16,9 +16,6 @@ export const SimilarCourses = ({
     course_id,
     similarCourses,
 }: SimilarCoursesProps) => {
-    console.log(course_id);
-    console.log(similarCourses);
-
     return (
         <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-green-50/30 via-emerald-50/20 to-teal-50/30 rounded-3xl p-8 relative overflow-hidden">
             {/* Background animated elements */}

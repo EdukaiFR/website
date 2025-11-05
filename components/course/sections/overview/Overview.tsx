@@ -46,7 +46,6 @@ export const Overview = ({
     insights_data,
     summarySheetsData,
 }: OverviewProps) => {
-    console.log(overview);
     return (
         <div className="w-full h-full overflow-auto max-w-full">
             {/* Mobile: Single column, Tablet+: Two columns */}

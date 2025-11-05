@@ -103,7 +103,6 @@ export function GeneratorForm({
         const subscription = form.watch(() => {
             // Trigger validation when form values change
         });
-        console.log("Uploaded file id's: ", uploadedFileIds);
         return () => subscription.unsubscribe();
     }, [form, uploadedFileIds]);
 

@@ -38,23 +38,10 @@ const FileProcessorComponent = ({
                             selectedFile,
                             (progressUpdate: ProcessingProgress) => {
                                 setProgress(progressUpdate);
-                                console.log(
-                                    `Processing ${fileId}: ${progressUpdate.message} (${progressUpdate.progress}%)`
-                                );
                             }
                         );
 
                     onTextRecognized(result.text);
-                    console.log(
-                        `Final text from ${result.type} file (${fileId}):`,
-                        result.text
-                    );
-
-                    if (result.images && result.images.length > 0) {
-                        console.log(
-                            `Extracted ${result.images.length} images from PDF`
-                        );
-                    }
                 } catch (error) {
                     console.error(
                         `Erreur lors du traitement du fichier ${fileId}:`,

@@ -69,14 +69,8 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
     };
 
     const processFile = async (file: File, index: number, total: number) => {
-        console.log(`\n[AddSummarySheet] Processing file ${index + 1}/${total}:`, file.name);
-        console.log(`[AddSummarySheet] File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-        console.log(`[AddSummarySheet] File type: ${file.type}`);
-
         // Étape 1: Upload le fichier
-        console.log(`[AddSummarySheet] Step 1: Uploading file "${file.name}" to blob service...`);
         const uploadResponse = await blobService.uploadFile(file, "summary");
-        console.log(`[AddSummarySheet] Upload response:`, uploadResponse);
 
         if (uploadResponse?.status !== "success") {
             console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
@@ -85,27 +79,18 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
         }
 
         const fileId = uploadResponse.items._id;
-        console.log(`[AddSummarySheet] ✅ File uploaded successfully. File ID: ${fileId}`);
 
         // Étape 2: Lier le fichier au cours
-        console.log(`[AddSummarySheet] Step 2: Linking file "${file.name}" (ID: ${fileId}) to course ${courseId}...`);
         const linkResponse = await courseService.addFileToCourse(courseId, fileId);
-        console.log(`[AddSummarySheet] Link response:`, linkResponse);
 
         if (linkResponse?.status !== "success") {
             console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
             console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
             throw new Error("Link failed");
         }
-
-        console.log(`[AddSummarySheet] ✅ File "${file.name}" successfully linked to course`);
     };
 
     const onSubmit = async (data: FormData) => {
-        console.log("=== [AddSummarySheet] Starting upload process ===");
-        console.log("[AddSummarySheet] Number of files to upload:", data.files.length);
-        console.log("[AddSummarySheet] Course ID:", courseId);
-
         try {
             setIsUploading(true);
             let successCount = 0;
@@ -122,25 +107,17 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
                 }
             }
 
-            // Afficher les résultats
-            console.log("\n=== [AddSummarySheet] Upload process completed ===");
-            console.log(`[AddSummarySheet] Success count: ${successCount}`);
-            console.log(`[AddSummarySheet] Error count: ${errorCount}`);
-
             if (successCount > 0) {
-                console.log(`[AddSummarySheet] Showing success toast for ${successCount} file(s)`);
                 toast.success(
                     `${successCount} fiche${successCount > 1 ? "s" : ""} ajoutée${successCount > 1 ? "s" : ""} avec succès`
                 );
 
                 // Fermer le dialog et réinitialiser le formulaire
-                console.log("[AddSummarySheet] Closing dialog and resetting form");
                 setIsDialogOpen(false);
                 form.reset();
 
                 // Appeler le callback pour rafraîchir la liste
                 if (onUploadSuccess) {
-                    console.log("[AddSummarySheet] Calling onUploadSuccess callback to refresh list");
                     onUploadSuccess();
                 } else {
                     console.warn("[AddSummarySheet] No onUploadSuccess callback provided");
@@ -148,7 +125,6 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
             }
 
             if (errorCount > 0) {
-                console.log(`[AddSummarySheet] Showing error toast for ${errorCount} file(s)`);
                 toast.error(
                     `Erreur lors de l'ajout de ${errorCount} fichier${errorCount > 1 ? "s" : ""}`
                 );
@@ -160,7 +136,6 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
             );
             toast.error("Une erreur est survenue lors de l'upload des fichiers");
         } finally {
-            console.log("[AddSummarySheet] Setting isUploading to false");
             setIsUploading(false);
         }
     };

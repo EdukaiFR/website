@@ -232,9 +232,6 @@ export function ProfilePictureUpload({
                                     alt="Aperçu photo de profil"
                                     fill
                                     className="object-cover"
-                                    onError={() =>
-                                        console.log("Image failed to load")
-                                    }
                                 />
                             </div>
                             <div className="flex-1 min-w-0">

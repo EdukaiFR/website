@@ -10,17 +10,11 @@ export function useBlobService() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const uploadFile = async (file: File, fileType: string) => {
-        console.log(`[BlobService] uploadFile called`);
-        console.log(`[BlobService] API URL: ${apiUrl}`);
-        console.log(`[BlobService] File name: ${file.name}`);
-        console.log(`[BlobService] File type param: ${fileType}`);
-
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("fileType", fileType);
 
-            console.log(`[BlobService] Making POST request to: ${apiUrl}/blob/files`);
             const response = await axios.post(
                 `${apiUrl}/blob/files`,
                 formData,
@@ -32,7 +26,6 @@ export function useBlobService() {
                 }
             );
 
-            console.log(`[BlobService] ✅ Upload successful. Response:`, response.data);
             return response.data;
         } catch (error) {
             console.error("[BlobService] ❌ Error uploading file:", error);
@@ -59,17 +52,12 @@ export function useBlobService() {
     };
 
     const deleteFile = async (fileId: string) => {
-        console.log(`[BlobService] deleteFile called`);
-        console.log(`[BlobService] File ID: ${fileId}`);
-
         try {
-            console.log(`[BlobService] Making DELETE request to: ${apiUrl}/blob/files/${fileId}`);
             const response = await axios.delete(
                 `${apiUrl}/blob/files/${fileId}`,
                 { withCredentials: true }
             );
 
-            console.log(`[BlobService] ✅ File deleted successfully. Response:`, response.data);
             return response.data;
         } catch (error: any) {
             console.error("[BlobService] ❌ Error deleting file:", error);
