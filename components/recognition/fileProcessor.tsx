@@ -5,27 +5,29 @@ import {
     ProcessingResult,
 } from "@/lib/file-processors";
 import { fileToast } from "@/lib/toast";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const FileProcessorComponent = ({
     selectedFile,
     onTextRecognized,
     setIsRecognizing,
     fileId,
+    onError,
 }: {
     selectedFile: File | null;
     onTextRecognized: (text: string) => void;
     setIsRecognizing: (isRecognizing: boolean) => void;
     fileId: string;
+    onError?: () => void;
 }) => {
     const [processing, setProcessing] = useState(false);
     const [progress, setProgress] = useState<ProcessingProgress | null>(null);
-    const [hasProcessed, setHasProcessed] = useState(false);
+    const hasProcessedRef = useRef(false);
 
     useEffect(() => {
         const processFile = async () => {
-            if (selectedFile && !processing && !hasProcessed) {
-                setHasProcessed(true); // Mark as processed immediately to prevent re-processing
+            if (selectedFile && !processing && !hasProcessedRef.current) {
+                hasProcessedRef.current = true; // Mark as processed immediately to prevent re-processing
                 setProcessing(true);
                 setIsRecognizing(true);
                 setProgress(null);
@@ -59,11 +61,17 @@ const FileProcessorComponent = ({
                         error
                     );
                     fileToast.recognitionError();
-                    setHasProcessed(false); // Reset on error so it can be retried
+                    hasProcessedRef.current = false; // Reset on error so it can be retried
+                    // Call onError callback to remove file from list
+                    if (onError) {
+                        onError();
+                    }
                 } finally {
-                    setProcessing(false);
+                    // Keep processing true to continue showing percentage
+                    // setProcessing(false);
                     setIsRecognizing(false);
-                    setProgress(null);
+                    // Don't clear progress to keep showing the last percentage
+                    // setProgress(null);
                 }
             }
         };
@@ -86,38 +94,23 @@ const FileProcessorComponent = ({
         }
     };
 
-    const getStatusMessage = () => {
-        if (!processing) {
-            return (
-                <div className="flex items-center gap-1">
-                    <span>{getFileTypeIcon()}</span>
-                    <span className="text-xs text-gray-500">Importé !</span>
-                </div>
-            );
-        }
-
-        if (progress) {
-            return (
-                <div className="flex items-center gap-1">
-                    <span>{getFileTypeIcon()}</span>
-                    <span className="text-xs text-blue-600 font-medium">
-                        {progress.message} {progress.progress}%
-                    </span>
-                </div>
-            );
-        }
-
-        return (
-            <div className="flex items-center gap-1">
-                <span>{getFileTypeIcon()}</span>
-                <span className="text-xs text-blue-600 font-medium">
-                    Traitement en cours...
-                </span>
-            </div>
-        );
-    };
-
-    return <div>{getStatusMessage()}</div>;
+    // Use a stable wrapper to prevent double rendering
+    return (
+        <span
+            className={
+                !processing
+                    ? "text-xs text-gray-500"
+                    : "text-xs text-blue-600 font-medium"
+            }
+            data-file-id={fileId}
+        >
+            {!processing
+                ? "Importé !"
+                : progress
+                  ? `${progress.message} ${progress.progress}%`
+                  : "Traitement en cours..."}
+        </span>
+    );
 };
 
 export { FileProcessorComponent };

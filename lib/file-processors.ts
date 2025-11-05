@@ -124,7 +124,7 @@ export class FileProcessor {
                     onProgress?.({
                         stage: "ocr",
                         progress: progressPercent,
-                        message: `OCR en cours... ${progressPercent}%`,
+                        message: "OCR en cours...",
                     });
                 }
             },
