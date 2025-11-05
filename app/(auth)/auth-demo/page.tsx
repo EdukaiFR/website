@@ -16,7 +16,6 @@ export default function AuthDemoPage() {
     const [selectedForm, setSelectedForm] = useState<DemoMode>(null);
 
     const handleSuccess = () => {
-        console.log("Auth success!");
         // Could show a success message
     };
 

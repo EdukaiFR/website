@@ -17,7 +17,6 @@ type RankingData = {
 
 export const Ranking = ({ ranking, className }: RankingProps) => {
     const typedRanking = ranking as RankingData[];
-    console.log(typedRanking);
 
     if (!typedRanking || typedRanking.length === 0) {
         return (

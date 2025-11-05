@@ -70,34 +70,21 @@ export const SummarySheets = ({
     });
 
     useEffect(() => {
-        console.log("[SummarySheets] useEffect triggered - summarySheets prop changed");
-        console.log("[SummarySheets] New summarySheets prop:", summarySheets);
-        console.log("[SummarySheets] Typed summary sheets:", typedSummarySheets);
-        console.log("[SummarySheets] Number of items:", typedSummarySheets.length);
         setLocalSummarySheets(typedSummarySheets);
-        console.log("[SummarySheets] Local state updated");
     }, [summarySheets]);
 
     const handleDelete = async (file: SummarySheetData) => {
-        console.log("[SummarySheets] handleDelete called");
-        console.log("[SummarySheets] File to delete:", file);
-        console.log("[SummarySheets] File source:", file.source);
-
         try {
             let response;
 
             // Use different service based on file source
             if (file.source === "file") {
                 // User-uploaded file - use blob service
-                console.log("[SummarySheets] Deleting user-uploaded file via blob service");
                 response = await blobService.deleteFile(file._id);
             } else {
                 // AI-generated sheet - use summary sheet service
-                console.log("[SummarySheets] Deleting AI-generated sheet via summary sheet service");
                 response = await deleteSheetById(file._id);
             }
-
-            console.log("[SummarySheets] Delete response:", response);
 
             if (response?.status === "success") {
                 setLocalSummarySheets(prevSheets =>
@@ -107,7 +94,6 @@ export const SummarySheets = ({
 
                 // Refresh the list from backend
                 if (onRefresh) {
-                    console.log("[SummarySheets] Calling onRefresh after delete");
                     onRefresh();
                 }
             } else {

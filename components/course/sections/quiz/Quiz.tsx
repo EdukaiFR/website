@@ -62,13 +62,9 @@ export const Quiz = ({
                         typedQuizData.length
                     );
                     await insights_service.createInsight(quiz_id, finalScore);
-                    console.log("✅ Quiz insight created successfully");
                     insightsToast.createSuccess();
 
                     // Force refresh insights data after creating new insight
-                    console.log(
-                        "🔄 [Quiz] Refreshing insights after quiz completion"
-                    );
                     await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to ensure backend is updated
                 } catch (error) {
                     console.error("❌ Failed to create quiz insight:", error);

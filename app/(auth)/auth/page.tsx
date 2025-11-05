@@ -13,7 +13,6 @@ export default function Authpage() {
     }, []);
 
     const handleAuthSuccess = () => {
-        console.log("Authentication successful");
         const urlParams = new URLSearchParams(
             globalThis.location?.search || ""
         );

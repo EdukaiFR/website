@@ -7,7 +7,6 @@ export default function ChangePasswordPage() {
     const router = useRouter();
 
     const handleSuccess = () => {
-        console.log("Password changed successfully");
         // Could redirect to profile page or stay on the same page
         // router.push('/profile');
     };
