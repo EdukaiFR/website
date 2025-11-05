@@ -45,6 +45,18 @@ export interface CourseService {
         description: string,
         date: Date
     ) => Promise<{ message: string } | null>;
+    getAllExams: () => Promise<{
+        items: Array<{
+            _id: string;
+            title: string;
+            date: string;
+            courseId: string | null;
+            courseTitle: string | null;
+            courseSubject: string | null;
+        }>;
+        message: string;
+        status: string;
+    } | null>;
     toggleShare: (courseId: string) => Promise<any>;
     getPublicCourses: () => Promise<any>;
 }
@@ -305,6 +317,18 @@ export function useCourseService() {
         }
     };
 
+    const getAllExams = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/exams`, {
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("An error occurred fetching all exams.", error);
+            return null;
+        }
+    };
+
     return {
         createCourse,
         getCourseById,
@@ -318,6 +342,7 @@ export function useCourseService() {
         getExamById,
         updateExamById,
         deleteExamById,
+        getAllExams,
         toggleShare,
         getPublicCourses,
     };
