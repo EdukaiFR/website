@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSession, useIsAdmin } from "@/hooks";
+import { useIsAdmin, useSession } from "@/hooks";
 import { useTicket } from "@/hooks/useTicket";
 import { TicketPriority, TicketStatus } from "@/lib/types/ticket";
 import { cn } from "@/lib/utils";
@@ -134,7 +134,7 @@ export default function TicketsPage() {
                                     </div>
                                 </div>
                                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
-                                    Centre d&apos;aide
+                                    Centre d'aide
                                 </h1>
                                 <p className="text-blue-100 text-sm sm:text-base lg:text-lg max-w-2xl">
                                     Signalez un problème et suivez sa
@@ -178,7 +178,7 @@ export default function TicketsPage() {
                                         </p>
                                         <p className="text-sm text-indigo-700">
                                             Vous avez accès aux fonctionnalités
-                                            d&apos;administration
+                                            d'administration
                                         </p>
                                     </div>
                                 </div>

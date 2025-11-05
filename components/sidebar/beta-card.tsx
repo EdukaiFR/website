@@ -1,8 +1,8 @@
 "use client";
 
-import { X, ArrowUpRight, Sparkles } from "lucide-react";
-import { useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { ArrowUpRight, Sparkles, X } from "lucide-react";
+import { useState } from "react";
 
 export function BetaCard() {
     const [isVisible, setIsVisible] = useState(true);
@@ -35,11 +35,11 @@ export function BetaCard() {
                 {/* Content */}
                 <div className="space-y-2 mb-4">
                     <h3 className="text-gray-900 font-semibold text-sm leading-tight">
-                        Version Beta d&apos;Edukai
+                        Version Beta d'Edukai
                     </h3>
                     <p className="text-gray-600 text-xs leading-relaxed">
                         Vous testez la version beta. Vos retours nous aident à
-                        améliorer l&apos;expérience !
+                        améliorer l'expérience !
                     </p>
                 </div>
 

@@ -18,7 +18,7 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                     </span>
                     <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
-                        Plateforme d&apos;apprentissage
+                        Plateforme d'apprentissage
                     </span>
                 </div>
 

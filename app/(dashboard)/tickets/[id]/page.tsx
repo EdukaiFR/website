@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -12,32 +10,33 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { AuthGuard } from "@/components/auth/AuthGuard";
-import {
-    ArrowLeft,
-    Clock,
-    CheckCircle,
-    AlertCircle,
-    XCircle,
-    MessageSquare,
-    Send,
-    Calendar,
-    User,
-    Globe,
-    Monitor,
-    RefreshCw,
-    Paperclip,
-    Copy,
-    Shield,
-    UserCircle,
-    ExternalLink,
-} from "lucide-react";
-import { useTicketService } from "@/services";
-import { useTicket, useIsAdmin, useRolePermissions } from "@/hooks";
-import { cn } from "@/lib/utils";
-import { TicketStatus, TicketPriority } from "@/lib/types/ticket";
-import { CommentVisibility as CommentVisibilityEnum } from "@/lib/types/ticket";
+import { Textarea } from "@/components/ui/textarea";
+import { useIsAdmin, useRolePermissions, useTicket } from "@/hooks";
 import type { AddCommentRequest } from "@/lib/types/ticket";
+import { CommentVisibility as CommentVisibilityEnum, TicketPriority, TicketStatus } from "@/lib/types/ticket";
+import { cn } from "@/lib/utils";
+import { useTicketService } from "@/services";
+import {
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Copy,
+    ExternalLink,
+    Globe,
+    MessageSquare,
+    Monitor,
+    Paperclip,
+    RefreshCw,
+    Send,
+    Shield,
+    User,
+    UserCircle,
+    XCircle,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function TicketDetailPage() {
     const params = useParams();
@@ -223,8 +222,8 @@ export default function TicketDetailPage() {
                                     Ticket non trouvé
                                 </h2>
                                 <p className="text-gray-600 mb-8">
-                                    Le ticket demandé n&apos;existe pas ou
-                                    n&apos;est plus accessible.
+                                    Le ticket demandé n'existe pas ou
+                                    n'est plus accessible.
                                 </p>
                                 <Button
                                     className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300"

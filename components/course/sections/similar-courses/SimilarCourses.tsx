@@ -63,7 +63,7 @@ export const SimilarCourses = ({
                 <p className="text-gray-600 leading-relaxed text-lg">
                     Découvrez bientôt des cours similaires personnalisés selon
                     vos intérêts et votre niveau pour enrichir votre parcours
-                    d&apos;apprentissage.
+                    d'apprentissage.
                 </p>
 
                 {/* Coming soon badge */}
@@ -115,7 +115,7 @@ export const SimilarCourses = ({
                             </span>
                         </div>
                         <p className="text-xs text-gray-600">
-                            Parcours d&apos;apprentissage optimisés
+                            Parcours d'apprentissage optimisés
                         </p>
                     </div>
 

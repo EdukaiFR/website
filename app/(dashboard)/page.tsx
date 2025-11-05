@@ -117,7 +117,7 @@ export default function Home() {
                             <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
                                 Voici un petit résumé de ton compte et de tes
                                 progrès récents dans ton parcours
-                                d&apos;apprentissage.
+                                d'apprentissage.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -126,7 +126,7 @@ export default function Home() {
                                     className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
                                 >
                                     <BookOpen className="w-6 h-6" />
-                                    Continuer l&apos;Apprentissage
+                                    Continuer l'Apprentissage
                                 </button>
                                 <button
                                     onClick={() =>
@@ -171,7 +171,7 @@ export default function Home() {
                                         45h
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Temps d&apos;Étude
+                                        Temps d'Étude
                                     </div>
                                 </div>
 

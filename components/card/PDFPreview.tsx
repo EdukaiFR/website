@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { FileIcon, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PDFPreviewProps {
     fileId: string;
@@ -88,7 +88,7 @@ export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) =
         return (
             <div className="flex flex-col items-center justify-center h-full gap-4">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                <p className="text-sm text-gray-500">Génération de l&apos;aperçu...</p>
+                <p className="text-sm text-gray-500">Génération de l'aperçu...</p>
             </div>
         );
     }

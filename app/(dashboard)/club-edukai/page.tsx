@@ -1,8 +1,8 @@
 "use client";
 
-import { Users, Calendar, Trophy, Star, UserPlus, BookOpen, Search, Filter, X, Loader2 } from "lucide-react";
 import { PublicCourseCard } from "@/components/club/PublicCourseCard";
 import { useCourseService } from "@/services";
+import { BookOpen, Calendar, Filter, Loader2, Search, Star, Trophy, UserPlus, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PublicCourse {
@@ -162,7 +162,7 @@ export default function ClubEdukaiPage() {
 
                             <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
                                 Rejoignez une communauté passionnée
-                                d&apos;apprenants et développez vos compétences
+                                d'apprenants et développez vos compétences
                                 ensemble dans un environnement collaboratif et
                                 bienveillant.
                             </p>
