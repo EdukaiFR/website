@@ -31,17 +31,17 @@ export const Tips = ({ tips }: TipsProps) => {
                     </span>
                 </div>
 
-                {/* Empty State */}
+                {/* Empty State - Coming Soon */}
                 <div className="flex flex-col items-center justify-center gap-3 h-full text-center">
                     <div className="p-3 bg-amber-100 rounded-2xl">
                         <Sparkles className="w-6 h-6 text-amber-600" />
                     </div>
                     <div>
                         <p className="text-sm font-medium text-amber-800 mb-1">
-                            Aucune astuce disponible
+                            Bientôt disponible
                         </p>
                         <p className="text-xs text-amber-600">
-                            Les astuces apparaîtront ici pour t&apos;aider dans
+                            Les astuces arriveront prochainement pour t&apos;aider dans
                             tes révisions.
                         </p>
                     </div>

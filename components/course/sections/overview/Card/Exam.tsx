@@ -107,6 +107,21 @@ export const Exam = ({
                         </Button>
                     )}
                 </div>
+
+                {/* Empty State */}
+                <div className="flex flex-col items-center justify-center gap-3 flex-1 text-center py-6">
+                    <div className="p-3 bg-blue-50 rounded-2xl">
+                        <Calendar className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-gray-800 mb-1">
+                            Aucun examen prévu
+                        </p>
+                        <p className="text-xs text-gray-600">
+                            Ajoute un examen pour mieux organiser tes révisions.
+                        </p>
+                    </div>
+                </div>
             </div>
         );
     }
