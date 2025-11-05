@@ -74,12 +74,12 @@ export const Exam = ({
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                        <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                             <Calendar className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-base font-semibold text-gray-800">
+                        <span className="text-base font-semibold text-gray-800">
                             Examens prévus
-                        </h3>
+                        </span>
                     </div>
 
                     {/* Action Button - Full width on mobile, auto on desktop */}
@@ -134,12 +134,12 @@ export const Exam = ({
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4 flex-shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                         <Calendar className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-800">
+                    <span className="text-base font-semibold text-gray-800">
                         Examens prévus
-                    </h3>
+                    </span>
                     <CounterBadge counter={typedExams.length} />
                 </div>
 
