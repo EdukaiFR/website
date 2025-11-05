@@ -9,8 +9,10 @@ import {
     Clock,
     TrendingUp,
     Star,
+    Bell,
 } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserContext";
+import { toast } from "sonner";
 
 export default function Home() {
     const { userProfile, loading } = useUserProfile();
@@ -79,6 +81,64 @@ export default function Home() {
                                 <button className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200">
                                     <Target className="w-6 h-6" />
                                     Voir les Objectifs
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const toasts = [
+                                            () =>
+                                                toast.success(
+                                                    "Cours sauvegardé !",
+                                                    {
+                                                        description:
+                                                            "Votre progression a été enregistrée avec succès.",
+                                                    }
+                                                ),
+                                            () =>
+                                                toast.error(
+                                                    "Erreur de connexion",
+                                                    {
+                                                        description:
+                                                            "Impossible de se connecter au serveur.",
+                                                    }
+                                                ),
+                                            () =>
+                                                toast.warning(
+                                                    "Attention !",
+                                                    {
+                                                        description:
+                                                            "Vous avez atteint 80% de votre quota.",
+                                                    }
+                                                ),
+                                            () =>
+                                                toast.info(
+                                                    "Nouvelle fonctionnalité",
+                                                    {
+                                                        description:
+                                                            "Découvrez le mode révision rapide !",
+                                                    }
+                                                ),
+                                            () =>
+                                                toast(
+                                                    "Notification simple",
+                                                    {
+                                                        description:
+                                                            "Un message informatif basique.",
+                                                    }
+                                                ),
+                                        ];
+                                        const randomToast =
+                                            toasts[
+                                                Math.floor(
+                                                    Math.random() *
+                                                        toasts.length
+                                                )
+                                            ];
+                                        randomToast();
+                                    }}
+                                    className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
+                                >
+                                    <Bell className="w-6 h-6" />
+                                    Tester Toast
                                 </button>
                             </div>
                         </div>
