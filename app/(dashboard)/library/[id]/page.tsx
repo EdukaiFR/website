@@ -29,6 +29,7 @@ export default function MyCourses() {
         updateExam,
         deleteExam,
         loadCourseFiles,
+        loadSummarySheets,
     } = useCourseLogic();
 
     // Loading state
@@ -79,6 +80,7 @@ export default function MyCourses() {
                 summarySheetsData={summarySheetsData}
                 loadCourseFiles={loadCourseFiles}
                 storageUserId={storageUserId}
+                refreshSummarySheets={loadSummarySheets}
             />
         </div>
     );
