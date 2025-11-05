@@ -160,7 +160,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                                 Aucun quiz lancé
                             </p>
                             <p className="text-xs text-gray-500">
-                                Tu n&apos;as pas encore lancé de quiz.
+                                Tu n'as pas encore lancé de quiz.
                             </p>
                         </div>
                     </div>

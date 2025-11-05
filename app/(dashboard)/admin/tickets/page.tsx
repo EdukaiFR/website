@@ -1,8 +1,8 @@
 "use client";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { AdminTicketCard } from "@/components/ticket/admin-ticket-card";
 import { AdminStatistics } from "@/components/ticket/admin-statistics";
+import { AdminTicketCard } from "@/components/ticket/admin-ticket-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,14 +13,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSession, useIsAdmin, useRolePermissions, useTicket } from "@/hooks";
+import { useIsAdmin, useRolePermissions, useSession, useTicket } from "@/hooks";
 import {
-    Ticket,
-    TicketStatus,
-    TicketPriority,
     AdminGetTicketsParams,
-    TicketStatistics,
     DEFAULT_PAGE_LIMIT,
+    Ticket,
+    TicketPriority,
+    TicketStatistics,
+    TicketStatus,
 } from "@/lib/types/ticket";
 import { useTicketService } from "@/services";
 import {
@@ -273,7 +273,7 @@ export default function AdminTicketsPage() {
                                     Gestion des tickets
                                 </h1>
                                 <p className="text-indigo-100 text-sm sm:text-base lg:text-lg max-w-2xl">
-                                    Vue d&apos;ensemble de tous les tickets du
+                                    Vue d'ensemble de tous les tickets du
                                     système avec contrôles administrateur
                                 </p>
                             </div>

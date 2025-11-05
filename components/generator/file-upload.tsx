@@ -15,8 +15,8 @@ import { useState } from "react";
 
 import { FileProcessorComponent } from "@/components/recognition";
 import { useBlob } from "@/hooks";
-import { useBlobService } from "@/services";
 import { showToast } from "@/lib/toast";
+import { useBlobService } from "@/services";
 
 type FileUploadProps = {
     selectedFiles: File[];
@@ -300,7 +300,7 @@ export function FileUpload({
                                                 </span>
                                             ) : shouldQueue ? (
                                                 <span className="text-orange-600 font-medium">
-                                                    En file d&apos;attente...
+                                                    En file d'attente...
                                                 </span>
                                             ) : (
                                                 <FileProcessorComponent

@@ -1,20 +1,20 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AtSign, Save, User } from "lucide-react";
 import { useState } from "react";
-import { User, AtSign, Save } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { PersistentAlert } from "@/components/ui/persistent-alert";
-import { ProfilePictureUpload } from "./profile-picture-upload";
+import { updateProfileAction } from "@/lib/actions/user";
 import {
     profileSettingsSchema,
     type ProfileSettingsFormValues,
 } from "@/lib/schemas/user";
-import { updateProfileAction } from "@/lib/actions/user";
+import { ProfilePictureUpload } from "./profile-picture-upload";
 
 export interface ProfileSettingsProps {
     initialData?: ProfileSettingsFormValues & { email?: string };
@@ -157,7 +157,7 @@ export function ProfileSettings({
                             className="text-sm font-medium text-gray-700 flex items-center gap-2"
                         >
                             <AtSign className="w-4 h-4" />
-                            Nom d&apos;utilisateur *
+                            Nom d'utilisateur *
                         </label>
                         <Input
                             id="username"
@@ -177,7 +177,7 @@ export function ProfileSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Le nom d&apos;utilisateur doit être unique et peut
+                            Le nom d'utilisateur doit être unique et peut
                             contenir des lettres, chiffres et underscores.
                         </p>
                     </div>
@@ -199,7 +199,7 @@ export function ProfileSettings({
                                 className="h-11 border-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                             />
                             <p className="text-xs text-gray-500">
-                                L&apos;adresse email ne peut pas être modifiée
+                                L'adresse email ne peut pas être modifiée
                                 pour des raisons de sécurité.
                             </p>
                         </div>

@@ -17,8 +17,8 @@ export function GeneratorHeader() {
                     Bienvenue dans le générateur
                 </h1>
                 <p className="text-blue-100 text-base lg:text-lg max-w-2xl">
-                    Remplis les champs ci-dessous puis clique sur &apos;Lancer
-                    la génération&apos;.
+                    Remplis les champs ci-dessous puis clique sur 'Lancer
+                    la génération'.
                 </p>
             </div>
             {/* Decorative elements */}

@@ -524,8 +524,8 @@ export const Statistics = ({
                             </h3>
                             <p className="text-gray-500">
                                 Complétez plus de quiz pour débloquer les
-                                graphiques détaillés, l&apos;évolution des
-                                performances et l&apos;analyse des tendances.
+                                graphiques détaillés, l'évolution des
+                                performances et l'analyse des tendances.
                             </p>
                         </div>
                     </CardContent>

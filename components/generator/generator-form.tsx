@@ -180,7 +180,7 @@ export function GeneratorForm({
                                             />
                                         </FormControl>
                                         <FormDescription className="text-gray-600">
-                                            Le niveau d&apos;étude de ton cours.
+                                            Le niveau d'étude de ton cours.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>

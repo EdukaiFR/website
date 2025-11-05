@@ -1,14 +1,14 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    CreditCard,
     AlertCircle,
+    Clock,
+    CreditCard,
+    FileQuestion,
     Shield,
     Sparkles,
-    Clock,
-    FileQuestion,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface SubscriptionSettingsProps {
     initialData?: Record<string, unknown>;
@@ -80,7 +80,7 @@ export function SubscriptionSettings({
                                         expérience optimale à tous nos
                                         utilisateurs Beta, un système de
                                         limitation est en place sur
-                                        l&apos;utilisation des fonctionnalités
+                                        l'utilisation des fonctionnalités
                                         IA.
                                     </p>
                                 </div>
@@ -122,7 +122,7 @@ export function SubscriptionSettings({
 
                         <div className="space-y-3">
                             <p className="text-sm text-gray-700 font-medium">
-                                Plans d&apos;abonnement à venir après la Beta :
+                                Plans d'abonnement à venir après la Beta :
                             </p>
 
                             <div className="grid gap-3">
@@ -170,8 +170,8 @@ export function SubscriptionSettings({
 
                         <div className="bg-white/70 rounded-lg p-3 border border-indigo-100">
                             <p className="text-xs text-gray-600 italic">
-                                💡 En tant qu&apos;utilisateur Beta, vous
-                                bénéficierez d&apos;avantages exclusifs lors du
+                                💡 En tant qu'utilisateur Beta, vous
+                                bénéficierez d'avantages exclusifs lors du
                                 lancement des abonnements payants !
                             </p>
                         </div>
@@ -189,7 +189,7 @@ export function SubscriptionSettings({
                                 Aidez-nous à améliorer Edukai
                             </h4>
                             <p className="text-sm text-green-700 mb-2">
-                                Vos retours sont précieux ! N&apos;hésitez pas à
+                                Vos retours sont précieux ! N'hésitez pas à
                                 nous faire part de vos suggestions et des bugs
                                 rencontrés pendant cette phase Beta.
                             </p>

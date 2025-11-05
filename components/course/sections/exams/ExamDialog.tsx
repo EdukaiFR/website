@@ -108,7 +108,7 @@ export const ExamDialog = ({
             console.error("Error submitting form: ", error);
             toast("Erreur", {
                 description:
-                    "Une erreur s'est produite lors de la création de l&apos;examen.",
+                    "Une erreur s'est produite lors de la création de l'examen.",
             });
         } finally {
             form.reset();
@@ -166,7 +166,7 @@ export const ExamDialog = ({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-semibold text-gray-700 mb-2 block">
-                                            Nom de l&apos;examen
+                                            Nom de l'examen
                                         </FormLabel>
                                         <FormControl>
                                             <div className="relative">
@@ -178,7 +178,7 @@ export const ExamDialog = ({
                                             </div>
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Le nom de l&apos;examen que tu
+                                            Le nom de l'examen que tu
                                             souhaites créer
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
@@ -206,7 +206,7 @@ export const ExamDialog = ({
                                             />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Ajoute des détails sur ce qu&apos;il
+                                            Ajoute des détails sur ce qu'il
                                             faut réviser
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
@@ -220,7 +220,7 @@ export const ExamDialog = ({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-semibold text-gray-700 mb-2 block">
-                                            Date de l&apos;examen
+                                            Date de l'examen
                                         </FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
@@ -275,7 +275,7 @@ export const ExamDialog = ({
                                         </Popover>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
                                             La date prévue pour le déroulement
-                                            de l&apos;examen
+                                            de l'examen
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
                                     </FormItem>
@@ -311,7 +311,7 @@ export const ExamDialog = ({
                                             }}
                                         >
                                             <Trash className="w-4 h-4 mr-2" />
-                                            Supprimer l&apos;examen
+                                            Supprimer l'examen
                                         </Button>
                                     </DialogClose>
                                 )}

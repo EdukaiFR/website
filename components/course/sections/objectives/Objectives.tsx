@@ -52,7 +52,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
                 {/* Description */}
                 <p className="text-gray-600 leading-relaxed text-lg">
                     Nous travaillons actuellement sur cette fonctionnalité pour
-                    vous offrir une expérience d&apos;apprentissage encore plus
+                    vous offrir une expérience d'apprentissage encore plus
                     personnalisée et efficace.
                 </p>
 
@@ -76,7 +76,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
                             </span>
                         </div>
                         <p className="text-xs text-gray-600">
-                            Définissez vos objectifs d&apos;apprentissage
+                            Définissez vos objectifs d'apprentissage
                         </p>
                     </div>
 
