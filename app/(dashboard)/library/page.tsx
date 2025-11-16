@@ -44,12 +44,14 @@ type ApiCourseData = {
     title: string;
     subject: string;
     level: string;
-    author?: string | {
-        _id?: string;
-        username?: string;
-        firstName?: string;
-        lastName?: string;
-    };
+    author?:
+        | string
+        | {
+              _id?: string;
+              username?: string;
+              firstName?: string;
+              lastName?: string;
+          };
     isPublished?: boolean;
     createdAt?: string;
     quizzes: string[];
@@ -192,9 +194,12 @@ export default function LibraryPage() {
                     (course: ApiCourseData) => ({
                         ...course,
                         id: course._id || course.id || "",
-                        author: typeof course.author === 'string'
-                            ? course.author
-                            : (course.author?.username || course.author?.firstName || "Unknown"),
+                        author:
+                            typeof course.author === "string"
+                                ? course.author
+                                : course.author?.username ||
+                                  course.author?.firstName ||
+                                  "Unknown",
                         isPublished: course.isPublished || false,
                         createdAt: course.createdAt || new Date().toISOString(),
                     })

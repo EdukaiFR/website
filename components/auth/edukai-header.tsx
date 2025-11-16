@@ -15,7 +15,9 @@ export function EdukaiHeader() {
                     <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                         Edukai
                     </h1>
-                    <p className="text-xs text-gray-500">Révise mieux, pas plus</p>
+                    <p className="text-xs text-gray-500">
+                        Révise mieux, pas plus
+                    </p>
                 </div>
             </div>
         </div>

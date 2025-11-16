@@ -132,7 +132,8 @@ export function ResetPasswordForm({
                     Mot de passe oublié ?
                 </h2>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    Pas de souci ! Indique ton email et reçois un lien pour créer un nouveau mot de passe
+                    Pas de souci ! Indique ton email et reçois un lien pour
+                    créer un nouveau mot de passe
                 </p>
             </div>
 

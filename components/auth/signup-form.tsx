@@ -79,7 +79,8 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                     Commence ton aventure
                 </h2>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    Crée ton compte gratuitement et transforme ta façon de réviser
+                    Crée ton compte gratuitement et transforme ta façon de
+                    réviser
                 </p>
             </div>
 

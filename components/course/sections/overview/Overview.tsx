@@ -8,6 +8,7 @@ import { SummarySheets } from "./Card/SummarySheets";
 import { Tips } from "./Card/Tips";
 
 export type OverviewProps = {
+    isPrivateView: boolean;
     course_id: string;
     course_title?: string;
     overview: unknown;
@@ -34,6 +35,7 @@ export type OverviewProps = {
 };
 
 export const Overview = ({
+    isPrivateView,
     course_id,
     course_title,
     overview,
@@ -46,6 +48,21 @@ export const Overview = ({
     insights_data,
     summarySheetsData,
 }: OverviewProps) => {
+    if (!isPrivateView) {
+        return (
+            <div className="w-full h-full overflow-auto max-w-full">
+                <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full max-w-full">
+                    <div className="w-full max-w-full min-w-0">
+                        <SummarySheets
+                            summary_sheets={summarySheetsData || []}
+                            courseTitle={course_title}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full h-full overflow-auto max-w-full">
             {/* Mobile: Single column, Tablet+: Two columns */}

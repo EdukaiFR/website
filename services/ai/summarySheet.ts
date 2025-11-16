@@ -101,10 +101,17 @@ export function useSummarySheetService(): SummarySheetService {
 
             return {
                 status: "failure",
-                message: "Une erreur est survenue lors de la récupération des fiches publiques.",
+                message:
+                    "Une erreur est survenue lors de la récupération des fiches publiques.",
             };
         }
     };
 
-    return { generateSheet, getSheetById, deleteSheetById, toggleShare, getPublicSheets };
+    return {
+        generateSheet,
+        getSheetById,
+        deleteSheetById,
+        toggleShare,
+        getPublicSheets,
+    };
 }

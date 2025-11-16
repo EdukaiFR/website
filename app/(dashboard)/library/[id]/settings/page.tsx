@@ -78,7 +78,8 @@ export default function CourseSettingsPage() {
         return <LoadingState />;
     }
 
-    const hasChanges = isPublic !== (courseData.visibility === Visibility.PUBLIC);
+    const hasChanges =
+        isPublic !== (courseData.visibility === Visibility.PUBLIC);
 
     return (
         <div className="course-content flex flex-col gap-2 sm:gap-3 lg:gap-4 px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4 min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 w-full max-w-full">
@@ -198,7 +199,12 @@ export default function CourseSettingsPage() {
                         <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                             <Button
                                 variant="outline"
-                                onClick={() => setIsPublic(courseData.visibility === Visibility.PUBLIC)}
+                                onClick={() =>
+                                    setIsPublic(
+                                        courseData.visibility ===
+                                            Visibility.PUBLIC
+                                    )
+                                }
                             >
                                 Annuler
                             </Button>

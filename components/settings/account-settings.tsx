@@ -145,8 +145,7 @@ export function AccountSettings({
                                                     personnelles
                                                 </li>
                                                 <li>
-                                                    Votre historique
-                                                    d'activité
+                                                    Votre historique d'activité
                                                 </li>
                                                 <li>
                                                     Vos cours et matériaux

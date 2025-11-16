@@ -32,9 +32,9 @@ export const CourseGrid = ({ courses, isLoading = false }: CourseGridProps) => {
                     Aucun cours trouvé
                 </h3>
                 <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    Il semblerait qu'aucun cours ne corresponde à vos
-                    critères de recherche. Essayez de modifier vos filtres ou
-                    votre recherche.
+                    Il semblerait qu'aucun cours ne corresponde à vos critères
+                    de recherche. Essayez de modifier vos filtres ou votre
+                    recherche.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
                     <Search className="w-4 h-4" />

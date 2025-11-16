@@ -24,7 +24,8 @@ export function useCourseLogic() {
     // State
     const [quizId, setQuizId] = useState<string>("");
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
-    const [isSummarySheetsVisible, setSummarySheetsVisible] = useState<boolean>(false);
+    const [isSummarySheetsVisible, setSummarySheetsVisible] =
+        useState<boolean>(false);
     const [selectedTab, setSelectedTabState] = useState<string>(tabFromUrl);
 
     // Wrapper to update both state and URL

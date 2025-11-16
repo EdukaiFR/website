@@ -106,14 +106,18 @@ export function FileUpload({
         // Check if adding these files would exceed the maximum
         const remainingSlots = MAX_FILES - selectedFiles.length;
         if (remainingSlots <= 0) {
-            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            showToast.warning(
+                `Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`
+            );
             return;
         }
 
         // Only take files up to the maximum
         const filesToAdd = files.slice(0, remainingSlots);
         if (files.length > remainingSlots) {
-            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+            showToast.warning(
+                `Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`
+            );
         }
 
         const newFiles = [...selectedFiles, ...filesToAdd];
@@ -145,14 +149,18 @@ export function FileUpload({
         // Check if adding these files would exceed the maximum
         const remainingSlots = MAX_FILES - selectedFiles.length;
         if (remainingSlots <= 0) {
-            showToast.warning(`Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`);
+            showToast.warning(
+                `Vous ne pouvez pas ajouter plus de ${MAX_FILES} fichiers.`
+            );
             return;
         }
 
         // Only take files up to the maximum
         const filesToAdd = files.slice(0, remainingSlots);
         if (files.length > remainingSlots) {
-            showToast.warning(`Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`);
+            showToast.warning(
+                `Seuls ${remainingSlots} fichier(s) peuvent être ajoutés (maximum ${MAX_FILES} fichiers).`
+            );
         }
 
         const newFiles = [...selectedFiles, ...filesToAdd];

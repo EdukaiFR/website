@@ -75,7 +75,8 @@ export function useBlobService() {
 
             return {
                 status: "failure",
-                message: "Une erreur est survenue lors de la suppression du fichier.",
+                message:
+                    "Une erreur est survenue lors de la suppression du fichier.",
             };
         }
     };

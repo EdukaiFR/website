@@ -95,6 +95,7 @@ export const ExamDialog = ({
     const onSubmit = async (data: ExamFormData) => {
         try {
             if (isEditing && exam?._id && updateExam) {
+                console.log("The id is: ", exam._id);
                 await updateExam(exam._id, data);
             } else {
                 await createExam(
@@ -178,8 +179,8 @@ export const ExamDialog = ({
                                             </div>
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Le nom de l'examen que tu
-                                            souhaites créer
+                                            Le nom de l'examen que tu souhaites
+                                            créer
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
                                     </FormItem>
@@ -206,8 +207,8 @@ export const ExamDialog = ({
                                             />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500 mt-2">
-                                            Ajoute des détails sur ce qu'il
-                                            faut réviser
+                                            Ajoute des détails sur ce qu'il faut
+                                            réviser
                                         </FormDescription>
                                         <FormMessage className="text-red-500 text-xs mt-1" />
                                     </FormItem>

@@ -29,7 +29,7 @@ type CourseData = {
 };
 
 export type HeaderProps = {
-    courseData: unknown;
+    courseData: CourseData;
     setSelectedTab: (tab: string) => void;
     selectedTab: string;
 };
@@ -45,11 +45,12 @@ export const Header = ({
 
     // Get display name: use username to match sidebar
     const getDisplayName = () => {
-        return user?.username || "Utilisateur";
+        return courseData?.author?.username || "Auteur inconnu";
     };
 
-    // Check if user is the owner (frontend fallback if backend isOwner is incorrect)
-    const isUserOwner = course.isOwner ||
+    // Check if user is the owner (+ frontend fallback if backend isOwner is incorrect)
+    const isUserOwner =
+        course.isOwner ||
         (user?.email && course.author?.username === user.email) ||
         (user?.username && course.author?.username === user.username);
 
@@ -74,41 +75,45 @@ export const Header = ({
                                 Cours
                             </p>
                             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight break-words">
-                                {course?.title || "OUIIII"}
+                                {course?.title || "Titre inconnu"}
                             </h1>
                         </div>
                     </div>
 
                     {/* Action Buttons - All on same line */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
-                        <Button
-                            onClick={() => {
-                                if (selectedTab === "quiz") {
-                                    setSelectedTab("overview");
-                                } else {
-                                    setSelectedTab("quiz");
-                                }
-                            }}
-                            className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm whitespace-nowrap"
-                        >
-                            {selectedTab === "quiz" ? (
-                                <>
-                                    <CircleStop className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                    <span className="hidden sm:inline">
-                                        Arrêter le quiz
-                                    </span>
-                                    <span className="sm:hidden">Arrêter</span>
-                                </>
-                            ) : (
-                                <>
-                                    <BicepsFlexed className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                    <span className="hidden sm:inline">
-                                        Lancer un quiz
-                                    </span>
-                                    <span className="sm:hidden">Quiz</span>
-                                </>
-                            )}
-                        </Button>
+                        {isUserOwner && (
+                            <Button
+                                onClick={() => {
+                                    if (selectedTab === "quiz") {
+                                        setSelectedTab("overview");
+                                    } else {
+                                        setSelectedTab("quiz");
+                                    }
+                                }}
+                                className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm whitespace-nowrap"
+                            >
+                                {selectedTab === "quiz" ? (
+                                    <>
+                                        <CircleStop className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                        <span className="hidden sm:inline">
+                                            Arrêter le quiz
+                                        </span>
+                                        <span className="sm:hidden">
+                                            Arrêter
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <BicepsFlexed className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                        <span className="hidden sm:inline">
+                                            Lancer un quiz
+                                        </span>
+                                        <span className="sm:hidden">Quiz</span>
+                                    </>
+                                )}
+                            </Button>
+                        )}
 
                         <Button
                             size="icon"
@@ -120,7 +125,11 @@ export const Header = ({
                         {isUserOwner && (
                             <Button
                                 size="icon"
-                                onClick={() => router.push(`/library/${course._id}/settings`)}
+                                onClick={() =>
+                                    router.push(
+                                        `/library/${course._id}/settings`
+                                    )
+                                }
                                 className="h-10 w-10 sm:h-12 sm:w-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex-shrink-0"
                             >
                                 <Settings className="w-4 h-4 sm:w-5 sm:h-5" />

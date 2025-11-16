@@ -6,7 +6,7 @@ import { Overview } from "@/components/course/sections/overview";
 import { SimilarCourses } from "@/components/course/sections/similar-courses";
 import { Statistics } from "@/components/course/sections/statistics";
 
-export const navBarConfig = [
+export const navBarConfig = (isPrivateView: boolean) => [
     { label: "Aperçu", tab: "overview", component: Overview },
     {
         label: "Fiches de révision",
@@ -21,5 +21,9 @@ export const navBarConfig = [
         tab: "similarCourses",
         component: SimilarCourses,
     },
-    { label: "Mes fichiers", tab: "myFiles", component: MyFiles },
+    {
+        label: isPrivateView ? "Mes fichiers" : "Fichiers",
+        tab: "myFiles",
+        component: MyFiles,
+    },
 ];

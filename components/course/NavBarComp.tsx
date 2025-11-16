@@ -1,4 +1,5 @@
 interface NavBarCompProps {
+    isPrivateView: boolean;
     tabs: Array<{
         label: string;
         tab: string;
@@ -9,6 +10,7 @@ interface NavBarCompProps {
 }
 
 export default function NavBarComp({
+    isPrivateView,
     tabs,
     selectedTab,
     setSelectedTab,
@@ -26,16 +28,21 @@ export default function NavBarComp({
         return mobileLabels[label] || label.slice(0, 6);
     };
 
+    const publicViewTabs = ["myFiles", "summarySheets"];
+    const displayedTabs = isPrivateView
+        ? tabs
+        : tabs.filter(t => publicViewTabs.includes(t.tab));
+
     return (
         <div className="w-full max-w-full rounded-2xl p-1 sm:p-2 overflow-hidden">
             {/* Mobile: Horizontal scroll with very compact tabs */}
             <div className="flex overflow-x-auto scrollbar-hide gap-1 sm:gap-2 w-full max-w-full pb-1">
-                {tabs.map(tab => (
+                {displayedTabs.map(tab => (
                     <button
                         key={tab.tab}
                         onClick={() => setSelectedTab(tab.tab)}
                         className={`
-              flex-shrink-0 px-1.5 sm:px-3 lg:px-4 xl:px-6 py-1.5 sm:py-3 rounded-lg sm:rounded-2xl 
+              flex-shrink-0 px-1.5 sm:px-3 lg:px-4 xl:px-6 py-1.5 sm:py-3 rounded-lg sm:rounded-2xl
               font-medium text-[10px] sm:text-sm lg:text-base transition-all duration-200 
               whitespace-nowrap min-w-0 max-w-[60px] sm:max-w-none
               ${

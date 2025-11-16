@@ -31,7 +31,10 @@ export type AddSummarySheetProps = {
     onUploadSuccess?: () => void;
 };
 
-export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetProps) => {
+export const AddSummarySheet = ({
+    courseId,
+    onUploadSuccess,
+}: AddSummarySheetProps) => {
     type FormData = z.infer<typeof formSchema>;
     const [isDragActive, setIsDragActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -73,19 +76,32 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
         const uploadResponse = await blobService.uploadFile(file, "summary");
 
         if (uploadResponse?.status !== "success") {
-            console.error(`[AddSummarySheet] ❌ Failed to upload file: ${file.name}`);
-            console.error(`[AddSummarySheet] Upload response status:`, uploadResponse?.status);
+            console.error(
+                `[AddSummarySheet] ❌ Failed to upload file: ${file.name}`
+            );
+            console.error(
+                `[AddSummarySheet] Upload response status:`,
+                uploadResponse?.status
+            );
             throw new Error("Upload failed");
         }
 
         const fileId = uploadResponse.items._id;
 
         // Step 2: Link the file to the course
-        const linkResponse = await courseService.addFileToCourse(courseId, fileId);
+        const linkResponse = await courseService.addFileToCourse(
+            courseId,
+            fileId
+        );
 
         if (linkResponse?.status !== "success") {
-            console.error(`[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`);
-            console.error(`[AddSummarySheet] Link response status:`, linkResponse?.status);
+            console.error(
+                `[AddSummarySheet] ❌ Failed to link file to course: ${file.name}`
+            );
+            console.error(
+                `[AddSummarySheet] Link response status:`,
+                linkResponse?.status
+            );
             throw new Error("Link failed");
         }
     };
@@ -102,7 +118,10 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
                     await processFile(data.files[i], i, data.files.length);
                     successCount++;
                 } catch (error) {
-                    console.error(`[AddSummarySheet] ❌ Error processing file "${data.files[i].name}":`, error);
+                    console.error(
+                        `[AddSummarySheet] ❌ Error processing file "${data.files[i].name}":`,
+                        error
+                    );
                     errorCount++;
                 }
             }
@@ -120,7 +139,9 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
                 if (onUploadSuccess) {
                     onUploadSuccess();
                 } else {
-                    console.warn("[AddSummarySheet] No onUploadSuccess callback provided");
+                    console.warn(
+                        "[AddSummarySheet] No onUploadSuccess callback provided"
+                    );
                 }
             }
 
@@ -134,7 +155,9 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
                 "[AddSummarySheet] ❌ Fatal error during upload process:",
                 error
             );
-            toast.error("Une erreur est survenue lors de l'upload des fichiers");
+            toast.error(
+                "Une erreur est survenue lors de l'upload des fichiers"
+            );
         } finally {
             setIsUploading(false);
         }
@@ -267,7 +290,9 @@ export const AddSummarySheet = ({ courseId, onUploadSuccess }: AddSummarySheetPr
 
                             <div className="flex flex-col gap-3 pt-4">
                                 <Button
-                                    disabled={!watchedFiles.length || isUploading}
+                                    disabled={
+                                        !watchedFiles.length || isUploading
+                                    }
                                     type="submit"
                                     className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >

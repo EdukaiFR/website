@@ -325,7 +325,8 @@ export function useCourseService() {
 
             return {
                 status: "failure",
-                message: "Une erreur est survenue lors de la récupération des cours publics.",
+                message:
+                    "Une erreur est survenue lors de la récupération des cours publics.",
             };
         }
     };

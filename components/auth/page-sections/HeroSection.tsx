@@ -32,13 +32,17 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 max-w-xl leading-relaxed">
                         Edukai génère des questions personnalisées à partir de
-                        tes cours en <span className="font-bold text-blue-600">20 secondes</span>.
+                        tes cours en{" "}
+                        <span className="font-bold text-blue-600">
+                            20 secondes
+                        </span>
+                        .
                     </p>
                 </div>
 
                 {/* Features List */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {features.map((feature) => (
+                    {features.map(feature => (
                         <div
                             key={feature.text}
                             className="flex items-center gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-2xl border border-blue-100/50 hover:bg-white/90 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group"

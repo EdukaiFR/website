@@ -6,7 +6,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
 import type { VisibilityType } from "@/lib/types/visibility";
 import { Visibility } from "@/lib/types/visibility";
-import { BookOpen, Calendar, Eye, GraduationCap, User, Globe, Lock } from "lucide-react";
+import {
+    BookOpen,
+    Calendar,
+    Eye,
+    GraduationCap,
+    User,
+    Globe,
+    Lock,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -141,7 +149,9 @@ export const CourseCard = ({
                         </div>
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={() => router.push(`/library/${id}/settings`)}
+                                onClick={() =>
+                                    router.push(`/library/${id}/settings`)
+                                }
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md transform hover:scale-105 ${
                                     visibility === Visibility.PUBLIC
                                         ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"

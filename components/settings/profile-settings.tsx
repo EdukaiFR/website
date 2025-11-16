@@ -199,8 +199,8 @@ export function ProfileSettings({
                                 className="h-11 border-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                             />
                             <p className="text-xs text-gray-500">
-                                L'adresse email ne peut pas être modifiée
-                                pour des raisons de sécurité.
+                                L'adresse email ne peut pas être modifiée pour
+                                des raisons de sécurité.
                             </p>
                         </div>
                     )}

@@ -150,8 +150,8 @@ export function EducationSettings({
                             </p>
                         )}
                         <p className="text-xs text-gray-500">
-                            Type d'établissement ou niveau général (ex:
-                            Lycée, Université, École supérieure).
+                            Type d'établissement ou niveau général (ex: Lycée,
+                            Université, École supérieure).
                         </p>
                     </div>
 

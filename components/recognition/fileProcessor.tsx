@@ -43,10 +43,7 @@ const FileProcessorComponent = ({
 
                     onTextRecognized(result.text);
                 } catch (error) {
-                    console.error(
-                        `Error processing file ${fileId}:`,
-                        error
-                    );
+                    console.error(`Error processing file ${fileId}:`, error);
                     fileToast.recognitionError();
                     hasProcessedRef.current = false; // Reset on error so it can be retried
                     // Call onError callback to remove file from list
@@ -80,10 +77,7 @@ const FileProcessorComponent = ({
     };
 
     return (
-        <span
-            className={getStatusClassName()}
-            data-file-id={fileId}
-        >
+        <span className={getStatusClassName()} data-file-id={fileId}>
             {getStatusText()}
         </span>
     );

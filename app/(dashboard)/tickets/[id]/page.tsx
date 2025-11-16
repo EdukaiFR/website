@@ -13,7 +13,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useIsAdmin, useRolePermissions, useTicket } from "@/hooks";
 import type { AddCommentRequest } from "@/lib/types/ticket";
-import { CommentVisibility as CommentVisibilityEnum, TicketPriority, TicketStatus } from "@/lib/types/ticket";
+import {
+    CommentVisibility as CommentVisibilityEnum,
+    TicketPriority,
+    TicketStatus,
+} from "@/lib/types/ticket";
 import { cn } from "@/lib/utils";
 import { useTicketService } from "@/services";
 import {
@@ -222,8 +226,8 @@ export default function TicketDetailPage() {
                                     Ticket non trouvé
                                 </h2>
                                 <p className="text-gray-600 mb-8">
-                                    Le ticket demandé n'existe pas ou
-                                    n'est plus accessible.
+                                    Le ticket demandé n'existe pas ou n'est plus
+                                    accessible.
                                 </p>
                                 <Button
                                     className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300"
@@ -817,7 +821,10 @@ export default function TicketDetailPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <label htmlFor="message-input" className="sr-only">
+                                        <label
+                                            htmlFor="message-input"
+                                            className="sr-only"
+                                        >
                                             Votre message
                                         </label>
                                         <Textarea

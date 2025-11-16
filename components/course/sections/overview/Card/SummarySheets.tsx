@@ -181,16 +181,17 @@ export const SummarySheets = ({
     const handleDownloadSummarySheets = async () => {
         try {
             if (!summary_sheets?.length) {
-                console.error(
-                    "No files available for download."
-                );
+                console.error("No files available for download.");
                 return;
             }
 
             const downloads = summary_sheets.map(async summary_sheet => {
                 try {
                     // Handle user-uploaded files
-                    if (summary_sheet.source === "file" && "name" in summary_sheet) {
+                    if (
+                        summary_sheet.source === "file" &&
+                        "name" in summary_sheet
+                    ) {
                         const link = document.createElement("a");
                         link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${summary_sheet._id}`;
                         link.download = summary_sheet.name;
@@ -201,7 +202,10 @@ export const SummarySheets = ({
                     }
 
                     // Handle AI-generated sheets
-                    if (summary_sheet.source === "ai" && "content" in summary_sheet) {
+                    if (
+                        summary_sheet.source === "ai" &&
+                        "content" in summary_sheet
+                    ) {
                         if (!summary_sheet.content) {
                             console.warn(
                                 "File without content ignored:",
@@ -229,20 +233,14 @@ export const SummarySheets = ({
                         a.remove();
                     }
                 } catch (error) {
-                    console.error(
-                        `Error during download:`,
-                        error
-                    );
+                    console.error(`Error during download:`, error);
                 }
             });
 
             // Wait for all downloads to complete
             await Promise.all(downloads);
         } catch (error) {
-            console.error(
-                "Error during download process:",
-                error
-            );
+            console.error("Error during download process:", error);
             toast("Erreur", {
                 description:
                     "Une erreur s'est produite lors du téléchargement.",
@@ -448,12 +446,26 @@ export const SummarySheets = ({
                                         <FileText className="w-8 h-8 text-blue-600" />
                                         <p className="text-2xl font-bold text-blue-600">
                                             {(() => {
-                                                const currentSheet = summary_sheets[modalSheetIndex];
-                                                if (currentSheet?.source === "file" && "name" in currentSheet) {
+                                                const currentSheet =
+                                                    summary_sheets[
+                                                        modalSheetIndex
+                                                    ];
+                                                if (
+                                                    currentSheet?.source ===
+                                                        "file" &&
+                                                    "name" in currentSheet
+                                                ) {
                                                     return currentSheet.name;
                                                 }
-                                                if (currentSheet?.source === "ai" && "title" in currentSheet) {
-                                                    return currentSheet.title || "Fiche de révision";
+                                                if (
+                                                    currentSheet?.source ===
+                                                        "ai" &&
+                                                    "title" in currentSheet
+                                                ) {
+                                                    return (
+                                                        currentSheet.title ||
+                                                        "Fiche de révision"
+                                                    );
                                                 }
                                                 return "Fiche de révision";
                                             })()}
@@ -464,24 +476,38 @@ export const SummarySheets = ({
                                 {/* Content - Scrollable */}
                                 <div className="flex-1 overflow-auto px-12 py-8">
                                     {(() => {
-                                        const currentSheet = summary_sheets[modalSheetIndex];
+                                        const currentSheet =
+                                            summary_sheets[modalSheetIndex];
 
                                         // For AI-generated sheets, display markdown content
-                                        if (currentSheet?.source === "ai" && "content" in currentSheet) {
+                                        if (
+                                            currentSheet?.source === "ai" &&
+                                            "content" in currentSheet
+                                        ) {
                                             return (
                                                 <div
                                                     className="prose prose-lg max-w-none"
                                                     dangerouslySetInnerHTML={{
-                                                        __html: marked.parse(currentSheet.content) as string,
+                                                        __html: marked.parse(
+                                                            currentSheet.content
+                                                        ) as string,
                                                     }}
                                                 />
                                             );
                                         }
 
                                         // For uploaded files, display preview or download option
-                                        if (currentSheet?.source === "file" && "contentType" in currentSheet) {
-                                            const isPDF = currentSheet.contentType === "application/pdf";
-                                            const isImage = currentSheet.contentType.startsWith("image/");
+                                        if (
+                                            currentSheet?.source === "file" &&
+                                            "contentType" in currentSheet
+                                        ) {
+                                            const isPDF =
+                                                currentSheet.contentType ===
+                                                "application/pdf";
+                                            const isImage =
+                                                currentSheet.contentType.startsWith(
+                                                    "image/"
+                                                );
 
                                             if (isPDF) {
                                                 return (
@@ -489,7 +515,9 @@ export const SummarySheets = ({
                                                         <iframe
                                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
                                                             className="w-full h-full border-0 rounded-lg"
-                                                            title={currentSheet.name}
+                                                            title={
+                                                                currentSheet.name
+                                                            }
                                                         />
                                                     </div>
                                                 );
@@ -500,7 +528,9 @@ export const SummarySheets = ({
                                                     <div className="flex items-center justify-center h-full">
                                                         <img
                                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
-                                                            alt={currentSheet.name}
+                                                            alt={
+                                                                currentSheet.name
+                                                            }
                                                             className="max-w-full max-h-full object-contain rounded-lg"
                                                         />
                                                     </div>
@@ -518,14 +548,20 @@ export const SummarySheets = ({
                                                             {currentSheet.name}
                                                         </p>
                                                         <p className="text-gray-600">
-                                                            {currentSheet.contentType}
+                                                            {
+                                                                currentSheet.contentType
+                                                            }
                                                         </p>
                                                     </div>
                                                     <Button
                                                         onClick={() => {
-                                                            const link = document.createElement("a");
+                                                            const link =
+                                                                document.createElement(
+                                                                    "a"
+                                                                );
                                                             link.href = `${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`;
-                                                            link.download = currentSheet.name;
+                                                            link.download =
+                                                                currentSheet.name;
                                                             link.click();
                                                         }}
                                                         className="h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6"
@@ -546,22 +582,24 @@ export const SummarySheets = ({
                                     {/* Pagination dots */}
                                     <div className="flex items-center gap-3 flex-1">
                                         {summary_sheets.length > 1 ? (
-                                            summary_sheets.map((sheet, index) => (
-                                                <button
-                                                    key={sheet._id}
-                                                    onClick={() =>
-                                                        setModalSheetIndex(
+                                            summary_sheets.map(
+                                                (sheet, index) => (
+                                                    <button
+                                                        key={sheet._id}
+                                                        onClick={() =>
+                                                            setModalSheetIndex(
+                                                                index
+                                                            )
+                                                        }
+                                                        className={`rounded-full transition-all duration-200 ${
+                                                            modalSheetIndex ===
                                                             index
-                                                        )
-                                                    }
-                                                    className={`rounded-full transition-all duration-200 ${
-                                                        modalSheetIndex ===
-                                                        index
-                                                            ? "w-10 h-3 bg-blue-600"
-                                                            : "w-3 h-3 bg-gray-300 hover:bg-gray-400"
-                                                    }`}
-                                                />
-                                            ))
+                                                                ? "w-10 h-3 bg-blue-600"
+                                                                : "w-3 h-3 bg-gray-300 hover:bg-gray-400"
+                                                        }`}
+                                                    />
+                                                )
+                                            )
                                         ) : (
                                             <div />
                                         )}
