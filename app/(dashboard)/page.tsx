@@ -87,7 +87,7 @@ export default function Home() {
             {/* Beautiful Header Section */}
             <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+                <div className="absolute inset-0 opacity-10"></div>
 
                 {/* Floating Elements */}
                 <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
