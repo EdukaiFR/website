@@ -106,7 +106,7 @@ export const SummarySheets = ({
             }
 
             // For AI-generated sheets, generate PDF from markdown
-            if (currentSheet.source === "ai" && "content" in currentSheet) {
+            if (currentSheet._id && "content" in currentSheet) {
                 const { generateMarkdownPdf } = await import(
                     "@/lib/summary-sheets/md2pdf"
                 );
@@ -481,8 +481,8 @@ export const SummarySheets = ({
 
                                         // For AI-generated sheets, display markdown content
                                         if (
-                                            currentSheet?.source === "ai" &&
-                                            "content" in currentSheet
+                                            currentSheet?._id &&
+                                            currentSheet?.content
                                         ) {
                                             return (
                                                 <div

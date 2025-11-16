@@ -12,7 +12,7 @@ import {
     Calendar,
     Download,
     DownloadCloud,
-    Eye,
+    // Eye,
     FileText,
     Grid,
     List,
@@ -44,7 +44,6 @@ export const SummarySheets = ({
     summarySheets,
     onRefresh,
 }: SummarySheetProps) => {
-
     const typedSummarySheets: SummarySheetData[] =
         summarySheets && summarySheets.length > 0 ? summarySheets : [];
 
@@ -71,9 +70,10 @@ export const SummarySheets = ({
         }));
     };
 
-    const filteredFiles = localSummarySheets.filter(file =>
-        file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        file.content?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredFiles = localSummarySheets.filter(
+        file =>
+            file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            file.content?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     useEffect(() => {
