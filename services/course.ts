@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Visibility } from "@/lib/types/visibility";
 
 export interface CourseService {
     createCourse: (
@@ -57,7 +58,10 @@ export interface CourseService {
         message: string;
         status: string;
     } | null>;
-    toggleShare: (courseId: string) => Promise<any>;
+    updateVisibility: (
+        courseId: string,
+        visibility: Visibility
+    ) => Promise<any>;
     getPublicCourses: () => Promise<any>;
 }
 
@@ -292,11 +296,14 @@ export function useCourseService() {
         }
     };
 
-    const toggleShare = async (courseId: string) => {
+    const updateVisibility = async (
+        courseId: string,
+        visibility: Visibility
+    ) => {
         try {
-            const response = await axios.post(
-                `${apiUrl}/courses/${courseId}/share`,
-                {},
+            const response = await axios.patch(
+                `${apiUrl}/courses/${courseId}/visibility`,
+                { visibility: visibility },
                 { withCredentials: true }
             );
 
@@ -357,7 +364,7 @@ export function useCourseService() {
         updateExamById,
         deleteExamById,
         getAllExams,
-        toggleShare,
+        updateVisibility,
         getPublicCourses,
     };
 }
