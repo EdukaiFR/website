@@ -191,7 +191,7 @@ export default function TicketDetailPage() {
             <AuthGuard>
                 <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                     {/* Decorative background elements */}
-                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+                    <div className="absolute inset-0 opacity-10"></div>
                     <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-20 left-20 w-56 h-56 bg-indigo-200/20 rounded-full blur-2xl"></div>
 
@@ -212,7 +212,7 @@ export default function TicketDetailPage() {
             <AuthGuard>
                 <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                     {/* Decorative background elements */}
-                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+                    <div className="absolute inset-0 opacity-10"></div>
                     <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-20 left-20 w-56 h-56 bg-indigo-200/20 rounded-full blur-2xl"></div>
 
@@ -252,7 +252,7 @@ export default function TicketDetailPage() {
         <AuthGuard>
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white relative overflow-hidden">
                 {/* Decorative background elements */}
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+                <div className="absolute inset-0 opacity-10"></div>
                 <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-20 left-20 w-56 h-56 bg-indigo-200/20 rounded-full blur-2xl"></div>
 
