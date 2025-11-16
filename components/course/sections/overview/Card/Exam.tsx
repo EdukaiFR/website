@@ -21,7 +21,7 @@ export type ExamProps = {
 };
 
 type ExamData = {
-    examId: number;
+    _id: number;
     title: string;
     description?: string;
     date: Date;
@@ -138,7 +138,7 @@ export const Exam = ({
 
     // Convert currentExam to match the ExamCard props format (only after null check)
     const formattedExam = {
-        _id: currentExam.examId?.toString() || "temp-id",
+        _id: currentExam._id?.toString() || "temp-id",
         title: currentExam.title || "",
         description: currentExam.description || "",
         date: currentExam.date,
