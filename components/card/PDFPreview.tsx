@@ -18,69 +18,69 @@ export const PDFPreview = ({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        const generatePDFPreview = async () => {
-            try {
-                setLoading(true);
-                setError(false);
+    const generatePDFPreview = async () => {
+        try {
+            setLoading(true);
+            setError(false);
 
-                // Dynamically import pdfjs-dist only on client side
-                const pdfjsLib = await import("pdfjs-dist");
+            // Dynamically import pdfjs-dist only on client side
+            const pdfjsLib = await import("pdfjs-dist");
 
-                // Configure PDF.js worker
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+            // Configure PDF.js worker
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-                // Fetch the PDF file
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-                const response = await fetch(`${apiUrl}/blob/files/${fileId}`, {
-                    credentials: "include",
-                });
+            // Fetch the PDF file
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            const response = await fetch(`${apiUrl}/blob/files/${fileId}`, {
+                credentials: "include",
+            });
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch PDF");
-                }
-
-                const blob = await response.blob();
-                const arrayBuffer = await blob.arrayBuffer();
-
-                // Load PDF with PDF.js
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer })
-                    .promise;
-                const page = await pdf.getPage(1); // Get first page
-
-                // Set scale for better quality
-                const scale = 1.5;
-                const viewport = page.getViewport({ scale });
-
-                // Create canvas
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-
-                if (!context) {
-                    throw new Error("Could not get canvas context");
-                }
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                // Render PDF page to canvas
-                await page.render({
-                    canvasContext: context,
-                    viewport: viewport,
-                    canvas: canvas,
-                }).promise;
-
-                // Convert canvas to image URL
-                const imageUrl = canvas.toDataURL("image/png");
-                setPreviewUrl(imageUrl);
-                setLoading(false);
-            } catch (err) {
-                console.error("[PDFPreview] Error generating preview:", err);
-                setError(true);
-                setLoading(false);
+            if (!response.ok) {
+                throw new Error("Failed to fetch PDF");
             }
-        };
 
+            const blob = await response.blob();
+            const arrayBuffer = await blob.arrayBuffer();
+
+            // Load PDF with PDF.js
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer })
+                .promise;
+            const page = await pdf.getPage(1); // Get first page
+
+            // Set scale for better quality
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale });
+
+            // Create canvas
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+
+            if (!context) {
+                throw new Error("Could not get canvas context");
+            }
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page to canvas
+            await page.render({
+                canvasContext: context,
+                viewport: viewport,
+                canvas: canvas,
+            }).promise;
+
+            // Convert canvas to image URL
+            const imageUrl = canvas.toDataURL("image/png");
+            setPreviewUrl(imageUrl);
+            setLoading(false);
+        } catch (err) {
+            console.error("[PDFPreview] Error generating preview:", err);
+            setError(true);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         // Only generate preview for PDFs and only on client side
         if (
             globalThis.window !== undefined &&
