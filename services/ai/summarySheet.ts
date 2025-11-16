@@ -1,10 +1,11 @@
+import { Visibility } from "@/lib/types/visibility";
 import axios from "axios";
 
 export interface SummarySheetService {
     generateSheet: (recognizedText: string[]) => Promise<any>;
     getSheetById: (sheetId: string) => Promise<any>;
     deleteSheetById: (sheetId: string) => Promise<any>;
-    toggleShare: (sheetId: string) => Promise<any>;
+    updateVisibility: (sheetId: string, visibility: Visibility) => Promise<any>;
     getPublicSheets: () => Promise<any>;
 }
 
@@ -68,11 +69,16 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    const toggleShare = async (sheetId: string) => {
+    // Unused for now (may be useful in the future if we decide to share a
+    // summary sheet but not its course, or the other way around)
+    const updateVisibility = async (
+        sheetId: string,
+        visibility: Visibility
+    ) => {
         try {
-            const response = await axios.post(
-                `${apiUrl}/summary-sheets/${sheetId}/share`,
-                {},
+            const response = await axios.patch(
+                `${apiUrl}/summary-sheets/${sheetId}/visibility`,
+                { visibility: visibility },
                 { withCredentials: true }
             );
 
@@ -111,7 +117,7 @@ export function useSummarySheetService(): SummarySheetService {
         generateSheet,
         getSheetById,
         deleteSheetById,
-        toggleShare,
+        updateVisibility,
         getPublicSheets,
     };
 }

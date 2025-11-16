@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Header } from "@/components/course/Header";
 import { LoadingState } from "@/components/course/components";
+import { Button } from "@/components/ui/button";
 import { useCourseLogic } from "@/hooks/course";
 import { Visibility } from "@/lib/types/visibility";
 import { useCourseService } from "@/services";
-import { ArrowLeft, Globe, Lock, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Globe, Loader2, Lock, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ export default function CourseSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [isPublic, setIsPublic] = useState(false);
 
-    const { toggleShare } = useCourseService();
+    const { updateVisibility } = useCourseService();
 
     // Initialize isPublic from courseData
     useEffect(() => {
@@ -48,7 +48,10 @@ export default function CourseSettingsPage() {
 
         setSaving(true);
         try {
-            const response = await toggleShare(courseId);
+            const response = await updateVisibility(
+                courseId,
+                isPublic ? Visibility.PUBLIC : Visibility.PRIVATE
+            );
 
             if (response.status === "success") {
                 toast.success(
