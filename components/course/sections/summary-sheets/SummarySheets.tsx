@@ -59,9 +59,7 @@ export const SummarySheets = ({
         return sheets.map((file, index) => ({
             ...file,
             name:
-                file.name?.trim().length > 0
-                    ? file.name
-                    : `Fiche ${index + 1}`,
+                file.name?.trim().length > 0 ? file.name : `Fiche ${index + 1}`,
         }));
     };
 
@@ -326,7 +324,8 @@ export const SummarySheets = ({
                                 }`}
                                 style={{
                                     animationDelay: `${index * 50}ms`,
-                                    animation: "fadeInUp 0.5s ease-out forwards",
+                                    animation:
+                                        "fadeInUp 0.5s ease-out forwards",
                                 }}
                             >
                                 {viewMode === "grid" ? (
