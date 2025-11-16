@@ -32,6 +32,11 @@ export interface SummarySheetProps {
     onRefresh?: () => void;
 }
 
+// TODO: remove the whole file.source logic for summary sheets, I'm not sure
+// we need that property, especially because the backend just returns 1 type of
+// entity from the /summary-sheets endpoint, so it only creates unnecessary complexity.
+// Summary sheets should be one and only one entity : the LLM generated markdown documents
+
 export const SummarySheets = ({
     isPrivateView,
     user_id,
@@ -39,6 +44,7 @@ export const SummarySheets = ({
     summarySheets,
     onRefresh,
 }: SummarySheetProps) => {
+
     const typedSummarySheets: SummarySheetData[] =
         summarySheets && summarySheets.length > 0 ? summarySheets : [];
 
@@ -55,24 +61,24 @@ export const SummarySheets = ({
     const blobService = useBlobService();
     const { error, deleteSheetById } = useSheet(summarySheetsService);
 
-    const filteredFiles = localSummarySheets.filter(file => {
-        const searchLower = searchTerm.toLowerCase();
+    const nameFiles = (sheets: SummarySheetData[]) => {
+        return sheets.map((file, index) => ({
+            ...file,
+            name:
+                file.name && file.name.trim().length > 0
+                    ? file.name
+                    : `Fiche ${index + 1}`,
+        }));
+    };
 
-        // For AI-generated sheets, search in content
-        if (file.source === "ai" && "content" in file) {
-            return file.content.toLowerCase().includes(searchLower);
-        }
-
-        // For user-uploaded files, search in name
-        if (file.source === "file" && "name" in file) {
-            return file.name.toLowerCase().includes(searchLower);
-        }
-
-        return false;
-    });
+    const filteredFiles = localSummarySheets.filter(file =>
+        file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        file.content?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
-        setLocalSummarySheets(typedSummarySheets);
+        const named = nameFiles(typedSummarySheets);
+        setLocalSummarySheets(named);
     }, [summarySheets]);
 
     const handleDelete = async (file: SummarySheetData) => {
@@ -125,10 +131,7 @@ export const SummarySheets = ({
             return;
         }
 
-        // For AI-generated sheets, generate PDF from markdown
-        if (file.source === "ai" && "content" in file) {
-            await generateMarkdownPdf(course_id, file.content);
-        }
+        await generateMarkdownPdf(course_id, file.content);
     };
 
     function delay(ms: number) {
@@ -150,10 +153,7 @@ export const SummarySheets = ({
                     return;
                 }
 
-                // For AI-generated sheets, generate PDF from markdown
-                if (file.source === "ai" && "content" in file) {
-                    await generateMarkdownPdf(course_id, file.content);
-                }
+                await generateMarkdownPdf(course_id, file.content);
             });
 
             await Promise.all(downloadPromises);
@@ -338,7 +338,7 @@ export const SummarySheets = ({
                                                 <FileText className="w-7 h-7 text-blue-600" />
                                             </div>
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                                                <Button
+                                                {/* <Button
                                                     size="sm"
                                                     variant="ghost"
                                                     className="h-9 w-9 p-0 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg shadow-sm transition-all duration-200"
@@ -347,7 +347,7 @@ export const SummarySheets = ({
                                                     }
                                                 >
                                                     <Eye className="w-4 h-4" />
-                                                </Button>
+                                                </Button> */}
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
@@ -373,7 +373,7 @@ export const SummarySheets = ({
 
                                         <div className="flex-1">
                                             <h3 className="font-bold text-gray-800 mb-4 line-clamp-2 text-lg">
-                                                Fiche {index + 1}
+                                                {file.name}
                                             </h3>
 
                                             <div className="space-y-2.5 text-sm text-gray-600">
@@ -425,7 +425,7 @@ export const SummarySheets = ({
                                         </div>
 
                                         <div className="flex gap-2 flex-shrink-0">
-                                            <Button
+                                            {/* <Button
                                                 size="sm"
                                                 variant="ghost"
                                                 className="h-10 w-10 p-0 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg shadow-sm transition-all duration-200"
@@ -434,7 +434,7 @@ export const SummarySheets = ({
                                                 }
                                             >
                                                 <Eye className="w-4 h-4" />
-                                            </Button>
+                                            </Button> */}
                                             <Button
                                                 size="sm"
                                                 variant="ghost"

@@ -1,9 +1,13 @@
 import type { VisibilityType } from "./visibility";
 
+// TODO: refactor this / see if we really need all these different types
+
 // Base interface for common fields
 interface BaseSummarySheet {
     _id: string;
     author: string;
+    name: string;
+    content: string;
     createdAt: string;
     type: "ai-generated" | "user-uploaded";
     source: "ai" | "file";
@@ -23,7 +27,6 @@ interface AISummarySheet extends BaseSummarySheet {
 interface UploadedFileSummarySheet extends BaseSummarySheet {
     type: "user-uploaded";
     source: "file";
-    name: string;
     contentType: string;
     fileType: string;
     size?: number;
