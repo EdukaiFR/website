@@ -4,7 +4,11 @@ interface FeatureCardProps {
     readonly description: string;
 }
 
-export function FeatureCard({ color, title, description }: Readonly<FeatureCardProps>) {
+export function FeatureCard({
+    color,
+    title,
+    description,
+}: Readonly<FeatureCardProps>) {
     const colorClasses = {
         yellow: {
             bg: "bg-yellow-400/20",

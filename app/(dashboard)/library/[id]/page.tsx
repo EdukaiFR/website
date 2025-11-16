@@ -49,9 +49,10 @@ export default function MyCourses() {
 
             {selectedTab !== "quiz" && (
                 <NavBarComp
+                    isPrivateView={courseData.isOwner || false}
                     setSelectedTab={setSelectedTab}
                     tabs={
-                        navBarConfig as Array<{
+                        navBarConfig(courseData.isOwner || false) as Array<{
                             label: string;
                             tab: string;
                             component: React.ComponentType<
@@ -64,6 +65,7 @@ export default function MyCourses() {
             )}
 
             <CourseContentRenderer
+                isPrivateView={courseData.isOwner || false}
                 selectedTab={selectedTab}
                 courseId={courseId}
                 courseTitle={courseData?.title}

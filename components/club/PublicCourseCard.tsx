@@ -47,9 +47,7 @@ const getLevelColor = (level: string) => {
         Terminale: "bg-pink-50 text-pink-700",
         TERMIIIIINALE: "bg-pink-50 text-pink-700",
     };
-    return (
-        colors[level as keyof typeof colors] || "bg-gray-50 text-gray-700"
-    );
+    return colors[level as keyof typeof colors] || "bg-gray-50 text-gray-700";
 };
 
 export const PublicCourseCard = ({

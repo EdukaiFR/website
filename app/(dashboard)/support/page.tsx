@@ -417,8 +417,8 @@ export default function SupportPage() {
                                 Aucune question trouvée
                             </h3>
                             <p className="text-gray-500 text-sm lg:text-base">
-                                Essaie avec d'autres mots-clés ou contacte
-                                notre équipe.
+                                Essaie avec d'autres mots-clés ou contacte notre
+                                équipe.
                             </p>
                         </div>
                     ) : (

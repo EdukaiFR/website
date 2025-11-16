@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    useMemo,
+} from "react";
 import { useSession } from "@/hooks/useSession";
 import { UserProfile, getUserProfileAction } from "@/lib/actions/user";
 

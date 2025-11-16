@@ -9,7 +9,11 @@ interface PDFPreviewProps {
     contentType: string;
 }
 
-export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) => {
+export const PDFPreview = ({
+    fileId,
+    fileName,
+    contentType,
+}: PDFPreviewProps) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -40,7 +44,8 @@ export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) =
                 const arrayBuffer = await blob.arrayBuffer();
 
                 // Load PDF with PDF.js
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer })
+                    .promise;
                 const page = await pdf.getPage(1); // Get first page
 
                 // Set scale for better quality
@@ -77,7 +82,10 @@ export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) =
         };
 
         // Only generate preview for PDFs and only on client side
-        if (globalThis.window !== undefined && contentType === "application/pdf") {
+        if (
+            globalThis.window !== undefined &&
+            contentType === "application/pdf"
+        ) {
             generatePDFPreview();
         } else if (contentType !== "application/pdf") {
             setLoading(false);
@@ -88,7 +96,9 @@ export const PDFPreview = ({ fileId, fileName, contentType }: PDFPreviewProps) =
         return (
             <div className="flex flex-col items-center justify-center h-full gap-4">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                <p className="text-sm text-gray-500">Génération de l'aperçu...</p>
+                <p className="text-sm text-gray-500">
+                    Génération de l'aperçu...
+                </p>
             </div>
         );
     }

@@ -31,7 +31,9 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
     const getFileExtension = () => {
         if (isUploadedFile && "name" in summary_sheet) {
             const parts = summary_sheet.name.split(".");
-            return parts.length > 1 ? parts.at(-1)?.toUpperCase() || "FILE" : "FILE";
+            return parts.length > 1
+                ? parts.at(-1)?.toUpperCase() || "FILE"
+                : "FILE";
         }
         return "";
     };
@@ -63,8 +65,14 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                     {isUploadedFile ? (
                         // Preview for uploaded files
                         (() => {
-                            const contentType = "contentType" in summary_sheet ? summary_sheet.contentType : "";
-                            const fileName = "name" in summary_sheet ? summary_sheet.name : "";
+                            const contentType =
+                                "contentType" in summary_sheet
+                                    ? summary_sheet.contentType
+                                    : "";
+                            const fileName =
+                                "name" in summary_sheet
+                                    ? summary_sheet.name
+                                    : "";
 
                             // PDF preview
                             if (contentType === "application/pdf") {
@@ -118,10 +126,12 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                             <div
                                 className="prose prose-sm max-w-none text-sm leading-relaxed overflow-hidden h-full"
                                 style={{
-                                    fontSize: '14px',
-                                    lineHeight: '1.6',
+                                    fontSize: "14px",
+                                    lineHeight: "1.6",
                                 }}
-                                dangerouslySetInnerHTML={{ __html: htmlContent }}
+                                dangerouslySetInnerHTML={{
+                                    __html: htmlContent,
+                                }}
                             />
                             <div className="absolute bottom-16 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                         </>
@@ -131,7 +141,9 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                 {/* Footer */}
                 <div className="px-4 py-2 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                     <p className="text-[10px] text-gray-400 text-center">
-                        {isUploadedFile ? "Fichier uploadé" : "Aperçu de la fiche"}
+                        {isUploadedFile
+                            ? "Fichier uploadé"
+                            : "Aperçu de la fiche"}
                     </p>
                 </div>
             </div>

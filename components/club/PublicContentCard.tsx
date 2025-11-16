@@ -39,13 +39,15 @@ export const PublicContentCard = ({
             iconBg: "bg-blue-100 group-hover:bg-blue-200",
             iconText: "text-blue-600",
             titleHover: "group-hover:text-blue-600",
-            buttonHover: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200",
+            buttonHover:
+                "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200",
         },
         purple: {
             iconBg: "bg-purple-100 group-hover:bg-purple-200",
             iconText: "text-purple-600",
             titleHover: "group-hover:text-purple-600",
-            buttonHover: "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200",
+            buttonHover:
+                "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200",
         },
     };
 
@@ -59,12 +61,18 @@ export const PublicContentCard = ({
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className={`p-1.5 ${colors.iconBg} rounded-lg transition-colors`}>
-                                    <Icon className={`w-4 h-4 ${colors.iconText}`} />
+                                <div
+                                    className={`p-1.5 ${colors.iconBg} rounded-lg transition-colors`}
+                                >
+                                    <Icon
+                                        className={`w-4 h-4 ${colors.iconText}`}
+                                    />
                                 </div>
                                 {badges}
                             </div>
-                            <h3 className={`text-lg font-semibold text-gray-900 ${colors.titleHover} transition-colors duration-300 leading-tight lg:truncate`}>
+                            <h3
+                                className={`text-lg font-semibold text-gray-900 ${colors.titleHover} transition-colors duration-300 leading-tight lg:truncate`}
+                            >
                                 {title}
                             </h3>
                         </div>

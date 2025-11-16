@@ -80,8 +80,7 @@ export function SubscriptionSettings({
                                         expérience optimale à tous nos
                                         utilisateurs Beta, un système de
                                         limitation est en place sur
-                                        l'utilisation des fonctionnalités
-                                        IA.
+                                        l'utilisation des fonctionnalités IA.
                                     </p>
                                 </div>
                             </div>
@@ -189,8 +188,8 @@ export function SubscriptionSettings({
                                 Aidez-nous à améliorer Edukai
                             </h4>
                             <p className="text-sm text-green-700 mb-2">
-                                Vos retours sont précieux ! N'hésitez pas à
-                                nous faire part de vos suggestions et des bugs
+                                Vos retours sont précieux ! N'hésitez pas à nous
+                                faire part de vos suggestions et des bugs
                                 rencontrés pendant cette phase Beta.
                             </p>
                             <p className="text-sm text-green-800 font-medium">

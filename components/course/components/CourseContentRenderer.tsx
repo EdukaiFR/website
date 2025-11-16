@@ -16,6 +16,7 @@ type Exam = {
 };
 
 interface CourseContentRendererProps {
+    isPrivateView: boolean;
     selectedTab: string;
     courseId: string;
     courseTitle?: string;
@@ -41,6 +42,7 @@ interface CourseContentRendererProps {
 }
 
 export function CourseContentRenderer({
+    isPrivateView,
     selectedTab,
     courseId,
     courseTitle,
@@ -63,6 +65,7 @@ export function CourseContentRenderer({
         <div className="flex-1 min-h-0 w-full max-w-full">
             {selectedTab === "overview" && (
                 <Overview
+                    isPrivateView={isPrivateView}
                     overview={null}
                     course_id={courseId}
                     course_title={courseTitle}
@@ -84,6 +87,7 @@ export function CourseContentRenderer({
             )}
             {selectedTab === "summarySheets" && (
                 <CourseSummarySheets
+                    isPrivateView={isPrivateView}
                     user_id={storageUserId}
                     course_id={courseId}
                     summarySheets={summarySheetsData}

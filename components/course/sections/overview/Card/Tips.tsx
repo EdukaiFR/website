@@ -41,8 +41,8 @@ export const Tips = ({ tips }: TipsProps) => {
                             Bientôt disponible
                         </p>
                         <p className="text-xs text-amber-600">
-                            Les astuces arriveront prochainement pour t'aider dans
-                            tes révisions.
+                            Les astuces arriveront prochainement pour t'aider
+                            dans tes révisions.
                         </p>
                     </div>
                 </div>

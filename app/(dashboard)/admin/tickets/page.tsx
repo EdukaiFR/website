@@ -223,7 +223,8 @@ export default function AdminTicketsPage() {
 
     // Get empty state message based on active filters
     const getEmptyStateMessage = () => {
-        const hasFilters = searchTerm || statusFilter !== "all" || priorityFilter !== "all";
+        const hasFilters =
+            searchTerm || statusFilter !== "all" || priorityFilter !== "all";
         if (hasFilters) {
             return "Aucun ticket ne correspond à vos critères de recherche.";
         }
@@ -231,7 +232,8 @@ export default function AdminTicketsPage() {
     };
 
     // Check if filters are active
-    const hasActiveFilters = searchTerm || statusFilter !== "all" || priorityFilter !== "all";
+    const hasActiveFilters =
+        searchTerm || statusFilter !== "all" || priorityFilter !== "all";
 
     // Don't render anything if still loading
     if (session.loading) {
@@ -396,16 +398,19 @@ export default function AdminTicketsPage() {
                 <div className="space-y-4">
                     {isLoading ? (
                         // Loading skeleton
-                        Array.from({ length: LOADING_SKELETON_COUNT }, (_, i) => (
-                            <Card
-                                key={`skeleton-loading-${i}`}
-                                className="border-0 shadow-lg animate-pulse"
-                            >
-                                <CardContent className="p-4 sm:p-6">
-                                    <div className="h-32 bg-gray-200 rounded"></div>
-                                </CardContent>
-                            </Card>
-                        ))
+                        Array.from(
+                            { length: LOADING_SKELETON_COUNT },
+                            (_, i) => (
+                                <Card
+                                    key={`skeleton-loading-${i}`}
+                                    className="border-0 shadow-lg animate-pulse"
+                                >
+                                    <CardContent className="p-4 sm:p-6">
+                                        <div className="h-32 bg-gray-200 rounded"></div>
+                                    </CardContent>
+                                </Card>
+                            )
+                        )
                     ) : tickets.length === 0 ? (
                         // Empty state
                         <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">

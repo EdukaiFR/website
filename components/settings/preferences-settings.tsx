@@ -298,9 +298,8 @@ export function PreferencesSettings({
                                                 </label>
                                                 <p className="text-xs text-gray-500 break-words">
                                                     Aider à améliorer
-                                                    l'application en
-                                                    partageant des données
-                                                    anonymes
+                                                    l'application en partageant
+                                                    des données anonymes
                                                 </p>
                                             </div>
                                             <div className="flex-shrink-0">

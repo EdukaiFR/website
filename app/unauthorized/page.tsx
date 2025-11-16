@@ -19,15 +19,15 @@ export default function UnauthorizedPage() {
                     <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                         <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
                         <p className="text-sm text-amber-800">
-                            Vous n'avez pas les permissions nécessaires
-                            pour accéder à cette page.
+                            Vous n'avez pas les permissions nécessaires pour
+                            accéder à cette page.
                         </p>
                     </div>
 
                     <p className="text-gray-600 mb-8">
                         Cette section est réservée aux administrateurs. Si vous
-                        pensez qu'il s'agit d'une erreur,
-                        contactez votre administrateur système.
+                        pensez qu'il s'agit d'une erreur, contactez votre
+                        administrateur système.
                     </p>
 
                     <div className="space-y-3">

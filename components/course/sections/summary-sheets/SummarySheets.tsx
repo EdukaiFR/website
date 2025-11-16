@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { AddSummarySheet } from "./AddSummarySheet";
 
 export interface SummarySheetProps {
+    isPrivateView: boolean;
     user_id: string;
     course_id: string;
     summarySheets: SummarySheetData[] | [];
@@ -32,6 +33,7 @@ export interface SummarySheetProps {
 }
 
 export const SummarySheets = ({
+    isPrivateView,
     user_id,
     course_id,
     summarySheets,
@@ -90,14 +92,18 @@ export const SummarySheets = ({
                 setLocalSummarySheets(prevSheets =>
                     prevSheets.filter(sheet => sheet._id !== file._id)
                 );
-                toast.success(response.message || "Fichier supprimé avec succès");
+                toast.success(
+                    response.message || "Fichier supprimé avec succès"
+                );
 
                 // Refresh the list from backend
                 if (onRefresh) {
                     onRefresh();
                 }
             } else {
-                toast.error(response?.message || "Erreur lors de la suppression");
+                toast.error(
+                    response?.message || "Erreur lors de la suppression"
+                );
             }
         } catch (error) {
             console.error("[SummarySheets] Error in handleDelete:", error);
@@ -184,7 +190,6 @@ export const SummarySheets = ({
         }
     };
 
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("fr-FR", {
             day: "numeric",
@@ -235,7 +240,12 @@ export const SummarySheets = ({
                                 </span>
                             </Button>
                         )}
-                        <AddSummarySheet courseId={course_id} onUploadSuccess={onRefresh} />
+                        {isPrivateView && (
+                            <AddSummarySheet
+                                courseId={course_id}
+                                onUploadSuccess={onRefresh}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -297,7 +307,12 @@ export const SummarySheets = ({
                                     ? "Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers."
                                     : "Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage."}
                             </p>
-                            {!searchTerm && <AddSummarySheet courseId={course_id} onUploadSuccess={onRefresh} />}
+                            {!searchTerm && (
+                                <AddSummarySheet
+                                    courseId={course_id}
+                                    onUploadSuccess={onRefresh}
+                                />
+                            )}
                         </div>
                     </div>
                 ) : (
@@ -312,9 +327,7 @@ export const SummarySheets = ({
                             <div
                                 key={file._id}
                                 className={`bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 shadow-xl hover:shadow-2xl transition-all duration-300 group ${
-                                    viewMode === "grid"
-                                        ? "p-6"
-                                        : "p-4"
+                                    viewMode === "grid" ? "p-6" : "p-4"
                                 }`}
                             >
                                 {viewMode === "grid" ? (

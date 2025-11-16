@@ -42,15 +42,17 @@ export default function Home() {
                 if (response && "items" in response) {
                     const courses = response.items as CourseData[];
                     // Sort by update date (most recent first) and limit to 4
-                    const sortedCourses = courses.toSorted((a, b) => {
-                        const dateA = new Date(
-                            a.updatedAt || a.createdAt || 0
-                        ).getTime();
-                        const dateB = new Date(
-                            b.updatedAt || b.createdAt || 0
-                        ).getTime();
-                        return dateB - dateA;
-                    }).slice(0, 4);
+                    const sortedCourses = courses
+                        .toSorted((a, b) => {
+                            const dateA = new Date(
+                                a.updatedAt || a.createdAt || 0
+                            ).getTime();
+                            const dateB = new Date(
+                                b.updatedAt || b.createdAt || 0
+                            ).getTime();
+                            return dateB - dateA;
+                        })
+                        .slice(0, 4);
                     setRecentCourses(sortedCourses);
                 }
             } catch (error) {
@@ -261,8 +263,9 @@ export default function Home() {
                                                         Aucun examen prévu
                                                     </span>
                                                     <span className="text-gray-600 text-xs">
-                                                        Ajoute des examens dans tes
-                                                        cours pour les voir ici
+                                                        Ajoute des examens dans
+                                                        tes cours pour les voir
+                                                        ici
                                                     </span>
                                                 </div>
                                             </div>
@@ -283,7 +286,8 @@ export default function Home() {
                                             : "text-orange-600";
 
                                         const getDaysLeftText = () => {
-                                            if (daysLeft === 0) return "Aujourd'hui";
+                                            if (daysLeft === 0)
+                                                return "Aujourd'hui";
                                             if (daysLeft === 1) return "Demain";
                                             return `Dans ${daysLeft} jours`;
                                         };

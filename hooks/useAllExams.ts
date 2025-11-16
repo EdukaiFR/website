@@ -35,7 +35,11 @@ export function useAllExams() {
                 const now = new Date();
                 const upcomingExams = exams
                     .filter((exam: ExamData) => new Date(exam.date) >= now)
-                    .sort((a: ExamData, b: ExamData) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    .sort(
+                        (a: ExamData, b: ExamData) =>
+                            new Date(a.date).getTime() -
+                            new Date(b.date).getTime()
+                    );
 
                 setAllExams(upcomingExams);
             } catch (error) {

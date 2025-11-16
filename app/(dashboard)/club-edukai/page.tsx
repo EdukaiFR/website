@@ -2,7 +2,18 @@
 
 import { PublicCourseCard } from "@/components/club/PublicCourseCard";
 import { useCourseService } from "@/services";
-import { BookOpen, Calendar, Filter, Loader2, Search, Star, Trophy, UserPlus, Users, X } from "lucide-react";
+import {
+    BookOpen,
+    Calendar,
+    Filter,
+    Loader2,
+    Search,
+    Star,
+    Trophy,
+    UserPlus,
+    Users,
+    X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PublicCourse {
@@ -31,16 +42,27 @@ export default function ClubEdukaiPage() {
     const { getPublicCourses } = useCourseService();
 
     // Extract unique subjects and levels from courses
-    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort((a, b) => a.localeCompare(b, 'fr'));
-    const levels = Array.from(new Set(courses.map(c => c.level))).sort((a, b) => a.localeCompare(b, 'fr'));
+    const subjects = Array.from(new Set(courses.map(c => c.subject))).sort(
+        (a, b) => a.localeCompare(b, "fr")
+    );
+    const levels = Array.from(new Set(courses.map(c => c.level))).sort((a, b) =>
+        a.localeCompare(b, "fr")
+    );
 
     // Filter courses based on search and filters
     const filteredCourses = courses.filter(course => {
-        const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            course.author.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            course.author.lastName.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesSubject = selectedSubject === "all" || course.subject === selectedSubject;
-        const matchesLevel = selectedLevel === "all" || course.level === selectedLevel;
+        const matchesSearch =
+            course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            course.author.firstName
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+            course.author.lastName
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+        const matchesSubject =
+            selectedSubject === "all" || course.subject === selectedSubject;
+        const matchesLevel =
+            selectedLevel === "all" || course.level === selectedLevel;
 
         return matchesSearch && matchesSubject && matchesLevel;
     });
@@ -65,7 +87,10 @@ export default function ClubEdukaiPage() {
         return courses.length === 0 ? "Aucun cours public" : "Aucun résultat";
     };
 
-    const hasActiveFilters = searchQuery !== "" || selectedSubject !== "all" || selectedLevel !== "all";
+    const hasActiveFilters =
+        searchQuery !== "" ||
+        selectedSubject !== "all" ||
+        selectedLevel !== "all";
 
     // Render courses content based on loading and filtered courses state
     const renderCoursesContent = () => {
@@ -93,7 +118,7 @@ export default function ClubEdukaiPage() {
 
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCourses.map((course) => (
+                {filteredCourses.map(course => (
                     <PublicCourseCard
                         key={course._id}
                         id={course._id}
@@ -161,10 +186,9 @@ export default function ClubEdukaiPage() {
                             </h1>
 
                             <p className="text-base lg:text-lg text-blue-100 mb-8 max-w-2xl">
-                                Rejoignez une communauté passionnée
-                                d'apprenants et développez vos compétences
-                                ensemble dans un environnement collaboratif et
-                                bienveillant.
+                                Rejoignez une communauté passionnée d'apprenants
+                                et développez vos compétences ensemble dans un
+                                environnement collaboratif et bienveillant.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -258,9 +282,13 @@ export default function ClubEdukaiPage() {
                     <div className="flex items-center justify-center mb-8">
                         <div className="flex items-center gap-3 bg-white/70 backdrop-blur-sm px-6 py-3 rounded-xl shadow-md">
                             <BookOpen className="w-6 h-6 text-blue-600" />
-                            <h2 className="text-xl font-bold text-gray-900">Cours publics</h2>
+                            <h2 className="text-xl font-bold text-gray-900">
+                                Cours publics
+                            </h2>
                             <span className="px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-600">
-                                {hasActiveFilters ? `${filteredCourses.length}/${courses.length}` : courses.length}
+                                {hasActiveFilters
+                                    ? `${filteredCourses.length}/${courses.length}`
+                                    : courses.length}
                             </span>
                         </div>
                     </div>
@@ -275,7 +303,9 @@ export default function ClubEdukaiPage() {
                                     type="text"
                                     placeholder="Rechercher un cours, un auteur..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={e =>
+                                        setSearchQuery(e.target.value)
+                                    }
                                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/70 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 />
                             </div>
@@ -291,7 +321,12 @@ export default function ClubEdukaiPage() {
                                 <span>Filtres</span>
                                 {hasActiveFilters && (
                                     <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-                                        {[selectedSubject !== "all", selectedLevel !== "all"].filter(Boolean).length}
+                                        {
+                                            [
+                                                selectedSubject !== "all",
+                                                selectedLevel !== "all",
+                                            ].filter(Boolean).length
+                                        }
                                     </span>
                                 )}
                             </button>
@@ -310,35 +345,52 @@ export default function ClubEdukaiPage() {
                         {showFilters && (
                             <div className="flex flex-col sm:flex-row gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200">
                                 <div className="flex-1">
-                                    <label htmlFor="subject-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label
+                                        htmlFor="subject-filter"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
                                         Matière
                                     </label>
                                     <select
                                         id="subject-filter"
                                         value={selectedSubject}
-                                        onChange={(e) => setSelectedSubject(e.target.value)}
+                                        onChange={e =>
+                                            setSelectedSubject(e.target.value)
+                                        }
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     >
-                                        <option value="all">Toutes les matières</option>
-                                        {subjects.map((subject) => (
-                                            <option key={subject} value={subject}>
+                                        <option value="all">
+                                            Toutes les matières
+                                        </option>
+                                        {subjects.map(subject => (
+                                            <option
+                                                key={subject}
+                                                value={subject}
+                                            >
                                                 {subject}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="flex-1">
-                                    <label htmlFor="level-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label
+                                        htmlFor="level-filter"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
                                         Niveau
                                     </label>
                                     <select
                                         id="level-filter"
                                         value={selectedLevel}
-                                        onChange={(e) => setSelectedLevel(e.target.value)}
+                                        onChange={e =>
+                                            setSelectedLevel(e.target.value)
+                                        }
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     >
-                                        <option value="all">Tous les niveaux</option>
-                                        {levels.map((level) => (
+                                        <option value="all">
+                                            Tous les niveaux
+                                        </option>
+                                        {levels.map(level => (
                                             <option key={level} value={level}>
                                                 {level}
                                             </option>
@@ -350,9 +402,7 @@ export default function ClubEdukaiPage() {
                     </div>
 
                     {/* Courses Content */}
-                    <div className="mt-8">
-                        {renderCoursesContent()}
-                    </div>
+                    <div className="mt-8">{renderCoursesContent()}</div>
                 </div>
             </main>
         </div>
