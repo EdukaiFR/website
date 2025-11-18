@@ -16,9 +16,6 @@ export const SimilarCourses = ({
     course_id,
     similarCourses,
 }: SimilarCoursesProps) => {
-    console.log(course_id);
-    console.log(similarCourses);
-
     return (
         <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-green-50/30 via-emerald-50/20 to-teal-50/30 rounded-3xl p-8 relative overflow-hidden">
             {/* Background animated elements */}
@@ -66,7 +63,7 @@ export const SimilarCourses = ({
                 <p className="text-gray-600 leading-relaxed text-lg">
                     Découvrez bientôt des cours similaires personnalisés selon
                     vos intérêts et votre niveau pour enrichir votre parcours
-                    d&apos;apprentissage.
+                    d'apprentissage.
                 </p>
 
                 {/* Coming soon badge */}
@@ -118,7 +115,7 @@ export const SimilarCourses = ({
                             </span>
                         </div>
                         <p className="text-xs text-gray-600">
-                            Parcours d&apos;apprentissage optimisés
+                            Parcours d'apprentissage optimisés
                         </p>
                     </div>
 

@@ -171,21 +171,16 @@ export function ProfilePictureUpload({
             {/* File Upload Mode */}
             {mode === "file" && (
                 <div className="space-y-2">
-                    <div
+                    <label
+                        htmlFor="profile-file-input"
                         className={clsx(
-                            "relative border-dashed border-2 rounded-xl p-6 text-center cursor-pointer transition-all duration-200",
+                            "block relative border-dashed border-2 rounded-xl p-6 text-center transition-all duration-200",
                             isDragActive
                                 ? "border-blue-600 bg-blue-50 shadow-lg scale-[1.02]"
                                 : isUploading
-                                  ? "border-gray-300 bg-gray-50"
-                                  : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md"
+                                  ? "border-gray-300 bg-gray-50 cursor-not-allowed"
+                                  : "border-blue-200/60 bg-white/50 hover:bg-blue-50/50 hover:border-blue-400 hover:shadow-md cursor-pointer"
                         )}
-                        onClick={() =>
-                            !isUploading &&
-                            document
-                                .getElementById("profile-file-input")
-                                ?.click()
-                        }
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
@@ -210,7 +205,7 @@ export function ProfilePictureUpload({
                                 </>
                             ) : (
                                 <>
-                                    <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl mb-3">
+                                    <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl mb-3">
                                         <CloudUpload className="w-6 h-6 text-white" />
                                     </div>
                                     <p className="text-sm font-semibold text-gray-800 mb-1">
@@ -222,7 +217,7 @@ export function ProfilePictureUpload({
                                 </>
                             )}
                         </div>
-                    </div>
+                    </label>
                 </div>
             )}
 
@@ -237,9 +232,6 @@ export function ProfilePictureUpload({
                                     alt="Aperçu photo de profil"
                                     fill
                                     className="object-cover"
-                                    onError={() =>
-                                        console.log("Image failed to load")
-                                    }
                                 />
                             </div>
                             <div className="flex-1 min-w-0">

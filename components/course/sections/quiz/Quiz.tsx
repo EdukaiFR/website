@@ -62,13 +62,9 @@ export const Quiz = ({
                         typedQuizData.length
                     );
                     await insights_service.createInsight(quiz_id, finalScore);
-                    console.log("✅ Quiz insight created successfully");
                     insightsToast.createSuccess();
 
                     // Force refresh insights data after creating new insight
-                    console.log(
-                        "🔄 [Quiz] Refreshing insights after quiz completion"
-                    );
                     await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to ensure backend is updated
                 } catch (error) {
                     console.error("❌ Failed to create quiz insight:", error);
@@ -163,7 +159,7 @@ export const Quiz = ({
             {isFinish ? (
                 <div className="w-full flex flex-col items-start h-full gap-4">
                     {/* Results Section */}
-                    <div className="flex flex-col lg:flex-row items-start gap-4 w-full">
+                    <div className="flex flex-col lg:flex-row items-stretch gap-4 w-full">
                         <div className="flex-1">
                             <EndQuizCard
                                 score={getPercentage(
@@ -171,12 +167,14 @@ export const Quiz = ({
                                     typedQuizData.length
                                 )}
                                 restartFct={restartQuiz}
+                                className="h-full"
                             />
                         </div>
                         <div className="flex-1">
                             <LastQuiz
                                 last_attemps={insights_data?.insights || []}
                                 insights_data={insights_data}
+                                className="h-full"
                             />
                         </div>
                     </div>
@@ -214,7 +212,7 @@ export const Quiz = ({
                         <div className="mb-6">
                             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500 ease-out"
+                                    className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-500 ease-out"
                                     style={{
                                         width: `${
                                             (answeredQuestionsCount /

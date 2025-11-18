@@ -118,7 +118,7 @@ export function AdminStatistics({
                             </div>
                         </div>
                         <div className="text-sm font-medium text-white">
-                            Vue d&apos;ensemble
+                            Vue d'ensemble
                         </div>
 
                         {/* Progress bar */}

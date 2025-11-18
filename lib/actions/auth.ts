@@ -102,11 +102,10 @@ export async function signupAction(
 
 // Reset password action
 export async function resetPasswordAction(
-    data: ResetPasswordFormValues
+    _data: ResetPasswordFormValues
 ): Promise<AuthResponse> {
     try {
         // TODO: Implement actual password reset logic
-        console.log("Reset password attempt:", { email: data.email });
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -134,7 +133,6 @@ export async function changePasswordAction(
 ): Promise<AuthResponse> {
     try {
         // TODO: Implement actual password change logic
-        console.log("Change password attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -167,7 +165,6 @@ export async function changePasswordAction(
 export async function signoutAction(): Promise<AuthResponse> {
     try {
         // TODO: Implement actual signout logic (clear tokens, etc.)
-        console.log("Signout attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));

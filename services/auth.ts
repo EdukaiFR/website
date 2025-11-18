@@ -36,12 +36,6 @@ export interface AuthService {
 export function useAuthService(): AuthService {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    if (!apiUrl) {
-        console.error(
-            "❌ NEXT_PUBLIC_API_URL n'est pas défini ! Veuillez l'ajouter à votre fichier .env.local"
-        );
-    }
-
     const login = async (
         credentials: LoginCredentials
     ): Promise<AuthResponse> => {
@@ -81,7 +75,7 @@ export function useAuthService(): AuthService {
 
     const logout = async (): Promise<void> => {
         try {
-            console.log("Déconnexion...");
+            // Logout logic here if needed
         } catch (error) {
             console.error("Erreur de déconnexion:", error);
             throw error;

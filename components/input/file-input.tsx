@@ -29,7 +29,7 @@ export const FileInput = ({ name }: FileInputProps) => {
         setValue(name, [...selectedFiles, ...files]);
     };
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event: React.DragEvent<HTMLElement>) => {
         event.preventDefault();
         setIsDragActive(false);
         const files = Array.from(event.dataTransfer.files);
@@ -51,18 +51,14 @@ export const FileInput = ({ name }: FileInputProps) => {
                 <FormItem>
                     <FormLabel>Fichiers</FormLabel>
                     <FormControl>
-                        <div
+                        <label
+                            htmlFor={`file-input-${name}`}
                             className={clsx(
-                                "border-dashed border-2 rounded-lg p-6 text-center cursor-pointer bg-[#6C757D] bg-opacity-5",
+                                "block border-dashed border-2 rounded-lg p-6 text-center cursor-pointer bg-[#6C757D] bg-opacity-5",
                                 isDragActive
                                     ? "border-[#2d6bcf] bg-[#6C757D] bg-opacity-25"
                                     : "border-gray-300 hover:bg-[#6C757D] hover:bg-opacity-15"
                             )}
-                            onClick={() =>
-                                document
-                                    .getElementById(`file-input-${name}`)
-                                    ?.click()
-                            }
                             onDragOver={e => {
                                 e.preventDefault();
                                 setIsDragActive(true);
@@ -92,7 +88,7 @@ export const FileInput = ({ name }: FileInputProps) => {
                                     le cadre
                                 </p>
                             </div>
-                        </div>
+                        </label>
                     </FormControl>
                     <FormDescription>Sélectionne tes fichiers</FormDescription>
                     <FormMessage />

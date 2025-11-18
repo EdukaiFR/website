@@ -29,6 +29,7 @@ export default function MyCourses() {
         updateExam,
         deleteExam,
         loadCourseFiles,
+        loadSummarySheets,
     } = useCourseLogic();
 
     // Loading state
@@ -48,9 +49,10 @@ export default function MyCourses() {
 
             {selectedTab !== "quiz" && (
                 <NavBarComp
+                    isPrivateView={courseData.isOwner || false}
                     setSelectedTab={setSelectedTab}
                     tabs={
-                        navBarConfig as Array<{
+                        navBarConfig(courseData.isOwner || false) as Array<{
                             label: string;
                             tab: string;
                             component: React.ComponentType<
@@ -63,8 +65,10 @@ export default function MyCourses() {
             )}
 
             <CourseContentRenderer
+                isPrivateView={courseData.isOwner || false}
                 selectedTab={selectedTab}
                 courseId={courseId}
+                courseTitle={courseData?.title}
                 examsData={examsData}
                 createExam={createExam}
                 getExams={getExams}
@@ -78,6 +82,7 @@ export default function MyCourses() {
                 summarySheetsData={summarySheetsData}
                 loadCourseFiles={loadCourseFiles}
                 storageUserId={storageUserId}
+                refreshSummarySheets={loadSummarySheets}
             />
         </div>
     );

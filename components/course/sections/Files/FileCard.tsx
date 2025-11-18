@@ -19,10 +19,7 @@ const getFileIcon = (contentType: string, isZip?: boolean) => {
         case "archive":
             return <Archive className="w-5 h-5" />;
         case "image":
-            {
-                /* eslint-disable-next-line jsx-a11y/alt-text */
-            }
-            /* eslint-disable-next-line @next/next/no-img-element */
+            /* eslint-disable-next-line jsx-a11y/alt-text */
             return <Image className="w-5 h-5" />;
         case "text":
             return <FileText className="w-5 h-5" />;
@@ -34,7 +31,7 @@ const getFileIcon = (contentType: string, isZip?: boolean) => {
 export default function FileCard({ file }: FileCardProps) {
     return (
         <Card className="group border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden">
-            {/* Header de la carte avec icône */}
+            {/* Card header with icon */}
             <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-4 border-b border-slate-200/50">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-white rounded-lg shadow-sm">
@@ -52,7 +49,7 @@ export default function FileCard({ file }: FileCardProps) {
             </div>
 
             <CardContent className="p-4">
-                {/* Métadonnées stylisées */}
+                {/* Styled metadata */}
                 <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-xs">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -62,7 +59,7 @@ export default function FileCard({ file }: FileCardProps) {
                     </div>
                 </div>
 
-                {/* Boutons d'action modernes */}
+                {/* Modern action buttons */}
                 <div className="flex flex-col sm:flex-row gap-2">
                     {isImage(file.contentType) && (
                         <ImagePreviewDialog file={file}>

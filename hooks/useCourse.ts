@@ -1,15 +1,25 @@
 import { courseToast, examToast } from "@/lib/toast";
 import type { GeneratorForm } from "@/lib/types/generator";
+import type { VisibilityType } from "@/lib/types/visibility";
 import type { CourseService } from "@/services";
 import { useState } from "react";
 
 interface CourseData {
+    _id?: string;
     title: string;
     subject: string;
     level: string;
     quizzes: string[];
     exams: string[];
     summarySheets: [];
+    isOwner?: boolean;
+    visibility?: VisibilityType;
+    author?: {
+        _id?: string;
+        username?: string;
+        firstName?: string;
+        lastName?: string;
+    };
 }
 
 interface ExamData {
@@ -58,11 +68,6 @@ export function useCourse(courseService: CourseService) {
                 setCourseData(response.item as CourseData);
                 // Also call getExams to get the exams associated with the course
                 await getExams((response.item as CourseData).exams || []);
-            } else {
-                console.warn(
-                    "Course response does not contain item property:",
-                    response
-                );
             }
         } catch (error) {
             console.error(

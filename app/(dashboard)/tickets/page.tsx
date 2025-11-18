@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSession, useIsAdmin } from "@/hooks";
+import { useIsAdmin, useSession } from "@/hooks";
 import { useTicket } from "@/hooks/useTicket";
 import { TicketPriority, TicketStatus } from "@/lib/types/ticket";
 import { cn } from "@/lib/utils";
@@ -120,7 +120,7 @@ export default function TicketsPage() {
         <AuthGuard>
             <div className="flex flex-col gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
                 {/* Header avec gradient moderne */}
-                <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-4 sm:p-6 lg:p-8 text-white shadow-xl">
+                <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 p-4 sm:p-6 lg:p-8 text-white shadow-xl">
                     <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                     <div className="relative z-10">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -134,7 +134,7 @@ export default function TicketsPage() {
                                     </div>
                                 </div>
                                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
-                                    Centre d&apos;aide
+                                    Centre d'aide
                                 </h1>
                                 <p className="text-blue-100 text-sm sm:text-base lg:text-lg max-w-2xl">
                                     Signalez un problème et suivez sa
@@ -146,8 +146,8 @@ export default function TicketsPage() {
                                 onClick={() => setCreateDialogOpen(true)}
                                 className="h-12 px-6 bg-white/35 hover:bg-white/25 transition-all duration-200 font-semibold rounded-xl shadow-lg hover:shadow-xl"
                             >
-                                <Plus className="w-5 h-5 mr-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent" />
-                                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-md">
+                                <Plus className="w-5 h-5 mr-2 bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent" />
+                                <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent text-md">
                                     Nouveau ticket
                                 </span>
                             </Button> */}
@@ -178,7 +178,7 @@ export default function TicketsPage() {
                                         </p>
                                         <p className="text-sm text-indigo-700">
                                             Vous avez accès aux fonctionnalités
-                                            d&apos;administration
+                                            d'administration
                                         </p>
                                     </div>
                                 </div>
@@ -273,7 +273,7 @@ export default function TicketsPage() {
                         // Loading skeleton
                         [...Array(3)].map((_, i) => (
                             <Card
-                                key={i}
+                                key={`loading-skeleton-${i}`}
                                 className="border-0 shadow-lg animate-pulse"
                             >
                                 <CardContent className="p-6">
@@ -285,7 +285,7 @@ export default function TicketsPage() {
                         // Empty state moderne
                         <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
                             <CardContent className="p-12 text-center">
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Sparkles className="w-10 h-10 text-blue-600" />
                                 </div>
                                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -329,7 +329,7 @@ export default function TicketsPage() {
                                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
                                             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                                 {/* Ticket ID - Design moderne */}
-                                                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full px-3 py-1.5 text-white text-xs font-medium shadow-sm">
+                                                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full px-3 py-1.5 text-white text-xs font-medium shadow-sm">
                                                     <div className="w-1.5 h-1.5 bg-white rounded-full opacity-80"></div>
                                                     #{ticket.publicId}
                                                 </div>
