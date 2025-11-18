@@ -40,7 +40,7 @@ export const ExamCard = ({ exam }: ExamCardProps) => {
                 ? "from-gray-50 to-gray-100 opacity-75"
                 : isUrgent
                   ? "from-red-50 via-pink-50 to-orange-50 border border-red-100"
-                  : "from-blue-50 via-indigo-50 to-purple-50 bg-white/80"
+                  : "from-blue-50 via-blue-100 to-blue-50 bg-white/80"
         }
       `}
             >
@@ -61,7 +61,7 @@ export const ExamCard = ({ exam }: ExamCardProps) => {
                       ? "bg-gray-200"
                       : isUrgent
                         ? "bg-gradient-to-r from-red-500 to-pink-500"
-                        : "bg-gradient-to-r from-blue-500 to-indigo-500"
+                        : "bg-gradient-to-r from-blue-600 to-blue-500"
               }
             `}
                         >
@@ -112,7 +112,7 @@ export const ExamCard = ({ exam }: ExamCardProps) => {
                       ? "from-gray-500 to-gray-600"
                       : isUrgent
                         ? "from-red-500 via-pink-500 to-orange-500"
-                        : "from-blue-500 via-indigo-500 to-purple-500"
+                        : "from-blue-600 via-blue-500 to-blue-400"
               }
             `}
                         >

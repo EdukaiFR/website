@@ -1,8 +1,5 @@
 import type { SummarySheetService, BlobService } from "@/services";
 import { useState } from "react";
-import testData from "../json/testData/quizResponse.json";
-
-const tempData = testData; // Temporary test data for the quiz
 
 interface SummarySheet {
     textString: string;

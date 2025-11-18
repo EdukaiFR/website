@@ -1,8 +1,8 @@
 "use client";
 
-import { X, ArrowUpRight, Sparkles } from "lucide-react";
-import { useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { ArrowUpRight, Sparkles, X } from "lucide-react";
+import { useState } from "react";
 
 export function BetaCard() {
     const [isVisible, setIsVisible] = useState(true);
@@ -15,7 +15,7 @@ export function BetaCard() {
 
     return (
         <div className="mx-2 mb-2 relative">
-            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-white rounded-xl p-4 border border-blue-200/50 shadow-md hover:shadow-lg transition-all duration-300">
+            <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-white rounded-xl p-4 border border-blue-200/50 shadow-md hover:shadow-lg transition-all duration-300">
                 {/* Close Button */}
                 <button
                     onClick={() => setIsVisible(false)}
@@ -35,16 +35,16 @@ export function BetaCard() {
                 {/* Content */}
                 <div className="space-y-2 mb-4">
                     <h3 className="text-gray-900 font-semibold text-sm leading-tight">
-                        Version Beta d&apos;Edukai
+                        Version Beta d'Edukai
                     </h3>
                     <p className="text-gray-600 text-xs leading-relaxed">
                         Vous testez la version beta. Vos retours nous aident à
-                        améliorer l&apos;expérience !
+                        améliorer l'expérience !
                     </p>
                 </div>
 
                 {/* CTA Button */}
-                <button className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full">
+                <button className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full">
                     <span className="text-white text-xs font-medium">
                         Donner un retour
                     </span>

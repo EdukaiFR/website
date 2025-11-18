@@ -122,7 +122,7 @@ export function NavUser() {
                                         alt={displayName}
                                     />
                                     <AvatarFallback
-                                        className={`bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-semibold ${
+                                        className={`bg-gradient-to-br from-blue-600 to-blue-500 text-white font-semibold ${
                                             isCollapsed
                                                 ? "text-sm"
                                                 : "text-[10px]"
@@ -175,7 +175,7 @@ export function NavUser() {
                                         )}
                                         alt={displayName}
                                     />
-                                    <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-sm font-semibold">
+                                    <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-500 text-white text-sm font-semibold">
                                         {initials}
                                     </AvatarFallback>
                                 </Avatar>

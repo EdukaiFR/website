@@ -137,7 +137,7 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-sm">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl">
-                        <div className="p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg">
+                        <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg">
                             <AlertCircle className="w-5 h-5 text-blue-600" />
                         </div>
                         Créer un ticket de support
@@ -332,7 +332,7 @@ export const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                         type="submit"
                         onClick={handleSubmit}
                         disabled={isCreating}
-                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                        className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
                     >
                         {isCreating ? (
                             <>

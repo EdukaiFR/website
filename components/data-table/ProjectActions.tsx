@@ -18,7 +18,6 @@ interface ProjectActionsProps<TData> {
 }
 
 export function ProjectActions<TData>({ row }: ProjectActionsProps<TData>) {
-    console.log(row);
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

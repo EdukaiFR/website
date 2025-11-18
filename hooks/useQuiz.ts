@@ -1,8 +1,5 @@
 import type { InsightsService, QuizService } from "@/services";
 import { useState } from "react";
-import testData from "../json/testData/quizResponse.json";
-
-export const tempData = testData; // Temporary test data for the quiz
 
 export type Quiz = {
     question: string;
@@ -87,7 +84,6 @@ export function useQuiz(
     const createInsight = async (quizId: string, score: number) => {
         try {
             if (!insightsService) {
-                console.warn("Insights service not available");
                 return null;
             }
 

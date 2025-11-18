@@ -179,7 +179,7 @@ export const LastQuiz = ({
         >
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
                     <Clock className="w-4 h-4 text-white" />
                 </div>
                 <h3 className="text-base font-semibold text-gray-800">
@@ -190,7 +190,7 @@ export const LastQuiz = ({
             {/* Statistics Cards */}
             {insights_data && insights_data.insightsCount > 0 && (
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl text-center">
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl text-center">
                         <div className="flex items-center justify-center gap-1 mb-1">
                             <Award className="w-4 h-4 text-blue-600" />
                         </div>
@@ -199,7 +199,7 @@ export const LastQuiz = ({
                         </p>
                         <p className="text-xs text-gray-500">Score moyen</p>
                     </div>
-                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl text-center">
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl text-center">
                         <div className="flex items-center justify-center gap-1 mb-1">
                             <Award className="w-4 h-4 text-blue-600" />
                         </div>
@@ -333,11 +333,11 @@ export const LastQuiz = ({
 
                     {/* Encouragement Stats
           <div className="mt-3 grid grid-cols-2 gap-2 w-full">
-            <div className="p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl text-center">
+            <div className="p-2.5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl text-center">
               <p className="text-lg font-bold text-blue-600">1</p>
               <p className="text-xs text-gray-500">Quiz terminé</p>
             </div>
-            <div className="p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl text-center">
+            <div className="p-2.5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl text-center">
               <p className="text-lg font-bold text-blue-600">+XP</p>
               <p className="text-xs text-gray-500">Expérience</p>
             </div>

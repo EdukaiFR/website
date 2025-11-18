@@ -100,30 +100,43 @@ export async function signupAction(
     }
 }
 
-// Reset password action
+// Reset password action (request password reset email)
 export async function resetPasswordAction(
-    data: ResetPasswordFormValues
+    _data: ResetPasswordFormValues
 ): Promise<AuthResponse> {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     try {
-        // TODO: Implement actual password reset logic
-        console.log("Reset password attempt:", { email: data.email });
+        const response = await axios.post(`${apiUrl}/auth/forgot-password`, {
+            email: _data.email,
+        });
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        // Mock response - replace with actual password reset logic
         return {
             success: true,
             data: {
                 message:
-                    "Un email de réinitialisation a été envoyé à votre adresse",
+                    response.data.message ||
+                    "Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.",
             },
         };
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Reset password error:", error);
+
+        // Check if it's a rate limit error
+        const axiosError = error as AxiosError<{ message: string }>;
+        if (axiosError.response?.status === 429) {
+            return {
+                success: false,
+                error: "Trop de tentatives. Veuillez réessayer dans une heure.",
+            };
+        }
+
         return {
             success: false,
-            error: "Une erreur est survenue lors de la réinitialisation",
+            error: translateApiError(
+                axiosError.response?.data?.message ||
+                    "Une erreur est survenue lors de la réinitialisation"
+            ),
         };
     }
 }
@@ -134,7 +147,6 @@ export async function changePasswordAction(
 ): Promise<AuthResponse> {
     try {
         // TODO: Implement actual password change logic
-        console.log("Change password attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -163,11 +175,75 @@ export async function changePasswordAction(
     }
 }
 
+// Verify reset token action
+export async function verifyResetTokenAction(
+    token: string
+): Promise<AuthResponse & { maskedEmail?: string }> {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    try {
+        const response = await axios.get(
+            `${apiUrl}/auth/verify-reset-token/${token}`
+        );
+
+        return {
+            success: response.data.isValid,
+            data: response.data,
+            maskedEmail: response.data.maskedEmail,
+        };
+    } catch (error: unknown) {
+        console.error("Verify reset token error:", error);
+        const axiosError = error as AxiosError<{ message: string }>;
+
+        return {
+            success: false,
+            error: translateApiError(
+                axiosError.response?.data?.message ||
+                    "Le lien de réinitialisation est invalide ou expiré"
+            ),
+        };
+    }
+}
+
+// Reset password with token action
+export async function resetPasswordWithTokenAction(
+    token: string,
+    newPassword: string
+): Promise<AuthResponse> {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    try {
+        const response = await axios.post(`${apiUrl}/auth/reset-password`, {
+            token,
+            newPassword,
+        });
+
+        return {
+            success: true,
+            data: {
+                message:
+                    response.data.message ||
+                    "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+            },
+        };
+    } catch (error: unknown) {
+        console.error("Reset password with token error:", error);
+        const axiosError = error as AxiosError<{ message: string }>;
+
+        return {
+            success: false,
+            error: translateApiError(
+                axiosError.response?.data?.message ||
+                    "Une erreur est survenue lors de la réinitialisation du mot de passe"
+            ),
+        };
+    }
+}
+
 // Signout action
 export async function signoutAction(): Promise<AuthResponse> {
     try {
         // TODO: Implement actual signout logic (clear tokens, etc.)
-        console.log("Signout attempt");
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));

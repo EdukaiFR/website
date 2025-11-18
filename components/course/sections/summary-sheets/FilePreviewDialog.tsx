@@ -164,15 +164,6 @@ export const FilePreviewDialog = ({
     };
 
     const renderFilePreview = () => {
-        // Debug info (you can remove this in production)
-        console.log("File debug info:", {
-            filename: file.alt,
-            src: file.src,
-            extension: getFileExtension(file.alt),
-            isImageDetected: isImage(file.alt, file.src),
-            isPDFDetected: isPDF(file.alt, file.src),
-        });
-
         // Image preview
         if (isImage(file.alt, file.src) && !imageError) {
             return (
@@ -185,7 +176,6 @@ export const FilePreviewDialog = ({
                             width={100}
                             height={100}
                             onError={(e: unknown) => {
-                                console.log(e);
                                 console.error(
                                     "Image failed to load:",
                                     file.src
@@ -193,10 +183,6 @@ export const FilePreviewDialog = ({
                                 setImageError(true);
                             }}
                             onLoad={() => {
-                                console.log(
-                                    "Image loaded successfully:",
-                                    file.src
-                                );
                                 setImageError(false);
                             }}
                         />
@@ -218,7 +204,6 @@ export const FilePreviewDialog = ({
                             setPdfError(true);
                         }}
                         onLoad={() => {
-                            console.log("PDF loaded successfully:", file.src);
                             setPdfError(false);
                         }}
                     />
@@ -286,7 +271,7 @@ export const FilePreviewDialog = ({
                     <DialogHeader className="p-6 pb-4 border-b border-gray-100">
                         <div className="flex items-start justify-between">
                             <div className="flex items-start gap-4 flex-1 min-w-0">
-                                <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex-shrink-0">
+                                <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex-shrink-0">
                                     <FileText className="w-6 h-6 text-white" />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -385,7 +370,7 @@ export const FilePreviewDialog = ({
                                 </Button>
                                 <Button
                                     onClick={() => onDownload(file)}
-                                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
                                 >
                                     <Download className="w-4 h-4 mr-2" />
                                     Télécharger

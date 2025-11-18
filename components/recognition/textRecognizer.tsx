@@ -37,15 +37,11 @@ const TextRecognizer = ({
                                         m.progress * 100
                                     );
                                     setProgress(progressPercent);
-                                    console.log(
-                                        `OCR Progress (${fileId}): ${progressPercent}%`
-                                    );
                                 }
                             },
                         }
                     );
                     onTextRecognized(result.data.text);
-                    console.log("Final text: ", result.data.text);
                 } catch (error) {
                     console.error(
                         "Erreur lors de la reconnaissance de texte:",

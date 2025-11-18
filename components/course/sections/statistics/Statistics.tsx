@@ -41,14 +41,12 @@ export type StatisticsProps = {
 };
 
 export const Statistics = ({
-    course_id,
-    statistics,
+    course_id: _course_id,
+    statistics: _statistics,
     quiz_id,
     insights_service,
     insights_data,
 }: StatisticsProps) => {
-    console.log(course_id);
-    console.log(statistics);
     const [localInsights, setLocalInsights] = useState(insights_data);
     const [loading, setLoading] = useState(!insights_data); // Start loading if no initial data
     const [hasAttemptedFetch, setHasAttemptedFetch] = useState(!!insights_data);
@@ -56,10 +54,6 @@ export const Statistics = ({
     useEffect(() => {
         const fetchInsights = async () => {
             if (quiz_id && insights_service && !hasAttemptedFetch) {
-                console.log(
-                    "🔍 [Statistics] Fetching insights for quiz:",
-                    quiz_id
-                );
                 setLoading(true);
                 setHasAttemptedFetch(true);
 
@@ -79,7 +73,6 @@ export const Statistics = ({
                         timeoutPromise,
                     ])) as StatisticsProps["insights_data"];
 
-                    console.log("✅ [Statistics] Insights fetched:", data);
                     setLocalInsights(data);
                 } catch (error) {
                     console.error(
@@ -108,8 +101,8 @@ export const Statistics = ({
                     quiz_id
                 )) as StatisticsProps["insights_data"];
                 setLocalInsights(data);
-            } catch (error) {
-                console.log("⚠️ [Statistics] Auto-refresh failed:", error);
+            } catch {
+                // Auto-refresh failed, continue with current data
             }
         };
 
@@ -120,27 +113,9 @@ export const Statistics = ({
     // Always use the most current data available
     const currentInsights = localInsights || insights_data;
 
-    console.log("🔍 [Statistics] Debug info:", {
-        quiz_id,
-        hasInsightsService: !!insights_service,
-        insights_data,
-        localInsights,
-        currentInsights,
-        loading,
-    });
-
     // Calculate statistics
     const calculateStats = (data = currentInsights) => {
-        console.log("🔍 [Statistics] calculateStats called with:", {
-            data,
-            hasData: !!data,
-            insightsArray: data?.insights,
-            insightsLength: data?.insights?.length,
-            insightsCount: data?.insightsCount,
-        });
-
         if (!data) {
-            console.log("⚠️ [Statistics] No data available - returning zeros");
             return {
                 totalQuizzes: 0,
                 averageScore: 0,
@@ -161,16 +136,8 @@ export const Statistics = ({
 
         // If we have individual insights data, calculate detailed stats
         if (data.insights && data.insights.length > 0) {
-            console.log(
-                "✅ [Statistics] Calculating detailed stats with insights:",
-                data.insights.length
-            );
-            console.log("✅ [Statistics] Sample insight:", data.insights[0]);
-
             const insights = data.insights;
             const scores = insights.map(i => i.score);
-
-            console.log("✅ [Statistics] Extracted scores:", scores);
 
             // Basic stats
             const totalQuizzes = insights.length;
@@ -271,7 +238,6 @@ export const Statistics = ({
 
         // If we only have summary data, use it for basic stats
         if (data.insightsCount && data.insightsCount > 0) {
-            console.log("✅ [Statistics] Using summary data for basic stats");
             return {
                 totalQuizzes:
                     typeof data.insightsCount === "string"
@@ -297,9 +263,6 @@ export const Statistics = ({
         }
 
         // No data at all
-        console.log(
-            "⚠️ [Statistics] No insights data available - returning zeros"
-        );
         return {
             totalQuizzes: 0,
             averageScore: 0,
@@ -354,12 +317,6 @@ export const Statistics = ({
             (currentInsights.insights && currentInsights.insights.length > 0) ||
             (Array.isArray(currentInsights) && currentInsights.length > 0)); // Handle array format
 
-    console.log("🔍 [Statistics] hasData check:", {
-        hasData,
-        insightsCount: currentInsights?.insightsCount,
-        insightsLength: currentInsights?.insights?.length,
-    });
-
     if (!hasData) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
@@ -387,10 +344,6 @@ export const Statistics = ({
 
         if (typedData && typedData.insights && typedData.insights.length > 0) {
             // We have real insights data
-            console.log(
-                "✅ [Statistics] Using real insights data:",
-                typedData.insights
-            );
             return {
                 ...typedData,
                 averageScore: parseFloat(String(typedData.averageScore)) || 0,
@@ -401,9 +354,6 @@ export const Statistics = ({
             parseInt(String(typedData.insightsCount)) > 0
         ) {
             // We only have summary data - return as is, no mock generation
-            console.log(
-                "⚠️ [Statistics] Only summary data available, no mock generation"
-            );
             return {
                 averageScore: parseFloat(String(typedData.averageScore)) || 0,
                 insightsCount: parseInt(String(typedData.insightsCount)) || 0,
@@ -574,8 +524,8 @@ export const Statistics = ({
                             </h3>
                             <p className="text-gray-500">
                                 Complétez plus de quiz pour débloquer les
-                                graphiques détaillés, l&apos;évolution des
-                                performances et l&apos;analyse des tendances.
+                                graphiques détaillés, l'évolution des
+                                performances et l'analyse des tendances.
                             </p>
                         </div>
                     </CardContent>
@@ -809,7 +759,7 @@ export const Statistics = ({
                                 </div>
                             </div>
 
-                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                                 <Zap className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                                 <div className="text-2xl font-bold text-blue-600">
                                     {stats.streakData.best}

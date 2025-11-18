@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="text-center">
                         <div className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
@@ -97,7 +97,7 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -112,7 +112,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                                 Paramètres
                             </h1>
                             <p className="text-gray-600">
@@ -127,7 +127,7 @@ export default function SettingsPage() {
                         <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-0">
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+                                    <div className="relative w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold overflow-hidden">
                                         {getImageDisplaySrc(
                                             userProfile.profilePic
                                         ) ? (
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                                             }
                                             className={`w-full justify-start h-auto p-4 ${
                                                 activeTab === tab.key
-                                                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                                                    ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
                                                     : "text-gray-700 hover:bg-gray-100"
                                             }`}
                                             onClick={() =>

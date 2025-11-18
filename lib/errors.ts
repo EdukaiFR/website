@@ -1,4 +1,4 @@
-// Types d'erreurs personnalisés
+// Custom error types
 interface HttpError extends Error {
     status?: number;
     code?: string;
@@ -18,25 +18,25 @@ export class UnauthorizedError extends Error {
     }
 }
 
-// Utilitaires pour détecter les types d'erreurs
+// Utilities to detect error types
 export function isForbiddenError(error: Error): boolean {
-    // Vérification par instance
+    // Check by instance
     if (error instanceof ForbiddenError) {
         return true;
     }
 
-    // Vérification par propriétés (pour les erreurs HTTP)
+    // Check by properties (for HTTP errors)
     const httpError = error as HttpError;
     if (httpError.status === 403 || httpError.code === "FORBIDDEN") {
         return true;
     }
 
-    // Vérification par nom de l'erreur
+    // Check by error name
     if (error.name === "ForbiddenError") {
         return true;
     }
 
-    // Fallback: vérification par message (moins fiable)
+    // Fallback: check by message (less reliable)
     const message = error.message.toLowerCase();
     return (
         message.includes("403") ||
@@ -48,23 +48,23 @@ export function isForbiddenError(error: Error): boolean {
 }
 
 export function isUnauthorizedError(error: Error): boolean {
-    // Vérification par instance
+    // Check by instance
     if (error instanceof UnauthorizedError) {
         return true;
     }
 
-    // Vérification par propriétés (pour les erreurs HTTP)
+    // Check by properties (for HTTP errors)
     const httpError = error as HttpError;
     if (httpError.status === 401 || httpError.code === "UNAUTHORIZED") {
         return true;
     }
 
-    // Vérification par nom de l'erreur
+    // Check by error name
     if (error.name === "UnauthorizedError") {
         return true;
     }
 
-    // Fallback: vérification par message (moins fiable)
+    // Fallback: check by message (less reliable)
     const message = error.message.toLowerCase();
     return (
         message.includes("401") ||
@@ -78,7 +78,7 @@ export function isUnauthorizedError(error: Error): boolean {
     );
 }
 
-// Utilitaire pour logger les erreurs de manière structurée
+// Utility to log errors in a structured manner
 export function logError(error: Error & { digest?: string }): void {
     const errorInfo = {
         name: error.name,
@@ -93,7 +93,7 @@ export function logError(error: Error & { digest?: string }): void {
 
     console.error("Application Error:", errorInfo);
 
-    // Ici on pourrait ajouter l'envoi vers un service de monitoring
-    // comme Sentry, LogRocket, etc.
+    // Here we could add sending to a monitoring service
+    // like Sentry, LogRocket, etc.
     // sendToMonitoringService(errorInfo);
 }

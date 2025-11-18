@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function NotFound() {
     return (
-        <ConditionalErrorLayout bgGradient="from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <ConditionalErrorLayout bgGradient="from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800">
             <div role="alert" aria-live="polite">
                 {/* Message d'erreur */}
                 <h1
