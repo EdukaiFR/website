@@ -416,37 +416,6 @@ export default function Home() {
                                 );
                             })()}
                         </div>
-
-                        {/* Objectives */}
-                        <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
-                                    <Target className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-xl font-bold text-gray-800">
-                                        Tes Objectifs
-                                    </p>
-                                    <p className="text-gray-600 text-sm">
-                                        Progresse vers tes buts
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-                                <div className="p-3 bg-blue-50 rounded-2xl">
-                                    <Target className="w-6 h-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-800 mb-1">
-                                        Objectifs non disponibles
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        La fonctionnalité de suivi des objectifs
-                                        arrive bientôt !
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </main>
