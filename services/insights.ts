@@ -4,6 +4,7 @@ import { getCurrentUserId } from "@/lib/auth-utils";
 export interface InsightsService {
     createInsight: (quizId: string, score: number) => Promise<unknown>;
     getQuizInsights: (quizId: string) => Promise<unknown>;
+    getAllMyInsights: () => Promise<unknown>;
 }
 
 export function useInsightsService() {
@@ -52,5 +53,35 @@ export function useInsightsService() {
         }
     };
 
-    return { createInsight, getQuizInsights };
+    const getAllMyInsights = async () => {
+        try {
+            const userId = getCurrentUserId();
+
+            if (!userId) {
+                throw new Error("User not authenticated");
+            }
+
+            const response = await axios.get(`${apiUrl}/insights/my`, {
+                withCredentials: true,
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error(
+                "[Insights Service] Error fetching all user insights:",
+                error
+            );
+            if (axios.isAxiosError(error)) {
+                console.error("[Insights Service] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
+
+            throw error;
+        }
+    };
+
+    return { createInsight, getQuizInsights, getAllMyInsights };
 }

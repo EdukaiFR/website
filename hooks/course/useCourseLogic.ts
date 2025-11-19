@@ -178,6 +178,14 @@ export function useCourseLogic() {
         if (courseId && loadCourseSummarySheets) {
             const data = await loadCourseSummarySheets(courseId);
 
+            // DEBUG: Log to verify backend response
+            console.log("[useCourseLogic] Summary sheets response:", {
+                courseId,
+                isOwner: courseData?.isOwner,
+                data,
+                itemsCount: data?.items?.length || 0,
+            });
+
             // Backend now returns both AI-generated and user-uploaded sheets
             // with proper structure including type and source fields
             const sheets = data?.items || [];
@@ -195,9 +203,7 @@ export function useCourseLogic() {
             ) {
                 // Only load if we truly don't have any insights data yet
                 const hasValidInsights =
-                    insightsData &&
-                    (insightsData.insightsCount > 0 ||
-                        insightsData.averageScore > 0);
+                    insightsData && insightsData.items?.length > 0;
 
                 if (!hasValidInsights) {
                     await getQuizInsights(quizId);
