@@ -13,11 +13,13 @@ export const metadata: Metadata = {
     description: "Révise mieux, pas plus.",
 };
 
-export default function RootLayout({
-    children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout(
+    {
+        children,
+    }: Readonly<{ children: React.ReactNode }>
+) {
     // Récupération de l'état de la sidebar depuis les cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sidebarState = cookieStore.get("sidebar:state")?.value;
     // Default to true (expanded) on first load, respect saved preference
     const defaultOpen = sidebarState ? sidebarState === "true" : true;

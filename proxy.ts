@@ -1,6 +1,15 @@
 import { jwtDecode } from "jwt-decode";
 import { NextRequest, NextResponse } from "next/server";
-import { USER_ROLES, UserRole } from "./hooks/useRole";
+
+// User role constants (copied from useRole.ts to avoid React hooks in proxy)
+const USER_ROLES = {
+    USER: "user",
+    ADMIN: "admin",
+    TRIAGE: "triage",
+    DEV: "dev",
+} as const;
+
+type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 interface JwtToken {
     userId: string;
@@ -9,7 +18,7 @@ interface JwtToken {
     role?: UserRole;
 }
 
-export function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const cookie = req.cookies.get("auth_token");
 
@@ -48,6 +57,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        String.raw`/((?!api|static|.*\..*|_next|auth|reset-password|shared).*)`, // /api, /static, file extensions, /_next, /auth, /reset-password, and /shared
+        "/((?!api|static|.*\\..*|_next|auth|reset-password|shared).*)", // /api, /static, file extensions, /_next, /auth, /reset-password, and /shared
     ],
 };
