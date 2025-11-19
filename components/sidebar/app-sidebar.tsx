@@ -18,7 +18,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar";
 import { useLinks } from "@/hooks/use-links";
-import { BetaCard } from "./beta-card 2";
+import { BetaCard } from "./beta-card";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { upLinks, mySpaceLinks, downLinks, adminLinks } = useLinks();
