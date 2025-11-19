@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Suspense } from "react";
 import { AuthPageLayout, ResetPasswordForm } from "@/components/auth";
 

@@ -77,9 +77,12 @@ export function CourseContentRenderer({
                     deleteExam={deleteExam}
                     insights_data={
                         insightsData as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
+                            items: Array<{
+                                _id: string;
+                                score: number;
+                                createdAt: string;
+                                author: string;
+                            }>;
                         }
                     }
                     summarySheetsData={summarySheetsData}
@@ -117,10 +120,13 @@ export function CourseContentRenderer({
                         insightsService as unknown as InsightsService
                     }
                     insights_data={
-                        insightsData as unknown as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
+                        insightsData as {
+                            items: Array<{
+                                _id: string;
+                                score: number;
+                                createdAt: string;
+                                author: string;
+                            }>;
                         }
                     }
                 />
@@ -139,9 +145,12 @@ export function CourseContentRenderer({
                     insights_service={insightsService as InsightsService}
                     insights_data={
                         insightsData as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
+                            items: Array<{
+                                _id: string;
+                                score: number;
+                                createdAt: string;
+                                author: string;
+                            }>;
                         }
                     }
                 />

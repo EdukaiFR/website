@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AnimatedBackground } from "@/components/auth/page-sections/AnimatedBackground";
-import { HeroSection } from "@/components/auth/page-sections/HeroSection";
 import { AuthCard } from "@/components/auth/page-sections/AuthCard";
+import { HeroSection } from "@/components/auth/page-sections/HeroSection";
+import { useEffect, useState } from "react";
 
 export default function Authpage() {
     const [mounted, setMounted] = useState(false);

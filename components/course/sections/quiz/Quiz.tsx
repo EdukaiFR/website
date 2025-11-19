@@ -14,11 +14,11 @@ export type QuizProps = {
     quiz_id?: string;
     insights_service?: InsightsService;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
 };
@@ -172,7 +172,7 @@ export const Quiz = ({
                         </div>
                         <div className="flex-1">
                             <LastQuiz
-                                last_attemps={insights_data?.insights || []}
+                                last_attemps={insights_data?.items || []}
                                 insights_data={insights_data}
                                 className="h-full"
                             />

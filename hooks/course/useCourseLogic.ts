@@ -26,7 +26,8 @@ export function useCourseLogic() {
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
-    const [selectedTab, setSelectedTabState] = useState<string>(tabFromUrl);
+    const [selectedTabState, setSelectedTabState] =
+        useState<string>(tabFromUrl);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -178,6 +179,14 @@ export function useCourseLogic() {
         if (courseId && loadCourseSummarySheets) {
             const data = await loadCourseSummarySheets(courseId);
 
+            // DEBUG: Log to verify backend response
+            console.log("[useCourseLogic] Summary sheets response:", {
+                courseId,
+                isOwner: courseData?.isOwner,
+                data,
+                itemsCount: data?.items?.length || 0,
+            });
+
             // Backend now returns both AI-generated and user-uploaded sheets
             // with proper structure including type and source fields
             const sheets = data?.items || [];
@@ -190,14 +199,13 @@ export function useCourseLogic() {
     useEffect(() => {
         const loadInsightsForTab = async () => {
             if (
-                (selectedTab === "statistics" || selectedTab === "overview") &&
+                (selectedTabState === "statistics" ||
+                    selectedTabState === "overview") &&
                 quizId
             ) {
                 // Only load if we truly don't have any insights data yet
                 const hasValidInsights =
-                    insightsData &&
-                    (insightsData.insightsCount > 0 ||
-                        insightsData.averageScore > 0);
+                    insightsData && insightsData.items?.length > 0;
 
                 if (!hasValidInsights) {
                     await getQuizInsights(quizId);
@@ -206,11 +214,11 @@ export function useCourseLogic() {
         };
 
         loadInsightsForTab();
-    }, [selectedTab, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
+    }, [selectedTabState, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
 
     return {
         courseId,
-        selectedTab,
+        selectedTab: selectedTabState,
         setSelectedTab,
         courseData,
         quizData,

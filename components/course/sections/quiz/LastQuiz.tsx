@@ -14,11 +14,11 @@ export type LastQuizProps = {
         createdAt: string;
     }>;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
     className?: string;
@@ -52,17 +52,19 @@ export const LastQuiz = ({
     // Calculate trend and performance insights
     const calculateInsights = () => {
         // Return defaults if no insights data or insufficient data
-        if (!insights_data?.insights || insights_data.insights.length === 0) {
+        if (!insights_data?.items || insights_data.items.length === 0) {
             return {
                 trend: 0,
                 trendDirection: "stable" as const,
                 streak: 0,
-                recentAverage: insights_data?.averageScore || 0,
+                recentAverage: 0,
                 improvement: 0,
+                totalCount: 0,
+                averageScore: 0,
             };
         }
 
-        const insights = insights_data.insights;
+        const insights = insights_data.items;
         // const scores = insights.map((i) => i.score);
 
         // Calculate trend only if we have enough data (6+ attempts)
@@ -102,19 +104,25 @@ export const LastQuiz = ({
             improvement = lastThreeAvg - firstScore;
         }
 
+        // Calculate average score
+        const scores = insights.map(i => i.score);
+        const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+
         return {
             trend,
             trendDirection,
             streak,
             recentAverage,
             improvement,
+            totalCount: insights.length,
+            averageScore,
         };
     };
 
     const insights = calculateInsights();
 
     const getMotivationalMessage = () => {
-        if (!insights_data || insights_data.insightsCount === 0) {
+        if (!insights_data || insights_data.items.length === 0) {
             return {
                 title: "Premier quiz !",
                 message:
@@ -123,7 +131,7 @@ export const LastQuiz = ({
             };
         }
 
-        const avgScore = insights_data.averageScore;
+        const avgScore = insights.averageScore;
         const streak = insights.streak;
         const trend = insights.trendDirection;
 
@@ -188,14 +196,14 @@ export const LastQuiz = ({
             </div>
 
             {/* Statistics Cards */}
-            {insights_data && insights_data.insightsCount > 0 && (
+            {insights_data && insights_data.items.length > 0 && (
                 <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl text-center">
                         <div className="flex items-center justify-center gap-1 mb-1">
                             <Award className="w-4 h-4 text-blue-600" />
                         </div>
                         <p className="text-lg font-bold text-blue-600">
-                            {Math.round(insights_data.averageScore)}%
+                            {Math.round(insights.averageScore)}%
                         </p>
                         <p className="text-xs text-gray-500">Score moyen</p>
                     </div>
@@ -204,7 +212,7 @@ export const LastQuiz = ({
                             <Award className="w-4 h-4 text-blue-600" />
                         </div>
                         <p className="text-lg font-bold text-blue-600">
-                            {insights_data.insightsCount}
+                            {insights.totalCount}
                         </p>
                         <p className="text-xs text-gray-500">Tentatives</p>
                     </div>
@@ -213,11 +221,11 @@ export const LastQuiz = ({
 
             {/* Performance Insights - Only show with sufficient real data */}
             {insights_data &&
-                insights_data.insights &&
-                insights_data.insights.length >= 2 && (
+                insights_data.items &&
+                insights_data.items.length >= 2 && (
                     <div className="grid grid-cols-2 gap-3 mb-4">
                         {/* Trend - Only show if we have enough data for meaningful calculation */}
-                        {insights_data.insights.length >= 6 ? (
+                        {insights_data.items.length >= 6 ? (
                             <div className="p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                     {insights.trendDirection === "up" ? (
@@ -280,7 +288,7 @@ export const LastQuiz = ({
                     <div className="space-y-2 max-h-32 overflow-y-auto">
                         {last_attemps.slice(0, 3).map((attempt, index) => (
                             <div
-                                key={index}
+                                key={attempt.createdAt}
                                 className="p-3 bg-gray-50 rounded-xl"
                             >
                                 <div className="flex items-center justify-between">
@@ -305,14 +313,14 @@ export const LastQuiz = ({
                     </div>
 
                     {/* Motivational Section */}
-                    <div className="mt-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                    <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200">
                         <div className="flex items-center gap-2 mb-2">
-                            <Trophy className="w-4 h-4 text-purple-600" />
-                            <h4 className="text-sm font-semibold text-purple-800">
+                            <Trophy className="w-4 h-4 text-blue-600" />
+                            <h4 className="text-sm font-semibold text-blue-800">
                                 {motivationalData.title}
                             </h4>
                         </div>
-                        <p className="text-xs text-purple-700 leading-relaxed">
+                        <p className="text-xs text-blue-700 leading-relaxed">
                             {motivationalData.message}
                         </p>
                     </div>

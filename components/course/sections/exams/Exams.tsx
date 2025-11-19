@@ -61,53 +61,47 @@ export const Exams = ({
     return (
         <div className="w-full flex flex-col min-h-[calc(100vh-12rem)] sm:min-h-[65vh] gap-4 sm:gap-6 overflow-auto max-w-full">
             {/* Header */}
-            <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 max-w-full">
-                {/* Page Title and Filter */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                        <h2 className="text-lg sm:text-xl satoshi-medium">
-                            {examFilter === "upcoming"
-                                ? "Examens prévus"
-                                : "Tous les examens"}
-                        </h2>
-                        <CounterBadge counter={displayedExams.length || 0} />
-                    </div>
+            <div className="w-full flex flex-wrap items-center gap-3 sm:gap-4 max-w-full">
+                <h2 className="text-lg sm:text-xl satoshi-medium leading-none m-0">
+                    {examFilter === "upcoming"
+                        ? "Examens prévus"
+                        : "Tous les examens"}
+                </h2>
 
-                    {/* Exam Filter Selector */}
-                    <Select
-                        value={examFilter}
-                        onValueChange={(value: "upcoming" | "all") =>
-                            setExamFilter(value)
-                        }
-                    >
-                        <SelectTrigger className="w-full sm:w-[180px] rounded-full border-2 border-blue-200 bg-white/80 backdrop-blur-sm hover:border-blue-300 focus:border-blue-400 transition-colors">
-                            <SelectValue placeholder="Filtrer les examens" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-                            <SelectItem
-                                value="upcoming"
-                                className="rounded-xl hover:bg-blue-50 focus:bg-blue-50"
-                            >
-                                Examens prévus ({upcomingExams.length})
-                            </SelectItem>
-                            <SelectItem
-                                value="all"
-                                className="rounded-xl hover:bg-blue-50 focus:bg-blue-50"
-                            >
-                                Tous les examens ({exams.length})
-                                {pastExams.length > 0 && (
-                                    <span className="text-xs text-muted-foreground ml-1">
-                                        (dont {pastExams.length} passé
-                                        {pastExams.length > 1 ? "s" : ""})
-                                    </span>
-                                )}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+                <CounterBadge counter={displayedExams.length || 0} />
 
-                {/* Add Exam Button */}
-                <div className="flex-shrink-0">
+                <Select
+                    value={examFilter}
+                    onValueChange={(value: "upcoming" | "all") =>
+                        setExamFilter(value)
+                    }
+                >
+                    <SelectTrigger className="w-full sm:w-[180px] rounded-full border-2 border-blue-200 bg-white/80 backdrop-blur-sm hover:border-blue-300 focus:border-blue-400 transition-colors">
+                        <SelectValue placeholder="Filtrer les examens" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+                        <SelectItem
+                            value="upcoming"
+                            className="rounded-xl hover:bg-blue-50 focus:bg-blue-50"
+                        >
+                            Examens prévus ({upcomingExams.length})
+                        </SelectItem>
+                        <SelectItem
+                            value="all"
+                            className="rounded-xl hover:bg-blue-50 focus:bg-blue-50"
+                        >
+                            Tous les examens ({exams.length})
+                            {pastExams.length > 0 && (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                    (dont {pastExams.length} passé
+                                    {pastExams.length > 1 ? "s" : ""})
+                                </span>
+                            )}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
+
+                <div className="ml-auto">
                     <ExamDialog
                         courseId={course_id}
                         createExam={createExam}
