@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import {
     Card,
     CardContent,
@@ -8,7 +7,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import type { InsightsService } from "@/services";
 import {
     Activity,
@@ -31,11 +29,11 @@ export type StatisticsProps = {
     quiz_id?: string;
     insights_service?: InsightsService;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
 };
@@ -80,7 +78,7 @@ export const Statistics = ({
                         error
                     );
                     // Set empty data to show "no statistics" instead of infinite loading
-                    setLocalInsights({ insightsCount: 0, averageScore: 0 });
+                    setLocalInsights({ items: [] });
                 } finally {
                     setLoading(false);
                 }
@@ -135,8 +133,8 @@ export const Statistics = ({
         }
 
         // If we have individual insights data, calculate detailed stats
-        if (data.insights && data.insights.length > 0) {
-            const insights = data.insights;
+        if (data.items && data.items.length > 0) {
+            const insights = data.items;
             const scores = insights.map(i => i.score);
 
             // Basic stats
@@ -236,32 +234,6 @@ export const Statistics = ({
             };
         }
 
-        // If we only have summary data, use it for basic stats
-        if (data.insightsCount && data.insightsCount > 0) {
-            return {
-                totalQuizzes:
-                    typeof data.insightsCount === "string"
-                        ? parseInt(data.insightsCount)
-                        : data.insightsCount || 0,
-                averageScore:
-                    typeof data.averageScore === "string"
-                        ? parseFloat(data.averageScore)
-                        : data.averageScore || 0,
-                highestScore: 0, // Not available in summary
-                lowestScore: 0, // Not available in summary
-                improvementTrend: 0, // Not available in summary
-                recentPerformance: [],
-                scoreDistribution: {
-                    excellent: 0,
-                    good: 0,
-                    average: 0,
-                    needsWork: 0,
-                },
-                streakData: { current: 0, best: 0 },
-                weeklyActivity: Array(7).fill(0),
-            };
-        }
-
         // No data at all
         return {
             totalQuizzes: 0,
@@ -281,10 +253,33 @@ export const Statistics = ({
         };
     };
 
+    // Format date like in Overview tab
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInDays = Math.floor(
+            (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        const timeString = date.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        if (diffInDays === 0) return `Aujourd'hui à ${timeString}`;
+        if (diffInDays === 1) return `Hier à ${timeString}`;
+        if (diffInDays < 7) return `Il y a ${diffInDays} jours à ${timeString}`;
+
+        return date.toLocaleDateString("fr-FR", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        }) + ` à ${timeString}`;
+    };
+
     const getScoreColor = (score: number) => {
-        if (score >= 90) return "text-green-600 bg-green-50 border-green-200";
-        if (score >= 70) return "text-blue-600 bg-blue-50 border-blue-200";
-        if (score >= 50)
+        if (score >= 80) return "text-green-600 bg-green-50 border-green-200";
+        if (score >= 60)
             return "text-yellow-600 bg-yellow-50 border-yellow-200";
         return "text-red-600 bg-red-50 border-red-200";
     };
@@ -313,8 +308,7 @@ export const Statistics = ({
     // Check if we have any insights data at all - be more flexible with data structure
     const hasData =
         currentInsights &&
-        ((currentInsights.insightsCount && currentInsights.insightsCount > 0) ||
-            (currentInsights.insights && currentInsights.insights.length > 0) ||
+        ((currentInsights.items && currentInsights.items.length > 0) ||
             (Array.isArray(currentInsights) && currentInsights.length > 0)); // Handle array format
 
     if (!hasData) {
@@ -337,42 +331,31 @@ export const Statistics = ({
     // Process insights data - NO MOCK DATA, only real data
     const processInsightsData = (data: unknown) => {
         const typedData = data as {
-            insights?: Array<{ score: number; createdAt: string }>;
-            insightsCount?: number | string;
-            averageScore?: number | string;
+            items?: Array<{
+                _id: string;
+                score: number;
+                createdAt: string;
+                author: string;
+            }>;
         };
 
-        if (typedData && typedData.insights && typedData.insights.length > 0) {
+        if (typedData && typedData.items && typedData.items.length > 0) {
             // We have real insights data
             return {
-                ...typedData,
-                averageScore: parseFloat(String(typedData.averageScore)) || 0,
-                insightsCount: parseInt(String(typedData.insightsCount)) || 0,
-            };
-        } else if (
-            typedData.insightsCount &&
-            parseInt(String(typedData.insightsCount)) > 0
-        ) {
-            // We only have summary data - return as is, no mock generation
-            return {
-                averageScore: parseFloat(String(typedData.averageScore)) || 0,
-                insightsCount: parseInt(String(typedData.insightsCount)) || 0,
-                insights: [], // Empty array - sections will be hidden
+                items: typedData.items,
             };
         }
 
         return {
-            averageScore: 0,
-            insightsCount: 0,
-            insights: [],
+            items: [],
         };
     };
 
     const processedInsights = processInsightsData(currentInsights);
     const stats = calculateStats(processedInsights);
     const hasRealInsights =
-        processedInsights?.insights && processedInsights.insights.length > 0;
-    const hasBasicStats = processedInsights?.insightsCount > 0;
+        processedInsights?.items && processedInsights.items.length > 0;
+    const hasBasicStats = hasRealInsights;
 
     // Show loading state during initial load
     if (loading) {
@@ -432,37 +415,41 @@ export const Statistics = ({
     return (
         <div className="space-y-6">
             {/* Overview Stats - Only show basic stats that work with summary data */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-semibold text-gray-700">
                             Quiz terminés
                         </CardTitle>
-                        <BookOpen className="h-4 w-4 text-blue-600" />
+                        <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                            <BookOpen className="h-4 w-4 text-white" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-blue-600">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                             {stats.totalQuizzes}
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-600 font-medium mt-1">
                             Total des tentatives
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-semibold text-gray-700">
                             Score moyen
                         </CardTitle>
-                        <Target className="h-4 w-4 text-green-600" />
+                        <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                            <Target className="h-4 w-4 text-white" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                             {Math.round(stats.averageScore)}%
                         </div>
                         {hasRealInsights && (
-                            <div className="flex items-center space-x-1 text-xs text-gray-500">
+                            <div className="flex items-center space-x-1 text-xs text-gray-600 font-medium mt-1">
                                 {getTrendIcon(stats.improvementTrend)}
                                 <span>
                                     {stats.improvementTrend > 0 ? "+" : ""}
@@ -476,35 +463,39 @@ export const Statistics = ({
 
                 {hasRealInsights && (
                     <>
-                        <Card>
+                        <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
+                                <CardTitle className="text-sm font-semibold text-gray-700">
                                     Meilleur score
                                 </CardTitle>
-                                <Trophy className="h-4 w-4 text-yellow-600" />
+                                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                    <Trophy className="h-4 w-4 text-white" />
+                                </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-yellow-600">
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                                     {Math.round(stats.highestScore)}%
                                 </div>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-600 font-medium mt-1">
                                     Record personnel
                                 </p>
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
+                                <CardTitle className="text-sm font-semibold text-gray-700">
                                     Série actuelle
                                 </CardTitle>
-                                <Zap className="h-4 w-4 text-orange-600" />
+                                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                    <Zap className="h-4 w-4 text-white" />
+                                </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-orange-600">
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
                                     {stats.streakData.current}
                                 </div>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-600 font-medium mt-1">
                                     Quiz réussis (≥70%)
                                 </p>
                             </CardContent>
@@ -513,67 +504,48 @@ export const Statistics = ({
                 )}
             </div>
 
-            {/* Message when only basic stats are available */}
-            {!hasRealInsights && hasBasicStats && (
-                <Card>
-                    <CardContent className="pt-6">
-                        <div className="text-center">
-                            <Activity className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                                Statistiques détaillées bientôt disponibles
-                            </h3>
-                            <p className="text-gray-500">
-                                Complétez plus de quiz pour débloquer les
-                                graphiques détaillés, l'évolution des
-                                performances et l'analyse des tendances.
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
             {/* Performance Chart - Only show with real insights data */}
             {hasRealInsights && (
-                <Card>
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-white/95 via-blue-50/20 to-indigo-50/20 backdrop-blur-md hover:shadow-2xl transition-all duration-300">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5" />
-                            Évolution des performances
+                        <CardTitle className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                <TrendingUp className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">
+                                Évolution des performances
+                            </span>
                         </CardTitle>
-                        <CardDescription>Vos 10 derniers quiz</CardDescription>
+                        <CardDescription className="text-gray-600 font-medium ml-14">Vos 10 derniers quiz</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {stats.recentPerformance.map(
                                 (performance, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                                        className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"
                                     >
-                                        <div className="flex items-center space-x-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="w-16 justify-center"
-                                            >
-                                                #{performance.attempt}
-                                            </Badge>
-                                            <div
-                                                className={`px-3 py-1 rounded-full text-sm font-semibold border ${getScoreColor(
-                                                    performance.score
-                                                )}`}
-                                            >
-                                                {Math.round(performance.score)}%
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-1.5 bg-blue-100 rounded-lg">
+                                                <Trophy className="w-3 h-3 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-800">
+                                                    Quiz #{performance.attempt}
+                                                </p>
+                                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {formatDate(performance.date)}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="text-sm text-gray-500">
-                                            {new Date(
-                                                performance.date
-                                            ).toLocaleDateString("fr-FR", {
-                                                day: "numeric",
-                                                month: "short",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                            })}
+                                        <div
+                                            className={`px-2 py-1 rounded-md border text-xs font-semibold ${getScoreColor(
+                                                performance.score
+                                            )}`}
+                                        >
+                                            {Math.round(performance.score)}%
                                         </div>
                                     </div>
                                 )
@@ -587,110 +559,154 @@ export const Statistics = ({
             {hasRealInsights && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Score Distribution */}
-                    <Card>
+                    <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <BarChart3 className="w-5 h-5" />
-                                Répartition des scores
+                            <CardTitle className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                    <BarChart3 className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">
+                                    Répartition des scores
+                                </span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                        <span className="text-sm">
-                                            Excellent (90-100%)
-                                        </span>
+                        <CardContent className="space-y-3">
+                            {/* Excellent */}
+                            <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50/50 rounded-xl border border-green-200/50 hover:shadow-md transition-all duration-200">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-green-500 rounded-lg shadow-sm">
+                                            <Trophy className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-semibold text-gray-800">
+                                                Excellent
+                                            </span>
+                                            <p className="text-xs text-gray-500">90-100%</p>
+                                        </div>
                                     </div>
-                                    <span className="font-semibold">
-                                        {stats.scoreDistribution.excellent}
-                                    </span>
+                                    <div className="text-right">
+                                        <div className="text-xl font-bold text-green-600">
+                                            {stats.scoreDistribution.excellent}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {Math.round((stats.scoreDistribution.excellent / stats.totalQuizzes) * 100)}%
+                                        </div>
+                                    </div>
                                 </div>
-                                <Progress
-                                    value={
-                                        (stats.scoreDistribution.excellent /
-                                            stats.totalQuizzes) *
-                                        100
-                                    }
-                                    className="h-2"
-                                />
+                                <div className="relative h-2.5 bg-green-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500"
+                                        style={{ width: `${(stats.scoreDistribution.excellent / stats.totalQuizzes) * 100}%` }}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                        <span className="text-sm">
-                                            Bien (70-89%)
-                                        </span>
+                            {/* Bien */}
+                            <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-50/50 rounded-xl border border-blue-200/50 hover:shadow-md transition-all duration-200">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-blue-500 rounded-lg shadow-sm">
+                                            <Target className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-semibold text-gray-800">
+                                                Bien
+                                            </span>
+                                            <p className="text-xs text-gray-500">70-89%</p>
+                                        </div>
                                     </div>
-                                    <span className="font-semibold">
-                                        {stats.scoreDistribution.good}
-                                    </span>
+                                    <div className="text-right">
+                                        <div className="text-xl font-bold text-blue-600">
+                                            {stats.scoreDistribution.good}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {Math.round((stats.scoreDistribution.good / stats.totalQuizzes) * 100)}%
+                                        </div>
+                                    </div>
                                 </div>
-                                <Progress
-                                    value={
-                                        (stats.scoreDistribution.good /
-                                            stats.totalQuizzes) *
-                                        100
-                                    }
-                                    className="h-2"
-                                />
+                                <div className="relative h-2.5 bg-blue-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+                                        style={{ width: `${(stats.scoreDistribution.good / stats.totalQuizzes) * 100}%` }}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                                        <span className="text-sm">
-                                            Moyen (50-69%)
-                                        </span>
+                            {/* Moyen */}
+                            <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-50/50 rounded-xl border border-yellow-200/50 hover:shadow-md transition-all duration-200">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-yellow-500 rounded-lg shadow-sm">
+                                            <Activity className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-semibold text-gray-800">
+                                                Moyen
+                                            </span>
+                                            <p className="text-xs text-gray-500">50-69%</p>
+                                        </div>
                                     </div>
-                                    <span className="font-semibold">
-                                        {stats.scoreDistribution.average}
-                                    </span>
+                                    <div className="text-right">
+                                        <div className="text-xl font-bold text-yellow-600">
+                                            {stats.scoreDistribution.average}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {Math.round((stats.scoreDistribution.average / stats.totalQuizzes) * 100)}%
+                                        </div>
+                                    </div>
                                 </div>
-                                <Progress
-                                    value={
-                                        (stats.scoreDistribution.average /
-                                            stats.totalQuizzes) *
-                                        100
-                                    }
-                                    className="h-2"
-                                />
+                                <div className="relative h-2.5 bg-yellow-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500"
+                                        style={{ width: `${(stats.scoreDistribution.average / stats.totalQuizzes) * 100}%` }}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                        <span className="text-sm">
-                                            À améliorer (&lt;50%)
-                                        </span>
+                            {/* À améliorer */}
+                            <div className="p-4 bg-gradient-to-r from-red-50 to-red-50/50 rounded-xl border border-red-200/50 hover:shadow-md transition-all duration-200">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-red-500 rounded-lg shadow-sm">
+                                            <TrendingUp className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-semibold text-gray-800">
+                                                À améliorer
+                                            </span>
+                                            <p className="text-xs text-gray-500">&lt;50%</p>
+                                        </div>
                                     </div>
-                                    <span className="font-semibold">
-                                        {stats.scoreDistribution.needsWork}
-                                    </span>
+                                    <div className="text-right">
+                                        <div className="text-xl font-bold text-red-600">
+                                            {stats.scoreDistribution.needsWork}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {Math.round((stats.scoreDistribution.needsWork / stats.totalQuizzes) * 100)}%
+                                        </div>
+                                    </div>
                                 </div>
-                                <Progress
-                                    value={
-                                        (stats.scoreDistribution.needsWork /
-                                            stats.totalQuizzes) *
-                                        100
-                                    }
-                                    className="h-2"
-                                />
+                                <div className="relative h-2.5 bg-red-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500"
+                                        style={{ width: `${(stats.scoreDistribution.needsWork / stats.totalQuizzes) * 100}%` }}
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
 
                     {/* Weekly Activity */}
-                    <Card>
+                    <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                Activité de la semaine
+                            <CardTitle className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                    <Calendar className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">
+                                    Activité de la semaine
+                                </span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -740,42 +756,52 @@ export const Statistics = ({
 
             {/* Achievement Section - Only show with real insights data */}
             {hasRealInsights && (
-                <Card>
+                <Card className="border border-blue-100/50 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Award className="w-5 h-5" />
-                            Performances
+                        <CardTitle className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                                <Award className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">
+                                Performances
+                            </span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
-                                <Trophy className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                                <div className="text-2xl font-bold text-yellow-600">
+                            <div className="text-center p-6 bg-gradient-to-br from-blue-50 via-blue-50/50 to-blue-100/30 rounded-2xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit mx-auto mb-3 shadow-lg">
+                                    <Trophy className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
                                     {Math.round(stats.highestScore)}%
                                 </div>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-gray-700 font-semibold">
                                     Meilleur score
                                 </div>
                             </div>
 
-                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-                                <Zap className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                                <div className="text-2xl font-bold text-blue-600">
+                            <div className="text-center p-6 bg-gradient-to-br from-blue-50 via-blue-50/50 to-indigo-50/30 rounded-2xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit mx-auto mb-3 shadow-lg">
+                                    <Zap className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
                                     {stats.streakData.best}
                                 </div>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-gray-700 font-semibold">
                                     Meilleure série
                                 </div>
                             </div>
 
-                            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                                <Target className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                                <div className="text-2xl font-bold text-green-600">
+                            <div className="text-center p-6 bg-gradient-to-br from-blue-50 via-blue-50/50 to-blue-100/30 rounded-2xl border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl w-fit mx-auto mb-3 shadow-lg">
+                                    <Target className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
                                     {stats.scoreDistribution.excellent +
                                         stats.scoreDistribution.good}
                                 </div>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-gray-700 font-semibold">
                                     Quiz réussis (≥70%)
                                 </div>
                             </div>
