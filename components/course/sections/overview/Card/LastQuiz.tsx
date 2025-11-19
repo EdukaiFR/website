@@ -6,11 +6,11 @@ export type LastQuizProps = {
         createdAt: string;
     }>;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
 };
@@ -24,14 +24,20 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
             (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
         );
 
-        if (diffInDays === 0) return "Aujourd'hui";
-        if (diffInDays === 1) return "Hier";
-        if (diffInDays < 7) return `Il y a ${diffInDays} jours`;
+        const timeString = date.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        if (diffInDays === 0) return `Aujourd'hui à ${timeString}`;
+        if (diffInDays === 1) return `Hier à ${timeString}`;
+        if (diffInDays < 7) return `Il y a ${diffInDays} jours à ${timeString}`;
 
         return date.toLocaleDateString("fr-FR", {
             day: "numeric",
-            month: "short",
-        });
+            month: "long",
+            year: "numeric",
+        }) + ` à ${timeString}`;
     };
 
     // Function for score color
@@ -42,11 +48,23 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         return "text-red-600 bg-red-50 border-red-200";
     };
 
-    // Take the last 3 quizzes
-    const recentQuizzes = lastQuiz.slice(-3).reverse();
+    // Take only the last quiz
+    const recentQuizzes = lastQuiz.slice(-1);
+
+    // Calculate insights from items array
+    const calculateInsights = () => {
+        if (!insights_data?.items || insights_data.items.length === 0) {
+            return { averageScore: 0, totalCount: 0 };
+        }
+        const scores = insights_data.items.map(i => i.score);
+        const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+        return { averageScore, totalCount: insights_data.items.length };
+    };
+
+    const insights = calculateInsights();
 
     // Check if we have aggregated insights data but not the details
-    const hasAggregatedData = insights_data && insights_data.insightsCount > 0;
+    const hasAggregatedData = insights_data && insights_data.items.length > 0;
     const hasDetailedData = lastQuiz && lastQuiz.length > 0;
 
     return (
@@ -66,16 +84,11 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                 {hasDetailedData ? (
                     <>
                         {/* Quick stats */}
-                        {insights_data && insights_data.insightsCount > 0 && (
+                        {insights_data && insights_data.items.length > 0 && (
                             <div className="flex gap-2 mb-3">
                                 <div className="flex-1 p-2 bg-blue-50/80 rounded-lg text-center">
                                     <p className="text-sm font-semibold text-blue-600">
-                                        {Math.round(
-                                            parseFloat(
-                                                insights_data.averageScore.toString()
-                                            )
-                                        )}
-                                        %
+                                        {Math.round(insights.averageScore)}%
                                     </p>
                                     <p className="text-xs text-gray-500">
                                         Moyenne
@@ -83,7 +96,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                                 </div>
                                 <div className="flex-1 p-2 bg-blue-50/80 rounded-lg text-center">
                                     <p className="text-sm font-semibold text-blue-600">
-                                        {insights_data.insightsCount}
+                                        {insights.totalCount}
                                     </p>
                                     <p className="text-xs text-gray-500">
                                         Total
@@ -105,8 +118,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium text-gray-800">
-                                                Quiz #
-                                                {recentQuizzes.length - index}
+                                                Dernier quiz
                                             </p>
                                             <div className="flex items-center gap-1 text-xs text-gray-500">
                                                 <Calendar className="w-3 h-3" />
@@ -129,12 +141,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                         <div className="flex flex-col gap-2 mb-3">
                             <div className="flex-1 p-3 bg-blue-50/80 rounded-lg text-center">
                                 <p className="text-lg font-semibold text-blue-600">
-                                    {Math.round(
-                                        parseFloat(
-                                            insights_data.averageScore.toString()
-                                        )
-                                    )}
-                                    %
+                                    {Math.round(insights.averageScore)}%
                                 </p>
                                 <p className="text-xs text-gray-500">
                                     Score moyen
@@ -142,7 +149,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
                             </div>
                             <div className="flex-1 p-3 bg-blue-50/80 rounded-lg text-center">
                                 <p className="text-lg font-semibold text-blue-600">
-                                    {insights_data.insightsCount}
+                                    {insights.totalCount}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                     Quiz réalisés
