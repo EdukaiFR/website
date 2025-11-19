@@ -2,11 +2,13 @@
 
 import { useSidebar } from "@/components/ui/sidebar";
 import { ArrowUpRight, Sparkles, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function BetaCard() {
     const [isVisible, setIsVisible] = useState(true);
     const { state } = useSidebar();
+    const router = useRouter();
     const isCollapsed = state === "collapsed";
 
     if (!isVisible || isCollapsed) {
@@ -44,7 +46,10 @@ export function BetaCard() {
                 </div>
 
                 {/* CTA Button */}
-                <button className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full">
+                <button
+                    onClick={() => router.push("/tickets")} // After, we will have to create a new feedback page (not only tickets)
+                    className="group flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md w-full"
+                >
                     <span className="text-white text-xs font-medium">
                         Donner un retour
                     </span>
