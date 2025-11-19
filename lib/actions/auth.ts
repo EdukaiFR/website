@@ -107,7 +107,6 @@ export async function resetPasswordAction(
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
-        // TODO: Implement actual password reset logic
         const response = await axios.post(`${apiUrl}/auth/forgot-password`, {
             email: _data.email,
         });
