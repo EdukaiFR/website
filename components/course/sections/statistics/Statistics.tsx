@@ -339,7 +339,7 @@ export const Statistics = ({
             }>;
         };
 
-        if (typedData?.items?.length > 0) {
+        if (typedData?.items && typedData.items.length > 0) {
             // We have real insights data
             return {
                 items: typedData.items,

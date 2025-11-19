@@ -286,7 +286,7 @@ export const LastQuiz = ({
                     </div>
 
                     <div className="space-y-2 max-h-32 overflow-y-auto">
-                        {last_attemps.slice(0, 3).map((attempt) => (
+                        {last_attemps.slice(0, 3).map((attempt, index) => (
                             <div
                                 key={attempt.createdAt}
                                 className="p-3 bg-gray-50 rounded-xl"
