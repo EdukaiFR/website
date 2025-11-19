@@ -9,11 +9,11 @@ export type Quiz = {
 }[];
 
 type Insights = {
-    averageScore: number;
-    insightsCount: number;
-    insights?: Array<{
+    items: Array<{
+        _id: string;
         score: number;
         createdAt: string;
+        author: string;
     }>;
 };
 
@@ -26,8 +26,7 @@ export function useQuiz(
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [insightsData, setInsightsData] = useState<Insights>({
-        averageScore: 0,
-        insightsCount: 0,
+        items: [],
     });
 
     async function generateQuiz(recognizedTexts: string[]) {

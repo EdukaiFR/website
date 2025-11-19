@@ -24,14 +24,15 @@ export default function NavBarComp({
             Objectifs: "Obj.",
             Statistiques: "Stats",
             "Cours similaires": "Simil.",
+            "Mes fichiers": "Fichiers",
+            Fichiers: "Fichiers",
         };
         return mobileLabels[label] || label.slice(0, 6);
     };
 
-    const publicViewTabs = ["myFiles", "summarySheets"];
-    const displayedTabs = isPrivateView
-        ? tabs
-        : tabs.filter(t => publicViewTabs.includes(t.tab));
+    // Show all tabs for all users (public courses fully accessible)
+    // Backend handles privacy (users see only their own exams/insights)
+    const displayedTabs = tabs;
 
     return (
         <div className="w-full max-w-full rounded-2xl p-1 sm:p-2 overflow-hidden">

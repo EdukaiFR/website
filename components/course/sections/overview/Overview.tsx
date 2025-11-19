@@ -24,11 +24,11 @@ export type OverviewProps = {
     updateExam?: (examId: string, data: unknown) => void;
     deleteExam?: (examId: string) => void;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
     summarySheetsData?: SummarySheetData[];
@@ -48,21 +48,8 @@ export const Overview = ({
     insights_data,
     summarySheetsData,
 }: OverviewProps) => {
-    if (!isPrivateView) {
-        return (
-            <div className="w-full h-full overflow-auto max-w-full">
-                <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full max-w-full">
-                    <div className="w-full max-w-full min-w-0">
-                        <SummarySheets
-                            summary_sheets={summarySheetsData || []}
-                            courseTitle={course_title}
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
+    // Show full view for all users (public courses accessible to everyone)
+    // Backend handles privacy: users see only their own exams/insights
     return (
         <div className="w-full h-full overflow-auto max-w-full">
             {/* Mobile: Single column, Tablet+: Two columns */}
@@ -76,7 +63,7 @@ export const Overview = ({
                         </div>
                         <div className="h-80 lg:h-60 w-full min-w-0">
                             <LastQuiz
-                                lastQuiz={insights_data?.insights || []}
+                                lastQuiz={insights_data?.items || []}
                                 insights_data={insights_data}
                             />
                         </div>
