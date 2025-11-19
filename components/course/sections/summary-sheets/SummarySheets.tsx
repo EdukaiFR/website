@@ -201,14 +201,14 @@ export const SummarySheets = ({
     return (
         <div className="w-full flex flex-col min-h-[calc(100vh-12rem)] sm:min-h-[65vh] gap-4 sm:gap-6 overflow-auto">
             {/* Header Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-100/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-white/90 via-blue-50/30 to-indigo-50/30 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-blue-200/40 shadow-2xl hover:shadow-3xl hover:border-blue-300/50 transition-all duration-500 hover:scale-[1.01]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg">
+                        <div className="relative p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl shadow-xl transition-all duration-300 hover:scale-110">
                             <FileText className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
-                            <h1 className="text-2xl font-bold text-gray-800">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                                 Fiches de révision
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">
@@ -292,17 +292,17 @@ export const SummarySheets = ({
             {/* Content Section */}
             <div className="flex-1">
                 {filteredFiles.length === 0 ? (
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-blue-100/50 shadow-xl text-center">
+                    <div className="bg-gradient-to-br from-white/95 via-blue-50/20 to-indigo-50/20 backdrop-blur-md rounded-3xl p-12 border border-blue-200/40 shadow-2xl text-center hover:shadow-3xl transition-all duration-500">
                         <div className="max-w-md mx-auto">
-                            <div className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl w-fit mx-auto mb-6 shadow-sm">
+                            <div className="relative p-5 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 rounded-3xl w-fit mx-auto mb-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
                                 <FileText className="w-14 h-14 text-blue-600" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-3">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                                 {searchTerm
                                     ? "Aucun fichier trouvé"
                                     : "Aucune fiche de révision"}
                             </h3>
-                            <p className="text-gray-600 mb-8 leading-relaxed">
+                            <p className="text-gray-600 mb-8 leading-relaxed text-base">
                                 {searchTerm
                                     ? "Essayez de modifier votre recherche ou ajoutez de nouveaux fichiers."
                                     : "Commencez par ajouter vos premières fiches de révision pour organiser votre apprentissage."}
@@ -326,9 +326,13 @@ export const SummarySheets = ({
                         {filteredFiles.map((file, index) => (
                             <div
                                 key={file._id}
-                                className={`bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 shadow-xl hover:shadow-2xl transition-all duration-300 group ${
+                                className={`bg-gradient-to-br from-white/95 via-white/90 to-blue-50/30 backdrop-blur-md rounded-2xl border border-blue-200/40 shadow-lg hover:shadow-2xl hover:border-blue-300/60 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 group ${
                                     viewMode === "grid" ? "p-6" : "p-4"
                                 }`}
+                                style={{
+                                    animationDelay: `${index * 50}ms`,
+                                    animation: "fadeInUp 0.5s ease-out forwards",
+                                }}
                             >
                                 {viewMode === "grid" ? (
                                     // Grid View
