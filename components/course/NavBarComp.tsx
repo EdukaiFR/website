@@ -14,7 +14,7 @@ interface NavBarCompProps {
 }
 
 export default function NavBarComp({
-    isPrivateView,
+    isPrivateView: _isPrivateView,
     tabs,
     selectedTab,
     setSelectedTab,
@@ -44,7 +44,7 @@ export default function NavBarComp({
             <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-1.5 shadow-sm border border-gray-100">
                 {/* Scrollable tabs container */}
                 <div className="flex overflow-x-auto scrollbar-hide gap-1 w-full max-w-full">
-                    {displayedTabs.map((tab, index) => {
+                    {displayedTabs.map((tab, _index) => {
                         const isActive = selectedTab === tab.tab;
                         return (
                             <button

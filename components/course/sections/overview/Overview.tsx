@@ -35,10 +35,10 @@ export type OverviewProps = {
 };
 
 export const Overview = ({
-    isPrivateView,
+    isPrivateView: _isPrivateView,
     course_id,
     course_title,
-    overview,
+    overview: _overview,
     examsData,
     createExam,
     getExams,

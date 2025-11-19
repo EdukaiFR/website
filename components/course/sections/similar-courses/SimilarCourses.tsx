@@ -13,8 +13,8 @@ export type SimilarCoursesProps = {
 };
 
 export const SimilarCourses = ({
-    course_id,
-    similarCourses,
+    course_id: _course_id,
+    similarCourses: _similarCourses,
 }: SimilarCoursesProps) => {
     return (
         <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-blue-50/30 via-blue-100/20 to-blue-50/30 rounded-3xl p-8 relative overflow-hidden">

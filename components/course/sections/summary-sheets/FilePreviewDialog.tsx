@@ -175,7 +175,7 @@ export const FilePreviewDialog = ({
                             className="max-w-full max-h-[400px] object-contain rounded-xl shadow-lg"
                             width={100}
                             height={100}
-                            onError={(e: unknown) => {
+                            onError={(_e: unknown) => {
                                 console.error(
                                     "Image failed to load:",
                                     file.src

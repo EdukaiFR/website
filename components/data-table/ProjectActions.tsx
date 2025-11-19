@@ -17,7 +17,7 @@ interface ProjectActionsProps<TData> {
     row: Row<TData>;
 }
 
-export function ProjectActions<TData>({ row }: ProjectActionsProps<TData>) {
+export function ProjectActions<TData>({ row: _row }: ProjectActionsProps<TData>) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

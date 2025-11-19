@@ -89,6 +89,7 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                             if (contentType.startsWith("image/")) {
                                 return (
                                     <div className="relative w-full h-full flex items-center justify-center">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${summary_sheet._id}`}
                                             alt={fileName}
