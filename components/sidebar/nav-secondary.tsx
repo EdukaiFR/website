@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import {
     SidebarGroup,
+    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -14,6 +15,7 @@ import {
 
 export function NavSecondary({
     items,
+    title,
     ...props
 }: {
     items: {
@@ -21,6 +23,7 @@ export function NavSecondary({
         label: string;
         Icon: LucideIcon;
     }[];
+    title?: string;
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
     const pathname = usePathname();
     const { state } = useSidebar();
@@ -28,6 +31,11 @@ export function NavSecondary({
 
     return (
         <SidebarGroup {...props}>
+            {title && (
+                <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">
+                    {title}
+                </SidebarGroupLabel>
+            )}
             <SidebarMenu className="space-y-1 px-2">
                 {items.map(item => {
                     const isActive =

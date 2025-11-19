@@ -7,7 +7,6 @@ import * as React from "react";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/sidebar/nav-user";
-import { BetaCard } from "@/components/sidebar/beta-card";
 import {
     Sidebar,
     SidebarContent,
@@ -19,9 +18,10 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar";
 import { useLinks } from "@/hooks/use-links";
+import { BetaCard } from "./beta-card 2";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { upLinks, downLinks, adminLinks } = useLinks();
+    const { upLinks, mySpaceLinks, downLinks, adminLinks } = useLinks();
 
     return (
         <Sidebar variant="inset" collapsible="icon" {...props}>
@@ -62,6 +62,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <hr className="border-t border-gray-300 my-2" />
             <SidebarContent>
                 <NavMain items={upLinks} />
+                <hr className="border-t border-gray-300 my-2" />
+                <NavSecondary items={mySpaceLinks} title="Mon espace" />
                 {adminLinks.length > 0 && (
                     <>
                         <hr className="border-t border-gray-300 my-2" />

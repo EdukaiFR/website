@@ -72,14 +72,20 @@ export function EducationSettings({
     };
 
     return (
-        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-800">
-                    <GraduationCap className="w-5 h-5" />
+        <Card className="bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardHeader className="relative border-b border-gray-100/50 bg-gradient-to-r from-blue-50/30 to-transparent pb-6">
+                <CardTitle className="flex items-center gap-3 text-gray-900 text-xl font-bold">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl shadow-md">
+                        <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
                     Informations d'études
                 </CardTitle>
+                <p className="text-sm text-gray-600 mt-2 ml-12">
+                    Personnalisez votre expérience selon votre niveau
+                </p>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 relative">
                 {/* Persistent Error Alert */}
                 {persistentError && (
                     <PersistentAlert
@@ -178,14 +184,19 @@ export function EducationSettings({
                     </div>
 
                     {/* Educational Information */}
-                    <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                        <div className="flex">
-                            <div className="ml-3">
-                                <p className="text-sm text-blue-700">
-                                    <strong>Aide :</strong> Ces informations
-                                    nous aident à personnaliser votre expérience
-                                    et à vous proposer du contenu adapté à votre
-                                    niveau d'études.
+                    <div className="bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200/50 p-5 rounded-xl">
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                                <GraduationCap className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                                    Pourquoi ces informations ?
+                                </h4>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    Ces informations nous aident à personnaliser
+                                    votre expérience et à vous proposer du
+                                    contenu adapté à votre niveau d'études.
                                 </p>
                             </div>
                         </div>
@@ -204,21 +215,21 @@ export function EducationSettings({
                     )}
 
                     {/* Submit Button */}
-                    <div className="flex justify-end pt-4">
+                    <div className="flex justify-end pt-6 border-t border-gray-100/50">
                         <Button
                             type="submit"
                             disabled={isLoading || !isDirty}
-                            className="px-6 h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-8 h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                         >
                             {isLoading ? (
                                 <span className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Sauvegarde...
+                                    Sauvegarde en cours...
                                 </span>
                             ) : (
                                 <span className="flex items-center gap-2">
-                                    <Save className="w-4 h-4" />
-                                    Sauvegarder
+                                    <Save className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                                    Sauvegarder les modifications
                                 </span>
                             )}
                         </Button>

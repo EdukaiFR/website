@@ -1,0 +1,447 @@
+"use client";
+
+import { useUserProfile } from "@/contexts/UserContext";
+import { useCourseService } from "@/services";
+import { useInsightsService } from "@/services/insights";
+import {
+    BookOpen,
+    Crown,
+    GraduationCap,
+    Mail,
+    Target,
+    Trophy,
+    User,
+    Zap,
+} from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+
+interface CourseData {
+    _id: string;
+    title: string;
+    subject: string;
+    level: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+interface InsightData {
+    _id: string;
+    quizId: string;
+    score: number;
+    userId: string;
+    createdAt: string;
+}
+
+interface QuizData {
+    _id: string;
+    title?: string;
+    courseId?: string;
+    createdAt?: string;
+}
+
+export default function ProfilePage() {
+    const { userProfile, loading } = useUserProfile();
+    const courseService = useCourseService();
+    const insightsService = useInsightsService();
+
+    const [courses, setCourses] = useState<CourseData[]>([]);
+    const [insights, setInsights] = useState<InsightData[]>([]);
+    const [allQuizzes, setAllQuizzes] = useState<QuizData[]>([]);
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                setStatsLoading(true);
+
+                // Fetch courses
+                const coursesResponse = await courseService.getCourses();
+                if (coursesResponse && "items" in coursesResponse && Array.isArray(coursesResponse.items)) {
+                    const coursesData = coursesResponse.items as CourseData[];
+                    setCourses(coursesData || []);
+
+                    // Fetch all quizzes from all courses
+                    const quizzesPromises = coursesData.map(async course => {
+                        try {
+                            if (!course?._id) {
+                                console.warn("Course has no _id:", course);
+                                return [];
+                            }
+                            const quizzesResponse =
+                                await courseService.getCourseQuizzes(course._id);
+                            if (
+                                quizzesResponse &&
+                                "items" in quizzesResponse &&
+                                Array.isArray(quizzesResponse.items)
+                            ) {
+                                return quizzesResponse.items as QuizData[];
+                            }
+                            return [];
+                        } catch (error) {
+                            console.error(
+                                `Error fetching quizzes for course ${course._id}:`,
+                                error
+                            );
+                            return [];
+                        }
+                    });
+
+                    const quizzesArrays = await Promise.all(quizzesPromises);
+                    const allQuizzesFlat = quizzesArrays.flat();
+                    setAllQuizzes(allQuizzesFlat);
+                }
+
+                // Fetch insights (quiz results)
+                try {
+                    const insightsResponse =
+                        await insightsService.getAllMyInsights();
+                    console.log("🔍 Insights response:", insightsResponse);
+                    if (insightsResponse && Array.isArray(insightsResponse)) {
+                        console.log("✅ Insights array length:", insightsResponse.length);
+                        setInsights(insightsResponse);
+                    } else if (insightsResponse && "items" in insightsResponse) {
+                        console.log("✅ Insights items length:", insightsResponse.items.length);
+                        setInsights(insightsResponse.items as InsightData[]);
+                    } else {
+                        console.log("⚠️ Insights response format unknown, setting to empty array");
+                        setInsights([]);
+                    }
+                } catch (error) {
+                    console.error("Error fetching insights:", error);
+                    setInsights([]);
+                }
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            } finally {
+                setStatsLoading(false);
+            }
+        };
+
+        if (!loading && userProfile) {
+            fetchStats();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading, userProfile]);
+
+    // Calculate stats with useMemo to avoid recalculation
+    const stats = useMemo(() => {
+        const totalCourses = courses.length;
+        const totalQuizzes = allQuizzes.length;
+
+        // Calculate scores from insights
+        const totalInsights = insights.length;
+        console.log("📊 Stats calculation:", {
+            totalCourses,
+            totalQuizzes,
+            totalInsights,
+            insights: insights,
+        });
+
+        // Calculate scores with safety checks
+        const validScores = insights
+            .map(insight => insight?.score)
+            .filter((score): score is number => typeof score === "number" && !isNaN(score));
+
+        const averageScore =
+            validScores.length > 0
+                ? Math.round(
+                      validScores.reduce((sum, score) => sum + score, 0) /
+                          validScores.length
+                  )
+                : 0;
+        const bestScore =
+            validScores.length > 0
+                ? Math.round(Math.max(...validScores))
+                : 0;
+
+        console.log("📊 Calculated stats:", {
+            totalCourses,
+            totalQuizzes,
+            averageScore,
+            bestScore,
+            totalInsights,
+        });
+
+        return {
+            totalCourses,
+            totalQuizzes,
+            averageScore,
+            bestScore,
+            totalInsights,
+        };
+    }, [courses, allQuizzes, insights]);
+
+    // Determine the display name
+    const getDisplayName = () => {
+        if (!userProfile) return "";
+
+        if (
+            userProfile.username.includes("@") ||
+            userProfile.username === userProfile.email
+        ) {
+            return `${userProfile.firstName} ${userProfile.lastName}`;
+        }
+
+        return userProfile.username;
+    };
+
+    const getPlanBadge = () => {
+        const plan = userProfile?.accountPlan || "free";
+        const badges = {
+            free: { label: "Gratuit", color: "bg-gray-500", icon: Crown },
+            pro: { label: "Pro", color: "bg-blue-500", icon: Crown },
+            premium: { label: "Premium", color: "bg-purple-500", icon: Crown },
+        };
+        return badges[plan as keyof typeof badges] || badges.free;
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-white">
+            {/* Header Section */}
+            <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
+                <div className="relative z-10 container mx-auto px-6 py-12">
+                    <div className="flex flex-col items-center text-center">
+                        {/* Profile Picture or Icon */}
+                        <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 border-4 border-white/30">
+                            {userProfile?.profilePic ? (
+                                <div className="w-full h-full rounded-full overflow-hidden">
+                                    <User className="w-10 h-10 text-white" />
+                                </div>
+                            ) : (
+                                <User className="w-10 h-10 text-white" />
+                            )}
+                        </div>
+
+                        {/* Name with Plan Badge */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <h1 className="text-3xl font-bold">
+                                {loading ? (
+                                    <span className="inline-block animate-pulse bg-white/30 rounded h-10 w-48"></span>
+                                ) : (
+                                    getDisplayName()
+                                )}
+                            </h1>
+                            {!loading && (
+                                <div
+                                    className={`${getPlanBadge().color} px-3 py-1 rounded-full text-white text-sm font-medium flex items-center gap-1.5`}
+                                >
+                                    <Crown className="w-4 h-4" />
+                                    {getPlanBadge().label}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Badges Row */}
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                            {/* Email Badge */}
+                            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
+                                <Mail className="w-4 h-4" />
+                                <span className="text-sm">
+                                    {loading ? "..." : userProfile?.email}
+                                </span>
+                            </div>
+
+                            {/* Level Badge */}
+                            {userProfile?.levelOfStudy && (
+                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
+                                    <GraduationCap className="w-4 h-4" />
+                                    <span className="text-sm">
+                                        {userProfile.levelOfStudy}
+                                        {userProfile.grade &&
+                                            ` - ${userProfile.grade}`}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Institution Badge */}
+                            {userProfile?.institution && (
+                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
+                                    <BookOpen className="w-4 h-4" />
+                                    <span className="text-sm">
+                                        {userProfile.institution}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Wave */}
+                <div className="absolute bottom-0 left-0 w-full">
+                    <svg
+                        className="w-full h-12 text-white"
+                        preserveAspectRatio="none"
+                        viewBox="0 0 1440 120"
+                        fill="currentColor"
+                    >
+                        <path d="M0,120 C240,60 480,60 720,80 C960,100 1200,40 1440,60 L1440,120 Z" />
+                    </svg>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="flex-1 container mx-auto px-6 py-12">
+                {/* Statistics Section */}
+                <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                        Mes Statistiques
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Total Courses */}
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-blue-200">
+                                    <BookOpen className="w-6 h-6 text-blue-600" />
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-gray-900 mb-1">
+                                {statsLoading ? "..." : stats.totalCourses}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                Cours Générés
+                            </div>
+                        </div>
+
+                        {/* Total Quizzes */}
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-purple-200">
+                                    <Zap className="w-6 h-6 text-purple-600" />
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-gray-900 mb-1">
+                                {statsLoading ? "..." : stats.totalQuizzes}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                Quiz Créés
+                            </div>
+                        </div>
+
+                        {/* Average Score */}
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-green-200">
+                                    <Target className="w-6 h-6 text-green-600" />
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-gray-900 mb-1">
+                                {statsLoading
+                                    ? "..."
+                                    : stats.totalInsights > 0
+                                      ? `${stats.averageScore}%`
+                                      : "N/A"}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                Score Moyen
+                            </div>
+                        </div>
+
+                        {/* Best Score */}
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-yellow-200">
+                                    <Trophy className="w-6 h-6 text-yellow-600" />
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-gray-900 mb-1">
+                                {statsLoading
+                                    ? "..."
+                                    : stats.totalInsights > 0
+                                      ? `${stats.bestScore}%`
+                                      : "N/A"}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                Meilleur Score
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Activity */}
+                {!statsLoading && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                            Activité Récente
+                        </h2>
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                            {stats.totalInsights > 0 ? (
+                                <div className="space-y-4">
+                                    {insights
+                                        .filter(insight => insight?.createdAt && insight?._id)
+                                        .sort(
+                                            (a, b) =>
+                                                new Date(b.createdAt).getTime() -
+                                                new Date(a.createdAt).getTime()
+                                        )
+                                        .slice(0, 5)
+                                        .map((insight) => (
+                                            <div
+                                                key={insight._id}
+                                                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                        <Zap className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">
+                                                            Quiz Complété
+                                                        </div>
+                                                        <div className="text-sm text-gray-600">
+                                                            {new Date(
+                                                                insight.createdAt
+                                                            ).toLocaleDateString(
+                                                                "fr-FR",
+                                                                {
+                                                                    day: "numeric",
+                                                                    month: "long",
+                                                                    year: "numeric",
+                                                                }
+                                                            )}{" "}
+                                                            à{" "}
+                                                            {new Date(
+                                                                insight.createdAt
+                                                            ).toLocaleTimeString(
+                                                                "fr-FR",
+                                                                {
+                                                                    hour: "numeric",
+                                                                    minute: "2-digit",
+                                                                }
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={`px-4 py-2 rounded-full font-semibold ${
+                                                        (insight.score || 0) >= 80
+                                                            ? "bg-green-100 text-green-700"
+                                                            : (insight.score || 0) >= 60
+                                                              ? "bg-yellow-100 text-yellow-700"
+                                                              : "bg-red-100 text-red-700"
+                                                    }`}
+                                                >
+                                                    {Math.round(insight.score || 0)}%
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <Zap className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                        Aucune activité pour le moment
+                                    </h3>
+                                    <p className="text-sm text-gray-600 text-center max-w-md">
+                                        Commence à faire des quiz pour voir ton activité ici !
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </main>
+        </div>
+    );
+}
