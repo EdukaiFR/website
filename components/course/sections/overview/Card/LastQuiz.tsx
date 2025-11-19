@@ -48,8 +48,11 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         return "text-red-600 bg-red-50 border-red-200";
     };
 
-    // Take only the last quiz
-    const recentQuizzes = lastQuiz.slice(-1);
+    // Sort by date (most recent first) and take the most recent quiz
+    const sortedQuizzes = [...lastQuiz].sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+    const recentQuizzes = sortedQuizzes.slice(0, 1);
 
     // Calculate insights from items array
     const calculateInsights = () => {

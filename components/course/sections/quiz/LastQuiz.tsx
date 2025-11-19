@@ -187,12 +187,12 @@ export const LastQuiz = ({
         >
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl">
+                <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
                     <Clock className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-base font-semibold text-gray-800">
+                <span className="text-base font-semibold text-gray-800">
                     Tes statistiques
-                </h3>
+                </span>
             </div>
 
             {/* Statistics Cards */}
@@ -286,7 +286,10 @@ export const LastQuiz = ({
                     </div>
 
                     <div className="space-y-2 max-h-32 overflow-y-auto">
-                        {last_attemps.slice(0, 3).map((attempt, index) => (
+                        {[...last_attemps]
+                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .slice(0, 3)
+                            .map((attempt, index) => (
                             <div
                                 key={attempt.createdAt}
                                 className="p-3 bg-gray-50 rounded-xl"
@@ -315,10 +318,12 @@ export const LastQuiz = ({
                     {/* Motivational Section */}
                     <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200">
                         <div className="flex items-center gap-2 mb-2">
-                            <Trophy className="w-4 h-4 text-blue-600" />
-                            <h4 className="text-sm font-semibold text-blue-800">
+                            <div className="p-1.5 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Trophy className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <span className="text-sm font-semibold text-blue-800">
                                 {motivationalData.title}
-                            </h4>
+                            </span>
                         </div>
                         <p className="text-xs text-blue-700 leading-relaxed">
                             {motivationalData.message}
