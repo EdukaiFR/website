@@ -49,6 +49,15 @@ export const Statistics = ({
     const [loading, setLoading] = useState(!insights_data); // Start loading if no initial data
     const [hasAttemptedFetch, setHasAttemptedFetch] = useState(!!insights_data);
 
+    // Update local insights when prop changes
+    useEffect(() => {
+        if (insights_data) {
+            setLocalInsights(insights_data);
+            setHasAttemptedFetch(true);
+            setLoading(false);
+        }
+    }, [insights_data]);
+
     useEffect(() => {
         const fetchInsights = async () => {
             if (quiz_id && insights_service && !hasAttemptedFetch) {

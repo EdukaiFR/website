@@ -30,6 +30,8 @@ export function useCourseLogic() {
 
     // Ref to track if insights have been loaded for a quizId
     const insightsLoadedRef = useRef<string | null>(null);
+    // Ref to track if initial insights fetch is in progress
+    const insightsFetchingRef = useRef<boolean>(false);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -85,9 +87,19 @@ export function useCourseLogic() {
         if (courseData && courseData.quizzes.length > 0) {
             const quizId = courseData.quizzes[0];
             setQuizId(quizId);
-            const quizResponse = await loadQuiz(quizId);
-            // Always try to load insights for the quiz
-            await getQuizInsights(quizId);
+            await loadQuiz(quizId);
+            // Load insights immediately only if we're on a tab that needs them
+            if (selectedTabState === "statistics" || selectedTabState === "overview") {
+                if (!insightsFetchingRef.current && insightsLoadedRef.current !== quizId) {
+                    insightsFetchingRef.current = true;
+                    try {
+                        await getQuizInsights(quizId);
+                        insightsLoadedRef.current = quizId;
+                    } finally {
+                        insightsFetchingRef.current = false;
+                    }
+                }
+            }
         }
     };
 
@@ -205,11 +217,18 @@ export function useCourseLogic() {
             if (
                 (selectedTabState === "statistics" || selectedTabState === "overview") &&
                 quizId &&
+                !insightsFetchingRef.current &&
                 insightsLoadedRef.current !== quizId
             ) {
-                // Mark as loading to prevent duplicate calls
-                insightsLoadedRef.current = quizId;
-                await getQuizInsights(quizId);
+                // Prevent duplicate calls
+                insightsFetchingRef.current = true;
+                try {
+                    await getQuizInsights(quizId);
+                    // Mark as loaded after successful fetch
+                    insightsLoadedRef.current = quizId;
+                } finally {
+                    insightsFetchingRef.current = false;
+                }
             }
         };
 
