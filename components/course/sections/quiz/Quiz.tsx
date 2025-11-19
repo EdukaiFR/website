@@ -1,6 +1,6 @@
 import { getPercentage } from "@/lib/utils";
 import { rankings } from "@/public/mocks/default-value";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
@@ -21,6 +21,7 @@ export type QuizProps = {
             author: string;
         }>;
     };
+    refreshInsights?: (quizId: string) => Promise<unknown>;
 };
 
 type QuizQuestion = {
@@ -35,6 +36,7 @@ export const Quiz = ({
     quiz_id,
     insights_service,
     insights_data,
+    refreshInsights,
 }: QuizProps) => {
     const typedQuizData = quiz_data as QuizQuestion[];
     const [questionIndex, setQuestionIndex] = useState<number>(1);
@@ -52,10 +54,14 @@ export const Quiz = ({
     const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
     const [isFinish, setIsFinish] = useState<boolean>(false);
 
+    // Track if insight has been created to prevent duplicates
+    const insightCreatedRef = useRef<boolean>(false);
+
     // Create insight when quiz is finished
     useEffect(() => {
         const createQuizInsight = async () => {
-            if (isFinish && quiz_id && insights_service) {
+            if (isFinish && quiz_id && insights_service && !insightCreatedRef.current) {
+                insightCreatedRef.current = true; // Mark as created immediately to prevent duplicates
                 try {
                     const finalScore = getPercentage(
                         score,
@@ -64,17 +70,20 @@ export const Quiz = ({
                     await insights_service.createInsight(quiz_id, finalScore);
                     insightsToast.createSuccess();
 
-                    // Force refresh insights data after creating new insight
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to ensure backend is updated
+                    // Refresh insights data after creating new insight
+                    if (refreshInsights) {
+                        await refreshInsights(quiz_id);
+                    }
                 } catch (error) {
                     console.error("❌ Failed to create quiz insight:", error);
                     insightsToast.createError();
+                    insightCreatedRef.current = false; // Reset on error to allow retry
                 }
             }
         };
 
         createQuizInsight();
-    }, [isFinish, quiz_id, score, typedQuizData.length, insights_service]);
+    }, [isFinish, quiz_id, score, typedQuizData.length, insights_service, refreshInsights]);
 
     const handleSubmitQuestion = () => {
         try {
@@ -132,6 +141,8 @@ export const Quiz = ({
             setIsAnswer(false);
             setScore(0);
             setIsFinish(false);
+            // Reset insight created flag to allow creating a new insight
+            insightCreatedRef.current = false;
         } catch (error: unknown) {
             console.error("Oups.. Une erreur est survenue:", error);
             quizToast.restartError();

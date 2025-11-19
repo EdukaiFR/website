@@ -5,7 +5,7 @@ import {
     useQuizService,
 } from "@/services";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { SummarySheetData } from "@/lib/types/library";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
@@ -27,6 +27,9 @@ export function useCourseLogic() {
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
     const [selectedTabState, setSelectedTabState] = useState<string>(tabFromUrl);
+
+    // Ref to track if insights have been loaded for a quizId
+    const insightsLoadedRef = useRef<string | null>(null);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -61,7 +64,7 @@ export function useCourseLogic() {
         deleteExamById,
     } = useCourse(courseService);
 
-    const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
+    const { quizData, insightsData, loadQuiz, getQuizInsights, createInsight } = useQuiz(
         quizService,
         insightsService
     );
@@ -155,6 +158,8 @@ export function useCourseLogic() {
             loadCourse(courseId);
             loadCourseFiles(courseId);
             loadSummarySheets();
+            // Reset insights loaded ref when course changes
+            insightsLoadedRef.current = null;
         }
     }, [courseId]);
 
@@ -199,20 +204,17 @@ export function useCourseLogic() {
         const loadInsightsForTab = async () => {
             if (
                 (selectedTabState === "statistics" || selectedTabState === "overview") &&
-                quizId
+                quizId &&
+                insightsLoadedRef.current !== quizId
             ) {
-                // Only load if we truly don't have any insights data yet
-                const hasValidInsights =
-                    insightsData && insightsData.items?.length > 0;
-
-                if (!hasValidInsights) {
-                    await getQuizInsights(quizId);
-                }
+                // Mark as loading to prevent duplicate calls
+                insightsLoadedRef.current = quizId;
+                await getQuizInsights(quizId);
             }
         };
 
         loadInsightsForTab();
-    }, [selectedTabState, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
+    }, [selectedTabState, quizId, getQuizInsights]);
 
     return {
         courseId,
@@ -233,5 +235,6 @@ export function useCourseLogic() {
         deleteExam,
         loadCourseFiles,
         loadSummarySheets,
+        getQuizInsights,
     };
 }

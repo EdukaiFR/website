@@ -39,6 +39,7 @@ interface CourseContentRendererProps {
     quizData: unknown;
     loadCourseFiles: (courseId: string) => Promise<unknown>;
     refreshSummarySheets?: () => void;
+    refreshInsights?: (quizId: string) => Promise<unknown>;
 }
 
 export function CourseContentRenderer({
@@ -60,6 +61,7 @@ export function CourseContentRenderer({
     quizData,
     loadCourseFiles,
     refreshSummarySheets,
+    refreshInsights,
 }: CourseContentRendererProps) {
     return (
         <div className="flex-1 min-h-0 w-full max-w-full">
@@ -153,6 +155,7 @@ export function CourseContentRenderer({
                             }>;
                         }
                     }
+                    refreshInsights={refreshInsights}
                 />
             )}
         </div>
