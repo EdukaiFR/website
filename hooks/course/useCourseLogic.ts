@@ -9,6 +9,7 @@ import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { SummarySheetData } from "@/lib/types/library";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import type { InsightsResponse } from "@/lib/types/insights";
 
 export function useCourseLogic() {
     const params = useParams();
@@ -32,6 +33,8 @@ export function useCourseLogic() {
     const insightsLoadedRef = useRef<string | null>(null);
     // Ref to track if initial insights fetch is in progress
     const insightsFetchingRef = useRef<boolean>(false);
+    // AbortController ref for canceling requests
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -89,12 +92,29 @@ export function useCourseLogic() {
             setQuizId(quizId);
             await loadQuiz(quizId);
             // Load insights immediately only if we're on a tab that needs them
-            if (selectedTabState === "statistics" || selectedTabState === "overview") {
-                if (!insightsFetchingRef.current && insightsLoadedRef.current !== quizId) {
+            if (
+                selectedTabState === "statistics" ||
+                selectedTabState === "overview"
+            ) {
+                if (
+                    !insightsFetchingRef.current &&
+                    insightsLoadedRef.current !== quizId
+                ) {
+                    // Cancel previous request
+                    abortControllerRef.current?.abort();
+                    abortControllerRef.current = new AbortController();
+
                     insightsFetchingRef.current = true;
                     try {
                         await getQuizInsights(quizId);
                         insightsLoadedRef.current = quizId;
+                    } catch (error) {
+                        if (
+                            error instanceof Error &&
+                            error.name !== "AbortError"
+                        ) {
+                            // Only log non-abort errors
+                        }
                     } finally {
                         insightsFetchingRef.current = false;
                     }
@@ -195,14 +215,6 @@ export function useCourseLogic() {
         if (courseId && loadCourseSummarySheets) {
             const data = await loadCourseSummarySheets(courseId);
 
-            // DEBUG: Log to verify backend response
-            console.log("[useCourseLogic] Summary sheets response:", {
-                courseId,
-                isOwner: courseData?.isOwner,
-                data,
-                itemsCount: data?.items?.length || 0,
-            });
-
             // Backend now returns both AI-generated and user-uploaded sheets
             // with proper structure including type and source fields
             const sheets = data?.items || [];
@@ -215,17 +227,29 @@ export function useCourseLogic() {
     useEffect(() => {
         const loadInsightsForTab = async () => {
             if (
-                (selectedTabState === "statistics" || selectedTabState === "overview") &&
+                (selectedTabState === "statistics" ||
+                    selectedTabState === "overview") &&
                 quizId &&
                 !insightsFetchingRef.current &&
                 insightsLoadedRef.current !== quizId
             ) {
+                // Cancel previous request
+                abortControllerRef.current?.abort();
+                abortControllerRef.current = new AbortController();
+
                 // Prevent duplicate calls
                 insightsFetchingRef.current = true;
                 try {
                     await getQuizInsights(quizId);
                     // Mark as loaded after successful fetch
                     insightsLoadedRef.current = quizId;
+                } catch (error) {
+                    if (
+                        error instanceof Error &&
+                        error.name !== "AbortError"
+                    ) {
+                        // Only handle non-abort errors
+                    }
                 } finally {
                     insightsFetchingRef.current = false;
                 }
@@ -233,6 +257,11 @@ export function useCourseLogic() {
         };
 
         loadInsightsForTab();
+
+        // Cleanup on unmount
+        return () => {
+            abortControllerRef.current?.abort();
+        };
     }, [selectedTabState, quizId, getQuizInsights]);
 
     return {
