@@ -1,136 +1,108 @@
 import axios from "axios";
 import { getCurrentUserId } from "@/lib/auth-utils";
+import type {
+    InsightsResponse,
+    AnalyticsData,
+    InsightItem,
+} from "@/lib/types/insights";
 
-export interface AnalyticsCourse {
-    courseId: string;
-    title: string;
-    subject: string;
-    avgScore: number;
-    quizCount: number;
-}
+export type { AnalyticsData } from "@/lib/types/insights";
 
-export interface AnalyticsData {
-    status: string;
-    message: string;
-    insights: Array<{
-        score: number;
-        createdAt: string;
-    }>;
-    bestCourse: AnalyticsCourse | null;
-    worstCourse: AnalyticsCourse | null;
+interface CreateInsightResponse {
+    success: boolean;
+    insight: InsightItem;
 }
 
 export interface InsightsService {
-    createInsight: (quizId: string, score: number) => Promise<unknown>;
-    getQuizInsights: (quizId: string) => Promise<unknown>;
-    getAllMyInsights: () => Promise<unknown>;
-    getAnalytics: () => Promise<AnalyticsData>;
+    createInsight: (
+        quizId: string,
+        score: number,
+        signal?: AbortSignal
+    ) => Promise<CreateInsightResponse>;
+    getQuizInsights: (
+        quizId: string,
+        signal?: AbortSignal
+    ) => Promise<InsightsResponse>;
+    getAllMyInsights: (signal?: AbortSignal) => Promise<InsightItem[]>;
+    getAnalytics: (signal?: AbortSignal) => Promise<AnalyticsData>;
 }
 
 export function useInsightsService() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const createInsight = async (quizId: string, score: number) => {
-        try {
-            const userId = getCurrentUserId();
+    const createInsight = async (
+        quizId: string,
+        score: number,
+        signal?: AbortSignal
+    ): Promise<CreateInsightResponse> => {
+        const userId = getCurrentUserId();
 
-            if (!userId) {
-                throw new Error("User not authenticated");
-            }
-
-            const response = await axios.post(
-                `${apiUrl}/insights/${quizId}`,
-                { score, userId },
-                { withCredentials: true }
-            );
-
-            return response.data;
-        } catch (error) {
-            console.error("[Insights Service] Error creating insight:", error);
-            throw error;
+        if (!userId) {
+            throw new Error("User not authenticated");
         }
+
+        const response = await axios.post<CreateInsightResponse>(
+            `${apiUrl}/insights/${quizId}`,
+            { score, userId },
+            { withCredentials: true, signal }
+        );
+
+        return response.data;
     };
 
-    const getQuizInsights = async (quizId: string) => {
-        try {
-            const response = await axios.get(`${apiUrl}/insights/${quizId}`, {
+    const getQuizInsights = async (
+        quizId: string,
+        signal?: AbortSignal
+    ): Promise<InsightsResponse> => {
+        const response = await axios.get<InsightsResponse>(
+            `${apiUrl}/insights/${quizId}`,
+            {
                 withCredentials: true,
-            });
-
-            const data = response.data;
-
-            return data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error("[Insights Service] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
+                signal,
             }
+        );
 
-            throw error;
-        }
+        return response.data;
     };
 
-    const getAllMyInsights = async () => {
-        try {
-            const userId = getCurrentUserId();
+    const getAllMyInsights = async (
+        signal?: AbortSignal
+    ): Promise<InsightItem[]> => {
+        const userId = getCurrentUserId();
 
-            if (!userId) {
-                throw new Error("User not authenticated");
-            }
-
-            const response = await axios.get(`${apiUrl}/insights/my`, {
-                withCredentials: true,
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error(
-                "[Insights Service] Error fetching all user insights:",
-                error
-            );
-            if (axios.isAxiosError(error)) {
-                console.error("[Insights Service] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
-
-            throw error;
+        if (!userId) {
+            throw new Error("User not authenticated");
         }
+
+        const response = await axios.get<InsightItem[]>(
+            `${apiUrl}/insights/my`,
+            {
+                withCredentials: true,
+                signal,
+            }
+        );
+
+        return response.data;
     };
 
-    const getAnalytics = async (): Promise<AnalyticsData> => {
-        try {
-            const userId = getCurrentUserId();
+    const getAnalytics = async (
+        signal?: AbortSignal
+    ): Promise<AnalyticsData> => {
+        const userId = getCurrentUserId();
 
-            if (!userId) {
-                throw new Error("User not authenticated");
-            }
-
-            const response = await axios.get(`${apiUrl}/stats/analytics`, {
-                withCredentials: true,
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error(
-                "[Insights Service] Error fetching analytics:",
-                error
-            );
-            if (axios.isAxiosError(error)) {
-                console.error("[Insights Service] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
-
-            throw error;
+        if (!userId) {
+            throw new Error("User not authenticated");
         }
+
+        const response = await axios.get<AnalyticsData>(
+            `${apiUrl}/stats/analytics`,
+            {
+                withCredentials: true,
+                signal,
+            }
+        );
+
+        return response.data;
     };
 
     return { createInsight, getQuizInsights, getAllMyInsights, getAnalytics };
