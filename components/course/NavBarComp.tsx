@@ -34,6 +34,30 @@ export default function NavBarComp({
         return mobileLabels[label] || label.slice(0, 6);
     };
 
+    // Keyboard navigation handler
+    const handleKeyDown = (
+        e: React.KeyboardEvent,
+        currentTab: string
+    ) => {
+        const currentIndex = tabs.findIndex(t => t.tab === currentTab);
+
+        if (e.key === "ArrowRight") {
+            e.preventDefault();
+            const nextIndex = (currentIndex + 1) % tabs.length;
+            setSelectedTab(tabs[nextIndex].tab);
+        } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            setSelectedTab(tabs[prevIndex].tab);
+        } else if (e.key === "Home") {
+            e.preventDefault();
+            setSelectedTab(tabs[0].tab);
+        } else if (e.key === "End") {
+            e.preventDefault();
+            setSelectedTab(tabs[tabs.length - 1].tab);
+        }
+    };
+
     // Show all tabs for all users (public courses fully accessible)
     // Backend handles privacy (users see only their own exams/insights)
     const displayedTabs = tabs;
@@ -50,6 +74,7 @@ export default function NavBarComp({
                             <button
                                 key={tab.tab}
                                 onClick={() => setSelectedTab(tab.tab)}
+                                onKeyDown={e => handleKeyDown(e, tab.tab)}
                                 className="relative flex-shrink-0 px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5
                                          font-medium text-[11px] sm:text-sm lg:text-base
                                          whitespace-nowrap min-w-0 max-w-[65px] sm:max-w-none
@@ -60,7 +85,7 @@ export default function NavBarComp({
                                 role="tab"
                                 aria-selected={isActive}
                                 aria-controls={`panel-${tab.tab}`}
-                                tabIndex={isActive ? 0 : -1}
+                                tabIndex={0}
                             >
                                 {/* Animated background for active tab */}
                                 {isActive && (
