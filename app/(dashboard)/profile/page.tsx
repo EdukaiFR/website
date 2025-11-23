@@ -14,6 +14,9 @@ import {
     Zap,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
+import { formatFullDate } from "@/lib/utils/date";
+import type { InsightItem } from "@/lib/types/insights";
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 
 interface CourseData {
     _id: string;
@@ -22,14 +25,6 @@ interface CourseData {
     level: string;
     createdAt?: string;
     updatedAt?: string;
-}
-
-interface InsightData {
-    _id: string;
-    quizId: string;
-    score: number;
-    userId: string;
-    createdAt: string;
 }
 
 interface QuizData {
@@ -45,7 +40,7 @@ export default function ProfilePage() {
     const insightsService = useInsightsService();
 
     const [courses, setCourses] = useState<CourseData[]>([]);
-    const [insights, setInsights] = useState<InsightData[]>([]);
+    const [insights, setInsights] = useState<InsightItem[]>([]);
     const [allQuizzes, setAllQuizzes] = useState<QuizData[]>([]);
     const [statsLoading, setStatsLoading] = useState(true);
 
@@ -56,7 +51,11 @@ export default function ProfilePage() {
 
                 // Fetch courses
                 const coursesResponse = await courseService.getCourses();
-                if (coursesResponse && "items" in coursesResponse && Array.isArray(coursesResponse.items)) {
+                if (
+                    coursesResponse &&
+                    "items" in coursesResponse &&
+                    Array.isArray(coursesResponse.items)
+                ) {
                     const coursesData = coursesResponse.items as CourseData[];
                     setCourses(coursesData || []);
 
@@ -64,7 +63,6 @@ export default function ProfilePage() {
                     const quizzesPromises = coursesData.map(async course => {
                         try {
                             if (!course?._id) {
-                                console.warn("Course has no _id:", course);
                                 return [];
                             }
                             const quizzesResponse =
@@ -77,11 +75,7 @@ export default function ProfilePage() {
                                 return quizzesResponse.items as QuizData[];
                             }
                             return [];
-                        } catch (error) {
-                            console.error(
-                                `Error fetching quizzes for course ${course._id}:`,
-                                error
-                            );
+                        } catch {
                             return [];
                         }
                     });
@@ -95,23 +89,16 @@ export default function ProfilePage() {
                 try {
                     const insightsResponse =
                         await insightsService.getAllMyInsights();
-                    console.log("🔍 Insights response:", insightsResponse);
-                    if (insightsResponse && Array.isArray(insightsResponse)) {
-                        console.log("✅ Insights array length:", insightsResponse.length);
+                    if (Array.isArray(insightsResponse)) {
                         setInsights(insightsResponse);
-                    } else if (insightsResponse && "items" in insightsResponse) {
-                        console.log("✅ Insights items length:", insightsResponse.items.length);
-                        setInsights(insightsResponse.items as InsightData[]);
                     } else {
-                        console.log("⚠️ Insights response format unknown, setting to empty array");
                         setInsights([]);
                     }
-                } catch (error) {
-                    console.error("Error fetching insights:", error);
+                } catch {
                     setInsights([]);
                 }
-            } catch (error) {
-                console.error("Error fetching stats:", error);
+            } catch {
+                // Error fetching stats
             } finally {
                 setStatsLoading(false);
             }
@@ -127,20 +114,15 @@ export default function ProfilePage() {
     const stats = useMemo(() => {
         const totalCourses = courses.length;
         const totalQuizzes = allQuizzes.length;
-
-        // Calculate scores from insights
         const totalInsights = insights.length;
-        console.log("📊 Stats calculation:", {
-            totalCourses,
-            totalQuizzes,
-            totalInsights,
-            insights: insights,
-        });
 
         // Calculate scores with safety checks
         const validScores = insights
             .map(insight => insight?.score)
-            .filter((score): score is number => typeof score === "number" && !isNaN(score));
+            .filter(
+                (score): score is number =>
+                    typeof score === "number" && Number.isFinite(score)
+            );
 
         const averageScore =
             validScores.length > 0
@@ -150,17 +132,7 @@ export default function ProfilePage() {
                   )
                 : 0;
         const bestScore =
-            validScores.length > 0
-                ? Math.round(Math.max(...validScores))
-                : 0;
-
-        console.log("📊 Calculated stats:", {
-            totalCourses,
-            totalQuizzes,
-            averageScore,
-            bestScore,
-            totalInsights,
-        });
+            validScores.length > 0 ? Math.round(Math.max(...validScores)) : 0;
 
         return {
             totalCourses,
@@ -193,6 +165,21 @@ export default function ProfilePage() {
             premium: { label: "Premium", color: "bg-purple-500", icon: Crown },
         };
         return badges[plan as keyof typeof badges] || badges.free;
+    };
+
+    if (loading || statsLoading) {
+        return <PageLoadingSkeleton />;
+    }
+
+    const getScoreColor = (score: number): string => {
+        if (score >= 80) return "bg-green-100 text-green-700";
+        if (score >= 60) return "bg-yellow-100 text-yellow-700";
+        return "bg-red-100 text-red-700";
+    };
+
+    const getScoreLabel = (score: number): string => {
+        if (stats.totalInsights === 0) return "N/A";
+        return `${score}%`;
     };
 
     return (
@@ -325,11 +312,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading
-                                    ? "..."
-                                    : stats.totalInsights > 0
-                                      ? `${stats.averageScore}%`
-                                      : "N/A"}
+                                {getScoreLabel(stats.averageScore)}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Score Moyen
@@ -344,11 +327,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading
-                                    ? "..."
-                                    : stats.totalInsights > 0
-                                      ? `${stats.bestScore}%`
-                                      : "N/A"}
+                                {getScoreLabel(stats.bestScore)}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Meilleur Score
@@ -388,37 +367,16 @@ export default function ProfilePage() {
                                                             Quiz Complété
                                                         </div>
                                                         <div className="text-sm text-gray-600">
-                                                            {new Date(
+                                                            {formatFullDate(
                                                                 insight.createdAt
-                                                            ).toLocaleDateString(
-                                                                "fr-FR",
-                                                                {
-                                                                    day: "numeric",
-                                                                    month: "long",
-                                                                    year: "numeric",
-                                                                }
-                                                            )}{" "}
-                                                            à{" "}
-                                                            {new Date(
-                                                                insight.createdAt
-                                                            ).toLocaleTimeString(
-                                                                "fr-FR",
-                                                                {
-                                                                    hour: "numeric",
-                                                                    minute: "2-digit",
-                                                                }
                                                             )}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div
-                                                    className={`px-4 py-2 rounded-full font-semibold ${
-                                                        (insight.score || 0) >= 80
-                                                            ? "bg-green-100 text-green-700"
-                                                            : (insight.score || 0) >= 60
-                                                              ? "bg-yellow-100 text-yellow-700"
-                                                              : "bg-red-100 text-red-700"
-                                                    }`}
+                                                    className={`px-4 py-2 rounded-full font-semibold ${getScoreColor(
+                                                        insight.score || 0
+                                                    )}`}
                                                 >
                                                     {Math.round(insight.score || 0)}%
                                                 </div>
