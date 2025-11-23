@@ -12,14 +12,21 @@ import {
     Zap,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
+import { useUserStatistics } from "@/hooks/useUserStatistics";
+import { formatFullDate } from "@/lib/utils/date";
+import type { InsightItem } from "@/lib/types/insights";
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 
 type TimePeriod = "7days" | "30days" | "year" | "lifetime";
 
 export default function StatsPage() {
     const insightsService = useInsightsService();
-    const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+        null
+    );
     const [loading, setLoading] = useState(true);
-    const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("30days");
+    const [selectedPeriod, setSelectedPeriod] =
+        useState<TimePeriod>("30days");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,8 +34,7 @@ export default function StatsPage() {
                 setLoading(true);
                 const data = await insightsService.getAnalytics();
                 setAnalyticsData(data);
-            } catch (error) {
-                console.error("Error fetching analytics:", error);
+            } catch {
                 setAnalyticsData(null);
             } finally {
                 setLoading(false);
@@ -39,98 +45,22 @@ export default function StatsPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Filter insights by selected period
-    const filteredInsights = useMemo(() => {
+    // Convert analytics insights to InsightItem format
+    const insights: InsightItem[] = useMemo(() => {
         if (!analyticsData?.insights) return [];
 
-        const now = new Date();
-        const currentYear = now.getFullYear();
+        return analyticsData.insights.map((insight, index) => ({
+            _id: `insight-${index}`,
+            score: insight.score,
+            createdAt: insight.createdAt,
+            author: "",
+            quizId: "",
+            userId: "",
+        }));
+    }, [analyticsData]);
 
-        return analyticsData.insights.filter(insight => {
-            if (!insight?.createdAt) return false;
-
-            const insightDate = new Date(insight.createdAt);
-
-            switch (selectedPeriod) {
-                case "7days":
-                    const sevenDaysAgo = new Date(now);
-                    sevenDaysAgo.setDate(now.getDate() - 7);
-                    return insightDate >= sevenDaysAgo;
-
-                case "30days":
-                    const thirtyDaysAgo = new Date(now);
-                    thirtyDaysAgo.setDate(now.getDate() - 30);
-                    return insightDate >= thirtyDaysAgo;
-
-                case "year":
-                    return insightDate.getFullYear() === currentYear;
-
-                case "lifetime":
-                default:
-                    return true;
-            }
-        });
-    }, [analyticsData, selectedPeriod]);
-
-    // Calculate statistics
-    const stats = useMemo(() => {
-        const validScores = filteredInsights
-            .map(insight => insight?.score)
-            .filter(
-                (score): score is number =>
-                    typeof score === "number" && !isNaN(score)
-            );
-
-        const totalQuizzes = filteredInsights.length;
-        const averageScore =
-            validScores.length > 0
-                ? Math.round(
-                      validScores.reduce((sum, score) => sum + score, 0) /
-                          validScores.length
-                  )
-                : 0;
-        const bestScore =
-            validScores.length > 0 ? Math.round(Math.max(...validScores)) : 0;
-        const worstScore =
-            validScores.length > 0 ? Math.round(Math.min(...validScores)) : 0;
-
-        // Success rates
-        const excellent = validScores.filter(score => score >= 90).length;
-        const good = validScores.filter(score => score >= 70 && score < 90)
-            .length;
-        const average = validScores.filter(score => score >= 50 && score < 70)
-            .length;
-        const poor = validScores.filter(score => score < 50).length;
-
-        // Trend calculation (compare first half vs second half)
-        let trend: "up" | "down" | "stable" = "stable";
-        if (validScores.length >= 4) {
-            const midPoint = Math.floor(validScores.length / 2);
-            const firstHalfAvg =
-                validScores.slice(0, midPoint).reduce((a, b) => a + b, 0) /
-                midPoint;
-            const secondHalfAvg =
-                validScores.slice(midPoint).reduce((a, b) => a + b, 0) /
-                (validScores.length - midPoint);
-
-            if (secondHalfAvg > firstHalfAvg + 5) trend = "up";
-            else if (secondHalfAvg < firstHalfAvg - 5) trend = "down";
-        }
-
-        return {
-            totalQuizzes,
-            averageScore,
-            bestScore,
-            worstScore,
-            excellent,
-            good,
-            average,
-            poor,
-            trend,
-            bestCourse: analyticsData?.bestCourse || null,
-            worstCourse: analyticsData?.worstCourse || null,
-        };
-    }, [filteredInsights, analyticsData]);
+    // Use shared statistics hook with period filter
+    const stats = useUserStatistics(insights, selectedPeriod);
 
     const getPeriodLabel = () => {
         switch (selectedPeriod) {
@@ -144,6 +74,17 @@ export default function StatsPage() {
                 return "À vie";
         }
     };
+
+    const getScoreColor = (score: number): string => {
+        if (score >= 90) return "bg-green-100 text-green-700";
+        if (score >= 70) return "bg-blue-100 text-blue-700";
+        if (score >= 50) return "bg-yellow-100 text-yellow-700";
+        return "bg-red-100 text-red-700";
+    };
+
+    if (loading) {
+        return <PageLoadingSkeleton />;
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-white">
@@ -190,12 +131,18 @@ export default function StatsPage() {
                     <div className="flex flex-wrap gap-3">
                         {[
                             { value: "7days" as TimePeriod, label: "7 jours" },
-                            { value: "30days" as TimePeriod, label: "30 jours" },
+                            {
+                                value: "30days" as TimePeriod,
+                                label: "30 jours",
+                            },
                             {
                                 value: "year" as TimePeriod,
                                 label: `${new Date().getFullYear()}`,
                             },
-                            { value: "lifetime" as TimePeriod, label: "À vie" },
+                            {
+                                value: "lifetime" as TimePeriod,
+                                label: "À vie",
+                            },
                         ].map(period => (
                             <button
                                 key={period.value}
@@ -212,13 +159,7 @@ export default function StatsPage() {
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="text-gray-500">
-                            Chargement des statistiques...
-                        </div>
-                    </div>
-                ) : filteredInsights.length === 0 ? (
+                {stats.totalQuizzes === 0 ? (
                     <div className="bg-white rounded-2xl p-12 shadow-lg border border-gray-100 text-center">
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <BarChart3 className="w-8 h-8 text-gray-400" />
@@ -328,12 +269,13 @@ export default function StatsPage() {
                                         <Trophy className="w-5 h-5 text-green-600" />
                                     </div>
                                     <div className="text-2xl font-bold text-green-900">
-                                        {stats.excellent}
+                                        {stats.scoreDistribution.excellent}
                                     </div>
                                     <div className="text-xs text-green-700 mt-1">
                                         {stats.totalQuizzes > 0
                                             ? Math.round(
-                                                  (stats.excellent /
+                                                  (stats.scoreDistribution
+                                                      .excellent /
                                                       stats.totalQuizzes) *
                                                       100
                                               )
@@ -351,12 +293,13 @@ export default function StatsPage() {
                                         <Target className="w-5 h-5 text-blue-600" />
                                     </div>
                                     <div className="text-2xl font-bold text-blue-900">
-                                        {stats.good}
+                                        {stats.scoreDistribution.good}
                                     </div>
                                     <div className="text-xs text-blue-700 mt-1">
                                         {stats.totalQuizzes > 0
                                             ? Math.round(
-                                                  (stats.good /
+                                                  (stats.scoreDistribution
+                                                      .good /
                                                       stats.totalQuizzes) *
                                                       100
                                               )
@@ -374,12 +317,13 @@ export default function StatsPage() {
                                         <BarChart3 className="w-5 h-5 text-yellow-600" />
                                     </div>
                                     <div className="text-2xl font-bold text-yellow-900">
-                                        {stats.average}
+                                        {stats.scoreDistribution.average}
                                     </div>
                                     <div className="text-xs text-yellow-700 mt-1">
                                         {stats.totalQuizzes > 0
                                             ? Math.round(
-                                                  (stats.average /
+                                                  (stats.scoreDistribution
+                                                      .average /
                                                       stats.totalQuizzes) *
                                                       100
                                               )
@@ -397,12 +341,13 @@ export default function StatsPage() {
                                         <TrendingDown className="w-5 h-5 text-red-600" />
                                     </div>
                                     <div className="text-2xl font-bold text-red-900">
-                                        {stats.poor}
+                                        {stats.scoreDistribution.needsWork}
                                     </div>
                                     <div className="text-xs text-red-700 mt-1">
                                         {stats.totalQuizzes > 0
                                             ? Math.round(
-                                                  (stats.poor /
+                                                  (stats.scoreDistribution
+                                                      .needsWork /
                                                       stats.totalQuizzes) *
                                                       100
                                               )
@@ -414,10 +359,11 @@ export default function StatsPage() {
                         </div>
 
                         {/* Best and Worst Courses */}
-                        {(stats.bestCourse || stats.worstCourse) && (
+                        {(analyticsData?.bestCourse ||
+                            analyticsData?.worstCourse) && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 {/* Best Course */}
-                                {stats.bestCourse && (
+                                {analyticsData.bestCourse && (
                                     <div className="bg-gradient-to-br from-green-50 to-white rounded-2xl p-6 shadow-lg border border-green-100">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
@@ -438,21 +384,44 @@ export default function StatsPage() {
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <BookOpen className="w-5 h-5 text-green-600" />
                                                         <h4 className="font-semibold text-gray-900">
-                                                            {stats.bestCourse.title}
+                                                            {
+                                                                analyticsData
+                                                                    .bestCourse
+                                                                    .title
+                                                            }
                                                         </h4>
                                                     </div>
-                                                    {stats.bestCourse.subject && (
+                                                    {analyticsData.bestCourse
+                                                        .subject && (
                                                         <p className="text-sm text-gray-600 mb-2">
-                                                            {stats.bestCourse.subject}
+                                                            {
+                                                                analyticsData
+                                                                    .bestCourse
+                                                                    .subject
+                                                            }
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-gray-500">
-                                                        {stats.bestCourse.quizCount} quiz complété{stats.bestCourse.quizCount > 1 ? "s" : ""}
+                                                        {
+                                                            analyticsData
+                                                                .bestCourse
+                                                                .quizCount
+                                                        }{" "}
+                                                        quiz complété
+                                                        {analyticsData.bestCourse
+                                                            .quizCount > 1
+                                                            ? "s"
+                                                            : ""}
                                                     </p>
                                                 </div>
                                                 <div className="flex-shrink-0">
                                                     <div className="text-3xl font-bold text-green-600">
-                                                        {stats.bestCourse.avgScore}%
+                                                        {
+                                                            analyticsData
+                                                                .bestCourse
+                                                                .avgScore
+                                                        }
+                                                        %
                                                     </div>
                                                     <div className="text-xs text-gray-600 text-center">
                                                         Score moyen
@@ -464,51 +433,78 @@ export default function StatsPage() {
                                 )}
 
                                 {/* Worst Course */}
-                                {stats.worstCourse && stats.worstCourse.courseId !== stats.bestCourse?.courseId && (
-                                    <div className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-6 shadow-lg border border-orange-100">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                                                <Target className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-gray-900">
-                                                    Cours à Améliorer
-                                                </h3>
-                                                <p className="text-sm text-gray-600">
-                                                    Score le plus bas
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4 border border-orange-200">
-                                            <div className="flex items-start justify-between gap-4">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <BookOpen className="w-5 h-5 text-orange-600" />
-                                                        <h4 className="font-semibold text-gray-900">
-                                                            {stats.worstCourse.title}
-                                                        </h4>
-                                                    </div>
-                                                    {stats.worstCourse.subject && (
-                                                        <p className="text-sm text-gray-600 mb-2">
-                                                            {stats.worstCourse.subject}
-                                                        </p>
-                                                    )}
-                                                    <p className="text-xs text-gray-500">
-                                                        {stats.worstCourse.quizCount} quiz complété{stats.worstCourse.quizCount > 1 ? "s" : ""}
+                                {analyticsData.worstCourse &&
+                                    analyticsData.worstCourse.courseId !==
+                                        analyticsData.bestCourse?.courseId && (
+                                        <div className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-6 shadow-lg border border-orange-100">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                                                    <Target className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-gray-900">
+                                                        Cours à Améliorer
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600">
+                                                        Score le plus bas
                                                     </p>
                                                 </div>
-                                                <div className="flex-shrink-0">
-                                                    <div className="text-3xl font-bold text-orange-600">
-                                                        {stats.worstCourse.avgScore}%
+                                            </div>
+                                            <div className="bg-white rounded-xl p-4 border border-orange-200">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <BookOpen className="w-5 h-5 text-orange-600" />
+                                                            <h4 className="font-semibold text-gray-900">
+                                                                {
+                                                                    analyticsData
+                                                                        .worstCourse
+                                                                        .title
+                                                                }
+                                                            </h4>
+                                                        </div>
+                                                        {analyticsData
+                                                            .worstCourse
+                                                            .subject && (
+                                                            <p className="text-sm text-gray-600 mb-2">
+                                                                {
+                                                                    analyticsData
+                                                                        .worstCourse
+                                                                        .subject
+                                                                }
+                                                            </p>
+                                                        )}
+                                                        <p className="text-xs text-gray-500">
+                                                            {
+                                                                analyticsData
+                                                                    .worstCourse
+                                                                    .quizCount
+                                                            }{" "}
+                                                            quiz complété
+                                                            {analyticsData
+                                                                .worstCourse
+                                                                .quizCount > 1
+                                                                ? "s"
+                                                                : ""}
+                                                        </p>
                                                     </div>
-                                                    <div className="text-xs text-gray-600 text-center">
-                                                        Score moyen
+                                                    <div className="flex-shrink-0">
+                                                        <div className="text-3xl font-bold text-orange-600">
+                                                            {
+                                                                analyticsData
+                                                                    .worstCourse
+                                                                    .avgScore
+                                                            }
+                                                            %
+                                                        </div>
+                                                        <div className="text-xs text-gray-600 text-center">
+                                                            Score moyen
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
                             </div>
                         )}
 
@@ -518,15 +514,18 @@ export default function StatsPage() {
                                 Historique Récent
                             </h3>
                             <div className="space-y-3">
-                                {filteredInsights
-                                    .filter(insight => insight?.createdAt)
+                                {insights
+                                    .filter(
+                                        (insight: InsightItem) =>
+                                            insight?.createdAt
+                                    )
                                     .sort(
-                                        (a, b) =>
+                                        (a: InsightItem, b: InsightItem) =>
                                             new Date(b.createdAt).getTime() -
                                             new Date(a.createdAt).getTime()
                                     )
                                     .slice(0, 10)
-                                    .map((insight, index) => (
+                                    .map((insight: InsightItem, index: number) => (
                                         <div
                                             key={index}
                                             className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
@@ -540,41 +539,21 @@ export default function StatsPage() {
                                                         Quiz Complété
                                                     </div>
                                                     <div className="text-sm text-gray-600">
-                                                        {new Date(
+                                                        {formatFullDate(
                                                             insight.createdAt
-                                                        ).toLocaleDateString(
-                                                            "fr-FR",
-                                                            {
-                                                                day: "numeric",
-                                                                month: "long",
-                                                                year: "numeric",
-                                                            }
-                                                        )}{" "}
-                                                        à{" "}
-                                                        {new Date(
-                                                            insight.createdAt
-                                                        ).toLocaleTimeString(
-                                                            "fr-FR",
-                                                            {
-                                                                hour: "numeric",
-                                                                minute: "2-digit",
-                                                            }
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div
-                                                className={`px-4 py-2 rounded-full font-semibold ${
-                                                    (insight.score || 0) >= 90
-                                                        ? "bg-green-100 text-green-700"
-                                                        : (insight.score || 0) >= 70
-                                                          ? "bg-blue-100 text-blue-700"
-                                                          : (insight.score || 0) >= 50
-                                                            ? "bg-yellow-100 text-yellow-700"
-                                                            : "bg-red-100 text-red-700"
-                                                }`}
+                                                className={`px-4 py-2 rounded-full font-semibold ${getScoreColor(
+                                                    insight.score || 0
+                                                )}`}
                                             >
-                                                {Math.round(insight.score || 0)}%
+                                                {Math.round(
+                                                    insight.score || 0
+                                                )}
+                                                %
                                             </div>
                                         </div>
                                     ))}
