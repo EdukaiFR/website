@@ -7,6 +7,7 @@ import { Overview } from "../sections/overview";
 import { SimilarCourses } from "../sections/similar-courses";
 import { Statistics } from "../sections/statistics";
 import { SummarySheetData } from "@/lib/types/library";
+import type { InsightsResponse } from "@/lib/types/insights";
 
 type Exam = {
     _id: string;
@@ -116,21 +117,11 @@ export function CourseContentRenderer({
             {selectedTab === "statistics" && (
                 <Statistics
                     course_id={courseId}
-                    statistics={null}
                     quiz_id={quizId}
                     insights_service={
                         insightsService as unknown as InsightsService
                     }
-                    insights_data={
-                        insightsData as {
-                            items: Array<{
-                                _id: string;
-                                score: number;
-                                createdAt: string;
-                                author: string;
-                            }>;
-                        }
-                    }
+                    insights_data={insightsData as InsightsResponse}
                 />
             )}
             {selectedTab === "similarCourses" && (
