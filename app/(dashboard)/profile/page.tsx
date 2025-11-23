@@ -10,13 +10,15 @@ import {
     Mail,
     Target,
     Trophy,
-    User,
     Zap,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { formatFullDate } from "@/lib/utils/date";
 import type { InsightItem } from "@/lib/types/insights";
 import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
+import { useUserStatistics } from "@/hooks/useUserStatistics";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getImageDisplaySrc } from "@/lib/image-utils";
 
 interface CourseData {
     _id: string;
@@ -89,7 +91,17 @@ export default function ProfilePage() {
                 try {
                     const insightsResponse =
                         await insightsService.getAllMyInsights();
-                    if (Array.isArray(insightsResponse)) {
+
+                    // Check if response has items array (API returns {items: [...], message: '...', status: '...'})
+                    if (
+                        insightsResponse &&
+                        "items" in insightsResponse &&
+                        Array.isArray(insightsResponse.items)
+                    ) {
+                        const insightsData = insightsResponse.items as InsightItem[];
+                        setInsights(insightsData);
+                    } else if (Array.isArray(insightsResponse)) {
+                        // Fallback: if response is directly an array
                         setInsights(insightsResponse);
                     } else {
                         setInsights([]);
@@ -110,38 +122,19 @@ export default function ProfilePage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading, userProfile]);
 
-    // Calculate stats with useMemo to avoid recalculation
-    const stats = useMemo(() => {
+    // Use shared statistics hook (same as /stats page)
+    const userStats = useUserStatistics(insights);
+
+    // Calculate additional profile-specific stats
+    const profileStats = useMemo(() => {
         const totalCourses = courses.length;
         const totalQuizzes = allQuizzes.length;
-        const totalInsights = insights.length;
-
-        // Calculate scores with safety checks
-        const validScores = insights
-            .map(insight => insight?.score)
-            .filter(
-                (score): score is number =>
-                    typeof score === "number" && Number.isFinite(score)
-            );
-
-        const averageScore =
-            validScores.length > 0
-                ? Math.round(
-                      validScores.reduce((sum, score) => sum + score, 0) /
-                          validScores.length
-                  )
-                : 0;
-        const bestScore =
-            validScores.length > 0 ? Math.round(Math.max(...validScores)) : 0;
 
         return {
             totalCourses,
             totalQuizzes,
-            averageScore,
-            bestScore,
-            totalInsights,
         };
-    }, [courses, allQuizzes, insights]);
+    }, [courses, allQuizzes]);
 
     // Determine the display name
     const getDisplayName = () => {
@@ -155,6 +148,19 @@ export default function ProfilePage() {
         }
 
         return userProfile.username;
+    };
+
+    // Get user initials for avatar fallback
+    const getInitials = () => {
+        if (!userProfile) return "U";
+
+        const displayName = getDisplayName();
+        return displayName
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
     };
 
     const getPlanBadge = () => {
@@ -177,27 +183,23 @@ export default function ProfilePage() {
         return "bg-red-100 text-red-700";
     };
 
-    const getScoreLabel = (score: number): string => {
-        if (stats.totalInsights === 0) return "N/A";
-        return `${score}%`;
-    };
-
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-white">
             {/* Header Section */}
             <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white">
                 <div className="relative z-10 container mx-auto px-6 py-12">
                     <div className="flex flex-col items-center text-center">
-                        {/* Profile Picture or Icon */}
-                        <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 border-4 border-white/30">
-                            {userProfile?.profilePic ? (
-                                <div className="w-full h-full rounded-full overflow-hidden">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                            ) : (
-                                <User className="w-10 h-10 text-white" />
-                            )}
-                        </div>
+                        {/* Profile Picture */}
+                        <Avatar className="w-20 h-20 mb-4 border-4 border-white/30 shadow-xl">
+                            <AvatarImage
+                                src={getImageDisplaySrc(userProfile?.profilePic)}
+                                alt={getDisplayName()}
+                                className="object-cover"
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-500 text-white text-2xl font-bold">
+                                {getInitials()}
+                            </AvatarFallback>
+                        </Avatar>
 
                         {/* Name with Plan Badge */}
                         <div className="flex items-center gap-3 mb-4">
@@ -282,7 +284,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading ? "..." : stats.totalCourses}
+                                {statsLoading ? "..." : profileStats.totalCourses}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Cours Générés
@@ -297,7 +299,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading ? "..." : stats.totalQuizzes}
+                                {statsLoading ? "..." : profileStats.totalQuizzes}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Quiz Créés
@@ -312,7 +314,9 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {getScoreLabel(stats.averageScore)}
+                                {userStats.totalQuizzes > 0
+                                    ? `${userStats.averageScore}%`
+                                    : "N/A"}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Score Moyen
@@ -327,7 +331,9 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {getScoreLabel(stats.bestScore)}
+                                {userStats.totalQuizzes > 0
+                                    ? `${userStats.bestScore}%`
+                                    : "N/A"}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Meilleur Score
@@ -343,7 +349,7 @@ export default function ProfilePage() {
                             Activité Récente
                         </h2>
                         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                            {stats.totalInsights > 0 ? (
+                            {userStats.totalQuizzes > 0 ? (
                                 <div className="space-y-4">
                                     {insights
                                         .filter(insight => insight?.createdAt && insight?._id)
