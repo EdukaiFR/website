@@ -7,7 +7,6 @@ import {
     Zap,
     GraduationCap,
     Shield,
-    Eye,
     BarChart3,
     User,
 } from "lucide-react";
@@ -51,11 +50,6 @@ export function useLinks() {
     ];
 
     const mySpaceLinks = [
-        {
-            href: "/overview",
-            label: "Aperçu",
-            Icon: Eye,
-        },
         {
             href: "/stats",
             label: "Statistiques",
