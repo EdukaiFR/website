@@ -1,7 +1,6 @@
 "use client";
 
-import { useInsightsService } from "@/services/insights";
-import { useCourseService } from "@/services";
+import { useInsightsService, type AnalyticsData } from "@/services/insights";
 import {
     BarChart3,
     BookOpen,
@@ -14,33 +13,11 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 
-interface InsightData {
-    _id: string;
-    quizId: string | { _id: string; id?: string };
-    score: number;
-    userId: string;
-    createdAt: string;
-}
-
-interface CourseData {
-    _id: string;
-    title: string;
-    subject: string;
-}
-
-interface QuizData {
-    _id: string;
-    courseId?: string;
-}
-
 type TimePeriod = "7days" | "30days" | "year" | "lifetime";
 
 export default function StatsPage() {
     const insightsService = useInsightsService();
-    const courseService = useCourseService();
-    const [insights, setInsights] = useState<InsightData[]>([]);
-    const [courses, setCourses] = useState<CourseData[]>([]);
-    const [quizToCourseMap, setQuizToCourseMap] = useState<Record<string, string>>({});
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("30days");
 
@@ -48,56 +25,11 @@ export default function StatsPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-
-                // Fetch insights
-                const insightsResponse =
-                    await insightsService.getAllMyInsights();
-
-                if (insightsResponse && Array.isArray(insightsResponse)) {
-                    setInsights(insightsResponse);
-                } else if (insightsResponse && "items" in insightsResponse) {
-                    setInsights(insightsResponse.items as InsightData[]);
-                } else {
-                    setInsights([]);
-                }
-
-                // Fetch courses and build quiz-to-course mapping
-                const coursesResponse = await courseService.getCourses();
-                if (coursesResponse && "items" in coursesResponse && Array.isArray(coursesResponse.items)) {
-                    const coursesData = coursesResponse.items as CourseData[];
-                    setCourses(coursesData);
-
-                    // Build mapping: quizId -> courseId
-                    const mapping: Record<string, string> = {};
-
-                    for (const course of coursesData) {
-                        try {
-                            if (!course?._id) continue;
-
-                            const quizzesResponse = await courseService.getCourseQuizzes(course._id);
-                            if (
-                                quizzesResponse &&
-                                "items" in quizzesResponse &&
-                                Array.isArray(quizzesResponse.items)
-                            ) {
-                                const quizzes = quizzesResponse.items as QuizData[];
-                                quizzes.forEach(quiz => {
-                                    if (quiz?._id) {
-                                        mapping[quiz._id] = course._id;
-                                    }
-                                });
-                            }
-                        } catch (error) {
-                            console.error(`Error fetching quizzes for course ${course._id}:`, error);
-                        }
-                    }
-
-                    setQuizToCourseMap(mapping);
-                }
+                const data = await insightsService.getAnalytics();
+                setAnalyticsData(data);
             } catch (error) {
-                console.error("Error fetching data:", error);
-                setInsights([]);
-                setCourses([]);
+                console.error("Error fetching analytics:", error);
+                setAnalyticsData(null);
             } finally {
                 setLoading(false);
             }
@@ -109,10 +41,12 @@ export default function StatsPage() {
 
     // Filter insights by selected period
     const filteredInsights = useMemo(() => {
+        if (!analyticsData?.insights) return [];
+
         const now = new Date();
         const currentYear = now.getFullYear();
 
-        return insights.filter(insight => {
+        return analyticsData.insights.filter(insight => {
             if (!insight?.createdAt) return false;
 
             const insightDate = new Date(insight.createdAt);
@@ -136,7 +70,7 @@ export default function StatsPage() {
                     return true;
             }
         });
-    }, [insights, selectedPeriod]);
+    }, [analyticsData, selectedPeriod]);
 
     // Calculate statistics
     const stats = useMemo(() => {
@@ -183,79 +117,6 @@ export default function StatsPage() {
             else if (secondHalfAvg < firstHalfAvg - 5) trend = "down";
         }
 
-        // Calculate scores by course
-        const courseScores: Record<string, { scores: number[]; courseData: CourseData | null }> = {};
-
-        console.log("🔍 Quiz to Course Map:", quizToCourseMap);
-        console.log("🔍 Filtered Insights:", filteredInsights);
-        console.log("🔍 Courses:", courses);
-
-        filteredInsights.forEach(insight => {
-            if (!insight?.quizId || !insight?.score) {
-                console.log("⚠️ Skipping insight (no quizId or score):", insight);
-                return;
-            }
-
-            // Extract quizId - it might be an object with _id or a string
-            const quizId = typeof insight.quizId === 'string'
-                ? insight.quizId
-                : insight.quizId?._id || insight.quizId?.id;
-
-            if (!quizId) {
-                console.log("⚠️ Could not extract quizId from:", insight.quizId);
-                return;
-            }
-
-            const courseId = quizToCourseMap[quizId];
-            if (!courseId) {
-                console.log(`⚠️ No course found for quiz ${quizId}`);
-                return;
-            }
-
-            if (!courseScores[courseId]) {
-                courseScores[courseId] = {
-                    scores: [],
-                    courseData: courses.find(c => c._id === courseId) || null,
-                };
-            }
-
-            courseScores[courseId].scores.push(insight.score);
-        });
-
-        console.log("📊 Course Scores:", courseScores);
-
-        // Calculate average scores per course and find best/worst
-        const coursesWithAvg = Object.entries(courseScores)
-            .map(([courseId, data]) => {
-                const avgScore = data.scores.length > 0
-                    ? Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length)
-                    : 0;
-
-                return {
-                    courseId,
-                    courseData: data.courseData,
-                    avgScore,
-                    quizCount: data.scores.length,
-                };
-            })
-            .filter(course => course.quizCount > 0); // Only courses with completed quizzes
-
-        const bestCourse = coursesWithAvg.length > 0
-            ? coursesWithAvg.reduce((best, current) =>
-                  current.avgScore > best.avgScore ? current : best
-              )
-            : null;
-
-        const worstCourse = coursesWithAvg.length > 0
-            ? coursesWithAvg.reduce((worst, current) =>
-                  current.avgScore < worst.avgScore ? current : worst
-              )
-            : null;
-
-        console.log("✅ Best Course:", bestCourse);
-        console.log("✅ Worst Course:", worstCourse);
-        console.log("✅ Courses with avg:", coursesWithAvg);
-
         return {
             totalQuizzes,
             averageScore,
@@ -266,10 +127,10 @@ export default function StatsPage() {
             average,
             poor,
             trend,
-            bestCourse,
-            worstCourse,
+            bestCourse: analyticsData?.bestCourse || null,
+            worstCourse: analyticsData?.worstCourse || null,
         };
-    }, [filteredInsights, quizToCourseMap, courses]);
+    }, [filteredInsights, analyticsData]);
 
     const getPeriodLabel = () => {
         switch (selectedPeriod) {
@@ -577,12 +438,12 @@ export default function StatsPage() {
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <BookOpen className="w-5 h-5 text-green-600" />
                                                         <h4 className="font-semibold text-gray-900">
-                                                            {stats.bestCourse.courseData?.title || "Cours inconnu"}
+                                                            {stats.bestCourse.title}
                                                         </h4>
                                                     </div>
-                                                    {stats.bestCourse.courseData?.subject && (
+                                                    {stats.bestCourse.subject && (
                                                         <p className="text-sm text-gray-600 mb-2">
-                                                            {stats.bestCourse.courseData.subject}
+                                                            {stats.bestCourse.subject}
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-gray-500">
@@ -624,12 +485,12 @@ export default function StatsPage() {
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <BookOpen className="w-5 h-5 text-orange-600" />
                                                         <h4 className="font-semibold text-gray-900">
-                                                            {stats.worstCourse.courseData?.title || "Cours inconnu"}
+                                                            {stats.worstCourse.title}
                                                         </h4>
                                                     </div>
-                                                    {stats.worstCourse.courseData?.subject && (
+                                                    {stats.worstCourse.subject && (
                                                         <p className="text-sm text-gray-600 mb-2">
-                                                            {stats.worstCourse.courseData.subject}
+                                                            {stats.worstCourse.subject}
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-gray-500">
@@ -658,19 +519,16 @@ export default function StatsPage() {
                             </h3>
                             <div className="space-y-3">
                                 {filteredInsights
-                                    .filter(
-                                        insight =>
-                                            insight?.createdAt && insight?._id
-                                    )
+                                    .filter(insight => insight?.createdAt)
                                     .sort(
                                         (a, b) =>
                                             new Date(b.createdAt).getTime() -
                                             new Date(a.createdAt).getTime()
                                     )
                                     .slice(0, 10)
-                                    .map((insight) => (
+                                    .map((insight, index) => (
                                         <div
-                                            key={insight._id}
+                                            key={index}
                                             className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                                         >
                                             <div className="flex items-center gap-4">
