@@ -1,3 +1,5 @@
+import type { InsightsResponse } from "@/lib/types/insights";
+import { SummarySheetData } from "@/lib/types/library";
 import { InsightsService } from "@/services";
 import { CourseSummarySheets, Quiz } from "../sections";
 import { Exams } from "../sections/exams";
@@ -6,8 +8,6 @@ import { Objectives } from "../sections/objectives";
 import { Overview } from "../sections/overview";
 import { SimilarCourses } from "../sections/similar-courses";
 import { Statistics } from "../sections/statistics";
-import { SummarySheetData } from "@/lib/types/library";
-import type { InsightsResponse } from "@/lib/types/insights";
 
 type Exam = {
     _id: string;

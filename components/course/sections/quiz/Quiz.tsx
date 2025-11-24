@@ -1,12 +1,12 @@
+import { insightsToast, quizToast } from "@/lib/toast";
 import { getPercentage } from "@/lib/utils";
 import { rankings } from "@/public/mocks/default-value";
-import { useState, useEffect, useRef } from "react";
+import type { InsightsService } from "@/services";
+import { useEffect, useRef, useState } from "react";
 import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
 import { PossibleAnswers } from "./PossibleAnswers";
-import { quizToast, insightsToast } from "@/lib/toast";
-import type { InsightsService } from "@/services";
 
 export type QuizProps = {
     course_id: string;
@@ -60,7 +60,12 @@ export const Quiz = ({
     // Create insight when quiz is finished
     useEffect(() => {
         const createQuizInsight = async () => {
-            if (isFinish && quiz_id && insights_service && !insightCreatedRef.current) {
+            if (
+                isFinish &&
+                quiz_id &&
+                insights_service &&
+                !insightCreatedRef.current
+            ) {
                 insightCreatedRef.current = true; // Mark as created immediately to prevent duplicates
                 try {
                     const finalScore = getPercentage(
@@ -83,7 +88,14 @@ export const Quiz = ({
         };
 
         createQuizInsight();
-    }, [isFinish, quiz_id, score, typedQuizData.length, insights_service, refreshInsights]);
+    }, [
+        isFinish,
+        quiz_id,
+        score,
+        typedQuizData.length,
+        insights_service,
+        refreshInsights,
+    ]);
 
     const handleSubmitQuestion = () => {
         try {

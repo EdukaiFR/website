@@ -1,11 +1,11 @@
 import {
-    Clock,
-    BarChart3,
-    TrendingUp,
-    Award,
-    Zap,
-    Trophy,
     Activity,
+    Award,
+    BarChart3,
+    Clock,
+    TrendingUp,
+    Trophy,
+    Zap,
 } from "lucide-react";
 
 export type LastQuizProps = {
@@ -287,32 +287,36 @@ export const LastQuiz = ({
 
                     <div className="space-y-2 max-h-32 overflow-y-auto">
                         {[...last_attemps]
-                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .sort(
+                                (a, b) =>
+                                    new Date(b.createdAt).getTime() -
+                                    new Date(a.createdAt).getTime()
+                            )
                             .slice(0, 3)
                             .map((attempt, index) => (
-                            <div
-                                key={attempt.createdAt}
-                                className="p-3 bg-gray-50 rounded-xl"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className={`px-2 py-1 rounded-lg text-xs font-semibold ${getScoreColor(
-                                                attempt.score
-                                            )}`}
-                                        >
-                                            {Math.round(attempt.score)}%
+                                <div
+                                    key={attempt.createdAt}
+                                    className="p-3 bg-gray-50 rounded-xl"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className={`px-2 py-1 rounded-lg text-xs font-semibold ${getScoreColor(
+                                                    attempt.score
+                                                )}`}
+                                            >
+                                                {Math.round(attempt.score)}%
+                                            </div>
+                                            <span className="text-xs text-gray-500">
+                                                {formatDate(attempt.createdAt)}
+                                            </span>
                                         </div>
-                                        <span className="text-xs text-gray-500">
-                                            {formatDate(attempt.createdAt)}
-                                        </span>
-                                    </div>
-                                    <div className="text-xs text-gray-400">
-                                        #{last_attemps.length - index}
+                                        <div className="text-xs text-gray-400">
+                                            #{last_attemps.length - index}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
 
                     {/* Motivational Section */}

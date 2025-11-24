@@ -120,9 +120,9 @@ export function AccountSettings({
                             </h4>
                             <p className="text-sm text-gray-700 leading-relaxed">
                                 Votre compte est sécurisé avec une
-                                authentification par cookies HTTP-only. L'adresse
-                                email ne peut pas être modifiée pour des raisons
-                                de sécurité.
+                                authentification par cookies HTTP-only.
+                                L'adresse email ne peut pas être modifiée pour
+                                des raisons de sécurité.
                             </p>
                         </div>
                     </div>

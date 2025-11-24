@@ -1,5 +1,5 @@
 import type { InsightsService, QuizService } from "@/services";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export type Quiz = {
     question: string;
@@ -67,18 +67,21 @@ export function useQuiz(
         }
     };
 
-    const getQuizInsights = useCallback(async (quizId: string) => {
-        try {
-            const insights = (await insightsService?.getQuizInsights(
-                quizId
-            )) as Insights;
-            setInsightsData(insights);
-            return insights;
-        } catch (error) {
-            setError("Failed to load quiz insights.");
-            return null;
-        }
-    }, [insightsService]);
+    const getQuizInsights = useCallback(
+        async (quizId: string) => {
+            try {
+                const insights = (await insightsService?.getQuizInsights(
+                    quizId
+                )) as Insights;
+                setInsightsData(insights);
+                return insights;
+            } catch (error) {
+                setError("Failed to load quiz insights.");
+                return null;
+            }
+        },
+        [insightsService]
+    );
 
     const createInsight = async (quizId: string, score: number) => {
         try {

@@ -1,5 +1,5 @@
-import axios from "axios";
 import { Visibility } from "@/lib/types/visibility";
+import axios from "axios";
 
 export interface CourseService {
     createCourse: (

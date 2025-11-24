@@ -35,10 +35,7 @@ export default function NavBarComp({
     };
 
     // Keyboard navigation handler
-    const handleKeyDown = (
-        e: React.KeyboardEvent,
-        currentTab: string
-    ) => {
+    const handleKeyDown = (e: React.KeyboardEvent, currentTab: string) => {
         const currentIndex = tabs.findIndex(t => t.tab === currentTab);
 
         if (e.key === "ArrowRight") {

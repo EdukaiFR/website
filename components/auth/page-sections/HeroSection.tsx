@@ -1,5 +1,5 @@
-import { Share2 } from "lucide-react";
 import { features } from "@/config/auth/features.config";
+import { Share2 } from "lucide-react";
 
 interface HeroSectionProps {
     readonly mounted: boolean;
@@ -35,7 +35,8 @@ export function HeroSection({ mounted }: HeroSectionProps) {
                         tes cours en{" "}
                         <span className="font-bold text-blue-600">
                             20 secondes
-                        </span>.
+                        </span>
+                        .
                     </p>
                 </div>
 

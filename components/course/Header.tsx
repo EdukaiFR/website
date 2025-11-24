@@ -6,10 +6,10 @@ import { useSession } from "@/hooks/useSession";
 import type { VisibilityType } from "@/lib/types/visibility";
 import {
     BicepsFlexed,
+    BookOpen,
     CircleStop,
     Heart,
     Settings,
-    BookOpen,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 

@@ -33,11 +33,13 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
         if (diffInDays === 1) return `Hier à ${timeString}`;
         if (diffInDays < 7) return `Il y a ${diffInDays} jours à ${timeString}`;
 
-        return date.toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        }) + ` à ${timeString}`;
+        return (
+            date.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }) + ` à ${timeString}`
+        );
     };
 
     // Function for score color
@@ -50,7 +52,9 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
 
     // Sort by date (most recent first) and take the most recent quiz
     const sortedQuizzes = [...lastQuiz].sort((a, b) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
     });
     const recentQuizzes = sortedQuizzes.slice(0, 1);
 
@@ -110,7 +114,7 @@ export const LastQuiz = ({ lastQuiz, insights_data }: LastQuizProps) => {
 
                         {/* List of recent quizzes */}
                         <div className="space-y-2 flex-1">
-                            {recentQuizzes.map((quiz) => (
+                            {recentQuizzes.map(quiz => (
                                 <div
                                     key={quiz.createdAt}
                                     className="flex items-center justify-between p-3 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors"

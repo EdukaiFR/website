@@ -1,15 +1,14 @@
 import { useCourse, useQuiz } from "@/hooks";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SummarySheetData } from "@/lib/types/library";
 import {
     useCourseService,
     useInsightsService,
     useQuizService,
 } from "@/services";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { SummarySheetData } from "@/lib/types/library";
-import { useSessionStorage } from "@/hooks/useSessionStorage";
-import type { InsightsResponse } from "@/lib/types/insights";
 
 export function useCourseLogic() {
     const params = useParams();
@@ -27,7 +26,8 @@ export function useCourseLogic() {
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
-    const [selectedTabState, setSelectedTabState] = useState<string>(tabFromUrl);
+    const [selectedTabState, setSelectedTabState] =
+        useState<string>(tabFromUrl);
 
     // Ref to track if insights have been loaded for a quizId
     const insightsLoadedRef = useRef<string | null>(null);
@@ -69,10 +69,8 @@ export function useCourseLogic() {
         deleteExamById,
     } = useCourse(courseService);
 
-    const { quizData, insightsData, loadQuiz, getQuizInsights, createInsight } = useQuiz(
-        quizService,
-        insightsService
-    );
+    const { quizData, insightsData, loadQuiz, getQuizInsights, createInsight } =
+        useQuiz(quizService, insightsService);
 
     const [summarySheetsData, setSummarySheetsData] = useState<
         SummarySheetData[] | []
@@ -244,10 +242,7 @@ export function useCourseLogic() {
                     // Mark as loaded after successful fetch
                     insightsLoadedRef.current = quizId;
                 } catch (error) {
-                    if (
-                        error instanceof Error &&
-                        error.name !== "AbortError"
-                    ) {
+                    if (error instanceof Error && error.name !== "AbortError") {
                         // Only handle non-abort errors
                     }
                 } finally {

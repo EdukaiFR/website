@@ -7,6 +7,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useUserStatistics } from "@/hooks/useUserStatistics";
+import type { InsightItem, InsightsResponse } from "@/lib/types/insights";
+import { formatRelativeDate } from "@/lib/utils/date";
 import type { InsightsService } from "@/services";
 import {
     Activity,
@@ -21,10 +24,7 @@ import {
     Trophy,
     Zap,
 } from "lucide-react";
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useUserStatistics } from "@/hooks/useUserStatistics";
-import { formatRelativeDate } from "@/lib/utils/date";
-import type { InsightItem, InsightsResponse } from "@/lib/types/insights";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type StatisticsProps = {
     course_id: string;
@@ -43,8 +43,9 @@ export const Statistics = ({
     insights_service,
     insights_data,
 }: StatisticsProps) => {
-    const [localInsights, setLocalInsights] =
-        useState<InsightsResponse | null>(insights_data || null);
+    const [localInsights, setLocalInsights] = useState<InsightsResponse | null>(
+        insights_data || null
+    );
     const [loading, setLoading] = useState(!insights_data);
     const [hasAttemptedFetch, setHasAttemptedFetch] = useState(!!insights_data);
     const abortControllerRef = useRef<AbortController | null>(null);
@@ -296,7 +297,9 @@ export const Statistics = ({
                                         </p>
                                         <div className="flex items-center gap-1 text-xs text-gray-500">
                                             <Calendar className="w-3 h-3" />
-                                            {formatRelativeDate(performance.date)}
+                                            {formatRelativeDate(
+                                                performance.date
+                                            )}
                                         </div>
                                     </div>
                                 </div>

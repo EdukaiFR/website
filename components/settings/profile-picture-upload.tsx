@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Image from "next/image";
-import { CloudUpload, Link as LinkIcon, X, Camera } from "lucide-react";
 import clsx from "clsx";
+import { Camera, CloudUpload, Link as LinkIcon, X } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
     convertFileToBase64,
-    isValidImageType,
     getImageDisplaySrc,
+    isValidImageType,
 } from "@/lib/image-utils";
 
 interface ProfilePictureUploadProps {
@@ -92,19 +92,29 @@ export function ProfilePictureUpload({
     };
 
     return (
-        <Card className={clsx("bg-gradient-to-br from-blue-50/50 to-white border border-blue-100/50 overflow-hidden", className)}>
+        <Card
+            className={clsx(
+                "bg-gradient-to-br from-blue-50/50 to-white border border-blue-100/50 overflow-hidden",
+                className
+            )}
+        >
             <CardContent className="p-5 space-y-5">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
-                            <Camera className="w-4 h-4 text-white" aria-label="Photo de profil" />
+                            <Camera
+                                className="w-4 h-4 text-white"
+                                aria-label="Photo de profil"
+                            />
                         </div>
                         <div>
                             <label className="text-sm font-semibold text-gray-900">
                                 Photo de profil
                             </label>
-                            <p className="text-xs text-gray-500">Personnalisez votre avatar</p>
+                            <p className="text-xs text-gray-500">
+                                Personnalisez votre avatar
+                            </p>
                         </div>
                     </div>
                     {value && (
@@ -172,7 +182,8 @@ export function ProfilePictureUpload({
                         <div className="flex items-start gap-2 bg-blue-50/50 border border-blue-100 rounded-lg p-3">
                             <LinkIcon className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                             <p className="text-xs text-blue-700 leading-relaxed">
-                                Collez l'URL de votre photo de profil (JPG, PNG recommandé).
+                                Collez l'URL de votre photo de profil (JPG, PNG
+                                recommandé).
                             </p>
                         </div>
                     </div>
@@ -213,7 +224,10 @@ export function ProfilePictureUpload({
                                             Upload en cours...
                                         </p>
                                         <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden mt-3">
-                                            <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full animate-[loading_1s_ease-in-out_infinite]" style={{width: '70%'}} />
+                                            <div
+                                                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full animate-[loading_1s_ease-in-out_infinite]"
+                                                style={{ width: "70%" }}
+                                            />
                                         </div>
                                     </>
                                 ) : (

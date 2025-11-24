@@ -1,8 +1,10 @@
 "use client";
 
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 import { useUserProfile } from "@/contexts/UserContext";
 import { useAllExams } from "@/hooks/useAllExams";
 import { getDaysLeft } from "@/lib/date-format";
+import type { InsightItem } from "@/lib/types/insights";
 import { useCourseService } from "@/services";
 import { useInsightsService } from "@/services/insights";
 import {
@@ -15,9 +17,7 @@ import {
     Trophy,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
-import type { InsightItem } from "@/lib/types/insights";
-import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
+import { useEffect, useMemo, useState } from "react";
 
 interface CourseData {
     _id: string;
@@ -82,7 +82,9 @@ export default function Home() {
                         try {
                             if (!course?._id) return [];
                             const quizzesResponse =
-                                await courseService.getCourseQuizzes(course._id);
+                                await courseService.getCourseQuizzes(
+                                    course._id
+                                );
                             if (
                                 quizzesResponse &&
                                 "items" in quizzesResponse &&
