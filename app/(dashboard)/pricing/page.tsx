@@ -3,36 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "@/hooks/useSession";
+import { ApiError, getErrorMessage } from "@/lib/types/api";
 import { usePaymentService } from "@/services/payment";
 import { AlertCircle, Check, Crown, Sparkles, Zap } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function PricingPage() {
     const paymentService = usePaymentService();
     const { user } = useSession();
     const [isLoading, setIsLoading] = useState(false);
 
-    console.log("🔍 PricingPage - User:", user);
-    console.log("🔍 PricingPage - Account Plan:", user?.accountPlan);
-    console.log("🔍 PricingPage - Cancel At Period End:", user?.cancelAtPeriodEnd);
-    console.log("🔍 PricingPage - Current Period End:", user?.currentPeriodEnd);
-
     const isPremium = user?.accountPlan === "premium";
     const hasScheduledCancellation = isPremium && user?.cancelAtPeriodEnd && user?.currentPeriodEnd;
 
-    console.log("🔍 PricingPage - Is Premium:", isPremium);
-    console.log("🔍 PricingPage - Has Scheduled Cancellation:", hasScheduledCancellation);
-
-    const formatDate = (dateString: string) => {
+    const formatDate = useCallback((dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString("fr-FR", {
             day: "numeric",
             month: "long",
             year: "numeric"
         });
-    };
+    }, []);
 
-    const handleSubscribe = async () => {
+    const handleSubscribe = useCallback(async () => {
         try {
             setIsLoading(true);
             const { url } = await paymentService.createCheckoutSession();
@@ -40,7 +33,7 @@ export default function PricingPage() {
             window.location.href = url;
         } catch (error: unknown) {
             console.error("Erreur lors de la création de la session:", error);
-            const err = error as { response?: { data?: { message?: string } }; message?: string };
+            const err = error as ApiError;
             alert(
                 err.response?.data?.message ||
                     err.message ||
@@ -49,20 +42,21 @@ export default function PricingPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [paymentService]);
 
-    const handleManageSubscription = async () => {
+    const handleManageSubscription = useCallback(async () => {
         try {
             setIsLoading(true);
             const { url } = await paymentService.createPortalSession();
             window.location.href = url;
         } catch (error: unknown) {
             console.error("Erreur lors de l'accès au portail:", error);
-            alert("Impossible d'accéder au portail de gestion");
+            const errorMessage = getErrorMessage(error);
+            alert(errorMessage || "Impossible d'accéder au portail de gestion");
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [paymentService]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50/30">

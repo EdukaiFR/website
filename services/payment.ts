@@ -26,16 +26,10 @@ export function usePaymentService(): PaymentService {
             
             // Backend ignores Authorization header and only uses cookies
             // We only send withCredentials: true
-            const config = {
-                withCredentials: true
-            };
-            
-            console.log("🔍 Payment config:", config);
-            
             const response = await axios.post(
                 `${apiUrl}/payment/checkout`,
                 {},
-                config
+                { withCredentials: true }
             );
             return response.data;
         } catch (error: unknown) {

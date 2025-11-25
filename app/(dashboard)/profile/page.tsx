@@ -18,7 +18,7 @@ import {
     Trophy,
     Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface CourseData {
     _id: string;
@@ -38,9 +38,6 @@ interface QuizData {
 
 export default function ProfilePage() {
     const { userProfile, loading } = useUserProfile();
-    
-    console.log("🔍 ProfilePage - User Profile:", userProfile);
-    console.log("🔍 ProfilePage - Account Plan:", userProfile?.accountPlan);
 
     const courseService = useCourseService();
     const insightsService = useInsightsService();
@@ -141,7 +138,7 @@ export default function ProfilePage() {
     }, [courses, allQuizzes]);
 
     // Determine the display name
-    const getDisplayName = () => {
+    const getDisplayName = useCallback(() => {
         if (!userProfile) return "";
 
         if (
@@ -152,10 +149,10 @@ export default function ProfilePage() {
         }
 
         return userProfile.username;
-    };
+    }, [userProfile]);
 
     // Get user initials for avatar fallback
-    const getInitials = () => {
+    const getInitials = useCallback(() => {
         if (!userProfile) return "U";
 
         const displayName = getDisplayName();
@@ -165,9 +162,9 @@ export default function ProfilePage() {
             .join("")
             .toUpperCase()
             .slice(0, 2);
-    };
+    }, [userProfile, getDisplayName]);
 
-    const getPlanBadge = () => {
+    const getPlanBadge = useCallback(() => {
         const plan = userProfile?.accountPlan || "free";
         const badges = {
             free: { label: "Gratuit", color: "bg-gray-500", icon: Crown },
@@ -175,7 +172,7 @@ export default function ProfilePage() {
             premium: { label: "Premium", color: "bg-gradient-to-r from-yellow-500 to-amber-600 shadow-lg", icon: Crown },
         };
         return badges[plan as keyof typeof badges] || badges.free;
-    };
+    }, [userProfile]);
 
     if (loading || statsLoading) {
         return <PageLoadingSkeleton />;
