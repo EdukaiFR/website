@@ -1,6 +1,12 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 import { useUserProfile } from "@/contexts/UserContext";
+import { useUserStatistics } from "@/hooks/useUserStatistics";
+import { getImageDisplaySrc } from "@/lib/image-utils";
+import type { InsightItem } from "@/lib/types/insights";
+import { formatFullDate } from "@/lib/utils/date";
 import { useCourseService } from "@/services";
 import { useInsightsService } from "@/services/insights";
 import {
@@ -12,13 +18,7 @@ import {
     Trophy,
     Zap,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
-import { formatFullDate } from "@/lib/utils/date";
-import type { InsightItem } from "@/lib/types/insights";
-import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
-import { useUserStatistics } from "@/hooks/useUserStatistics";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getImageDisplaySrc } from "@/lib/image-utils";
+import { useEffect, useMemo, useState } from "react";
 
 interface CourseData {
     _id: string;
@@ -38,6 +38,10 @@ interface QuizData {
 
 export default function ProfilePage() {
     const { userProfile, loading } = useUserProfile();
+    
+    console.log("🔍 ProfilePage - User Profile:", userProfile);
+    console.log("🔍 ProfilePage - Account Plan:", userProfile?.accountPlan);
+
     const courseService = useCourseService();
     const insightsService = useInsightsService();
 
@@ -168,7 +172,7 @@ export default function ProfilePage() {
         const badges = {
             free: { label: "Gratuit", color: "bg-gray-500", icon: Crown },
             pro: { label: "Pro", color: "bg-blue-500", icon: Crown },
-            premium: { label: "Premium", color: "bg-purple-500", icon: Crown },
+            premium: { label: "Premium", color: "bg-gradient-to-r from-yellow-500 to-amber-600 shadow-lg", icon: Crown },
         };
         return badges[plan as keyof typeof badges] || badges.free;
     };
