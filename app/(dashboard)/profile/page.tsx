@@ -172,7 +172,11 @@ export default function ProfilePage() {
         const badges = {
             free: { label: "Gratuit", color: "bg-gray-500", icon: Crown },
             pro: { label: "Pro", color: "bg-blue-500", icon: Crown },
-            premium: { label: "Premium", color: "bg-gradient-to-r from-yellow-500 to-amber-600 shadow-lg", icon: Crown },
+            premium: {
+                label: "Premium",
+                color: "bg-gradient-to-r from-yellow-500 to-amber-600 shadow-lg",
+                icon: Crown,
+            },
         };
         return badges[plan as keyof typeof badges] || badges.free;
     }, [userProfile]);
