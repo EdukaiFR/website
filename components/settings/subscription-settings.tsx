@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ApiError, getErrorMessage } from "@/lib/types/api";
 import { usePaymentService } from "@/services/payment";
 import {
     AlertCircle,
@@ -50,9 +51,10 @@ export function SubscriptionSettings({
                 error
             );
             if (onError) {
-                const err = error as { response?: { data?: { message?: string } } };
+                const err = error as ApiError;
                 onError(
                     err.response?.data?.message ||
+                        getErrorMessage(error) ||
                         "Une erreur est survenue lors de l'ouverture du portail de gestion"
                 );
             }
