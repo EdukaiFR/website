@@ -1,5 +1,55 @@
+import { ApiError, ApiErrorResponse } from "@/lib/types/api";
+import { SummarySheetData } from "@/lib/types/library";
 import { Visibility } from "@/lib/types/visibility";
 import axios from "axios";
+
+// Response interfaces
+export interface SummarySheetsResponse {
+    sheets?: SummarySheetData[];
+    items?: SummarySheetData[];
+    message: string;
+}
+
+export interface Quiz {
+    _id: string;
+    title: string;
+    questions: unknown[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface QuizzesResponse {
+    quizzes: Quiz[];
+    message: string;
+}
+
+export interface VisibilityUpdateResponse {
+    status: "success" | "failure";
+    message: string;
+}
+
+export interface PublicCourseAuthor {
+    firstName: string;
+    lastName: string;
+    username: string;
+}
+
+export interface PublicCourse {
+    _id: string;
+    title: string;
+    subject: string;
+    level: string;
+    visibility?: Visibility;
+    author: PublicCourseAuthor;
+    createdAt: string;
+}
+
+export interface PublicCoursesResponse {
+    status: "success" | "failure";
+    items?: PublicCourse[];
+    courses?: PublicCourse[];
+    message?: string;
+}
 
 export interface CourseService {
     createCourse: (
@@ -13,9 +63,9 @@ export interface CourseService {
     getCourseFiles: (
         courseId: string
     ) => Promise<{ id: string; message: string } | null>;
-    getCourseSummarySheets: (courseId: string) => Promise<any>;
+    getCourseSummarySheets: (courseId: string) => Promise<SummarySheetsResponse | null>;
     getCourses: () => Promise<{ id: string; message: string } | null>;
-    getCourseQuizzes: (courseId: string) => Promise<any>;
+    getCourseQuizzes: (courseId: string) => Promise<QuizzesResponse | null>;
     addQuizToCourse: (
         courseId: string,
         quizId: string
@@ -62,8 +112,8 @@ export interface CourseService {
     updateVisibility: (
         courseId: string,
         visibility: Visibility
-    ) => Promise<any>;
-    getPublicCourses: () => Promise<any>;
+    ) => Promise<VisibilityUpdateResponse | ApiErrorResponse>;
+    getPublicCourses: () => Promise<PublicCoursesResponse | ApiErrorResponse>;
 }
 
 export function useCourseService() {
@@ -309,9 +359,10 @@ export function useCourseService() {
             );
 
             return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {
@@ -321,14 +372,15 @@ export function useCourseService() {
         }
     };
 
-    const getPublicCourses = async () => {
+    const getPublicCourses = async (): Promise<PublicCoursesResponse | ApiErrorResponse> => {
         try {
             const response = await axios.get(`${apiUrl}/courses/public`);
 
             return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {

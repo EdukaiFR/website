@@ -1,4 +1,5 @@
 import { sessionStorage } from "@/lib/session";
+import { jwtDecode } from "jwt-decode";
 
 export function getAuthToken() {
     return sessionStorage.getToken();
@@ -53,4 +54,37 @@ export function getAuthConfig() {
         withCredentials: true,
         headers: getAuthHeaders(),
     };
+}
+
+/**
+ * Synchronize the auth token from localStorage to a cookie
+ * This is needed for the backend to receive the token in requests that require cookies
+ */
+export function syncAuthCookie() {
+    if (typeof window === "undefined") return;
+    
+    const token = sessionStorage.getToken();
+    if (token) {
+        // Set cookie with appropriate flags
+        // Note: In development (localhost), Secure might need to be false if not using HTTPS
+        // SameSite=Lax is usually good for top-level navigations, but for API calls 
+        // across ports/domains, we might need to be careful.
+        // For now, we set it simply to ensure it's available.
+        document.cookie = `auth_token=${token}; path=/; max-age=86400; SameSite=Lax`;
+    }
+}
+
+/**
+ * Check if a JWT token is expired
+ * @param token JWT token string
+ * @returns true if expired or invalid, false otherwise
+ */
+export function isTokenExpired(token: string): boolean {
+    try {
+        const decoded = jwtDecode<{ exp: number }>(token);
+        const currentTime = Date.now() / 1000;
+        return decoded.exp < currentTime;
+    } catch {
+        return true; // Treat invalid tokens as expired
+    }
 }

@@ -1,12 +1,53 @@
+import { ApiError, ApiErrorResponse } from "@/lib/types/api";
 import { Visibility } from "@/lib/types/visibility";
 import axios from "axios";
 
+// Response interfaces
+export interface GeneratedSheetResponse {
+    id: string;
+    title: string;
+    content: string;
+    message: string;
+}
+
+export interface SheetByIdResponse {
+    _id: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface DeleteSheetResponse {
+    status: "success" | "failure";
+    message: string;
+}
+
+export interface SheetVisibilityUpdateResponse {
+    status: "success" | "failure";
+    message: string;
+}
+
+export interface PublicSheet {
+    _id: string;
+    title: string;
+    content: string;
+    visibility: Visibility;
+    createdAt: string;
+}
+
+export interface PublicSheetsResponse {
+    status: "success" | "failure";
+    sheets?: PublicSheet[];
+    message?: string;
+}
+
 export interface SummarySheetService {
-    generateSheet: (recognizedText: string[]) => Promise<any>;
-    getSheetById: (sheetId: string) => Promise<any>;
-    deleteSheetById: (sheetId: string) => Promise<any>;
-    updateVisibility: (sheetId: string, visibility: Visibility) => Promise<any>;
-    getPublicSheets: () => Promise<any>;
+    generateSheet: (recognizedText: string[]) => Promise<GeneratedSheetResponse | undefined>;
+    getSheetById: (sheetId: string) => Promise<SheetByIdResponse | undefined>;
+    deleteSheetById: (sheetId: string) => Promise<DeleteSheetResponse | ApiErrorResponse>;
+    updateVisibility: (sheetId: string, visibility: Visibility) => Promise<SheetVisibilityUpdateResponse | ApiErrorResponse>;
+    getPublicSheets: () => Promise<PublicSheetsResponse | ApiErrorResponse>;
 }
 
 export function useSummarySheetService(): SummarySheetService {
@@ -49,7 +90,7 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    const deleteSheetById = async (sheetId: string) => {
+    const deleteSheetById = async (sheetId: string): Promise<DeleteSheetResponse | ApiErrorResponse> => {
         try {
             const response = await axios.delete(
                 `${apiUrl}/summary-sheets/${sheetId}`,
@@ -57,9 +98,10 @@ export function useSummarySheetService(): SummarySheetService {
             );
 
             return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {
@@ -74,7 +116,7 @@ export function useSummarySheetService(): SummarySheetService {
     const updateVisibility = async (
         sheetId: string,
         visibility: Visibility
-    ) => {
+    ): Promise<SheetVisibilityUpdateResponse | ApiErrorResponse> => {
         try {
             const response = await axios.patch(
                 `${apiUrl}/summary-sheets/${sheetId}/visibility`,
@@ -83,9 +125,10 @@ export function useSummarySheetService(): SummarySheetService {
             );
 
             return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {
@@ -95,14 +138,15 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    const getPublicSheets = async () => {
+    const getPublicSheets = async (): Promise<PublicSheetsResponse | ApiErrorResponse> => {
         try {
             const response = await axios.get(`${apiUrl}/summary-sheets/public`);
 
             return response.data;
-        } catch (error: any) {
-            if (error?.response?.data) {
-                return error.response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {
