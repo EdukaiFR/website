@@ -81,7 +81,13 @@ export function useAuthService(): AuthService {
 
     const logout = async (): Promise<void> => {
         try {
-            // Logout logic here if needed
+            await axios.post(
+                `${apiUrl}/auth/logout`,
+                {},
+                {
+                    withCredentials: true,
+                }
+            );
         } catch (error) {
             console.error("Erreur de déconnexion:", error);
             throw error;
@@ -107,7 +113,7 @@ export function useAuthService(): AuthService {
     const getUserProfile = async (userId: string): Promise<AuthResponse["user"]> => {
         try {
             const response = await axios.get(
-                `${apiUrl}/user/${userId}`,
+                `${apiUrl}/users/${userId}`,
                 {
                     withCredentials: true,
                 }

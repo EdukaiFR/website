@@ -33,7 +33,6 @@ export function useSession() {
         } else if (token && storedUser) {
             // Check if token is expired
             if (isTokenExpired(token)) {
-                console.log("Token expired, clearing session");
                 sessionStorage.clearSession();
                 setUser(null);
                 setLoading(false);
@@ -129,6 +128,21 @@ export function useSession() {
         }
     };
 
+    const refreshUserProfile = async () => {
+        try {
+            const currentUser = sessionStorage.getUser();
+            const userId = currentUser?.id || currentUser?._id;
+
+            if (userId) {
+                const userProfile = await authService.getUserProfile(userId);
+                sessionStorage.setUser(userProfile);
+                setUser(userProfile);
+            }
+        } catch (error) {
+            console.error("Erreur lors du rafraîchissement du profil:", error);
+        }
+    };
+
     return {
         user,
         loading,
@@ -136,5 +150,6 @@ export function useSession() {
         register,
         logout,
         validateSession,
+        refreshUserProfile,
     };
 }

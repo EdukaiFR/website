@@ -6,15 +6,31 @@ import { useSession } from "@/hooks/useSession";
 import { ApiError, getErrorMessage } from "@/lib/types/api";
 import { usePaymentService } from "@/services/payment";
 import { AlertCircle, Check, Crown, Sparkles, Zap } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function PricingPage() {
     const paymentService = usePaymentService();
-    const { user } = useSession();
+    const { user, loading: sessionLoading, refreshUserProfile } = useSession();
     const [isLoading, setIsLoading] = useState(false);
 
+    // Rafraîchir les données utilisateur au chargement (après retour de Stripe)
+    useEffect(() => {
+        if (!sessionLoading) {
+            refreshUserProfile();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionLoading]);
+
     const isPremium = user?.accountPlan === "premium";
-    const hasScheduledCancellation = isPremium && user?.cancelAtPeriodEnd && user?.currentPeriodEnd;
+    // Only show cancellation banner if:
+    // 1. User is premium
+    // 2. cancelAtPeriodEnd is explicitly true (not undefined/null)
+    // 3. subscriptionStatus is "active" (not already cancelled)
+    // 4. currentPeriodEnd exists
+    const hasScheduledCancellation = isPremium &&
+        user?.cancelAtPeriodEnd === true &&
+        user?.subscriptionStatus === "active" &&
+        user?.currentPeriodEnd;
 
     const formatDate = useCallback((dateString: string) => {
         const date = new Date(dateString);
@@ -57,6 +73,15 @@ export default function PricingPage() {
             setIsLoading(false);
         }
     }, [paymentService]);
+
+    // Afficher un loader pendant le chargement de la session
+    if (sessionLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50/30 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50/30">
@@ -106,7 +131,7 @@ export default function PricingPage() {
                 {/* Pricing Cards */}
                 <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     {/* Free Plan */}
-                    <Card className={`bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden hover:shadow-2xl transition-all duration-300 ${!isPremium ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
+                    <Card className={`flex flex-col bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden hover:shadow-2xl transition-all duration-300 ${!isPremium ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
                         <CardHeader className="border-b border-gray-100/50 bg-gradient-to-r from-gray-50/30 to-transparent pb-6">
                             <div className="flex items-center justify-between mb-4">
                                 <CardTitle className="text-2xl font-bold text-gray-900">
@@ -123,28 +148,28 @@ export default function PricingPage() {
                                 <span className="text-gray-600">/mois</span>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-6">
-                            <ul className="space-y-4 mb-8">
+                        <CardContent className="pt-6 flex flex-col flex-1">
+                            <ul className="space-y-4 flex-1">
                                 <li className="flex items-start gap-3">
-                                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <Check className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <span className="text-gray-700">
                                         Accès aux fonctionnalités de base
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-3">
-                                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <Check className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <span className="text-gray-700">
                                         Quiz limités (4 questions)
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-3">
-                                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <Check className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <span className="text-gray-700">
                                         Génération de fiches de révision
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-3">
-                                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <Check className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <span className="text-gray-700">
                                         Support communautaire
                                     </span>
@@ -152,7 +177,7 @@ export default function PricingPage() {
                             </ul>
                             <Button
                                 variant="outline"
-                                className="w-full"
+                                className="w-full mt-8"
                                 disabled={!isPremium}
                                 onClick={isPremium ? handleManageSubscription : undefined}
                             >
@@ -162,23 +187,23 @@ export default function PricingPage() {
                     </Card>
 
                     {/* Premium Plan */}
-                    <Card className={`bg-white/60 backdrop-blur-xl shadow-2xl border-2 ${isPremium ? 'border-green-500/50' : 'border-blue-500/50'} overflow-hidden hover:shadow-3xl transition-all duration-300 relative`}>
-                        {/* Popular Badge */}
+                    <Card className={`flex flex-col bg-white/60 backdrop-blur-xl shadow-2xl border-2 border-blue-500/50 overflow-hidden hover:shadow-3xl transition-all duration-300 relative`}>
+                        {/* Popular/Active Badge */}
                         {!isPremium && (
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                            <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                                 POPULAIRE
                             </div>
                         )}
                         {isPremium && (
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                            <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                                 ACTIF
                             </div>
                         )}
 
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5" />
 
-                        <CardHeader className="relative border-b border-blue-100/50 bg-gradient-to-r from-blue-50/50 to-transparent pb-6">
-                            <div className="flex items-center justify-between mb-4">
+                        <CardHeader className="relative border-b border-blue-100/50 bg-gradient-to-r from-blue-50/50 to-transparent pb-6 pt-12">
+                            <div className="flex items-center gap-3 mb-4">
                                 <CardTitle className="text-2xl font-bold text-gray-900">
                                     Premium
                                 </CardTitle>
@@ -193,8 +218,8 @@ export default function PricingPage() {
                                 <span className="text-gray-600">/mois</span>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-6 relative">
-                            <ul className="space-y-4 mb-8">
+                        <CardContent className="pt-6 relative flex flex-col flex-1">
+                            <ul className="space-y-4 flex-1">
                                 <li className="flex items-start gap-3">
                                     <div className="p-0.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full mt-0.5">
                                         <Check className="w-4 h-4 text-white" />
@@ -250,7 +275,7 @@ export default function PricingPage() {
                                 </li>
                             </ul>
                             <Button
-                                className={`w-full text-white shadow-lg hover:shadow-xl transition-all duration-300 ${isPremium ? 'bg-green-600 hover:bg-green-700' : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'}`}
+                                className="w-full mt-8 text-white shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
                                 onClick={isPremium ? handleManageSubscription : handleSubscribe}
                                 disabled={isLoading}
                             >
