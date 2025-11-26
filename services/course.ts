@@ -1,5 +1,6 @@
 import { ApiError, ApiErrorResponse } from "@/lib/types/api";
 import { SummarySheetData } from "@/lib/types/library";
+import type { StartGenerationResponse } from "@/lib/types/progress";
 import { Visibility } from "@/lib/types/visibility";
 import axios from "axios";
 
@@ -49,6 +50,14 @@ export interface PublicCoursesResponse {
     items?: PublicCourse[];
     courses?: PublicCourse[];
     message?: string;
+}
+
+export interface GenerateCourseOptions {
+    /** Extracted text content from OCR processing */
+    extractedTexts: string[];
+    generateQuiz?: boolean;
+    generateSheet?: boolean;
+    level?: string;
 }
 
 export interface CourseService {
@@ -114,6 +123,10 @@ export interface CourseService {
         visibility: Visibility
     ) => Promise<VisibilityUpdateResponse | ApiErrorResponse>;
     getPublicCourses: () => Promise<PublicCoursesResponse | ApiErrorResponse>;
+    startCourseGeneration: (
+        courseId: string,
+        options: GenerateCourseOptions
+    ) => Promise<StartGenerationResponse | null>;
 }
 
 export function useCourseService() {
@@ -428,6 +441,50 @@ export function useCourseService() {
         }
     };
 
+    /**
+     * Start course generation with SSE progress tracking
+     * @param courseId - The course ID to generate content for
+     * @param options - Generation options including extracted texts and settings
+     * @returns Promise with jobId for SSE tracking
+     */
+    const startCourseGeneration = async (
+        courseId: string,
+        options: GenerateCourseOptions
+    ): Promise<StartGenerationResponse | null> => {
+        try {
+            // Combine all extracted texts into a single textString
+            const textString = options.extractedTexts.join("\n\n---\n\n");
+
+            const response = await axios.post(
+                `${apiUrl}/courses/${courseId}/generate`,
+                {
+                    textString,
+                    generateQuiz: options.generateQuiz ?? true,
+                    generateSheet: options.generateSheet ?? true,
+                    level: options.level,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+
+            return response.data as StartGenerationResponse;
+        } catch (error) {
+            console.error(
+                `[CourseService] ❌ Error starting generation for course ${courseId}:`,
+                error
+            );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
+            return null;
+        }
+    };
+
     return {
         createCourse,
         getCourseById,
@@ -445,5 +502,6 @@ export function useCourseService() {
         getAllExams,
         updateVisibility,
         getPublicCourses,
+        startCourseGeneration,
     };
 }
