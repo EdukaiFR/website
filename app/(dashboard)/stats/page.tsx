@@ -19,14 +19,30 @@ import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 
 type TimePeriod = "7days" | "30days" | "year" | "lifetime";
 
+type PeriodLabel = {
+    label: TimePeriod;
+    value: string;
+    period: string;
+};
+
+const periodLabels: PeriodLabel[] = [
+    { label: "7days", value: "les 7 derniers jours", period: "7 jours" },
+    { label: "30days", value: "les 30 derniers jours", period: "30 jours" },
+    {
+        label: "year",
+        value: `l'année ${new Date().getFullYear()}`,
+        period: `${new Date().getFullYear()}`,
+    },
+    { label: "lifetime", value: "À vie", period: "A vie" },
+];
+
 export default function StatsPage() {
     const insightsService = useInsightsService();
     const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
         null
     );
     const [loading, setLoading] = useState(true);
-    const [selectedPeriod, setSelectedPeriod] =
-        useState<TimePeriod>("30days");
+    const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("30days");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -62,17 +78,13 @@ export default function StatsPage() {
     // Use shared statistics hook with period filter
     const stats = useUserStatistics(insights, selectedPeriod);
 
-    const getPeriodLabel = () => {
-        switch (selectedPeriod) {
-            case "7days":
-                return "7 derniers jours";
-            case "30days":
-                return "30 derniers jours";
-            case "year":
-                return `Année ${new Date().getFullYear()}`;
-            case "lifetime":
-                return "À vie";
-        }
+    const getPeriodLabel = (selectedPeriod: TimePeriod) => {
+        const matching = periodLabels.find(
+            item => item.label === selectedPeriod
+        );
+        const result = matching ? matching.value : "Période inconnue";
+
+        return result;
     };
 
     const getScoreColor = (score: number): string => {
@@ -129,31 +141,17 @@ export default function StatsPage() {
                         </h2>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                        {[
-                            { value: "7days" as TimePeriod, label: "7 jours" },
-                            {
-                                value: "30days" as TimePeriod,
-                                label: "30 jours",
-                            },
-                            {
-                                value: "year" as TimePeriod,
-                                label: `${new Date().getFullYear()}`,
-                            },
-                            {
-                                value: "lifetime" as TimePeriod,
-                                label: "À vie",
-                            },
-                        ].map(period => (
+                        {periodLabels.map(item => (
                             <button
-                                key={period.value}
-                                onClick={() => setSelectedPeriod(period.value)}
+                                key={item.label}
+                                onClick={() => setSelectedPeriod(item.label)}
                                 className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
-                                    selectedPeriod === period.value
+                                    selectedPeriod === item.label
                                         ? "bg-blue-600 text-white shadow-lg"
                                         : "bg-white text-gray-700 border border-gray-200 hover:border-blue-300 hover:shadow-md"
                                 }`}
                             >
-                                {period.label}
+                                {item.period}
                             </button>
                         ))}
                     </div>
@@ -165,7 +163,10 @@ export default function StatsPage() {
                             <BarChart3 className="w-8 h-8 text-gray-400" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            Aucune donnée pour {getPeriodLabel()}
+                            Aucune donnée
+                            {selectedPeriod &&
+                                selectedPeriod != "lifetime" &&
+                                ` pour ${getPeriodLabel(selectedPeriod)}`}
                         </h3>
                         <p className="text-gray-600">
                             Complétez des quiz pour voir vos statistiques ici !
@@ -408,7 +409,8 @@ export default function StatsPage() {
                                                                 .quizCount
                                                         }{" "}
                                                         quiz complété
-                                                        {analyticsData.bestCourse
+                                                        {analyticsData
+                                                            .bestCourse
                                                             .quizCount > 1
                                                             ? "s"
                                                             : ""}
@@ -525,38 +527,43 @@ export default function StatsPage() {
                                             new Date(a.createdAt).getTime()
                                     )
                                     .slice(0, 10)
-                                    .map((insight: InsightItem, index: number) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                    <Zap className="w-5 h-5 text-blue-600" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-medium text-gray-900">
-                                                        Quiz Complété
-                                                    </div>
-                                                    <div className="text-sm text-gray-600">
-                                                        {formatFullDate(
-                                                            insight.createdAt
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    .map(
+                                        (
+                                            insight: InsightItem,
+                                            index: number
+                                        ) => (
                                             <div
-                                                className={`px-4 py-2 rounded-full font-semibold ${getScoreColor(
-                                                    insight.score || 0
-                                                )}`}
+                                                key={index}
+                                                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                                             >
-                                                {Math.round(
-                                                    insight.score || 0
-                                                )}
-                                                %
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                        <Zap className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">
+                                                            Quiz Complété
+                                                        </div>
+                                                        <div className="text-sm text-gray-600">
+                                                            {formatFullDate(
+                                                                insight.createdAt
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={`px-4 py-2 rounded-full font-semibold ${getScoreColor(
+                                                        insight.score || 0
+                                                    )}`}
+                                                >
+                                                    {Math.round(
+                                                        insight.score || 0
+                                                    )}
+                                                    %
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    )}
                             </div>
                         </div>
                     </>
