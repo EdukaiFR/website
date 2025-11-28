@@ -69,8 +69,10 @@ export function useCourseLogic() {
         deleteExamById,
     } = useCourse(courseService);
 
-    const { quizData, insightsData, loadQuiz, getQuizInsights } =
-        useQuiz(quizService, insightsService);
+    const { quizData, insightsData, loadQuiz, getQuizInsights } = useQuiz(
+        quizService,
+        insightsService
+    );
 
     const [summarySheetsData, setSummarySheetsData] = useState<
         SummarySheetData[] | []

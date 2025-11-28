@@ -17,8 +17,7 @@ export const formatRelativeDate = (dateString: string): string => {
 
     if (diffInDays === 0) return `Aujourd'hui à ${timeString}`;
     if (diffInDays === 1) return `Hier à ${timeString}`;
-    if (diffInDays < 7)
-        return `Il y a ${diffInDays} jours à ${timeString}`;
+    if (diffInDays < 7) return `Il y a ${diffInDays} jours à ${timeString}`;
 
     return (
         date.toLocaleDateString("fr-FR", {

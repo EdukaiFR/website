@@ -19,10 +19,7 @@ export interface ResetPasswordFormProps {
     onBack?: () => void;
 }
 
-export function ResetPasswordForm({
-    onError,
-    onBack,
-}: ResetPasswordFormProps) {
+export function ResetPasswordForm({ onError, onBack }: ResetPasswordFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 

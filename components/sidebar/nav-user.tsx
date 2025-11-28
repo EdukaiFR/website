@@ -19,7 +19,14 @@ import {
 import { useUserProfile } from "@/contexts/UserContext";
 import { useSession } from "@/hooks/useSession";
 import { getImageDisplaySrc } from "@/lib/image-utils";
-import { ChevronsUpDown, CreditCard, GraduationCap, LogOut, Settings, User } from "lucide-react";
+import {
+    ChevronsUpDown,
+    CreditCard,
+    GraduationCap,
+    LogOut,
+    Settings,
+    User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -223,8 +230,8 @@ export function NavUser() {
                                     className="flex items-center gap-2 cursor-pointer"
                                 >
                                     <CreditCard className="w-4 h-4" />
-                                    {userProfile?.accountPlan === "premium" 
-                                        ? "Gérer mon abonnement" 
+                                    {userProfile?.accountPlan === "premium"
+                                        ? "Gérer mon abonnement"
                                         : "Mettre à niveau l'abonnement"}
                                 </Link>
                             </DropdownMenuItem>
