@@ -38,7 +38,9 @@ export default function FileHeader({ file }: FileHeaderProps) {
                             {file.name}
                         </h3>
                         <div className="flex items-center gap-4 mt-2 text-gray-600">
-                            <span className="text-sm font-medium px-3 py-1 bg-blue-50/50 rounded-lg border border-blue-100">{file.contentType}</span>
+                            <span className="text-sm font-medium px-3 py-1 bg-blue-50/50 rounded-lg border border-blue-100">
+                                {file.contentType}
+                            </span>
                             <span className="text-blue-300">•</span>
                             <div className="flex items-center gap-2 px-3 py-1 bg-purple-50/50 rounded-lg border border-purple-100">
                                 <Calendar className="w-4 h-4 text-purple-600" />

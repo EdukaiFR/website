@@ -19,7 +19,13 @@ import {
 import { useSession } from "@/hooks/useSession";
 import { useUserProfile } from "@/contexts/UserContext";
 import { getImageDisplaySrc } from "@/lib/image-utils";
-import { ChevronsUpDown, LogOut, Settings, GraduationCap, User } from "lucide-react";
+import {
+    ChevronsUpDown,
+    LogOut,
+    Settings,
+    GraduationCap,
+    User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

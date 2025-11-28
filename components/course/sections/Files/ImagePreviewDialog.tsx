@@ -30,7 +30,9 @@ export default function ImagePreviewDialog({
                                 <Image className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="truncate bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">{file.name}</div>
+                                <div className="truncate bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent">
+                                    {file.name}
+                                </div>
                                 <div className="text-sm font-medium text-gray-600 mt-1">
                                     {file.contentType} •{" "}
                                     {formatFileSize(file.size)}

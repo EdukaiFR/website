@@ -53,7 +53,8 @@ export default function MyFiles({ courseId, getCourseFiles }: MyFilesProps) {
                                 <div className="flex items-center gap-2">
                                     <Eye className="w-5 h-5 text-blue-600" />
                                     <span className="text-base font-bold text-blue-700">
-                                        {allFiles.length} fichier{allFiles.length > 1 ? 's' : ''}
+                                        {allFiles.length} fichier
+                                        {allFiles.length > 1 ? "s" : ""}
                                     </span>
                                 </div>
                             </div>
@@ -62,7 +63,7 @@ export default function MyFiles({ courseId, getCourseFiles }: MyFilesProps) {
 
                     {/* Files Grid */}
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                        {allFiles.map((file) => (
+                        {allFiles.map(file => (
                             <FileCard
                                 key={`${file.name}-${file.size}`}
                                 file={file}

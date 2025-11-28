@@ -68,7 +68,9 @@ export default function ProfilePage() {
                                 return [];
                             }
                             const quizzesResponse =
-                                await courseService.getCourseQuizzes(course._id);
+                                await courseService.getCourseQuizzes(
+                                    course._id
+                                );
                             if (
                                 quizzesResponse &&
                                 "items" in quizzesResponse &&
@@ -98,7 +100,8 @@ export default function ProfilePage() {
                         "items" in insightsResponse &&
                         Array.isArray(insightsResponse.items)
                     ) {
-                        const insightsData = insightsResponse.items as InsightItem[];
+                        const insightsData =
+                            insightsResponse.items as InsightItem[];
                         setInsights(insightsData);
                     } else if (Array.isArray(insightsResponse)) {
                         // Fallback: if response is directly an array
@@ -192,7 +195,9 @@ export default function ProfilePage() {
                         {/* Profile Picture */}
                         <Avatar className="w-20 h-20 mb-4 border-4 border-white/30 shadow-xl">
                             <AvatarImage
-                                src={getImageDisplaySrc(userProfile?.profilePic)}
+                                src={getImageDisplaySrc(
+                                    userProfile?.profilePic
+                                )}
                                 alt={getDisplayName()}
                                 className="object-cover"
                             />
@@ -284,7 +289,9 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading ? "..." : profileStats.totalCourses}
+                                {statsLoading
+                                    ? "..."
+                                    : profileStats.totalCourses}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Cours Générés
@@ -299,7 +306,9 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {statsLoading ? "..." : profileStats.totalQuizzes}
+                                {statsLoading
+                                    ? "..."
+                                    : profileStats.totalQuizzes}
                             </div>
                             <div className="text-sm text-gray-600">
                                 Quiz Créés
@@ -352,14 +361,20 @@ export default function ProfilePage() {
                             {userStats.totalQuizzes > 0 ? (
                                 <div className="space-y-4">
                                     {insights
-                                        .filter(insight => insight?.createdAt && insight?._id)
+                                        .filter(
+                                            insight =>
+                                                insight?.createdAt &&
+                                                insight?._id
+                                        )
                                         .sort(
                                             (a, b) =>
-                                                new Date(b.createdAt).getTime() -
+                                                new Date(
+                                                    b.createdAt
+                                                ).getTime() -
                                                 new Date(a.createdAt).getTime()
                                         )
                                         .slice(0, 5)
-                                        .map((insight) => (
+                                        .map(insight => (
                                             <div
                                                 key={insight._id}
                                                 className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
@@ -384,7 +399,10 @@ export default function ProfilePage() {
                                                         insight.score || 0
                                                     )}`}
                                                 >
-                                                    {Math.round(insight.score || 0)}%
+                                                    {Math.round(
+                                                        insight.score || 0
+                                                    )}
+                                                    %
                                                 </div>
                                             </div>
                                         ))}
@@ -398,7 +416,8 @@ export default function ProfilePage() {
                                         Aucune activité pour le moment
                                     </h3>
                                     <p className="text-sm text-gray-600 text-center max-w-md">
-                                        Commence à faire des quiz pour voir ton activité ici !
+                                        Commence à faire des quiz pour voir ton
+                                        activité ici !
                                     </p>
                                 </div>
                             )}
