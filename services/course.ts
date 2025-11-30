@@ -76,7 +76,7 @@ export function useCourseService() {
     ) => {
         try {
             const response = await axios.post(
-                `${apiUrl}/courses/create`,
+                `${apiUrl}/courses`,
                 { title, subject, level },
                 { withCredentials: true }
             );
