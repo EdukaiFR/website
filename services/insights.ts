@@ -75,7 +75,7 @@ export function useInsightsService() {
         }
 
         const response = await axios.get<InsightItem[]>(
-            `${apiUrl}/insights/my`,
+            `${apiUrl}/insights`,
             {
                 withCredentials: true,
                 signal,
