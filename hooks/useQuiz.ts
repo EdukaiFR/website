@@ -1,5 +1,5 @@
 import type { InsightsService, QuizService } from "@/services";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export type Quiz = {
     question: string;
@@ -9,11 +9,11 @@ export type Quiz = {
 }[];
 
 type Insights = {
-    averageScore: number;
-    insightsCount: number;
-    insights?: Array<{
+    items: Array<{
+        _id: string;
         score: number;
         createdAt: string;
+        author: string;
     }>;
 };
 
@@ -26,8 +26,7 @@ export function useQuiz(
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [insightsData, setInsightsData] = useState<Insights>({
-        averageScore: 0,
-        insightsCount: 0,
+        items: [],
     });
 
     async function generateQuiz(recognizedTexts: string[]) {
@@ -68,18 +67,21 @@ export function useQuiz(
         }
     };
 
-    const getQuizInsights = async (quizId: string) => {
-        try {
-            const insights = (await insightsService?.getQuizInsights(
-                quizId
-            )) as Insights;
-            setInsightsData(insights);
-            return insights;
-        } catch (error) {
-            setError("Failed to load quiz insights.");
-            return null;
-        }
-    };
+    const getQuizInsights = useCallback(
+        async (quizId: string) => {
+            try {
+                const insights = (await insightsService?.getQuizInsights(
+                    quizId
+                )) as Insights;
+                setInsightsData(insights);
+                return insights;
+            } catch (error) {
+                setError("Failed to load quiz insights.");
+                return null;
+            }
+        },
+        [insightsService]
+    );
 
     const createInsight = async (quizId: string, score: number) => {
         try {

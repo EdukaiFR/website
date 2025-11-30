@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
+import { NextRequest, NextResponse } from "next/server";
 import { USER_ROLES, UserRole } from "./hooks/useRole";
 
 interface JwtToken {
@@ -49,6 +48,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        "/((?!api|static|.*\\..*|_next|auth).*)", // /api, /static, file extensions, /_next, and /auth
+        "/((?!api|static|.*\\..*|_next|auth|reset-password|shared).*)", // /api, /static, file extensions, /_next, /auth, /reset-password, and /shared
     ],
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -9,18 +9,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import {
-    FileText,
-    Download,
-    ExternalLink,
     Calendar,
-    User,
-    File,
     ChevronLeft,
     ChevronRight,
+    Download,
+    ExternalLink,
+    File,
+    FileText,
+    User,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type FileData = {
     id: number;
@@ -175,7 +175,7 @@ export const FilePreviewDialog = ({
                             className="max-w-full max-h-[400px] object-contain rounded-xl shadow-lg"
                             width={100}
                             height={100}
-                            onError={(e: unknown) => {
+                            onError={(_e: unknown) => {
                                 console.error(
                                     "Image failed to load:",
                                     file.src

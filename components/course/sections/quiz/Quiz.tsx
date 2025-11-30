@@ -1,12 +1,12 @@
+import { insightsToast, quizToast } from "@/lib/toast";
 import { getPercentage } from "@/lib/utils";
 import { rankings } from "@/public/mocks/default-value";
-import { useState, useEffect } from "react";
+import type { InsightsService } from "@/services";
+import { useEffect, useRef, useState } from "react";
 import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
 import { LastQuiz } from "./LastQuiz";
 import { PossibleAnswers } from "./PossibleAnswers";
-import { quizToast, insightsToast } from "@/lib/toast";
-import type { InsightsService } from "@/services";
 
 export type QuizProps = {
     course_id: string;
@@ -14,13 +14,14 @@ export type QuizProps = {
     quiz_id?: string;
     insights_service?: InsightsService;
     insights_data?: {
-        averageScore: number;
-        insightsCount: number;
-        insights?: Array<{
+        items: Array<{
+            _id: string;
             score: number;
             createdAt: string;
+            author: string;
         }>;
     };
+    refreshInsights?: (quizId: string) => Promise<unknown>;
 };
 
 type QuizQuestion = {
@@ -35,6 +36,7 @@ export const Quiz = ({
     quiz_id,
     insights_service,
     insights_data,
+    refreshInsights,
 }: QuizProps) => {
     const typedQuizData = quiz_data as QuizQuestion[];
     const [questionIndex, setQuestionIndex] = useState<number>(1);
@@ -52,29 +54,42 @@ export const Quiz = ({
     const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
     const [isFinish, setIsFinish] = useState<boolean>(false);
 
-    // Create insight when quiz is finished
-    useEffect(() => {
-        const createQuizInsight = async () => {
-            if (isFinish && quiz_id && insights_service) {
-                try {
-                    const finalScore = getPercentage(
-                        score,
-                        typedQuizData.length
-                    );
-                    await insights_service.createInsight(quiz_id, finalScore);
-                    insightsToast.createSuccess();
+    const insightCreatedRef = useRef<boolean>(false);
 
-                    // Force refresh insights data after creating new insight
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to ensure backend is updated
-                } catch (error) {
-                    console.error("❌ Failed to create quiz insight:", error);
-                    insightsToast.createError();
+    const createQuizInsight = async () => {
+        if (
+            isFinish &&
+            quiz_id &&
+            insights_service &&
+            !insightCreatedRef.current
+        ) {
+            insightCreatedRef.current = true;
+            try {
+                const finalScore = getPercentage(score, typedQuizData.length);
+                await insights_service.createInsight(quiz_id, finalScore);
+                insightsToast.createSuccess();
+
+                if (refreshInsights) {
+                    await refreshInsights(quiz_id);
                 }
+            } catch (error) {
+                console.error("❌ Failed to create quiz insight:", error);
+                insightsToast.createError();
+                insightCreatedRef.current = false;
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         createQuizInsight();
-    }, [isFinish, quiz_id, score, typedQuizData.length, insights_service]);
+    }, [
+        isFinish,
+        quiz_id,
+        score,
+        typedQuizData.length,
+        insights_service,
+        refreshInsights,
+    ]);
 
     const handleSubmitQuestion = () => {
         try {
@@ -101,8 +116,6 @@ export const Quiz = ({
     const handleNextQuestion = () => {
         try {
             setProcessingSubmit(true);
-
-            // Increment answered questions count when moving to next question
             setAnsweredQuestionsCount(answeredQuestionsCount + 1);
 
             if (questionIndex >= typedQuizData.length) {
@@ -132,6 +145,7 @@ export const Quiz = ({
             setIsAnswer(false);
             setScore(0);
             setIsFinish(false);
+            insightCreatedRef.current = false;
         } catch (error: unknown) {
             console.error("Oups.. Une erreur est survenue:", error);
             quizToast.restartError();
@@ -172,7 +186,7 @@ export const Quiz = ({
                         </div>
                         <div className="flex-1">
                             <LastQuiz
-                                last_attemps={insights_data?.insights || []}
+                                last_attemps={insights_data?.items || []}
                                 insights_data={insights_data}
                                 className="h-full"
                             />

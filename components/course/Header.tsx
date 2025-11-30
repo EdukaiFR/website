@@ -6,10 +6,10 @@ import { useSession } from "@/hooks/useSession";
 import type { VisibilityType } from "@/lib/types/visibility";
 import {
     BicepsFlexed,
+    BookOpen,
     CircleStop,
     Heart,
     Settings,
-    BookOpen,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -82,38 +82,35 @@ export const Header = ({
 
                     {/* Action Buttons - All on same line */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
-                        {isUserOwner && (
-                            <Button
-                                onClick={() => {
-                                    if (selectedTab === "quiz") {
-                                        setSelectedTab("overview");
-                                    } else {
-                                        setSelectedTab("quiz");
-                                    }
-                                }}
-                                className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm whitespace-nowrap"
-                            >
-                                {selectedTab === "quiz" ? (
-                                    <>
-                                        <CircleStop className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                        <span className="hidden sm:inline">
-                                            Arrêter le quiz
-                                        </span>
-                                        <span className="sm:hidden">
-                                            Arrêter
-                                        </span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <BicepsFlexed className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                        <span className="hidden sm:inline">
-                                            Lancer un quiz
-                                        </span>
-                                        <span className="sm:hidden">Quiz</span>
-                                    </>
-                                )}
-                            </Button>
-                        )}
+                        {/* Quiz button available for all authenticated users (public courses) */}
+                        <Button
+                            onClick={() => {
+                                if (selectedTab === "quiz") {
+                                    setSelectedTab("overview");
+                                } else {
+                                    setSelectedTab("quiz");
+                                }
+                            }}
+                            className="flex-1 sm:flex-none h-10 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm whitespace-nowrap"
+                        >
+                            {selectedTab === "quiz" ? (
+                                <>
+                                    <CircleStop className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="hidden sm:inline">
+                                        Arrêter le quiz
+                                    </span>
+                                    <span className="sm:hidden">Arrêter</span>
+                                </>
+                            ) : (
+                                <>
+                                    <BicepsFlexed className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="hidden sm:inline">
+                                        Lancer un quiz
+                                    </span>
+                                    <span className="sm:hidden">Quiz</span>
+                                </>
+                            )}
+                        </Button>
 
                         <Button
                             size="icon"

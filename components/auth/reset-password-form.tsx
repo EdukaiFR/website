@@ -19,11 +19,7 @@ export interface ResetPasswordFormProps {
     onBack?: () => void;
 }
 
-export function ResetPasswordForm({
-    onSuccess,
-    onError,
-    onBack,
-}: ResetPasswordFormProps) {
+export function ResetPasswordForm({ onError, onBack }: ResetPasswordFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -45,7 +41,7 @@ export function ResetPasswordForm({
 
             if (result.success) {
                 setIsSubmitted(true);
-                onSuccess?.();
+                // Don't call onSuccess() immediately - let user see the confirmation
             } else {
                 const errorMessage = result.error || "Une erreur est survenue";
                 setError("root", { message: errorMessage });

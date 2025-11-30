@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { CreditCard, GraduationCap, User, Shield } from "lucide-react";
+import { CreditCard, GraduationCap, School, Shield, User } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import {
-    ProfileSettings,
-    EducationSettings,
-    SubscriptionSettings,
     AccountSettings,
+    EducationSettings,
+    ProfileSettings,
+    SubscriptionSettings,
 } from "@/components/settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,87 +97,91 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
                 {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="relative">
-                            <Image
-                                src="/EdukaiLogo.svg"
-                                alt="Logo Edukai"
-                                width={48}
-                                height={48}
-                                className="rounded-full"
-                            />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
-                                Paramètres
-                            </h1>
-                            <p className="text-gray-600">
-                                Gérez vos informations personnelles et
-                                préférences
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* User Info Card */}
+                <div className="mb-8 space-y-6">
+                    {/* User Info Card - Modern Glassmorphism Design */}
                     {userProfile && (
-                        <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-0">
-                            <CardContent className="p-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="relative w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold overflow-hidden">
-                                        {getImageDisplaySrc(
-                                            userProfile.profilePic
-                                        ) ? (
-                                            <Image
-                                                src={
-                                                    getImageDisplaySrc(
-                                                        userProfile.profilePic
-                                                    )!
-                                                }
-                                                alt="Photo de profil"
-                                                fill
-                                                className="object-cover"
-                                                onError={() => {
-                                                    // You could set a state here to fallback to initials
-                                                    // For now we'll let it show the broken image placeholder
-                                                }}
-                                            />
-                                        ) : (
-                                            <>
-                                                {userProfile.firstName.charAt(
-                                                    0
-                                                )}
-                                                {userProfile.lastName.charAt(0)}
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h2 className="text-xl font-semibold text-gray-900">
-                                            {userProfile.firstName}{" "}
-                                            {userProfile.lastName}
-                                        </h2>
-                                        <p className="text-gray-600 text-sm">
-                                            @{userProfile.username}
-                                        </p>
-                                        <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
-                                            <span className="flex items-center gap-1">
-                                                <GraduationCap className="w-4 h-4" />
-                                                {userProfile.grade} •{" "}
-                                                {userProfile.levelOfStudy}
-                                            </span>
-                                            {userProfile.institution && (
-                                                <span className="flex items-center gap-1">
-                                                    <Shield className="w-4 h-4" />
-                                                    {userProfile.institution}
-                                                </span>
+                        <Card className="bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <CardContent className="p-6 sm:p-8 relative">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                                    {/* Profile Picture with Ring */}
+                                    <div className="relative">
+                                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden ring-4 ring-white">
+                                            {getImageDisplaySrc(
+                                                userProfile.profilePic
+                                            ) ? (
+                                                <Image
+                                                    src={
+                                                        getImageDisplaySrc(
+                                                            userProfile.profilePic
+                                                        )!
+                                                    }
+                                                    alt="Photo de profil"
+                                                    fill
+                                                    className="object-cover"
+                                                    onError={() => {
+                                                        // You could set a state here to fallback to initials
+                                                        // For now we'll let it show the broken image placeholder
+                                                    }}
+                                                />
+                                            ) : (
+                                                <>
+                                                    {userProfile.firstName.charAt(
+                                                        0
+                                                    )}
+                                                    {userProfile.lastName.charAt(
+                                                        0
+                                                    )}
+                                                </>
                                             )}
-                                            <span className="flex items-center gap-1">
+                                        </div>
+                                    </div>
+
+                                    {/* User Info */}
+                                    <div className="flex-1 space-y-3">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-gray-900">
+                                                {userProfile.firstName}{" "}
+                                                {userProfile.lastName}
+                                            </h2>
+                                            <p className="text-gray-600 text-base mt-0.5">
+                                                @{userProfile.username}
+                                            </p>
+                                        </div>
+
+                                        {/* Info Badges */}
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-full text-sm font-medium text-blue-700">
+                                                <GraduationCap className="w-4 h-4" />
+                                                <span>{userProfile.grade}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100/80 backdrop-blur-sm border border-blue-200 rounded-full text-sm font-medium text-blue-800">
+                                                <School className="w-4 h-4" />
+                                                <span>
+                                                    {userProfile.levelOfStudy}
+                                                </span>
+                                            </div>
+                                            {userProfile.institution && (
+                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-full text-sm font-medium text-blue-700">
+                                                    <Shield className="w-4 h-4" />
+                                                    <span>
+                                                        {
+                                                            userProfile.institution
+                                                        }
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full text-sm font-semibold text-white shadow-md">
                                                 <CreditCard className="w-4 h-4" />
-                                                Plan {userProfile.accountPlan}
-                                            </span>
+                                                <span>
+                                                    Plan{" "}
+                                                    {userProfile.accountPlan}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -190,59 +194,65 @@ export default function SettingsPage() {
                 <PersistentAlertsContainer alerts={alerts} className="mb-6" />
 
                 <div className="grid lg:grid-cols-4 gap-8">
-                    {/* Sidebar Navigation */}
+                    {/* Sidebar Navigation - Modern Design */}
                     <div className="lg:col-span-1">
-                        <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-0 sticky top-8">
-                            <CardContent className="p-6">
-                                <nav className="space-y-2">
-                                    {tabs.map(tab => (
-                                        <Button
-                                            key={tab.key}
-                                            variant={
-                                                activeTab === tab.key
-                                                    ? "default"
-                                                    : "ghost"
-                                            }
-                                            className={`w-full justify-start h-auto p-4 ${
-                                                activeTab === tab.key
-                                                    ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
-                                                    : "text-gray-700 hover:bg-gray-100"
-                                            }`}
-                                            onClick={() =>
-                                                setActiveTab(tab.key)
-                                            }
-                                        >
-                                            <div className="flex items-start gap-3 w-full">
-                                                <div className="flex-shrink-0">
-                                                    {tab.icon}
-                                                </div>
-                                                <div className="text-left flex-1 overflow-hidden">
-                                                    <div className="font-semibold whitespace-normal break-words">
-                                                        {tab.label}
+                        <div className="sticky top-8 space-y-4">
+                            {/* Navigation Title */}
+                            <div className="px-4">
+                                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                                    Navigation
+                                </h2>
+                            </div>
+
+                            {/* Navigation Tabs */}
+                            <Card className="bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden">
+                                <CardContent className="p-3">
+                                    <nav className="space-y-1">
+                                        {tabs.map(tab => (
+                                            <Button
+                                                key={tab.key}
+                                                variant="ghost"
+                                                className={`w-full justify-start h-auto p-4 rounded-xl transition-all duration-200 ${
+                                                    activeTab === tab.key
+                                                        ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-600"
+                                                        : "text-gray-700 hover:bg-blue-50/50 hover:text-blue-700"
+                                                }`}
+                                                onClick={() =>
+                                                    setActiveTab(tab.key)
+                                                }
+                                            >
+                                                <div className="flex items-start gap-3 w-full">
+                                                    <div className="flex-shrink-0 mt-0.5">
+                                                        {tab.icon}
                                                     </div>
-                                                    <div
-                                                        className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
-                                                            activeTab ===
-                                                            tab.key
-                                                                ? "text-blue-100"
-                                                                : "text-gray-500"
-                                                        }`}
-                                                        style={{
-                                                            wordWrap:
-                                                                "break-word",
-                                                            overflowWrap:
-                                                                "break-word",
-                                                        }}
-                                                    >
-                                                        {tab.description}
+                                                    <div className="text-left flex-1 overflow-hidden">
+                                                        <div className="font-semibold text-base whitespace-normal break-words">
+                                                            {tab.label}
+                                                        </div>
+                                                        <div
+                                                            className={`text-xs mt-1 whitespace-normal break-words leading-relaxed max-w-full ${
+                                                                activeTab ===
+                                                                tab.key
+                                                                    ? "text-blue-100"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                            style={{
+                                                                wordWrap:
+                                                                    "break-word",
+                                                                overflowWrap:
+                                                                    "break-word",
+                                                            }}
+                                                        >
+                                                            {tab.description}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </Button>
-                                    ))}
-                                </nav>
-                            </CardContent>
-                        </Card>
+                                            </Button>
+                                        ))}
+                                    </nav>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
 
                     {/* Main Content */}

@@ -1,9 +1,12 @@
 "use client";
 
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 import { useUserProfile } from "@/contexts/UserContext";
 import { useAllExams } from "@/hooks/useAllExams";
 import { getDaysLeft } from "@/lib/date-format";
+import type { InsightItem } from "@/lib/types/insights";
 import { useCourseService } from "@/services";
+import { useInsightsService } from "@/services/insights";
 import {
     Activity,
     BookOpen,
@@ -14,8 +17,7 @@ import {
     Trophy,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from "react";
 
 interface CourseData {
     _id: string;
@@ -26,21 +28,41 @@ interface CourseData {
     updatedAt?: string;
 }
 
+interface QuizData {
+    _id: string;
+    title?: string;
+    courseId?: string;
+    createdAt?: string;
+}
+
 export default function Home() {
     const { userProfile, loading } = useUserProfile();
     const router = useRouter();
     const { allExams, loading: examsLoading } = useAllExams();
     const courseService = useCourseService();
+    const insightsService = useInsightsService();
+
     const [recentCourses, setRecentCourses] = useState<CourseData[]>([]);
-    const [coursesLoading, setCoursesLoading] = useState(true);
+    const [allCourses, setAllCourses] = useState<CourseData[]>([]);
+    const [insights, setInsights] = useState<InsightItem[]>([]);
+    const [allQuizzes, setAllQuizzes] = useState<QuizData[]>([]);
+    const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
-        const fetchRecentCourses = async () => {
+        const fetchData = async () => {
             try {
-                setCoursesLoading(true);
-                const response = await courseService.getCourses();
-                if (response && "items" in response) {
-                    const courses = response.items as CourseData[];
+                setDataLoading(true);
+
+                // Fetch courses
+                const coursesResponse = await courseService.getCourses();
+                if (
+                    coursesResponse &&
+                    "items" in coursesResponse &&
+                    Array.isArray(coursesResponse.items)
+                ) {
+                    const courses = coursesResponse.items as CourseData[];
+                    setAllCourses(courses);
+
                     // Sort by update date (most recent first) and limit to 4
                     const sortedCourses = courses
                         .toSorted((a, b) => {
@@ -54,17 +76,84 @@ export default function Home() {
                         })
                         .slice(0, 4);
                     setRecentCourses(sortedCourses);
+
+                    // Fetch quizzes for all courses
+                    const quizzesPromises = courses.map(async course => {
+                        try {
+                            if (!course?._id) return [];
+                            const quizzesResponse =
+                                await courseService.getCourseQuizzes(
+                                    course._id
+                                );
+                            if (
+                                quizzesResponse &&
+                                "items" in quizzesResponse &&
+                                Array.isArray(quizzesResponse.items)
+                            ) {
+                                return quizzesResponse.items as QuizData[];
+                            }
+                            return [];
+                        } catch {
+                            return [];
+                        }
+                    });
+                    const quizzesArrays = await Promise.all(quizzesPromises);
+                    setAllQuizzes(quizzesArrays.flat());
                 }
-            } catch (error) {
-                console.error("Error fetching recent courses:", error);
+
+                // Fetch insights
+                try {
+                    const insightsResponse =
+                        await insightsService.getAllMyInsights();
+                    if (Array.isArray(insightsResponse)) {
+                        setInsights(insightsResponse);
+                    }
+                } catch {
+                    setInsights([]);
+                }
+            } catch {
+                // Error loading data
             } finally {
-                setCoursesLoading(false);
+                setDataLoading(false);
             }
         };
 
-        fetchRecentCourses();
+        fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Calculate dynamic stats
+    const stats = useMemo(() => {
+        const totalCourses = allCourses.length;
+        const totalQuizzes = allQuizzes.length;
+
+        // Calculate average score
+        const validScores = insights
+            .map(i => i.score)
+            .filter((score): score is number => Number.isFinite(score));
+
+        const averageScore =
+            validScores.length > 0
+                ? Math.round(
+                      validScores.reduce((sum, s) => sum + s, 0) /
+                          validScores.length
+                  )
+                : 0;
+
+        // Calculate total study sessions (quiz attempts)
+        const totalSessions = insights.length;
+
+        // Calculate achievements (excellent scores >= 90%)
+        const achievements = validScores.filter(s => s >= 90).length;
+
+        return {
+            totalCourses,
+            totalQuizzes,
+            totalSessions,
+            achievements,
+            averageScore,
+        };
+    }, [allCourses, allQuizzes, insights]);
 
     // Determine the name to display
     const getDisplayName = () => {
@@ -82,6 +171,11 @@ export default function Home() {
         // Otherwise display the username
         return userProfile.username;
     };
+
+    if (loading || dataLoading) {
+        return <PageLoadingSkeleton />;
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white">
             {/* Beautiful Header Section */}
@@ -108,11 +202,7 @@ export default function Home() {
                             <h1 className="text-2xl lg:text-4xl font-bold mb-6 leading-tight">
                                 Bienvenue{" "}
                                 <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                                    {loading ? (
-                                        <span className="inline-block animate-pulse bg-yellow-300/30 rounded h-10 w-32"></span>
-                                    ) : (
-                                        getDisplayName()
-                                    )}
+                                    {getDisplayName()}
                                 </span>
                             </h1>
 
@@ -131,19 +221,11 @@ export default function Home() {
                                     Continuer l'Apprentissage
                                 </button>
                                 <button
-                                    onClick={() =>
-                                        toast.warning(
-                                            "Fonctionnalité en développement",
-                                            {
-                                                description:
-                                                    "La gestion des objectifs arrive bientôt ! Restez connecté.",
-                                            }
-                                        )
-                                    }
+                                    onClick={() => router.push("/stats")}
                                     className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
                                 >
                                     <Target className="w-6 h-6" />
-                                    Voir les Objectifs
+                                    Voir les Statistiques
                                 </button>
                             </div>
                         </div>
@@ -151,57 +233,79 @@ export default function Home() {
                         {/* Right Content - Quick Stats */}
                         <div className="flex-1 max-w-md">
                             <div className="grid grid-cols-2 gap-4">
-                                {/* Courses Progress */}
-                                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group">
+                                {/* Total Courses */}
+                                <button
+                                    type="button"
+                                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group"
+                                    onClick={() => router.push("/library")}
+                                >
                                     <div className="w-12 h-12 bg-blue-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-blue-400/30 group-hover:scale-110">
                                         <BookOpen className="w-6 h-6 text-blue-300 transition-all duration-300 group-hover:text-blue-200" />
                                     </div>
                                     <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
-                                        12
+                                        {stats.totalCourses}
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Cours en Cours
+                                        Cours Total
+                                        {stats.totalCourses > 1 ? "s" : ""}
                                     </div>
-                                </div>
+                                </button>
 
-                                {/* Study Time */}
-                                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group">
+                                {/* Quiz Sessions */}
+                                <button
+                                    type="button"
+                                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group"
+                                    onClick={() => router.push("/stats")}
+                                >
                                     <div className="w-12 h-12 bg-green-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-green-400/30 group-hover:scale-110">
                                         <Clock className="w-6 h-6 text-green-300 transition-all duration-300 group-hover:text-green-200" />
                                     </div>
                                     <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
-                                        45h
+                                        {stats.totalSessions}
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Temps d'Étude
+                                        Quiz Complété
+                                        {stats.totalSessions > 1 ? "s" : ""}
                                     </div>
-                                </div>
+                                </button>
 
                                 {/* Achievements */}
-                                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group">
+                                <button
+                                    type="button"
+                                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group"
+                                    onClick={() => router.push("/stats")}
+                                >
                                     <div className="w-12 h-12 bg-yellow-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-yellow-400/30 group-hover:scale-110">
                                         <Trophy className="w-6 h-6 text-yellow-300 transition-all duration-300 group-hover:text-yellow-200" />
                                     </div>
                                     <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
-                                        8
+                                        {stats.achievements}
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Succès Débloqués
+                                        Score{stats.achievements > 1 ? "s" : ""}{" "}
+                                        Excellent
+                                        {stats.achievements > 1 ? "s" : ""}
                                     </div>
-                                </div>
+                                </button>
 
-                                {/* Progress */}
-                                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group">
+                                {/* Average Score */}
+                                <button
+                                    type="button"
+                                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/30 transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:shadow-2xl hover:shadow-white/20 hover:scale-105 hover:border-white/50 cursor-pointer group"
+                                    onClick={() => router.push("/profile")}
+                                >
                                     <div className="w-12 h-12 bg-purple-400/20 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-purple-400/30 group-hover:scale-110">
                                         <TrendingUp className="w-6 h-6 text-purple-300 transition-all duration-300 group-hover:text-purple-200" />
                                     </div>
                                     <div className="text-xl font-bold mb-1 transition-all duration-300 group-hover:scale-110">
-                                        78%
+                                        {stats.totalSessions > 0
+                                            ? `${stats.averageScore}%`
+                                            : "N/A"}
                                     </div>
                                     <div className="text-blue-100 text-sm transition-all duration-300 group-hover:text-white">
-                                        Progression
+                                        Score Moyen
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -356,96 +460,49 @@ export default function Home() {
                                     </p>
                                 </div>
                             </div>
-                            {(() => {
-                                if (coursesLoading) {
-                                    return (
-                                        <div className="flex justify-center items-center py-8">
-                                            <span className="text-gray-500 text-sm">
-                                                Chargement...
-                                            </span>
-                                        </div>
-                                    );
-                                }
-
-                                if (recentCourses.length === 0) {
-                                    return (
-                                        <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-                                            <div className="p-3 bg-purple-50 rounded-2xl">
-                                                <BookOpen className="w-6 h-6 text-purple-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-800 mb-1">
-                                                    Aucun cours disponible
-                                                </p>
-                                                <p className="text-xs text-gray-500">
-                                                    Crée ton premier cours pour
-                                                    commencer !
-                                                </p>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-
-                                return (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        {recentCourses.map(course => (
-                                            <button
-                                                key={course._id}
-                                                type="button"
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/library/${course._id}`
-                                                    )
-                                                }
-                                                className="w-full text-left p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-semibold text-gray-800 truncate">
-                                                            {course.title}
-                                                        </p>
-                                                        <p className="text-gray-600 text-sm truncate">
-                                                            {course.subject}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        ))}
+                            {recentCourses.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                                    <div className="p-3 bg-purple-50 rounded-2xl">
+                                        <BookOpen className="w-6 h-6 text-purple-600" />
                                     </div>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Objectives */}
-                        <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-100/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center">
-                                    <Target className="w-6 h-6 text-white" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800 mb-1">
+                                            Aucun cours disponible
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            Crée ton premier cours pour
+                                            commencer !
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-xl font-bold text-gray-800">
-                                        Tes Objectifs
-                                    </p>
-                                    <p className="text-gray-600 text-sm">
-                                        Progresse vers tes buts
-                                    </p>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {recentCourses.map(course => (
+                                        <button
+                                            key={course._id}
+                                            type="button"
+                                            onClick={() =>
+                                                router.push(
+                                                    `/library/${course._id}`
+                                                )
+                                            }
+                                            className="w-full text-left p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-semibold text-gray-800 truncate">
+                                                        {course.title}
+                                                    </p>
+                                                    <p className="text-gray-600 text-sm truncate">
+                                                        {course.subject}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
-                            </div>
-                            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-                                <div className="p-3 bg-blue-50 rounded-2xl">
-                                    <Target className="w-6 h-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-800 mb-1">
-                                        Objectifs non disponibles
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        La fonctionnalité de suivi des objectifs
-                                        arrive bientôt !
-                                    </p>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -5,14 +5,17 @@ export type ObjectivesProps = {
     objectives: unknown;
 };
 
-export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
+export const Objectives = ({
+    course_id: _course_id,
+    objectives: _objectives,
+}: ObjectivesProps) => {
     return (
         <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-gradient-to-br from-blue-50/30 via-blue-100/20 to-blue-50/30 rounded-3xl p-8 relative overflow-hidden">
             {/* Background animated elements */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full animate-pulse"></div>
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-blue-500/10 rounded-full animate-pulse"></div>
                 <div
-                    className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-purple-400/10 to-pink-400/10 rounded-full animate-pulse"
+                    className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-blue-300/10 to-indigo-400/10 rounded-full animate-pulse"
                     style={{ animationDelay: "1s" }}
                 ></div>
                 <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-ping"></div>
@@ -21,7 +24,7 @@ export const Objectives = ({ course_id, objectives }: ObjectivesProps) => {
                     style={{ animationDelay: "2s" }}
                 ></div>
                 <div
-                    className="absolute bottom-1/3 left-1/2 w-1.5 h-1.5 bg-purple-400/30 rounded-full animate-ping"
+                    className="absolute bottom-1/3 left-1/2 w-1.5 h-1.5 bg-blue-400/30 rounded-full animate-ping"
                     style={{ animationDelay: "3s" }}
                 ></div>
             </div>

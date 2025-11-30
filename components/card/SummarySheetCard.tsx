@@ -1,7 +1,7 @@
 "use client";
 
 import { SummarySheetData } from "@/lib/types/library";
-import { FileText, FileIcon, Image as ImageIcon } from "lucide-react";
+import { FileIcon, FileText, Image as ImageIcon } from "lucide-react";
 import { marked } from "marked";
 import { useEffect, useState } from "react";
 import { PDFPreview } from "./PDFPreview";
@@ -89,6 +89,7 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                             if (contentType.startsWith("image/")) {
                                 return (
                                     <div className="relative w-full h-full flex items-center justify-center">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${summary_sheet._id}`}
                                             alt={fileName}

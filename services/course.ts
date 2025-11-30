@@ -1,5 +1,5 @@
-import axios from "axios";
 import { Visibility } from "@/lib/types/visibility";
+import axios from "axios";
 
 export interface CourseService {
     createCourse: (
@@ -15,6 +15,7 @@ export interface CourseService {
     ) => Promise<{ id: string; message: string } | null>;
     getCourseSummarySheets: (courseId: string) => Promise<any>;
     getCourses: () => Promise<{ id: string; message: string } | null>;
+    getCourseQuizzes: (courseId: string) => Promise<any>;
     addQuizToCourse: (
         courseId: string,
         quizId: string
@@ -75,7 +76,7 @@ export function useCourseService() {
     ) => {
         try {
             const response = await axios.post(
-                `${apiUrl}/courses/create`,
+                `${apiUrl}/courses`,
                 { title, subject, level },
                 { withCredentials: true }
             );
@@ -350,12 +351,38 @@ export function useCourseService() {
         }
     };
 
+    const getCourseQuizzes = async (courseId: string) => {
+        try {
+            const response = await axios.get(
+                `${apiUrl}/courses/${courseId}/quizzes`,
+                {
+                    withCredentials: true,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(
+                `[CourseService] ❌ Error fetching course ${courseId} quizzes:`,
+                error
+            );
+            if (axios.isAxiosError(error)) {
+                console.error("[CourseService] Axios error details:", {
+                    status: error.response?.status,
+                    statusText: error.response?.statusText,
+                    data: error.response?.data,
+                });
+            }
+            return null;
+        }
+    };
+
     return {
         createCourse,
         getCourseById,
         getCourseFiles,
         getCourseSummarySheets,
         getCourses,
+        getCourseQuizzes,
         addQuizToCourse,
         addSheetToCourse,
         addFileToCourse,

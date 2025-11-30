@@ -526,6 +526,7 @@ export const SummarySheets = ({
                                             if (isImage) {
                                                 return (
                                                     <div className="flex items-center justify-center h-full">
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img
                                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
                                                             alt={

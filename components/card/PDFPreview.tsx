@@ -90,6 +90,7 @@ export const PDFPreview = ({
         } else if (contentType !== "application/pdf") {
             setLoading(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fileId, contentType]);
 
     if (loading) {
@@ -124,6 +125,7 @@ export const PDFPreview = ({
     // Show PDF preview image
     return (
         <div className="relative w-full h-full flex items-center justify-center p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 src={previewUrl}
                 alt={`Preview of ${fileName}`}

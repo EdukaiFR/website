@@ -30,30 +30,34 @@ const getFileIcon = (contentType: string, isZip?: boolean) => {
 
 export default function FileCard({ file }: FileCardProps) {
     return (
-        <Card className="group border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden">
+        <Card className="group border border-blue-200/40 shadow-xl bg-gradient-to-br from-white/95 via-white/90 to-blue-50/30 backdrop-blur-md hover:shadow-2xl hover:border-blue-300/60 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] overflow-hidden">
             {/* Card header with icon */}
-            <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-4 border-b border-slate-200/50">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                        {getFileIcon(file.contentType)}
+            <div className="relative bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50 p-4 border-b border-blue-200/40">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="flex items-center gap-3 relative">
+                    <div className="relative p-2 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-110">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="relative text-blue-600">
+                            {getFileIcon(file.contentType)}
+                        </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-slate-800 truncate text-sm">
+                        <h4 className="font-bold text-gray-800 truncate text-sm bg-gradient-to-r from-gray-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                             {file.name}
                         </h4>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-xs font-medium text-blue-600 mt-0.5 px-2 py-0.5 bg-blue-50/80 rounded-md w-fit border border-blue-100">
                             {file.contentType.split("/")[1]?.toUpperCase()}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <CardContent className="p-4">
+            <CardContent className="p-4 bg-gradient-to-br from-white/50 to-blue-50/20">
                 {/* Styled metadata */}
                 <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-xs">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-slate-600">
+                    <div className="flex items-center gap-2 text-xs px-3 py-2 bg-blue-50/80 rounded-lg border border-blue-100 shadow-sm">
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
+                        <span className="text-gray-700 font-medium">
                             {formatFileSize(file.size)}
                         </span>
                     </div>
@@ -63,8 +67,8 @@ export default function FileCard({ file }: FileCardProps) {
                 <div className="flex flex-col sm:flex-row gap-2">
                     {isImage(file.contentType) && (
                         <ImagePreviewDialog file={file}>
-                            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105">
-                                <Eye className="w-3 h-3" />
+                            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl text-xs font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-0.5">
+                                <Eye className="w-3.5 h-3.5" />
                                 Aperçu
                             </button>
                         </ImagePreviewDialog>
@@ -78,9 +82,9 @@ export default function FileCard({ file }: FileCardProps) {
                                 file.contentType
                             )
                         }
-                        className={`${isImage(file.contentType) ? "sm:flex-1" : "w-full"} flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-xs font-medium hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105`}
+                        className={`${isImage(file.contentType) ? "sm:flex-1" : "w-full"} flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl text-xs font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-0.5`}
                     >
-                        <Download className="w-3 h-3" />
+                        <Download className="w-3.5 h-3.5" />
                         Télécharger
                     </button>
                 </div>

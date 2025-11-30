@@ -1,7 +1,8 @@
 "use client";
 
+import { AuthPageLayout } from "@/components/auth";
+import ResetPasswordForm from "@/components/auth/reset-password-with-token-form";
 import { Suspense } from "react";
-import { AuthPageLayout, ResetPasswordForm } from "@/components/auth";
 
 function ResetPasswordContent() {
     return (

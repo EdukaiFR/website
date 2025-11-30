@@ -189,7 +189,7 @@ export default function AdminTicketsPage() {
     };
 
     // Handle ticket assignment (placeholder)
-    const handleAssign = async (ticketId: string) => {
+    const handleAssign = async (_ticketId: string) => {
         // TODO: Implement assignment dialog
     };
 

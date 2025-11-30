@@ -19,7 +19,13 @@ import {
 import { useSession } from "@/hooks/useSession";
 import { useUserProfile } from "@/contexts/UserContext";
 import { getImageDisplaySrc } from "@/lib/image-utils";
-import { ChevronsUpDown, LogOut, Settings, GraduationCap } from "lucide-react";
+import {
+    ChevronsUpDown,
+    LogOut,
+    Settings,
+    GraduationCap,
+    User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -199,6 +205,15 @@ export function NavUser() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center gap-2 cursor-pointer"
+                                >
+                                    <User className="w-4 h-4" />
+                                    Mon Profil
+                                </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link
                                     href="/settings"

@@ -19,5 +19,9 @@
     },
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "sonarlint.connectedMode.project": {
+        "connectionId": "edukaifr",
+        "projectKey": "EdukaiFR_website"
     }
 }

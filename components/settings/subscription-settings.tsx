@@ -24,14 +24,20 @@ export function SubscriptionSettings({
     onError: _onError,
 }: SubscriptionSettingsProps) {
     return (
-        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-800">
-                    <CreditCard className="w-5 h-5" />
+        <Card className="bg-white/60 backdrop-blur-xl shadow-xl border border-white/40 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardHeader className="relative border-b border-gray-100/50 bg-gradient-to-r from-blue-50/30 to-transparent pb-6">
+                <CardTitle className="flex items-center gap-3 text-gray-900 text-xl font-bold">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl shadow-md">
+                        <CreditCard className="w-5 h-5 text-white" />
+                    </div>
                     Abonnement
                 </CardTitle>
+                <p className="text-sm text-gray-600 mt-2 ml-12">
+                    Gérez votre plan et vos fonctionnalités
+                </p>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 relative">
                 {/* Beta Notice */}
                 <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-white border border-blue-200/50 rounded-xl p-6">
                     <div className="flex items-start gap-4">
@@ -40,10 +46,10 @@ export function SubscriptionSettings({
                         </div>
                         <div className="flex-1 space-y-3">
                             <div className="flex items-center gap-2">
-                                <h3 className="text-lg font-semibold text-gray-900">
+                                <p className="text-base font-bold text-gray-900">
                                     Version Beta Gratuite
-                                </h3>
-                                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                </p>
+                                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                                     BETA
                                 </span>
                             </div>
@@ -59,22 +65,26 @@ export function SubscriptionSettings({
 
                 {/* Current Limitations */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-blue-600" />
-                        Limitations actuelles (Beta)
-                    </h3>
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                            <Shield className="w-4 h-4 text-white" />
+                        </div>
+                        <p className="text-base font-bold text-gray-900">
+                            Limitations actuelles (Beta)
+                        </p>
+                    </div>
 
                     <div className="grid gap-4">
                         {/* Rate Limit */}
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
                             <div className="flex items-start gap-3">
-                                <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                                    <Clock className="w-4 h-4 text-gray-600" />
+                                <div className="p-1.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                                    <Clock className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900 mb-1">
+                                    <p className="font-semibold text-gray-900 mb-1 text-sm">
                                         Rate Limiting
-                                    </h4>
+                                    </p>
                                     <p className="text-sm text-gray-600">
                                         Pour éviter les abus et garantir une
                                         expérience optimale à tous nos
@@ -87,15 +97,15 @@ export function SubscriptionSettings({
                         </div>
 
                         {/* Quiz Limitation */}
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
                             <div className="flex items-start gap-3">
-                                <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                                    <FileQuestion className="w-4 h-4 text-gray-600" />
+                                <div className="p-1.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                                    <FileQuestion className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900 mb-1">
+                                    <p className="font-semibold text-gray-900 mb-1 text-sm">
                                         Quiz de 4 questions
-                                    </h4>
+                                    </p>
                                     <p className="text-sm text-gray-600">
                                         Les quiz sont actuellement limités à 4
                                         questions pour permettre de tester les
@@ -110,13 +120,15 @@ export function SubscriptionSettings({
                 </div>
 
                 {/* Coming Soon */}
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200/50 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/50 rounded-xl p-6">
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <AlertCircle className="w-5 h-5 text-indigo-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <div className="p-1.5 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                                <AlertCircle className="w-4 h-4 text-white" />
+                            </div>
+                            <p className="text-base font-bold text-gray-900">
                                 Bientôt disponible
-                            </h3>
+                            </p>
                         </div>
 
                         <div className="space-y-3">
@@ -126,7 +138,7 @@ export function SubscriptionSettings({
 
                             <div className="grid gap-3">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                                     <div>
                                         <span className="font-medium text-gray-800">
                                             Plan Gratuit
@@ -139,7 +151,7 @@ export function SubscriptionSettings({
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                                     <div>
                                         <span className="font-medium text-gray-800">
                                             Plan Premium
@@ -152,7 +164,7 @@ export function SubscriptionSettings({
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                                     <div>
                                         <span className="font-medium text-gray-800">
                                             Plan Pro
@@ -167,7 +179,7 @@ export function SubscriptionSettings({
                             </div>
                         </div>
 
-                        <div className="bg-white/70 rounded-lg p-3 border border-indigo-100">
+                        <div className="bg-white/70 rounded-lg p-3 border border-blue-100">
                             <p className="text-xs text-gray-600 italic">
                                 💡 En tant qu'utilisateur Beta, vous
                                 bénéficierez d'avantages exclusifs lors du
@@ -178,25 +190,25 @@ export function SubscriptionSettings({
                 </div>
 
                 {/* Beta Feedback */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
                     <div className="flex items-start gap-3">
-                        <div className="p-1.5 bg-green-100 rounded-lg">
-                            <Sparkles className="w-4 h-4 text-green-600" />
+                        <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                            <Sparkles className="w-4 h-4 text-white" />
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-medium text-green-900 mb-1">
+                            <p className="font-semibold text-gray-900 mb-1 text-sm">
                                 Aidez-nous à améliorer Edukai
-                            </h4>
-                            <p className="text-sm text-green-700 mb-2">
+                            </p>
+                            <p className="text-sm text-gray-700 mb-2">
                                 Vos retours sont précieux ! N'hésitez pas à nous
                                 faire part de vos suggestions et des bugs
                                 rencontrés pendant cette phase Beta.
                             </p>
-                            <p className="text-sm text-green-800 font-medium">
+                            <p className="text-sm text-blue-800 font-medium">
                                 ✉️ Contactez-nous :{" "}
                                 <a
                                     href="mailto:contact@edukai.fr"
-                                    className="underline hover:text-green-900"
+                                    className="underline hover:text-blue-900 transition-colors"
                                 >
                                     contact@edukai.fr
                                 </a>

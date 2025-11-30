@@ -1,7 +1,5 @@
 import type { VisibilityType } from "./visibility";
 
-// TODO: refactor this / see if we really need all these different types
-
 // Base interface for common fields
 interface BaseSummarySheet {
     _id: string;
