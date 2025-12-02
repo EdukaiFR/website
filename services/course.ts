@@ -1,16 +1,50 @@
+/**
+ * Course Service
+ *
+ * Provides methods for course CRUD operations, exam management,
+ * and course generation with SSE progress tracking.
+ *
+ * ## Error Handling Conventions
+ *
+ * This service uses two patterns for error handling:
+ *
+ * ### Pattern 1: Return null on error (Legacy)
+ * - Used by: createCourse, getCourseById, getCourses, etc.
+ * - Returns `null` on error, caller must handle null case
+ * - Logs error in development mode only
+ *
+ * ### Pattern 2: Return ApiResult (Recommended for new methods)
+ * - Used by: updateVisibility, getPublicCourses
+ * - Returns `{ status: "success" | "failure", message, data? }`
+ * - Caller can use type guards: `if (result.status === "success")`
+ *
+ * When adding new methods, prefer Pattern 2 for better type safety.
+ * See `lib/types/api.ts` for `ApiResult<T>` type and helpers.
+ *
+ * @module services/course
+ */
+
 import { ApiError, ApiErrorResponse } from "@/lib/types/api";
 import { SummarySheetData } from "@/lib/types/library";
 import type { StartGenerationResponse } from "@/lib/types/progress";
 import { Visibility } from "@/lib/types/visibility";
 import axios from "axios";
 
-// Response interfaces
+// ============================================================================
+// Response Interfaces
+// ============================================================================
+
+/**
+ * Response containing summary sheets for a course
+ * @deprecated Use ApiResult<SummarySheetData[]> for new implementations
+ */
 export interface SummarySheetsResponse {
     sheets?: SummarySheetData[];
     items?: SummarySheetData[];
     message: string;
 }
 
+/** Quiz entity */
 export interface Quiz {
     _id: string;
     title: string;
@@ -19,22 +53,29 @@ export interface Quiz {
     updatedAt: string;
 }
 
+/**
+ * Response containing quizzes for a course
+ * @deprecated Use ApiResult<Quiz[]> for new implementations
+ */
 export interface QuizzesResponse {
     quizzes: Quiz[];
     message: string;
 }
 
+/** Response for visibility update operations */
 export interface VisibilityUpdateResponse {
     status: "success" | "failure";
     message: string;
 }
 
+/** Author information for public courses */
 export interface PublicCourseAuthor {
     firstName: string;
     lastName: string;
     username: string;
 }
 
+/** Public course entity */
 export interface PublicCourse {
     _id: string;
     title: string;
@@ -45,6 +86,7 @@ export interface PublicCourse {
     createdAt: string;
 }
 
+/** Response containing public courses */
 export interface PublicCoursesResponse {
     status: "success" | "failure";
     items?: PublicCourse[];
@@ -52,12 +94,36 @@ export interface PublicCoursesResponse {
     message?: string;
 }
 
+/** Options for course generation */
 export interface GenerateCourseOptions {
     /** Extracted text content from OCR processing */
     extractedTexts: string[];
+    /** Whether to generate a quiz (default: true) */
     generateQuiz?: boolean;
+    /** Whether to generate a summary sheet (default: true) */
     generateSheet?: boolean;
+    /** Education level for content adaptation */
     level?: string;
+}
+
+// ============================================================================
+// Logging Helpers
+// ============================================================================
+
+/**
+ * Log error in development mode only
+ * Prevents sensitive information from leaking in production
+ */
+function logServiceError(context: string, error: unknown): void {
+    if (process.env.NODE_ENV === "development") {
+        console.error(`[CourseService] ${context}:`, error);
+        if (axios.isAxiosError(error)) {
+            console.error("[CourseService] Details:", {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+            });
+        }
+    }
 }
 
 export interface CourseService {
@@ -146,7 +212,7 @@ export function useCourseService() {
 
             return response.data;
         } catch (error) {
-            console.error("An error occurred creating the course.", error);
+            logServiceError("Error creating course", error);
             return null;
         }
     };
@@ -158,10 +224,7 @@ export function useCourseService() {
             });
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred fetching course ${courseId}`,
-                error
-            );
+            logServiceError(`Error fetching course ${courseId}`, error);
             return null;
         }
     };
@@ -173,7 +236,7 @@ export function useCourseService() {
             });
             return response.data;
         } catch (error) {
-            console.error(`An error occurred fetching courses.`, error);
+            logServiceError("Error fetching courses", error);
             return null;
         }
     };
@@ -188,10 +251,7 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred fetching course ${courseId} files`,
-                error
-            );
+            logServiceError(`Error fetching course ${courseId} files`, error);
             return null;
         }
     };
@@ -205,9 +265,8 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred associating ${quizId} to
-        course ${courseId}`,
+            logServiceError(
+                `Error associating quiz ${quizId} to course ${courseId}`,
                 error
             );
             return null;
@@ -223,9 +282,8 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred associating summary sheet ${sheetId} to
-        course ${courseId}`,
+            logServiceError(
+                `Error associating sheet ${sheetId} to course ${courseId}`,
                 error
             );
             return null;
@@ -241,17 +299,10 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `[CourseService] ❌ Error adding file ${fileId} to course ${courseId}:`,
+            logServiceError(
+                `Error adding file ${fileId} to course ${courseId}`,
                 error
             );
-            if (axios.isAxiosError(error)) {
-                console.error("[CourseService] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
             return null;
         }
     };
@@ -266,17 +317,10 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `[CourseService] ❌ Error fetching course ${courseId} summary sheets:`,
+            logServiceError(
+                `Error fetching course ${courseId} summary sheets`,
                 error
             );
-            if (axios.isAxiosError(error)) {
-                console.error("[CourseService] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
             return null;
         }
     };
@@ -295,10 +339,7 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred updating the exam ${examId}`,
-                error
-            );
+            logServiceError(`Error updating exam ${examId}`, error);
             return null;
         }
     };
@@ -314,15 +355,11 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred deleting the exam ${examId}`,
-                error
-            );
+            logServiceError(`Error deleting exam ${examId}`, error);
             return null;
         }
     };
 
-    // Course's Exams \\
     const createExam = async (
         courseId: string,
         title: string,
@@ -337,8 +374,8 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred creating exam for course ${courseId}`,
+            logServiceError(
+                `Error creating exam for course ${courseId}`,
                 error
             );
             return null;
@@ -352,10 +389,7 @@ export function useCourseService() {
             });
             return response.data;
         } catch (error) {
-            console.error(
-                `An error occurred fetching the exam ${examId}`,
-                error
-            );
+            logServiceError(`Error fetching exam ${examId}`, error);
             return null;
         }
     };
@@ -411,7 +445,7 @@ export function useCourseService() {
             });
             return response.data;
         } catch (error) {
-            console.error("An error occurred fetching all exams.", error);
+            logServiceError("Error fetching all exams", error);
             return null;
         }
     };
@@ -426,26 +460,20 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            console.error(
-                `[CourseService] ❌ Error fetching course ${courseId} quizzes:`,
+            logServiceError(
+                `Error fetching course ${courseId} quizzes`,
                 error
             );
-            if (axios.isAxiosError(error)) {
-                console.error("[CourseService] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
             return null;
         }
     };
 
     /**
      * Start course generation with SSE progress tracking
+     *
      * @param courseId - The course ID to generate content for
      * @param options - Generation options including extracted texts and settings
-     * @returns Promise with jobId for SSE tracking
+     * @returns Promise with jobId for SSE tracking, or null on error
      */
     const startCourseGeneration = async (
         courseId: string,
@@ -470,17 +498,10 @@ export function useCourseService() {
 
             return response.data as StartGenerationResponse;
         } catch (error) {
-            console.error(
-                `[CourseService] ❌ Error starting generation for course ${courseId}:`,
+            logServiceError(
+                `Error starting generation for course ${courseId}`,
                 error
             );
-            if (axios.isAxiosError(error)) {
-                console.error("[CourseService] Axios error details:", {
-                    status: error.response?.status,
-                    statusText: error.response?.statusText,
-                    data: error.response?.data,
-                });
-            }
             return null;
         }
     };
