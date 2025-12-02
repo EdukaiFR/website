@@ -285,11 +285,16 @@ export const RealtimeProgress = memo(function RealtimeProgress({
                         value={progress}
                         label="Progression globale"
                         showPercentage
+                        ariaDescription="Génération de votre cours personnalisé en cours"
                     />
 
                     {/* Step Indicators */}
-                    <div className="space-y-3">
-                        {stepStatuses.map(stepStatus => (
+                    <div
+                        className="space-y-3"
+                        role="list"
+                        aria-label="Étapes de génération du cours"
+                    >
+                        {stepStatuses.map((stepStatus, index) => (
                             <StepIndicator
                                 key={stepStatus.step}
                                 icon={stepStatus.icon}
@@ -297,6 +302,8 @@ export const RealtimeProgress = memo(function RealtimeProgress({
                                 description={stepStatus.description}
                                 active={stepStatus.isActive}
                                 complete={stepStatus.isComplete}
+                                stepNumber={index + 1}
+                                totalSteps={stepStatuses.length}
                             />
                         ))}
                     </div>
