@@ -52,3 +52,8 @@ CLAUDE.md
 
 # cursor IDE configuration
 .cursor/
+# Test coverage
+coverage/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
