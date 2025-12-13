@@ -9,7 +9,6 @@ import {
     PaymentError,
     usePaymentService,
 } from "@/services/payment";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./useSession";
@@ -73,7 +72,6 @@ export interface UseSubscriptionReturn {
  * ```
  */
 export function useSubscription(): UseSubscriptionReturn {
-    const router = useRouter();
     const paymentService = usePaymentService();
     const { user, loading: sessionLoading, refreshUserProfile } = useSession();
 
@@ -99,8 +97,7 @@ export function useSubscription(): UseSubscriptionReturn {
         setIsProcessing(true);
         try {
             const { url } = await paymentService.createCheckoutSession();
-            // Use router.push for better Next.js integration
-            // Note: Stripe checkout is an external URL, so window.location is actually needed here
+            // Stripe checkout is an external URL, so window.location is needed for redirection
             window.location.href = url;
         } catch (error) {
             if (error instanceof PaymentError) {
