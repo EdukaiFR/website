@@ -144,7 +144,6 @@ export class FileProcessor {
         const rawText = await file.text();
         const originalLength = rawText.length;
 
-        // 🎯 OPTIMISATION: Nettoyer et limiter
         const cleanedText = this.cleanText(rawText);
         const finalText = this.truncateText(
             cleanedText,
@@ -195,7 +194,6 @@ export class FileProcessor {
         const rawText = result.data.text;
         const originalLength = rawText.length;
 
-        // 🎯 OPTIMISATION: Nettoyer et limiter
         const cleanedText = this.cleanText(rawText);
         const finalText = this.truncateText(
             cleanedText,
