@@ -1,6 +1,5 @@
 import Tesseract from "tesseract.js";
 
-// Dynamic import for PDF.js to avoid SSR issues
 const loadPdfJs = async () => {
     if (typeof window === "undefined") {
         throw new Error("PDF processing is only available on the client side");
@@ -40,33 +39,21 @@ export interface ProcessingProgress {
     message: string;
 }
 
-// 🎯 OPTIMISATION: Configuration des limites
 const CONFIG = {
-    // Limite de caractères par page (environ 500-1000 tokens)
     MAX_CHARS_PER_PAGE: 3000,
-    // Limite totale de caractères (environ 10k-20k tokens)
     MAX_TOTAL_CHARS: 50000,
-    // Limite de pages à traiter pour les PDFs
     MAX_PDF_PAGES: 100,
-    // Ratio d'estimation tokens (1 token ≈ 4 chars en français)
     CHARS_PER_TOKEN: 4,
 };
 
 export class FileProcessor {
-    /**
-     * Estime le nombre de tokens d'un texte
-     */
     private static estimateTokens(text: string): number {
         return Math.ceil(text.length / CONFIG.CHARS_PER_TOKEN);
     }
 
-    /**
-     * Tronque intelligemment un texte pour respecter la limite
-     */
     private static truncateText(text: string, maxChars: number): string {
         if (text.length <= maxChars) return text;
 
-        // Tronquer à la phrase complète la plus proche
         const truncated = text.substring(0, maxChars);
         const lastPeriod = truncated.lastIndexOf(".");
         const lastExclamation = truncated.lastIndexOf("!");
@@ -79,28 +66,20 @@ export class FileProcessor {
         );
 
         if (lastSentenceEnd > maxChars * 0.8) {
-            // Si on trouve une phrase proche de la fin
             return truncated.substring(0, lastSentenceEnd + 1);
         }
 
-        // Sinon, tronquer au dernier espace
         const lastSpace = truncated.lastIndexOf(" ");
         return lastSpace > 0
             ? truncated.substring(0, lastSpace) + "..."
             : truncated + "...";
     }
 
-    /**
-     * Nettoie le texte extrait (enlève espaces multiples, lignes vides, etc.)
-     */
     private static cleanText(text: string): string {
         return (
             text
-                // Enlever les espaces multiples
                 .replace(/\s+/g, " ")
-                // Enlever les lignes vides multiples
                 .replace(/\n\s*\n\s*\n/g, "\n\n")
-                // Trim chaque ligne
                 .split("\n")
                 .map(line => line.trim())
                 .filter(Boolean)
@@ -267,9 +246,7 @@ export class FileProcessor {
             message: `Extraction du contenu de ${numPages} page(s)...`,
         });
 
-        // 🎯 OPTIMISATION: Arrêter si on atteint la limite
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-            // Vérifier si on a déjà atteint la limite
             if (totalCharsExtracted >= CONFIG.MAX_TOTAL_CHARS) {
                 console.log(
                     `[FileProcessor] Limite atteinte à la page ${pageNum}/${numPages}`
@@ -280,7 +257,6 @@ export class FileProcessor {
 
             const page = await pdf.getPage(pageNum);
 
-            // Extract text
             const textContent = await page.getTextContent();
             let pageText = textContent.items
                 .map((item: unknown) =>
@@ -291,10 +267,8 @@ export class FileProcessor {
                 .filter(Boolean)
                 .join(" ");
 
-            // 🎯 OPTIMISATION: Nettoyer le texte de la page
             pageText = this.cleanText(pageText);
 
-            // 🎯 OPTIMISATION: Limiter par page
             const charsRemaining =
                 CONFIG.MAX_TOTAL_CHARS - totalCharsExtracted;
             const maxCharsForThisPage = Math.min(
@@ -310,10 +284,9 @@ export class FileProcessor {
                 extractedText += `\n--- Page ${pageNum} ---\n${truncatedPageText}\n`;
                 totalCharsExtracted += truncatedPageText.length;
             }
-            // 🎯 OPTIMISATION: OCR seulement si vraiment nécessaire et sous la limite
             else if (totalCharsExtracted < CONFIG.MAX_TOTAL_CHARS * 0.8) {
                 try {
-                    const viewport = page.getViewport({ scale: 1.5 }); // Réduit de 2.0 à 1.5
+                    const viewport = page.getViewport({ scale: 1.5 });
                     const canvas = document.createElement("canvas");
                     const context = canvas.getContext("2d");
 
