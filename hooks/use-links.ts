@@ -9,6 +9,7 @@ import {
     Shield,
     BarChart3,
     User,
+    Sliders,
 } from "lucide-react";
 import { useIsAdmin } from "./useRole";
 
@@ -86,6 +87,11 @@ export function useLinks() {
                   href: "/admin/tickets",
                   label: "Admin - Tickets",
                   Icon: Shield,
+              },
+              {
+                  href: "/admin/plan-limits",
+                  label: "Admin - Limitations",
+                  Icon: Sliders,
               },
           ]
         : [];

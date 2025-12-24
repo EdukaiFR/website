@@ -95,7 +95,6 @@ export const ExamDialog = ({
     const onSubmit = async (data: ExamFormData) => {
         try {
             if (isEditing && exam?._id && updateExam) {
-                console.log("The id is: ", exam._id);
                 await updateExam(exam._id, data);
             } else {
                 await createExam(

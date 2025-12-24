@@ -24,10 +24,7 @@ import { useForm } from "react-hook-form";
 import { FileUpload } from "./file-upload";
 
 type GeneratorFormProps = {
-    onSubmit: (
-        data: GeneratorForm,
-        uploadedFileIds: { [localFileId: string]: string }
-    ) => Promise<void>;
+    onSubmit: (data: GeneratorForm) => Promise<void>;
     selectedFiles: File[];
     setSelectedFiles: (files: File[] | ((prev: File[]) => File[])) => void;
     onRecognizedText: (text: string, fileId: string) => void;
@@ -88,7 +85,7 @@ export function GeneratorForm({
                 level: data.level,
                 files: data.files,
             };
-            await onSubmit(formFields, uploadedFileIds);
+            await onSubmit(formFields);
         } catch (error: unknown) {
             console.error("Error submitting form: ", error);
         }

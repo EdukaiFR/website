@@ -1,6 +1,12 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
 import { useUserProfile } from "@/contexts/UserContext";
+import { useUserStatistics } from "@/hooks/useUserStatistics";
+import { getImageDisplaySrc } from "@/lib/image-utils";
+import type { InsightItem } from "@/lib/types/insights";
+import { formatFullDate } from "@/lib/utils/date";
 import { useCourseService } from "@/services";
 import { useInsightsService } from "@/services/insights";
 import {
@@ -12,13 +18,7 @@ import {
     Trophy,
     Zap,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
-import { formatFullDate } from "@/lib/utils/date";
-import type { InsightItem } from "@/lib/types/insights";
-import { PageLoadingSkeleton } from "@/components/ui/stat-card-skeleton";
-import { useUserStatistics } from "@/hooks/useUserStatistics";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getImageDisplaySrc } from "@/lib/image-utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface CourseData {
     _id: string;
@@ -38,6 +38,7 @@ interface QuizData {
 
 export default function ProfilePage() {
     const { userProfile, loading } = useUserProfile();
+
     const courseService = useCourseService();
     const insightsService = useInsightsService();
 
@@ -140,7 +141,7 @@ export default function ProfilePage() {
     }, [courses, allQuizzes]);
 
     // Determine the display name
-    const getDisplayName = () => {
+    const getDisplayName = useCallback(() => {
         if (!userProfile) return "";
 
         if (
@@ -151,10 +152,10 @@ export default function ProfilePage() {
         }
 
         return userProfile.username;
-    };
+    }, [userProfile]);
 
     // Get user initials for avatar fallback
-    const getInitials = () => {
+    const getInitials = useCallback(() => {
         if (!userProfile) return "U";
 
         const displayName = getDisplayName();
@@ -164,17 +165,21 @@ export default function ProfilePage() {
             .join("")
             .toUpperCase()
             .slice(0, 2);
-    };
+    }, [userProfile, getDisplayName]);
 
-    const getPlanBadge = () => {
+    const getPlanBadge = useCallback(() => {
         const plan = userProfile?.accountPlan || "free";
         const badges = {
             free: { label: "Gratuit", color: "bg-gray-500", icon: Crown },
             pro: { label: "Pro", color: "bg-blue-500", icon: Crown },
-            premium: { label: "Premium", color: "bg-purple-500", icon: Crown },
+            premium: {
+                label: "Premium",
+                color: "bg-gradient-to-r from-yellow-500 to-amber-600 shadow-lg",
+                icon: Crown,
+            },
         };
         return badges[plan as keyof typeof badges] || badges.free;
-    };
+    }, [userProfile]);
 
     if (loading || statsLoading) {
         return <PageLoadingSkeleton />;

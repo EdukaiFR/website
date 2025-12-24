@@ -16,14 +16,15 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/hooks/useSession";
 import { useUserProfile } from "@/contexts/UserContext";
+import { useSession } from "@/hooks/useSession";
 import { getImageDisplaySrc } from "@/lib/image-utils";
 import {
     ChevronsUpDown,
+    CreditCard,
+    GraduationCap,
     LogOut,
     Settings,
-    GraduationCap,
     User,
 } from "lucide-react";
 import Link from "next/link";
@@ -221,6 +222,17 @@ export function NavUser() {
                                 >
                                     <Settings className="w-4 h-4" />
                                     Paramètres
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    href="/pricing"
+                                    className="flex items-center gap-2 cursor-pointer"
+                                >
+                                    <CreditCard className="w-4 h-4" />
+                                    {userProfile?.accountPlan === "premium"
+                                        ? "Gérer mon abonnement"
+                                        : "Mettre à niveau l'abonnement"}
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>

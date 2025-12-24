@@ -123,19 +123,20 @@ export const SummarySheetCard = ({ summary_sheet }: SummarySheetCardProps) => {
                         })()
                     ) : (
                         // Preview for AI-generated sheets with markdown
-                        <>
+                        <div className="relative h-full w-full">
                             <div
-                                className="prose prose-sm max-w-none text-sm leading-relaxed overflow-hidden h-full"
+                                className="prose prose-sm max-w-none overflow-hidden h-full prose-headings:text-base prose-headings:font-semibold prose-headings:mb-2 prose-headings:mt-3 prose-p:text-xs prose-p:mb-2 prose-p:leading-relaxed prose-ul:text-xs prose-ul:my-1 prose-li:my-0.5 prose-strong:text-blue-600 prose-hr:my-2"
                                 style={{
-                                    fontSize: "14px",
-                                    lineHeight: "1.6",
+                                    fontSize: "12px",
+                                    lineHeight: "1.5",
+                                    maxHeight: "100%",
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: htmlContent,
                                 }}
                             />
-                            <div className="absolute bottom-16 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-                        </>
+                            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                        </div>
                     )}
                 </div>
 

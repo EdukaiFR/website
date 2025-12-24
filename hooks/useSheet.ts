@@ -18,6 +18,11 @@ export function useSheet(summarySheetService: SummarySheetService) {
         try {
             const sheet =
                 await summarySheetService.generateSheet(recognizedTexts);
+
+            if (!sheet) {
+                throw new Error("Failed to generate sheet");
+            }
+
             const newSheetId = sheet.id;
 
             setSheetId(newSheetId);
