@@ -6,7 +6,6 @@ import {
     EducationSettingsFormValues,
     SubscriptionSettingsFormValues,
     PreferencesSettingsFormValues,
-    DeleteAccountFormValues,
     API_ERROR_CODES,
 } from "@/lib/schemas/user";
 // translateApiError is imported but we use our local version

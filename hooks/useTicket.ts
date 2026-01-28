@@ -75,9 +75,9 @@ export function useTicket(ticketService: TicketService) {
 
             // Apply user-based filtering if user cannot view all tickets
             const filteredParams = { ...params };
-            if (!permissions.canViewAllTickets && user?.id) {
+            if (!permissions.canViewAllTickets && user?._id) {
                 // For regular users, only show their own tickets
-                filteredParams.userId = user.id;
+                filteredParams.userId = user._id;
             }
 
             const response = await ticketService.getTickets(filteredParams);
@@ -153,7 +153,7 @@ export function useTicket(ticketService: TicketService) {
                 tickets.find(t => t.id === ticketId) || currentTicket;
             const canModify =
                 permissions.canModifyAnyTicket ||
-                (ticket && ticket.reporter?.userId === user?.id);
+                (ticket && ticket.reporter?.userId === user?._id);
 
             if (!canModify) {
                 ticketToast.updateError(
