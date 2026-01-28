@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-    deleteAccountAction,
     updatePreferencesAction,
 } from "@/lib/actions/user";
 import {

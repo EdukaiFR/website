@@ -258,35 +258,3 @@ export async function updatePreferencesAction(
         };
     }
 }
-
-// Delete user account
-export async function deleteAccountAction(
-    data: DeleteAccountFormValues,
-    userId: string
-): Promise<UserResponse> {
-    try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-        await axios.delete(`${apiUrl}/users/${userId}`, {
-            headers: {
-                ...getAuthHeaders(),
-            },
-            withCredentials: true,
-        });
-
-        return {
-            success: true,
-            data: { message: "Compte supprimé avec succès" },
-        };
-    } catch (error: unknown) {
-        console.error("Erreur lors de la suppression du compte:", error);
-        return {
-            success: false,
-            error: translateApiErrorLocal(
-                (error as AxiosError<{ message: string }>).response?.data
-                    ?.message ||
-                    "Une erreur est survenue lors de la suppression du compte"
-            ),
-        };
-    }
-}

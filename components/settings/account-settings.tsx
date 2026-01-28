@@ -10,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PersistentAlert } from "@/components/ui/persistent-alert";
-import { deleteAccountAction } from "@/lib/actions/user";
+import { useSession } from "@/hooks/useSession";
 import {
     deleteAccountSchema,
     type DeleteAccountFormValues,
 } from "@/lib/schemas/user";
+import { useAuthService } from "@/services";
 
 export interface AccountSettingsProps {
     userId: string;
@@ -34,6 +35,9 @@ export function AccountSettings({
     >("initial");
     const router = useRouter();
 
+    const { verifyPassword, deleteUserAccount } = useAuthService();
+    const { logout } = useSession();
+
     const {
         register,
         handleSubmit,
@@ -42,26 +46,42 @@ export function AccountSettings({
     } = useForm<DeleteAccountFormValues>({
         resolver: zodResolver(deleteAccountSchema),
         defaultValues: {
-            confirmPassword: "",
+            currentPassword: "",
         },
     });
+
+    const handleSignOut = async () => {
+        await logout();
+        router.push("/auth");
+    };
 
     const onSubmit = async (data: DeleteAccountFormValues) => {
         setIsLoading(true);
         setPersistentError(null);
 
         try {
-            const result = await deleteAccountAction(data, userId);
 
-            if (result.success) {
+            console.log("[account-settings] data is : ", data );
+            console.log("[account-settings] verify password is : ", data.currentPassword );
+
+            const verificationResponse = await verifyPassword(data.currentPassword);
+
+            if (verificationResponse.status !== "success") {
+                setPersistentError(verificationResponse?.message);
+                return;
+            }
+            console.log("[account-settings] userId: ", userId);
+            const deletionResponse = await deleteUserAccount(userId);
+
+            if (deletionResponse.status === "success") {
                 onSuccess?.();
-                // Redirect to homepage after successful deletion
-                router.push("/");
+                handleSignOut();
             } else {
-                const errorMessage = result.error || "Une erreur est survenue";
+                const errorMessage = deletionResponse.message || "Une erreur est survenue";
                 setPersistentError(errorMessage);
                 onError?.(errorMessage);
             }
+
         } catch (error) {
             console.error("Error deleting account:", error);
             const errorMessage = "Une erreur inattendue est survenue";
@@ -213,28 +233,28 @@ export function AccountSettings({
 
                                 <div className="space-y-2">
                                     <label
-                                        htmlFor="confirmPassword"
+                                        htmlFor="currentPassword"
                                         className="text-sm font-medium text-gray-700"
                                     >
                                         Mot de passe actuel *
                                     </label>
                                     <Input
-                                        id="confirmPassword"
+                                        id="currentPassword"
                                         type="password"
                                         placeholder="Saisissez votre mot de passe"
-                                        {...register("confirmPassword")}
+                                        {...register("currentPassword")}
                                         className={`h-11 border-2 transition-all duration-200 focus:border-red-500 focus:ring-4 focus:ring-red-100 ${
-                                            errors.confirmPassword
+                                            errors.currentPassword
                                                 ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                                                 : "border-gray-200"
                                         }`}
                                     />
-                                    {errors.confirmPassword && (
+                                    {errors.currentPassword && (
                                         <p className="text-sm text-red-500 flex items-center gap-1">
                                             <span className="w-4 h-4 text-xs">
                                                 ⚠
                                             </span>
-                                            {errors.confirmPassword.message}
+                                            {errors.currentPassword.message}
                                         </p>
                                     )}
                                 </div>

@@ -199,7 +199,7 @@ export const preferencesSettingsSchema = z.object({
 
 // Account deletion confirmation schema
 export const deleteAccountSchema = z.object({
-    confirmPassword: z.string().min(1, "Mot de passe requis pour confirmer"),
+    currentPassword: z.string().min(1, "Mot de passe requis pour confirmer"),
 });
 
 // TypeScript types (updated for new API)

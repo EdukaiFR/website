@@ -17,7 +17,7 @@ export interface RegisterData {
 export interface AuthResponse {
     token: string;
     user: {
-        id: string;
+        _id: string;
         username: string;
         email?: string;
         firstName?: string;
@@ -30,12 +30,20 @@ export interface AuthResponse {
     };
 }
 
+export interface ApiMessageResponse {
+    message: string;
+    status: string;
+}
+
+
 export interface AuthService {
     login: (credentials: LoginCredentials) => Promise<AuthResponse>;
     register: (userData: RegisterData) => Promise<AuthResponse>;
     logout: () => Promise<void>;
     refreshToken: () => Promise<{ token: string }>;
     getUserProfile: (userId: string) => Promise<AuthResponse["user"]>;
+    verifyPassword: (password: string) => Promise<ApiMessageResponse>;
+    deleteUserAccount: (userId: string) => Promise<ApiMessageResponse>;
 }
 
 export function useAuthService(): AuthService {
@@ -125,5 +133,34 @@ export function useAuthService(): AuthService {
         }
     };
 
-    return { login, register, logout, refreshToken, getUserProfile };
+    const verifyPassword = async (password: string): Promise<ApiMessageResponse> => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/auth/verify-password`,
+                { password },
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de la vérification de mot de passe:", error);
+            throw error;
+        }
+    };
+
+    const deleteUserAccount = async (userId: string): Promise<ApiMessageResponse> => {
+        try {
+            const response = await axios.delete(
+                `${apiUrl}/users/${userId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de la suppression du compte:", error);
+            throw error;
+        }
+    };
+
+    return { login, register, logout, refreshToken, getUserProfile, verifyPassword, deleteUserAccount };
 }
