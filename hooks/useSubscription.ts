@@ -77,14 +77,13 @@ export function useSubscription(): UseSubscriptionReturn {
 
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Refresh user profile on mount (handles return from Stripe)
+    // Refresh user profile once session is ready (handles return from Stripe)
     useEffect(() => {
         if (!sessionLoading) {
             refreshUserProfile();
         }
-        // Only run on initial load, not on every sessionLoading change
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [sessionLoading]);
 
     // Compute subscription status from user data
     const status = getSubscriptionStatus(user);
