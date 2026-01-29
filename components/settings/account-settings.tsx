@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertTriangle, Shield, Trash2 } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, Shield, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,7 +15,19 @@ import {
     deleteAccountSchema,
     type DeleteAccountFormValues,
 } from "@/lib/schemas/user";
+import { ApiError } from "@/lib/types/api";
 import { useAuthService } from "@/services";
+
+const API_ERROR_TRANSLATIONS: Record<string, string> = {
+    "Invalid password": "Mot de passe incorrect",
+    "User not found": "Utilisateur introuvable",
+    "Unauthorized": "Non autorisé",
+};
+
+function translateApiError(message?: string): string {
+    if (!message) return "Une erreur inattendue est survenue";
+    return API_ERROR_TRANSLATIONS[message] ?? message;
+}
 
 export interface AccountSettingsProps {
     userId: string;
@@ -29,6 +41,7 @@ export function AccountSettings({
     onError,
 }: AccountSettingsProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [persistentError, setPersistentError] = useState<string | null>(null);
     const [confirmationStep, setConfirmationStep] = useState<
         "initial" | "confirm"
@@ -60,17 +73,12 @@ export function AccountSettings({
         setPersistentError(null);
 
         try {
-
-            console.log("[account-settings] data is : ", data );
-            console.log("[account-settings] verify password is : ", data.currentPassword );
-
             const verificationResponse = await verifyPassword(data.currentPassword);
 
             if (verificationResponse.status !== "success") {
                 setPersistentError(verificationResponse?.message);
                 return;
             }
-            console.log("[account-settings] userId: ", userId);
             const deletionResponse = await deleteUserAccount(userId);
 
             if (deletionResponse.status === "success") {
@@ -82,9 +90,11 @@ export function AccountSettings({
                 onError?.(errorMessage);
             }
 
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Error deleting account:", error);
-            const errorMessage = "Une erreur inattendue est survenue";
+            const err = error as ApiError;
+            const rawMessage = err.response?.data?.message;
+            const errorMessage = translateApiError(rawMessage);
             setPersistentError(errorMessage);
             onError?.(errorMessage);
         } finally {
@@ -238,17 +248,30 @@ export function AccountSettings({
                                     >
                                         Mot de passe actuel *
                                     </label>
-                                    <Input
-                                        id="currentPassword"
-                                        type="password"
-                                        placeholder="Saisissez votre mot de passe"
-                                        {...register("currentPassword")}
-                                        className={`h-11 border-2 transition-all duration-200 focus:border-red-500 focus:ring-4 focus:ring-red-100 ${
-                                            errors.currentPassword
-                                                ? "border-red-300 focus:border-red-500 focus:ring-red-100"
-                                                : "border-gray-200"
-                                        }`}
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="currentPassword"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Saisissez votre mot de passe"
+                                            {...register("currentPassword")}
+                                            className={`h-11 pr-12 border-2 transition-all duration-200 focus:border-red-500 focus:ring-4 focus:ring-red-100 ${
+                                                errors.currentPassword
+                                                    ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+                                                    : "border-gray-200"
+                                            }`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors p-1 rounded-lg hover:bg-red-50"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="w-5 h-5" />
+                                            ) : (
+                                                <Eye className="w-5 h-5" />
+                                            )}
+                                        </button>
+                                    </div>
                                     {errors.currentPassword && (
                                         <p className="text-sm text-red-500 flex items-center gap-1">
                                             <span className="w-4 h-4 text-xs">
