@@ -1,3 +1,4 @@
+export * from "./auth";
 export * from "./ai/quiz";
 export * from "./ai/summarySheet";
 export * from "./blob";
