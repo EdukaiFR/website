@@ -184,6 +184,9 @@ export interface CourseService {
         message: string;
         status: string;
     } | null>;
+    deleteCourse: (
+        courseId: string
+    ) => Promise<{ status: string; message: string } | ApiErrorResponse>;
     updateVisibility: (
         courseId: string,
         visibility: Visibility
@@ -394,6 +397,27 @@ export function useCourseService() {
         }
     };
 
+    const deleteCourse = async (
+        courseId: string
+    ): Promise<{ status: string; message: string } | ApiErrorResponse> => {
+        try {
+            const response = await axios.delete(
+                `${apiUrl}/courses/${courseId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error: unknown) {
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
+            }
+            return {
+                status: "failure",
+                message: "Une erreur est survenue lors de la suppression du cours.",
+            };
+        }
+    };
+
     const updateVisibility = async (
         courseId: string,
         visibility: Visibility
@@ -520,6 +544,7 @@ export function useCourseService() {
         getExamById,
         updateExamById,
         deleteExamById,
+        deleteCourse,
         getAllExams,
         updateVisibility,
         getPublicCourses,

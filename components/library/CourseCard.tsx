@@ -3,20 +3,35 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { formatDate } from "@/lib/date-format";
 import type { VisibilityType } from "@/lib/types/visibility";
 import { Visibility } from "@/lib/types/visibility";
 import {
+    AlertTriangle,
     BookOpen,
     Calendar,
     Eye,
+    FileText,
     GraduationCap,
+    ClipboardList,
     User,
     Globe,
     Lock,
+    Loader2,
+    Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
 
 export type CourseCardProps = {
     id: string;
@@ -27,6 +42,10 @@ export type CourseCardProps = {
     createdAt: string;
     isPublished: boolean;
     visibility?: VisibilityType;
+    quizzesCount?: number;
+    examsCount?: number;
+    summarySheetsCount?: number;
+    onDelete?: (courseId: string) => Promise<boolean>;
 };
 
 export const CourseCard = ({
@@ -38,8 +57,24 @@ export const CourseCard = ({
     createdAt,
     isPublished = true,
     visibility = Visibility.PRIVATE,
+    quizzesCount = 0,
+    examsCount = 0,
+    summarySheetsCount = 0,
+    onDelete,
 }: CourseCardProps) => {
     const router = useRouter();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = useCallback(async () => {
+        if (!onDelete) return;
+        setIsDeleting(true);
+        const success = await onDelete(id);
+        setIsDeleting(false);
+        if (success) {
+            setIsDeleteDialogOpen(false);
+        }
+    }, [onDelete, id]);
 
     const getSubjectColor = (subject: string) => {
         const colors = {
@@ -98,15 +133,27 @@ export const CourseCard = ({
                                 {title}
                             </h3>
                         </div>
-                        <Link href={`/library/${id}`}>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="opacity-0 group-hover:opacity-100 transition-all duration-300 ml-4 hover:bg-blue-50 hover:text-blue-600 transform translate-x-2 group-hover:translate-x-0 flex-shrink-0"
-                            >
-                                <Eye className="w-4 h-4" />
-                            </Button>
-                        </Link>
+                        <div className="flex items-center gap-1 ml-4 flex-shrink-0">
+                            <Link href={`/library/${id}`}>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 transform translate-x-2 group-hover:translate-x-0"
+                                >
+                                    <Eye className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                            {onDelete && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-50 hover:text-red-600 transform translate-x-2 group-hover:translate-x-0"
+                                    onClick={() => setIsDeleteDialogOpen(true)}
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Content Section */}
@@ -183,6 +230,83 @@ export const CourseCard = ({
                     </div>
                 </div>
             </CardContent>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <AlertTriangle className="w-5 h-5" />
+                            Supprimer le cours
+                        </DialogTitle>
+                        <DialogDescription>
+                            Cette action est irréversible. Le cours et toutes les
+                            données associées seront définitivement supprimés.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-3 py-2">
+                        <p className="text-sm font-medium text-gray-900">
+                            Vous allez supprimer le cours :
+                        </p>
+                        <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <p className="font-semibold text-gray-900">{title}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                                {subject} - {level}
+                            </p>
+                        </div>
+
+                        {(quizzesCount > 0 || examsCount > 0 || summarySheetsCount > 0) && (
+                            <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                                <p className="text-sm font-medium text-red-800 mb-2">
+                                    Les éléments suivants seront également supprimés :
+                                </p>
+                                <ul className="space-y-1.5">
+                                    {quizzesCount > 0 && (
+                                        <li className="flex items-center gap-2 text-sm text-red-700">
+                                            <ClipboardList className="w-4 h-4 flex-shrink-0" />
+                                            {quizzesCount} quiz{quizzesCount > 1 ? "zes" : ""}
+                                        </li>
+                                    )}
+                                    {examsCount > 0 && (
+                                        <li className="flex items-center gap-2 text-sm text-red-700">
+                                            <GraduationCap className="w-4 h-4 flex-shrink-0" />
+                                            {examsCount} examen{examsCount > 1 ? "s" : ""}
+                                        </li>
+                                    )}
+                                    {summarySheetsCount > 0 && (
+                                        <li className="flex items-center gap-2 text-sm text-red-700">
+                                            <FileText className="w-4 h-4 flex-shrink-0" />
+                                            {summarySheetsCount} fiche{summarySheetsCount > 1 ? "s" : ""} de révision
+                                        </li>
+                                    )}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <DialogClose asChild>
+                            <Button variant="outline" disabled={isDeleting}>
+                                Annuler
+                            </Button>
+                        </DialogClose>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="gap-2"
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="w-4 h-4" />
+                            )}
+                            {isDeleting ? "Suppression..." : "Supprimer"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 };
