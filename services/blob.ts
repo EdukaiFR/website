@@ -1,3 +1,4 @@
+import { ApiError, ApiErrorResponse } from "@/lib/types/api";
 import axios from "axios";
 
 export interface BlobService {
@@ -59,7 +60,7 @@ export function useBlobService() {
             );
 
             return response.data;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("[BlobService] ❌ Error deleting file:", error);
             if (axios.isAxiosError(error)) {
                 console.error("[BlobService] Axios error details:", {
@@ -69,8 +70,9 @@ export function useBlobService() {
                 });
             }
 
-            if (error?.response?.data) {
-                return error.response.data;
+            const err = error as ApiError;
+            if (err?.response?.data) {
+                return err.response.data as ApiErrorResponse;
             }
 
             return {

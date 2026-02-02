@@ -380,6 +380,8 @@ export const courseToast = {
     loadError: () => showToast.error(toastMessages.course.loadError),
     updateSuccess: () => showToast.success(toastMessages.course.updateSuccess),
     updateError: () => showToast.error(toastMessages.course.updateError),
+    deleteSuccess: () => showToast.success(toastMessages.course.deleteSuccess),
+    deleteError: () => showToast.error(toastMessages.course.deleteError),
 };
 
 export const examToast = {

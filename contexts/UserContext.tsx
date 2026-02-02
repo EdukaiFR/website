@@ -39,7 +39,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                 // Fallback to session user data if new API fails
                 if (user) {
                     setUserProfile({
-                        _id: user.id,
+                        _id: user._id,
                         email: user.email || "",
                         username: user.username || "",
                         firstName: user.firstName || "",
@@ -58,7 +58,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             // Fallback to session user data
             if (user) {
                 setUserProfile({
-                    _id: user.id,
+                    _id: user._id,
                     email: user.email || "",
                     username: user.username || "",
                     firstName: user.firstName || "",

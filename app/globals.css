@@ -294,7 +294,23 @@ body {
 }
 
 [data-sonner-toast] [data-close-button]:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #1d4ed8;
+    background: #dbeafe;
+    color: #1e293b;
     transform: scale(1.1);
+}
+
+/* Fade In Up Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out forwards;
 }

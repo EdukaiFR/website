@@ -2,12 +2,14 @@ import {
     Bell,
     Users,
     Home,
-    BookOpen,
     HelpCircle,
     Settings,
     Zap,
     GraduationCap,
     Shield,
+    BarChart3,
+    User,
+    Sliders,
 } from "lucide-react";
 import { useIsAdmin } from "./useRole";
 
@@ -48,6 +50,19 @@ export function useLinks() {
         },
     ];
 
+    const mySpaceLinks = [
+        {
+            href: "/stats",
+            label: "Statistiques",
+            Icon: BarChart3,
+        },
+        {
+            href: "/profile",
+            label: "Profile",
+            Icon: User,
+        },
+    ];
+
     const downLinks = [
         {
             href: "/notifications",
@@ -73,8 +88,13 @@ export function useLinks() {
                   label: "Admin - Tickets",
                   Icon: Shield,
               },
+              {
+                  href: "/admin/plan-limits",
+                  label: "Admin - Limitations",
+                  Icon: Sliders,
+              },
           ]
         : [];
 
-    return { upLinks, downLinks, adminLinks };
+    return { upLinks, mySpaceLinks, downLinks, adminLinks };
 }

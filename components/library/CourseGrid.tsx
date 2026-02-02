@@ -6,15 +6,16 @@ import { CourseCard, CourseCardProps } from "./CourseCard";
 interface CourseGridProps {
     courses: CourseCardProps[];
     isLoading?: boolean;
+    onDeleteCourse?: (courseId: string) => Promise<boolean>;
 }
 
-export const CourseGrid = ({ courses, isLoading = false }: CourseGridProps) => {
+export const CourseGrid = ({ courses, isLoading = false, onDeleteCourse }: CourseGridProps) => {
     if (isLoading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, index) => (
                     <div
-                        key={index}
+                        key={`skeleton-${index}`}
                         className="h-48 bg-gray-100 rounded-xl animate-pulse"
                     />
                 ))}
@@ -58,7 +59,7 @@ export const CourseGrid = ({ courses, isLoading = false }: CourseGridProps) => {
                         animationFillMode: "both",
                     }}
                 >
-                    <CourseCard {...course} />
+                    <CourseCard {...course} onDelete={onDeleteCourse} />
                 </div>
             ))}
         </div>

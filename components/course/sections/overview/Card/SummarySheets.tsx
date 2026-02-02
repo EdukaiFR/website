@@ -356,7 +356,7 @@ export const SummarySheets = ({
                 {/* Summary Sheet Card */}
                 <button
                     type="button"
-                    className="flex-1 min-w-0 cursor-pointer"
+                    className="flex-1 min-w-0 cursor-pointer max-h-[280px] h-[280px]"
                     onClick={() =>
                         handleOpenModal(
                             getArrayForShowSummarySheetInSummarySheets()
@@ -486,7 +486,7 @@ export const SummarySheets = ({
                                         ) {
                                             return (
                                                 <div
-                                                    className="prose prose-lg max-w-none"
+                                                    className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h1:mb-6 prose-h1:mt-8 prose-h2:text-2xl prose-h2:mb-4 prose-h2:mt-6 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:mb-3 prose-h3:mt-5 prose-p:leading-relaxed prose-p:mb-4 prose-strong:text-blue-600 prose-strong:font-semibold prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:my-4 prose-li:my-1 prose-hr:my-6 prose-hr:border-gray-300 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 prose-blockquote:py-2"
                                                     dangerouslySetInnerHTML={{
                                                         __html: marked.parse(
                                                             currentSheet.content
@@ -526,6 +526,7 @@ export const SummarySheets = ({
                                             if (isImage) {
                                                 return (
                                                     <div className="flex items-center justify-center h-full">
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img
                                                             src={`${process.env.NEXT_PUBLIC_API_URL}/blob/files/${currentSheet._id}`}
                                                             alt={

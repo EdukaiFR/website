@@ -16,10 +16,17 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/hooks/useSession";
 import { useUserProfile } from "@/contexts/UserContext";
+import { useSession } from "@/hooks/useSession";
 import { getImageDisplaySrc } from "@/lib/image-utils";
-import { ChevronsUpDown, LogOut, Settings, GraduationCap } from "lucide-react";
+import {
+    ChevronsUpDown,
+    CreditCard,
+    GraduationCap,
+    LogOut,
+    Settings,
+    User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -201,11 +208,31 @@ export function NavUser() {
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
                                 <Link
+                                    href="/profile"
+                                    className="flex items-center gap-2 cursor-pointer"
+                                >
+                                    <User className="w-4 h-4" />
+                                    Mon Profil
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link
                                     href="/settings"
                                     className="flex items-center gap-2 cursor-pointer"
                                 >
                                     <Settings className="w-4 h-4" />
                                     Paramètres
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    href="/pricing"
+                                    className="flex items-center gap-2 cursor-pointer"
+                                >
+                                    <CreditCard className="w-4 h-4" />
+                                    {userProfile?.accountPlan === "premium"
+                                        ? "Gérer mon abonnement"
+                                        : "Mettre à niveau l'abonnement"}
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>

@@ -1,3 +1,5 @@
+import type { InsightsResponse } from "@/lib/types/insights";
+import { SummarySheetData } from "@/lib/types/library";
 import { InsightsService } from "@/services";
 import { CourseSummarySheets, Quiz } from "../sections";
 import { Exams } from "../sections/exams";
@@ -6,7 +8,6 @@ import { Objectives } from "../sections/objectives";
 import { Overview } from "../sections/overview";
 import { SimilarCourses } from "../sections/similar-courses";
 import { Statistics } from "../sections/statistics";
-import { SummarySheetData } from "@/lib/types/library";
 
 type Exam = {
     _id: string;
@@ -39,6 +40,7 @@ interface CourseContentRendererProps {
     quizData: unknown;
     loadCourseFiles: (courseId: string) => Promise<unknown>;
     refreshSummarySheets?: () => void;
+    refreshInsights?: (quizId: string) => Promise<unknown>;
 }
 
 export function CourseContentRenderer({
@@ -60,6 +62,7 @@ export function CourseContentRenderer({
     quizData,
     loadCourseFiles,
     refreshSummarySheets,
+    refreshInsights,
 }: CourseContentRendererProps) {
     return (
         <div className="flex-1 min-h-0 w-full max-w-full">
@@ -77,9 +80,12 @@ export function CourseContentRenderer({
                     deleteExam={deleteExam}
                     insights_data={
                         insightsData as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
+                            items: Array<{
+                                _id: string;
+                                score: number;
+                                createdAt: string;
+                                author: string;
+                            }>;
                         }
                     }
                     summarySheetsData={summarySheetsData}
@@ -111,18 +117,11 @@ export function CourseContentRenderer({
             {selectedTab === "statistics" && (
                 <Statistics
                     course_id={courseId}
-                    statistics={null}
                     quiz_id={quizId}
                     insights_service={
                         insightsService as unknown as InsightsService
                     }
-                    insights_data={
-                        insightsData as unknown as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
-                        }
-                    }
+                    insights_data={insightsData as InsightsResponse}
                 />
             )}
             {selectedTab === "similarCourses" && (
@@ -139,11 +138,15 @@ export function CourseContentRenderer({
                     insights_service={insightsService as InsightsService}
                     insights_data={
                         insightsData as {
-                            averageScore: number;
-                            insightsCount: number;
-                            insights?: { score: number; createdAt: string }[];
+                            items: Array<{
+                                _id: string;
+                                score: number;
+                                createdAt: string;
+                                author: string;
+                            }>;
                         }
                     }
+                    refreshInsights={refreshInsights}
                 />
             )}
         </div>

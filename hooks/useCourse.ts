@@ -238,6 +238,24 @@ export function useCourse(courseService: CourseService) {
         }
     };
 
+    const deleteCourse = async (courseId: string): Promise<boolean> => {
+        try {
+            const response = await courseService.deleteCourse(courseId);
+            if ("status" in response && response.status === "failure") {
+                courseToast.deleteError();
+                return false;
+            }
+            setCoursesData(prev => prev.filter(c => c._id !== courseId));
+            courseToast.deleteSuccess();
+            return true;
+        } catch (error) {
+            console.error(`Error deleting course ${courseId}:`, error);
+            courseToast.deleteError();
+            setError("Failed to delete course. Please try again.");
+            return false;
+        }
+    };
+
     const deleteExamById = async (examId: string, courseId: string) => {
         try {
             const response = await courseService.deleteExamById(
@@ -271,5 +289,6 @@ export function useCourse(courseService: CourseService) {
         getExams,
         updateExamById,
         deleteExamById,
+        deleteCourse,
     };
 }

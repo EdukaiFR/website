@@ -1,12 +1,12 @@
 import {
+    ChangePasswordFormValues,
+    ResetPasswordFormValues,
     SigninFormValues,
     SignupFormValues,
-    ResetPasswordFormValues,
-    ChangePasswordFormValues,
 } from "@/lib/schemas/auth";
-import { LoginCredentials, RegisterData } from "@/services/auth";
 import { sessionStorage } from "@/lib/session";
 import { translateApiError } from "@/lib/toast";
+import { LoginCredentials, RegisterData } from "@/services/auth";
 import axios, { AxiosError } from "axios";
 
 // Types for auth responses
@@ -242,11 +242,20 @@ export async function resetPasswordWithTokenAction(
 
 // Signout action
 export async function signoutAction(): Promise<AuthResponse> {
-    try {
-        // TODO: Implement actual signout logic (clear tokens, etc.)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+        // Call backend to invalidate session/token
+        await axios.post(
+            `${apiUrl}/auth/logout`,
+            {},
+            {
+                withCredentials: true,
+            }
+        );
+
+        // Clear local session storage
+        sessionStorage.clearSession();
 
         return {
             success: true,
@@ -255,6 +264,9 @@ export async function signoutAction(): Promise<AuthResponse> {
             },
         };
     } catch (error) {
+        // Even if API call fails, clear local session
+        sessionStorage.clearSession();
+
         console.error("Signout error:", error);
         return {
             success: false,

@@ -1,7 +1,7 @@
 "use client";
 
 import { PublicCourseCard } from "@/components/club/PublicCourseCard";
-import { useCourseService } from "@/services";
+import { useCourseService, PublicCourse } from "@/services";
 import {
     BookOpen,
     Calendar,
@@ -15,19 +15,6 @@ import {
     X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
-interface PublicCourse {
-    _id: string;
-    title: string;
-    subject: string;
-    level: string;
-    author: {
-        firstName: string;
-        lastName: string;
-        username: string;
-    };
-    createdAt: string;
-}
 
 export default function ClubEdukaiPage() {
     const [courses, setCourses] = useState<PublicCourse[]>([]);

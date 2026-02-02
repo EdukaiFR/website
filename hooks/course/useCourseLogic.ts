@@ -1,14 +1,14 @@
 import { useCourse, useQuiz } from "@/hooks";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SummarySheetData } from "@/lib/types/library";
 import {
     useCourseService,
     useInsightsService,
     useQuizService,
 } from "@/services";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { SummarySheetData } from "@/lib/types/library";
-import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 export function useCourseLogic() {
     const params = useParams();
@@ -26,7 +26,15 @@ export function useCourseLogic() {
     const [isQuestionsVisible, setQuestionsVisible] = useState<boolean>(false);
     const [isSummarySheetsVisible, setSummarySheetsVisible] =
         useState<boolean>(false);
-    const [selectedTab, setSelectedTabState] = useState<string>(tabFromUrl);
+    const [selectedTabState, setSelectedTabState] =
+        useState<string>(tabFromUrl);
+
+    // Ref to track if insights have been loaded for a quizId
+    const insightsLoadedRef = useRef<string | null>(null);
+    // Ref to track if initial insights fetch is in progress
+    const insightsFetchingRef = useRef<boolean>(false);
+    // AbortController ref for canceling requests
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     // Wrapper to update both state and URL
     const setSelectedTab = (tab: string) => {
@@ -82,9 +90,36 @@ export function useCourseLogic() {
         if (courseData && courseData.quizzes.length > 0) {
             const quizId = courseData.quizzes[0];
             setQuizId(quizId);
-            const quizResponse = await loadQuiz(quizId);
-            // Always try to load insights for the quiz
-            await getQuizInsights(quizId);
+            await loadQuiz(quizId);
+            // Load insights immediately only if we're on a tab that needs them
+            if (
+                selectedTabState === "statistics" ||
+                selectedTabState === "overview"
+            ) {
+                if (
+                    !insightsFetchingRef.current &&
+                    insightsLoadedRef.current !== quizId
+                ) {
+                    // Cancel previous request
+                    abortControllerRef.current?.abort();
+                    abortControllerRef.current = new AbortController();
+
+                    insightsFetchingRef.current = true;
+                    try {
+                        await getQuizInsights(quizId);
+                        insightsLoadedRef.current = quizId;
+                    } catch (error) {
+                        if (
+                            error instanceof Error &&
+                            error.name !== "AbortError"
+                        ) {
+                            // Only log non-abort errors
+                        }
+                    } finally {
+                        insightsFetchingRef.current = false;
+                    }
+                }
+            }
         }
     };
 
@@ -155,6 +190,8 @@ export function useCourseLogic() {
             loadCourse(courseId);
             loadCourseFiles(courseId);
             loadSummarySheets();
+            // Reset insights loaded ref when course changes
+            insightsLoadedRef.current = null;
         }
     }, [courseId]);
 
@@ -190,27 +227,43 @@ export function useCourseLogic() {
     useEffect(() => {
         const loadInsightsForTab = async () => {
             if (
-                (selectedTab === "statistics" || selectedTab === "overview") &&
-                quizId
+                (selectedTabState === "statistics" ||
+                    selectedTabState === "overview") &&
+                quizId &&
+                !insightsFetchingRef.current &&
+                insightsLoadedRef.current !== quizId
             ) {
-                // Only load if we truly don't have any insights data yet
-                const hasValidInsights =
-                    insightsData &&
-                    (insightsData.insightsCount > 0 ||
-                        insightsData.averageScore > 0);
+                // Cancel previous request
+                abortControllerRef.current?.abort();
+                abortControllerRef.current = new AbortController();
 
-                if (!hasValidInsights) {
+                // Prevent duplicate calls
+                insightsFetchingRef.current = true;
+                try {
                     await getQuizInsights(quizId);
+                    // Mark as loaded after successful fetch
+                    insightsLoadedRef.current = quizId;
+                } catch (error) {
+                    if (error instanceof Error && error.name !== "AbortError") {
+                        // Only handle non-abort errors
+                    }
+                } finally {
+                    insightsFetchingRef.current = false;
                 }
             }
         };
 
         loadInsightsForTab();
-    }, [selectedTab, quizId, getQuizInsights]); // Removed insightsData from dependencies to avoid loop
+
+        // Cleanup on unmount
+        return () => {
+            abortControllerRef.current?.abort();
+        };
+    }, [selectedTabState, quizId, getQuizInsights]);
 
     return {
         courseId,
-        selectedTab,
+        selectedTab: selectedTabState,
         setSelectedTab,
         courseData,
         quizData,
@@ -227,5 +280,6 @@ export function useCourseLogic() {
         deleteExam,
         loadCourseFiles,
         loadSummarySheets,
+        getQuizInsights,
     };
 }

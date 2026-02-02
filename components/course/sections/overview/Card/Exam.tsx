@@ -36,7 +36,15 @@ export const Exam = ({
     updateExam,
     deleteExam,
 }: ExamProps) => {
-    const typedExams = exams as ExamData[];
+    const allExams = exams as ExamData[];
+
+    // Filter to show only upcoming exams (from today onwards)
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    const typedExams = allExams.filter(
+        (exam: ExamData) => new Date(exam.date) >= now
+    );
+
     const [currentIndex, setCurrentIndex] = useState(0);
 
     // Update current index when exams data changes

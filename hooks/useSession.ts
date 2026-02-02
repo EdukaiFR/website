@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { isTokenExpired } from "@/lib/auth-utils";
 import { sessionStorage } from "@/lib/session";
-import { authToast, handleError, translateApiError } from "@/lib/toast";
+import { authToast, translateApiError } from "@/lib/toast";
+import { ApiError } from "@/lib/types/api";
 import {
-    useAuthService,
+    AuthResponse,
     LoginCredentials,
     RegisterData,
-    AuthResponse,
+    useAuthService,
 } from "@/services/auth";
+import { useEffect, useState } from "react";
 
 type User = AuthResponse["user"] | null;
 
@@ -28,6 +30,15 @@ export function useSession() {
         if (token && !storedUser) {
             // Validate token and get user data
             validateSession();
+        } else if (token && storedUser) {
+            // Check if token is expired
+            if (isTokenExpired(token)) {
+                sessionStorage.clearSession();
+                setUser(null);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
         } else if (!token && storedUser) {
             // Clear invalid user data if no token
             sessionStorage.clearSession();
@@ -42,9 +53,20 @@ export function useSession() {
         try {
             const response = await authService.refreshToken();
             sessionStorage.setToken(response.token);
-            // Get user data and update state
+            
+            // Get current user ID to fetch fresh profile
+            const currentUser = sessionStorage.getUser();
+            // Handle both id formats
+            const userId = currentUser?.id || currentUser?._id;
+            
+            if (userId) {
+                const userProfile = await authService.getUserProfile(userId);
+                sessionStorage.setUser(userProfile);
+                setUser(userProfile);
+            }
+            
             setLoading(false);
-        } catch (error: any) {
+        } catch {
             // If refresh fails, clear session and continue
             sessionStorage.clearSession();
             setUser(null);
@@ -60,9 +82,10 @@ export function useSession() {
             setUser(response.user);
             authToast.loginSuccess();
             return { success: true, data: response };
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as ApiError;
             const errorMessage = translateApiError(
-                error.response?.data?.message || error.message
+                err.response?.data?.message || err.message || "Une erreur est survenue"
             );
             authToast.loginError(errorMessage);
             return {
@@ -80,9 +103,10 @@ export function useSession() {
             setUser(response.user);
             authToast.registerSuccess();
             return { success: true, data: response };
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as ApiError;
             const errorMessage = translateApiError(
-                error.response?.data?.message || error.message
+                err.response?.data?.message || err.message || "Une erreur est survenue"
             );
             authToast.registerError(errorMessage);
             return { success: false, error: errorMessage };
@@ -104,11 +128,28 @@ export function useSession() {
         }
     };
 
+    const refreshUserProfile = async () => {
+        try {
+            const currentUser = sessionStorage.getUser();
+            const userId = currentUser?.id || currentUser?._id;
+
+            if (userId) {
+                const userProfile = await authService.getUserProfile(userId);
+                sessionStorage.setUser(userProfile);
+                setUser(userProfile);
+            }
+        } catch (error) {
+            console.error("Erreur lors du rafraîchissement du profil:", error);
+        }
+    };
+
     return {
         user,
         loading,
         login,
         register,
         logout,
+        validateSession,
+        refreshUserProfile,
     };
 }

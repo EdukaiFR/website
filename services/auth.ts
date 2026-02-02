@@ -1,5 +1,5 @@
+import { ApiError } from "@/lib/types/api";
 import axios from "axios";
-import { translateApiError } from "@/lib/toast";
 
 export interface LoginCredentials {
     username: string;
@@ -17,20 +17,33 @@ export interface RegisterData {
 export interface AuthResponse {
     token: string;
     user: {
-        id: string;
+        _id: string;
         username: string;
         email?: string;
         firstName?: string;
         lastName?: string;
         role?: string;
+        accountPlan?: "free" | "premium";
+        subscriptionStatus?: string;
+        currentPeriodEnd?: string;
+        cancelAtPeriodEnd?: boolean;
     };
 }
+
+export interface ApiMessageResponse {
+    message: string;
+    status: string;
+}
+
 
 export interface AuthService {
     login: (credentials: LoginCredentials) => Promise<AuthResponse>;
     register: (userData: RegisterData) => Promise<AuthResponse>;
     logout: () => Promise<void>;
     refreshToken: () => Promise<{ token: string }>;
+    getUserProfile: (userId: string) => Promise<AuthResponse["user"]>;
+    verifyPassword: (password: string) => Promise<ApiMessageResponse>;
+    deleteUserAccount: (userId: string) => Promise<ApiMessageResponse>;
 }
 
 export function useAuthService(): AuthService {
@@ -48,10 +61,11 @@ export function useAuthService(): AuthService {
                 }
             );
             return response.data;
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as ApiError;
             console.error(
                 "Erreur de connexion:",
-                error.response?.data?.message || error.message
+                err.response?.data?.message || err.message
             );
             throw error;
         }
@@ -75,7 +89,13 @@ export function useAuthService(): AuthService {
 
     const logout = async (): Promise<void> => {
         try {
-            // Logout logic here if needed
+            await axios.post(
+                `${apiUrl}/auth/logout`,
+                {},
+                {
+                    withCredentials: true,
+                }
+            );
         } catch (error) {
             console.error("Erreur de déconnexion:", error);
             throw error;
@@ -98,5 +118,49 @@ export function useAuthService(): AuthService {
         }
     };
 
-    return { login, register, logout, refreshToken };
+    const getUserProfile = async (userId: string): Promise<AuthResponse["user"]> => {
+        try {
+            const response = await axios.get(
+                `${apiUrl}/users/${userId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+            return response.data.user;
+        } catch (error) {
+            console.error("Erreur de récupération du profil:", error);
+            throw error;
+        }
+    };
+
+    const verifyPassword = async (password: string): Promise<ApiMessageResponse> => {
+        try {
+            const response = await axios.post(
+                `${apiUrl}/auth/verify-password`,
+                { password },
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de la vérification de mot de passe:", error);
+            throw error;
+        }
+    };
+
+    const deleteUserAccount = async (userId: string): Promise<ApiMessageResponse> => {
+        try {
+            const response = await axios.delete(
+                `${apiUrl}/users/${userId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de la suppression du compte:", error);
+            throw error;
+        }
+    };
+
+    return { login, register, logout, refreshToken, getUserProfile, verifyPassword, deleteUserAccount };
 }
