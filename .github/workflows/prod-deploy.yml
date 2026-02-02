@@ -26,6 +26,7 @@ jobs:
         envs: DIRECTORY, PM2_PROCESS_NAME
         script: |
           cd ${DIRECTORY}
+          git reset --hard HEAD
           git pull origin main
           npm install
           npm run build
