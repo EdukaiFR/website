@@ -68,7 +68,13 @@ export default function Generate() {
 
             setCourseId(courseResponse.id);
 
-            // 2. Start generation with SSE tracking - send extracted text, NOT raw files
+            const fileIds = Object.values(uploadedFileIds);
+            await Promise.all(
+                fileIds.map(fileId =>
+                    courseService.addFileToCourse(courseResponse.id, fileId)
+                )
+            );
+
             const generationResponse =
                 await courseService.startCourseGeneration(courseResponse.id, {
                     extractedTexts: recognizedTexts,
