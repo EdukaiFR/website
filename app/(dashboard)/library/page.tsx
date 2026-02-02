@@ -17,7 +17,7 @@ import { useCourse } from "@/hooks";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { useCourseService } from "@/services";
 import { RotateCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { VisibilityType } from "@/lib/types/visibility";
 
@@ -63,10 +63,18 @@ type ApiCourseData = {
 export default function LibraryPage() {
     // Basic Data
     const courseService = useCourseService();
-    const { coursesData, loadAllCourses } = useCourse(courseService);
+    const { coursesData, loadAllCourses, deleteCourse } = useCourse(courseService);
     const [userCourses, setUserCourses] = useState<ExtendedCourseData[]>([]);
 
     const { storageUserId } = useSessionStorage();
+
+    const handleDeleteCourse = useCallback(async (courseId: string): Promise<boolean> => {
+        const success = await deleteCourse(courseId);
+        if (success) {
+            setUserCourses(prev => prev.filter(c => c.id !== courseId));
+        }
+        return success;
+    }, [deleteCourse]);
 
     // View State - Load from localStorage or default to 'grid'
     const [view, setView] = useState<"grid" | "table">(() => {
@@ -364,8 +372,12 @@ export default function LibraryPage() {
                                     createdAt: course.createdAt,
                                     isPublished: course.isPublished,
                                     visibility: course.visibility,
+                                    quizzesCount: course.quizzes?.length ?? 0,
+                                    examsCount: course.exams?.length ?? 0,
+                                    summarySheetsCount: course.summarySheets?.length ?? 0,
                                 }))}
                                 isLoading={false}
+                                onDeleteCourse={handleDeleteCourse}
                             />
                         ) : (
                             <DataTable
