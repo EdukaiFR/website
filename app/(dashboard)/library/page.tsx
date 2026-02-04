@@ -108,7 +108,6 @@ export default function LibraryPage() {
     const [filteredCourses, setFilteredCourses] = useState<
         ExtendedCourseData[]
     >([]);
-    const [isFilterOpen, setFilterOpen] = useState<boolean>(false);
     const [filter, setFilter] = useState<{
         type: "" | "title" | "subject" | "level";
         value: string;
@@ -264,8 +263,6 @@ export default function LibraryPage() {
                                     coursesFilter={coursesFilter}
                                     activeFilter={filter}
                                     setActiveFilter={setFilter}
-                                    isFilterOpen={isFilterOpen}
-                                    setFilterOpen={setFilterOpen}
                                 />
 
                                 {filter.type && (
@@ -320,8 +317,6 @@ export default function LibraryPage() {
                                     coursesFilter={coursesFilter}
                                     activeFilter={filter}
                                     setActiveFilter={setFilter}
-                                    isFilterOpen={isFilterOpen}
-                                    setFilterOpen={setFilterOpen}
                                 />
 
                                 {filter.type && (
