@@ -1,9 +1,15 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { FileProcessor, type ProcessingProgress, type ProcessingResult } from "@/lib/file-processors";
+import {
+    FileProcessor,
+    type ProcessingProgress,
+    type ProcessingResult,
+} from "@/lib/file-processors";
 import Tesseract from "tesseract.js";
 
 // Store the logger callback for testing
-let tesseractLoggerCallback: ((m: { status: string; progress: number }) => void) | null = null;
+let tesseractLoggerCallback:
+    | ((m: { status: string; progress: number }) => void)
+    | null = null;
 
 // Mock tesseract.js
 vi.mock("tesseract.js", () => ({
@@ -82,72 +88,100 @@ describe("FileProcessor", () => {
 
     describe("getFileType", () => {
         it("should identify PDF files by extension", () => {
-            const file = new File(["content"], "document.pdf", { type: "application/pdf" });
+            const file = new File(["content"], "document.pdf", {
+                type: "application/pdf",
+            });
             expect(FileProcessor.getFileType(file)).toBe("pdf");
         });
 
         it("should identify image files by extension - png", () => {
-            const file = new File(["content"], "image.png", { type: "image/png" });
+            const file = new File(["content"], "image.png", {
+                type: "image/png",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify image files by extension - jpg", () => {
-            const file = new File(["content"], "photo.jpg", { type: "image/jpeg" });
+            const file = new File(["content"], "photo.jpg", {
+                type: "image/jpeg",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify image files by extension - jpeg", () => {
-            const file = new File(["content"], "photo.jpeg", { type: "image/jpeg" });
+            const file = new File(["content"], "photo.jpeg", {
+                type: "image/jpeg",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify image files by extension - gif", () => {
-            const file = new File(["content"], "animation.gif", { type: "image/gif" });
+            const file = new File(["content"], "animation.gif", {
+                type: "image/gif",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify image files by extension - webp", () => {
-            const file = new File(["content"], "modern.webp", { type: "image/webp" });
+            const file = new File(["content"], "modern.webp", {
+                type: "image/webp",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify image files by extension - bmp", () => {
-            const file = new File(["content"], "bitmap.bmp", { type: "image/bmp" });
+            const file = new File(["content"], "bitmap.bmp", {
+                type: "image/bmp",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should identify text files by extension - txt", () => {
-            const file = new File(["content"], "notes.txt", { type: "text/plain" });
+            const file = new File(["content"], "notes.txt", {
+                type: "text/plain",
+            });
             expect(FileProcessor.getFileType(file)).toBe("text");
         });
 
         it("should identify text files by extension - md", () => {
-            const file = new File(["content"], "readme.md", { type: "text/markdown" });
+            const file = new File(["content"], "readme.md", {
+                type: "text/markdown",
+            });
             expect(FileProcessor.getFileType(file)).toBe("text");
         });
 
         it("should identify text files by extension - csv", () => {
-            const file = new File(["content"], "data.csv", { type: "text/csv" });
+            const file = new File(["content"], "data.csv", {
+                type: "text/csv",
+            });
             expect(FileProcessor.getFileType(file)).toBe("text");
         });
 
         it("should fallback to MIME type for image files", () => {
-            const file = new File(["content"], "unknown", { type: "image/tiff" });
+            const file = new File(["content"], "unknown", {
+                type: "image/tiff",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
         it("should fallback to MIME type for PDF files", () => {
-            const file = new File(["content"], "unknown", { type: "application/pdf" });
+            const file = new File(["content"], "unknown", {
+                type: "application/pdf",
+            });
             expect(FileProcessor.getFileType(file)).toBe("pdf");
         });
 
         it("should fallback to MIME type for text files", () => {
-            const file = new File(["content"], "unknown", { type: "text/html" });
+            const file = new File(["content"], "unknown", {
+                type: "text/html",
+            });
             expect(FileProcessor.getFileType(file)).toBe("text");
         });
 
         it("should default to image for unknown types", () => {
-            const file = new File(["content"], "unknown.xyz", { type: "application/octet-stream" });
+            const file = new File(["content"], "unknown.xyz", {
+                type: "application/octet-stream",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
 
@@ -157,12 +191,16 @@ describe("FileProcessor", () => {
         });
 
         it("should handle uppercase extensions", () => {
-            const file = new File(["content"], "DOCUMENT.PDF", { type: "application/pdf" });
+            const file = new File(["content"], "DOCUMENT.PDF", {
+                type: "application/pdf",
+            });
             expect(FileProcessor.getFileType(file)).toBe("pdf");
         });
 
         it("should handle mixed case extensions", () => {
-            const file = new File(["content"], "Image.JpEg", { type: "image/jpeg" });
+            const file = new File(["content"], "Image.JpEg", {
+                type: "image/jpeg",
+            });
             expect(FileProcessor.getFileType(file)).toBe("image");
         });
     });
@@ -170,7 +208,11 @@ describe("FileProcessor", () => {
     describe("processFile - Text Files", () => {
         it("should process text files successfully", async () => {
             const mockTextContent = "This is test content";
-            const file = createMockFile(mockTextContent, "document.txt", "text/plain");
+            const file = createMockFile(
+                mockTextContent,
+                "document.txt",
+                "text/plain"
+            );
 
             const result = await FileProcessor.processFile(file);
 
@@ -210,7 +252,8 @@ describe("FileProcessor", () => {
 
             await FileProcessor.processFile(file, onProgress);
 
-            const lastCall = onProgress.mock.calls[onProgress.mock.calls.length - 1];
+            const lastCall =
+                onProgress.mock.calls[onProgress.mock.calls.length - 1];
             expect(lastCall[0]).toEqual({
                 stage: "complete",
                 progress: 100,
@@ -219,7 +262,11 @@ describe("FileProcessor", () => {
         });
 
         it("should work without onProgress callback", async () => {
-            const file = createMockFile("content without callback", "test.txt", "text/plain");
+            const file = createMockFile(
+                "content without callback",
+                "test.txt",
+                "text/plain"
+            );
 
             const result = await FileProcessor.processFile(file);
 
@@ -229,7 +276,11 @@ describe("FileProcessor", () => {
 
         it("should handle markdown files", async () => {
             const mdContent = "# Heading\n\nSome **bold** text";
-            const file = createMockFile(mdContent, "readme.md", "text/markdown");
+            const file = createMockFile(
+                mdContent,
+                "readme.md",
+                "text/markdown"
+            );
 
             const result = await FileProcessor.processFile(file);
 
@@ -301,14 +352,18 @@ describe("FileProcessor", () => {
 
             // Simulate OCR progress via the logger callback
             if (tesseractLoggerCallback) {
-                tesseractLoggerCallback({ status: "recognizing text", progress: 0.5 });
+                tesseractLoggerCallback({
+                    status: "recognizing text",
+                    progress: 0.5,
+                });
             }
 
             await resultPromise;
 
             // Check that progress was reported during OCR
             const ocrProgressCalls = onProgress.mock.calls.filter(
-                (call: [ProcessingProgress]) => call[0].stage === "ocr" && call[0].progress === 50
+                (call: [ProcessingProgress]) =>
+                    call[0].stage === "ocr" && call[0].progress === 50
             );
             expect(ocrProgressCalls.length).toBeGreaterThanOrEqual(1);
         });
@@ -391,11 +446,7 @@ describe("FileProcessor", () => {
 
         it("should handle PDF pages with text", async () => {
             mockGetTextContent.mockResolvedValue({
-                items: [
-                    { str: "Hello" },
-                    { str: " " },
-                    { str: "World" },
-                ],
+                items: [{ str: "Hello" }, { str: " " }, { str: "World" }],
             });
 
             const file = createMockFile("", "doc.pdf", "application/pdf");
@@ -440,7 +491,8 @@ describe("FileProcessor", () => {
             // Should have progress updates for each page
             const pageProgressCalls = onProgress.mock.calls.filter(
                 (call: [ProcessingProgress]) =>
-                    call[0].message.includes("Page") && call[0].message.includes("traitée")
+                    call[0].message.includes("Page") &&
+                    call[0].message.includes("traitée")
             );
             expect(pageProgressCalls.length).toBe(2); // 2 pages
         });
@@ -450,14 +502,18 @@ describe("FileProcessor", () => {
 
             // Also need to mock canvas for OCR path, but we'll skip OCR by making it fail
             const originalCreateElement = document.createElement.bind(document);
-            vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
-                if (tag === "canvas") {
-                    const canvas = originalCreateElement("canvas") as HTMLCanvasElement;
-                    vi.spyOn(canvas, "getContext").mockReturnValue(null);
-                    return canvas;
+            vi.spyOn(document, "createElement").mockImplementation(
+                (tag: string) => {
+                    if (tag === "canvas") {
+                        const canvas = originalCreateElement(
+                            "canvas"
+                        ) as HTMLCanvasElement;
+                        vi.spyOn(canvas, "getContext").mockReturnValue(null);
+                        return canvas;
+                    }
+                    return originalCreateElement(tag);
                 }
-                return originalCreateElement(tag);
-            });
+            );
 
             const file = createMockFile("", "empty.pdf", "application/pdf");
             const result = await FileProcessor.processFile(file);
@@ -478,8 +534,13 @@ describe("FileProcessor", () => {
 
     describe("ProcessingResult interface", () => {
         it("should return correct structure for text files", async () => {
-            const file = createMockFile("Test content", "test.txt", "text/plain");
-            const result: ProcessingResult = await FileProcessor.processFile(file);
+            const file = createMockFile(
+                "Test content",
+                "test.txt",
+                "text/plain"
+            );
+            const result: ProcessingResult =
+                await FileProcessor.processFile(file);
 
             expect(result).toHaveProperty("text");
             expect(result).toHaveProperty("type");
@@ -489,7 +550,8 @@ describe("FileProcessor", () => {
 
         it("should return correct structure for image files", async () => {
             const file = createMockFile("", "image.png", "image/png");
-            const result: ProcessingResult = await FileProcessor.processFile(file);
+            const result: ProcessingResult =
+                await FileProcessor.processFile(file);
 
             expect(result).toHaveProperty("text");
             expect(result).toHaveProperty("type");
@@ -498,7 +560,8 @@ describe("FileProcessor", () => {
 
         it("should return correct structure for PDF files", async () => {
             const file = createMockFile("", "doc.pdf", "application/pdf");
-            const result: ProcessingResult = await FileProcessor.processFile(file);
+            const result: ProcessingResult =
+                await FileProcessor.processFile(file);
 
             expect(result).toHaveProperty("text");
             expect(result).toHaveProperty("type");

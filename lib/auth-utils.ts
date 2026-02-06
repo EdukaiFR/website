@@ -62,12 +62,12 @@ export function getAuthConfig() {
  */
 export function syncAuthCookie() {
     if (typeof window === "undefined") return;
-    
+
     const token = sessionStorage.getToken();
     if (token) {
         // Set cookie with appropriate flags
         // Note: In development (localhost), Secure might need to be false if not using HTTPS
-        // SameSite=Lax is usually good for top-level navigations, but for API calls 
+        // SameSite=Lax is usually good for top-level navigations, but for API calls
         // across ports/domains, we might need to be careful.
         // For now, we set it simply to ensure it's available.
         document.cookie = `auth_token=${token}; path=/; max-age=86400; SameSite=Lax`;

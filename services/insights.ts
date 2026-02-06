@@ -74,13 +74,10 @@ export function useInsightsService() {
             throw new Error("User not authenticated");
         }
 
-        const response = await axios.get<InsightItem[]>(
-            `${apiUrl}/insights`,
-            {
-                withCredentials: true,
-                signal,
-            }
-        );
+        const response = await axios.get<InsightItem[]>(`${apiUrl}/insights`, {
+            withCredentials: true,
+            signal,
+        });
 
         return response.data;
     };

@@ -46,10 +46,7 @@ export function SubscriptionSettings({
             // Redirect to Stripe portal
             window.location.href = url;
         } catch (error: unknown) {
-            console.error(
-                "Erreur lors de l'ouverture du portail:",
-                error
-            );
+            console.error("Erreur lors de l'ouverture du portail:", error);
             if (onError) {
                 const err = error as ApiError;
                 onError(
@@ -176,9 +173,9 @@ export function SubscriptionSettings({
                                 </div>
                                 <p className="text-sm text-gray-600 leading-relaxed">
                                     Pendant la phase Beta, Edukai est
-                                    entièrement gratuit ! Profitez de toutes
-                                    les fonctionnalités disponibles pour nous
-                                    aider à améliorer la plateforme.
+                                    entièrement gratuit ! Profitez de toutes les
+                                    fonctionnalités disponibles pour nous aider
+                                    à améliorer la plateforme.
                                 </p>
                             </div>
                         </div>
@@ -370,8 +367,8 @@ export function SubscriptionSettings({
                                 Aidez-nous à améliorer Edukai
                             </p>
                             <p className="text-sm text-gray-700 mb-2">
-                                Vos retours sont précieux ! N'hésitez pas à
-                                nous faire part de vos suggestions et des bugs
+                                Vos retours sont précieux ! N'hésitez pas à nous
+                                faire part de vos suggestions et des bugs
                                 rencontrés pendant cette phase Beta.
                             </p>
                             <p className="text-sm text-blue-800 font-medium">

@@ -1,6 +1,14 @@
 import { PaymentError, usePaymentService } from "@/services/payment";
 import axios from "axios";
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    vi,
+    type Mock,
+} from "vitest";
 
 // Mock axios
 vi.mock("axios", () => ({

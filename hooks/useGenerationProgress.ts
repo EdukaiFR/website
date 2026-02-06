@@ -113,7 +113,9 @@ export function useGenerationProgress(
                 if (progressEvent.step === "completed") {
                     setIsComplete(true);
                     cleanup();
-                    callbacksRef.current.onComplete?.(progressEvent.data || null);
+                    callbacksRef.current.onComplete?.(
+                        progressEvent.data || null
+                    );
                 }
                 // Handle error from server
                 else if (progressEvent.step === "error") {
@@ -150,10 +152,9 @@ export function useGenerationProgress(
         try {
             // Create new SSE connection
             const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-            const eventSource = new EventSource(
-                `${apiUrl}/progress/${jobId}`,
-                { withCredentials: true }
-            );
+            const eventSource = new EventSource(`${apiUrl}/progress/${jobId}`, {
+                withCredentials: true,
+            });
 
             eventSourceRef.current = eventSource;
 

@@ -45,8 +45,10 @@ export type PaymentErrorCode =
 
 /** User-friendly error messages (no sensitive data) */
 const PAYMENT_ERROR_MESSAGES: Record<PaymentErrorCode, string> = {
-    CHECKOUT_FAILED: "Impossible de créer la session de paiement. Veuillez réessayer.",
-    PORTAL_FAILED: "Impossible d'accéder au portail de gestion. Veuillez réessayer.",
+    CHECKOUT_FAILED:
+        "Impossible de créer la session de paiement. Veuillez réessayer.",
+    PORTAL_FAILED:
+        "Impossible d'accéder au portail de gestion. Veuillez réessayer.",
     UNAUTHORIZED: "Vous devez être connecté pour effectuer cette action.",
     NETWORK_ERROR: "Erreur de connexion. Vérifiez votre connexion internet.",
 };
@@ -117,24 +119,25 @@ function getPaymentErrorCode(
 export function usePaymentService(): PaymentService {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const createCheckoutSession = async (): Promise<CheckoutSessionResponse> => {
-        try {
-            syncAuthCookie();
+    const createCheckoutSession =
+        async (): Promise<CheckoutSessionResponse> => {
+            try {
+                syncAuthCookie();
 
-            const response = await axios.post(
-                `${apiUrl}/payment/checkout`,
-                {},
-                { withCredentials: true }
-            );
-            return response.data;
-        } catch (error: unknown) {
-            const err = error as ApiError;
-            logPaymentError("Checkout session creation", err);
+                const response = await axios.post(
+                    `${apiUrl}/payment/checkout`,
+                    {},
+                    { withCredentials: true }
+                );
+                return response.data;
+            } catch (error: unknown) {
+                const err = error as ApiError;
+                logPaymentError("Checkout session creation", err);
 
-            const errorCode = getPaymentErrorCode(err, "CHECKOUT_FAILED");
-            throw new PaymentError(errorCode, err.response?.status);
-        }
-    };
+                const errorCode = getPaymentErrorCode(err, "CHECKOUT_FAILED");
+                throw new PaymentError(errorCode, err.response?.status);
+            }
+        };
 
     const createPortalSession = async (): Promise<PortalSessionResponse> => {
         try {

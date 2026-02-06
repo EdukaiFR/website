@@ -35,7 +35,6 @@ export interface ApiMessageResponse {
     status: string;
 }
 
-
 export interface AuthService {
     login: (credentials: LoginCredentials) => Promise<AuthResponse>;
     register: (userData: RegisterData) => Promise<AuthResponse>;
@@ -118,14 +117,13 @@ export function useAuthService(): AuthService {
         }
     };
 
-    const getUserProfile = async (userId: string): Promise<AuthResponse["user"]> => {
+    const getUserProfile = async (
+        userId: string
+    ): Promise<AuthResponse["user"]> => {
         try {
-            const response = await axios.get(
-                `${apiUrl}/users/${userId}`,
-                {
-                    withCredentials: true,
-                }
-            );
+            const response = await axios.get(`${apiUrl}/users/${userId}`, {
+                withCredentials: true,
+            });
             return response.data.user;
         } catch (error) {
             console.error("Erreur de récupération du profil:", error);
@@ -133,7 +131,9 @@ export function useAuthService(): AuthService {
         }
     };
 
-    const verifyPassword = async (password: string): Promise<ApiMessageResponse> => {
+    const verifyPassword = async (
+        password: string
+    ): Promise<ApiMessageResponse> => {
         try {
             const response = await axios.post(
                 `${apiUrl}/auth/verify-password`,
@@ -142,19 +142,21 @@ export function useAuthService(): AuthService {
             );
             return response.data;
         } catch (error) {
-            console.error("Erreur lors de la vérification de mot de passe:", error);
+            console.error(
+                "Erreur lors de la vérification de mot de passe:",
+                error
+            );
             throw error;
         }
     };
 
-    const deleteUserAccount = async (userId: string): Promise<ApiMessageResponse> => {
+    const deleteUserAccount = async (
+        userId: string
+    ): Promise<ApiMessageResponse> => {
         try {
-            const response = await axios.delete(
-                `${apiUrl}/users/${userId}`,
-                {
-                    withCredentials: true,
-                }
-            );
+            const response = await axios.delete(`${apiUrl}/users/${userId}`, {
+                withCredentials: true,
+            });
             return response.data;
         } catch (error) {
             console.error("Erreur lors de la suppression du compte:", error);
@@ -162,5 +164,13 @@ export function useAuthService(): AuthService {
         }
     };
 
-    return { login, register, logout, refreshToken, getUserProfile, verifyPassword, deleteUserAccount };
+    return {
+        login,
+        register,
+        logout,
+        refreshToken,
+        getUserProfile,
+        verifyPassword,
+        deleteUserAccount,
+    };
 }

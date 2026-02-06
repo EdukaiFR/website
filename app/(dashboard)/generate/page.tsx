@@ -49,7 +49,9 @@ export default function Generate() {
     ): Promise<void> => {
         // Validate that we have extracted text
         if (recognizedTexts.length === 0) {
-            toast.error("Veuillez attendre que l'extraction du texte soit terminée");
+            toast.error(
+                "Veuillez attendre que l'extraction du texte soit terminée"
+            );
             return;
         }
 
@@ -90,10 +92,7 @@ export default function Generate() {
                 toast.error("Impossible de démarrer la génération");
             }
         } catch (error: unknown) {
-            console.error(
-                "Erreur lors du démarrage de la génération:",
-                error
-            );
+            console.error("Erreur lors du démarrage de la génération:", error);
             toast.error("Une erreur est survenue lors de la génération");
         }
     };

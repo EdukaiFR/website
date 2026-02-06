@@ -65,7 +65,10 @@ export const ProgressBar = memo(function ProgressBar({
                         </span>
                     )}
                     {showPercentage && (
-                        <span className="text-gray-500 tabular-nums" aria-hidden="true">
+                        <span
+                            className="text-gray-500 tabular-nums"
+                            aria-hidden="true"
+                        >
                             {roundedValue}%
                         </span>
                     )}

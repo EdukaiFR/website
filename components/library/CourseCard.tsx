@@ -232,7 +232,10 @@ export const CourseCard = ({
             </CardContent>
 
             {/* Delete Confirmation Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <Dialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+            >
                 <DialogContent className="sm:max-w-[480px]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-red-600">
@@ -240,8 +243,9 @@ export const CourseCard = ({
                             Supprimer le cours
                         </DialogTitle>
                         <DialogDescription>
-                            Cette action est irréversible. Le cours et toutes les
-                            données associées seront définitivement supprimés.
+                            Cette action est irréversible. Le cours et toutes
+                            les données associées seront définitivement
+                            supprimés.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -250,34 +254,43 @@ export const CourseCard = ({
                             Vous allez supprimer le cours :
                         </p>
                         <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <p className="font-semibold text-gray-900">{title}</p>
+                            <p className="font-semibold text-gray-900">
+                                {title}
+                            </p>
                             <p className="text-sm text-gray-500 mt-1">
                                 {subject} - {level}
                             </p>
                         </div>
 
-                        {(quizzesCount > 0 || examsCount > 0 || summarySheetsCount > 0) && (
+                        {(quizzesCount > 0 ||
+                            examsCount > 0 ||
+                            summarySheetsCount > 0) && (
                             <div className="p-3 bg-red-50 rounded-lg border border-red-200">
                                 <p className="text-sm font-medium text-red-800 mb-2">
-                                    Les éléments suivants seront également supprimés :
+                                    Les éléments suivants seront également
+                                    supprimés :
                                 </p>
                                 <ul className="space-y-1.5">
                                     {quizzesCount > 0 && (
                                         <li className="flex items-center gap-2 text-sm text-red-700">
                                             <ClipboardList className="w-4 h-4 flex-shrink-0" />
-                                            {quizzesCount} quiz{quizzesCount > 1 ? "zes" : ""}
+                                            {quizzesCount} quiz
+                                            {quizzesCount > 1 ? "zes" : ""}
                                         </li>
                                     )}
                                     {examsCount > 0 && (
                                         <li className="flex items-center gap-2 text-sm text-red-700">
                                             <GraduationCap className="w-4 h-4 flex-shrink-0" />
-                                            {examsCount} examen{examsCount > 1 ? "s" : ""}
+                                            {examsCount} examen
+                                            {examsCount > 1 ? "s" : ""}
                                         </li>
                                     )}
                                     {summarySheetsCount > 0 && (
                                         <li className="flex items-center gap-2 text-sm text-red-700">
                                             <FileText className="w-4 h-4 flex-shrink-0" />
-                                            {summarySheetsCount} fiche{summarySheetsCount > 1 ? "s" : ""} de révision
+                                            {summarySheetsCount} fiche
+                                            {summarySheetsCount > 1 ? "s" : ""}{" "}
+                                            de révision
                                         </li>
                                     )}
                                 </ul>

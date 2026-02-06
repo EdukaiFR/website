@@ -18,7 +18,8 @@ class MockEventSource {
     onerror: ((event: Event) => void) | null = null;
     onmessage: ((event: MessageEvent) => void) | null = null;
 
-    private listeners: Map<string, ((event: MessageEvent) => void)[]> = new Map();
+    private listeners: Map<string, ((event: MessageEvent) => void)[]> =
+        new Map();
 
     constructor(url: string, options?: { withCredentials?: boolean }) {
         this.url = url;
@@ -26,14 +27,20 @@ class MockEventSource {
         eventSourceInstances.push(this);
     }
 
-    addEventListener(type: string, listener: (event: MessageEvent) => void): void {
+    addEventListener(
+        type: string,
+        listener: (event: MessageEvent) => void
+    ): void {
         if (!this.listeners.has(type)) {
             this.listeners.set(type, []);
         }
         this.listeners.get(type)!.push(listener);
     }
 
-    removeEventListener(type: string, listener: (event: MessageEvent) => void): void {
+    removeEventListener(
+        type: string,
+        listener: (event: MessageEvent) => void
+    ): void {
         const listeners = this.listeners.get(type);
         if (listeners) {
             const index = listeners.indexOf(listener);
@@ -58,7 +65,9 @@ class MockEventSource {
     }
 
     simulateProgressEvent(data: unknown): void {
-        const event = new MessageEvent("progress", { data: JSON.stringify(data) });
+        const event = new MessageEvent("progress", {
+            data: JSON.stringify(data),
+        });
         const listeners = this.listeners.get("progress");
         if (listeners) {
             listeners.forEach(listener => listener(event));
@@ -106,9 +115,7 @@ describe("useGenerationProgress", () => {
 
     describe("SSE connection", () => {
         it("should create EventSource with correct URL when jobId is provided", () => {
-            renderHook(() =>
-                useGenerationProgress({ jobId: "test-job-123" })
-            );
+            renderHook(() => useGenerationProgress({ jobId: "test-job-123" }));
 
             expect(eventSourceInstances.length).toBe(1);
             expect(eventSourceInstances[0].url).toBe(
@@ -226,9 +233,7 @@ describe("useGenerationProgress", () => {
         });
 
         it("should close connection when completed", async () => {
-            renderHook(() =>
-                useGenerationProgress({ jobId: "test-job" })
-            );
+            renderHook(() => useGenerationProgress({ jobId: "test-job" }));
 
             act(() => {
                 eventSourceInstances[0].simulateProgressEvent({
@@ -239,7 +244,9 @@ describe("useGenerationProgress", () => {
             });
 
             await waitFor(() => {
-                expect(eventSourceInstances[0].readyState).toBe(MockEventSource.CLOSED);
+                expect(eventSourceInstances[0].readyState).toBe(
+                    MockEventSource.CLOSED
+                );
             });
         });
     });
@@ -285,8 +292,12 @@ describe("useGenerationProgress", () => {
             });
 
             await waitFor(() => {
-                expect(result.current.error).toBe("Erreur de connexion au serveur");
-                expect(onError).toHaveBeenCalledWith("Erreur de connexion au serveur");
+                expect(result.current.error).toBe(
+                    "Erreur de connexion au serveur"
+                );
+                expect(onError).toHaveBeenCalledWith(
+                    "Erreur de connexion au serveur"
+                );
             });
         });
 
@@ -302,15 +313,21 @@ describe("useGenerationProgress", () => {
 
             // Simulate an event with invalid JSON
             act(() => {
-                const listeners = (eventSourceInstances[0] as MockEventSource)["listeners"].get("progress");
+                const listeners = (eventSourceInstances[0] as MockEventSource)[
+                    "listeners"
+                ].get("progress");
                 if (listeners) {
-                    const invalidEvent = new MessageEvent("progress", { data: "invalid-json" });
+                    const invalidEvent = new MessageEvent("progress", {
+                        data: "invalid-json",
+                    });
                     listeners.forEach(listener => listener(invalidEvent));
                 }
             });
 
             await waitFor(() => {
-                expect(result.current.error).toBe("Erreur lors du parsing de l'événement SSE");
+                expect(result.current.error).toBe(
+                    "Erreur lors du parsing de l'événement SSE"
+                );
                 expect(onError).toHaveBeenCalled();
             });
         });
@@ -322,11 +339,15 @@ describe("useGenerationProgress", () => {
                 useGenerationProgress({ jobId: "test-job" })
             );
 
-            expect(eventSourceInstances[0].readyState).toBe(MockEventSource.CONNECTING);
+            expect(eventSourceInstances[0].readyState).toBe(
+                MockEventSource.CONNECTING
+            );
 
             unmount();
 
-            expect(eventSourceInstances[0].readyState).toBe(MockEventSource.CLOSED);
+            expect(eventSourceInstances[0].readyState).toBe(
+                MockEventSource.CLOSED
+            );
         });
 
         it("should close connection when jobId becomes null", () => {
@@ -339,7 +360,9 @@ describe("useGenerationProgress", () => {
 
             rerender({ jobId: null });
 
-            expect(eventSourceInstances[0].readyState).toBe(MockEventSource.CLOSED);
+            expect(eventSourceInstances[0].readyState).toBe(
+                MockEventSource.CLOSED
+            );
         });
     });
 
@@ -349,7 +372,8 @@ describe("useGenerationProgress", () => {
             const onProgress2 = vi.fn();
 
             const { rerender } = renderHook(
-                ({ onProgress }) => useGenerationProgress({ jobId: "test-job", onProgress }),
+                ({ onProgress }) =>
+                    useGenerationProgress({ jobId: "test-job", onProgress }),
                 { initialProps: { onProgress: onProgress1 } }
             );
 
@@ -367,7 +391,8 @@ describe("useGenerationProgress", () => {
             const onProgress2 = vi.fn();
 
             const { rerender } = renderHook(
-                ({ onProgress }) => useGenerationProgress({ jobId: "test-job", onProgress }),
+                ({ onProgress }) =>
+                    useGenerationProgress({ jobId: "test-job", onProgress }),
                 { initialProps: { onProgress: onProgress1 } }
             );
 

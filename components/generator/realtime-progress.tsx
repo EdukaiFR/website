@@ -127,7 +127,9 @@ export const RealtimeProgress = memo(function RealtimeProgress({
             );
 
             // Step is active if current step is within this group
-            const isActive = stepConfig.displaySteps.includes(step as ProgressStep);
+            const isActive = stepConfig.displaySteps.includes(
+                step as ProgressStep
+            );
 
             // Step is complete if current step is past the latest step in this group
             const isComplete = currentStepOrderIndex > latestStepIndex;

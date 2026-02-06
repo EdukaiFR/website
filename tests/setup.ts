@@ -40,21 +40,28 @@ class MockEventSource {
     onerror: ((event: Event) => void) | null = null;
     onmessage: ((event: MessageEvent) => void) | null = null;
 
-    private listeners: Map<string, ((event: MessageEvent) => void)[]> = new Map();
+    private listeners: Map<string, ((event: MessageEvent) => void)[]> =
+        new Map();
 
     constructor(url: string, options?: { withCredentials?: boolean }) {
         this.url = url;
         this.withCredentials = options?.withCredentials ?? false;
     }
 
-    addEventListener(type: string, listener: (event: MessageEvent) => void): void {
+    addEventListener(
+        type: string,
+        listener: (event: MessageEvent) => void
+    ): void {
         if (!this.listeners.has(type)) {
             this.listeners.set(type, []);
         }
         this.listeners.get(type)!.push(listener);
     }
 
-    removeEventListener(type: string, listener: (event: MessageEvent) => void): void {
+    removeEventListener(
+        type: string,
+        listener: (event: MessageEvent) => void
+    ): void {
         const listeners = this.listeners.get(type);
         if (listeners) {
             const index = listeners.indexOf(listener);

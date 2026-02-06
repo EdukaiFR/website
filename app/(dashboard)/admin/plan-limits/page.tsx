@@ -221,8 +221,8 @@ export default function AdminPlanLimitsPage() {
                                     Gestion des limitations
                                 </h1>
                                 <p className="text-indigo-100 text-sm sm:text-base lg:text-lg max-w-2xl">
-                                    Configurez les limitations de ressources pour
-                                    les plans gratuit et premium
+                                    Configurez les limitations de ressources
+                                    pour les plans gratuit et premium
                                 </p>
                             </div>
                             <div className="hidden md:block">
@@ -244,8 +244,8 @@ export default function AdminPlanLimitsPage() {
                                     Mode Administrateur Activé
                                 </p>
                                 <p className="text-sm text-amber-700">
-                                    Les modifications affectent immédiatement tous
-                                    les utilisateurs. Valeur -1 = illimité.
+                                    Les modifications affectent immédiatement
+                                    tous les utilisateurs. Valeur -1 = illimité.
                                 </p>
                             </div>
                         </div>
@@ -296,18 +296,30 @@ export default function AdminPlanLimitsPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {limitEntries.map(([name, limitData]) => {
-                                            const limitName = name as LimitName;
-                                            return (
-                                                <TableRow key={name}>
-                                                    <TableCell className="font-medium">
-                                                        {LIMIT_LABELS[limitName]}
-                                                    </TableCell>
-                                                    <TableCell className="text-sm text-gray-600">
-                                                        {limitData.description}
-                                                    </TableCell>
-                                                    {(["free", "premium"] as Plan[]).map(
-                                                        plan => {
+                                        {limitEntries.map(
+                                            ([name, limitData]) => {
+                                                const limitName =
+                                                    name as LimitName;
+                                                return (
+                                                    <TableRow key={name}>
+                                                        <TableCell className="font-medium">
+                                                            {
+                                                                LIMIT_LABELS[
+                                                                    limitName
+                                                                ]
+                                                            }
+                                                        </TableCell>
+                                                        <TableCell className="text-sm text-gray-600">
+                                                            {
+                                                                limitData.description
+                                                            }
+                                                        </TableCell>
+                                                        {(
+                                                            [
+                                                                "free",
+                                                                "premium",
+                                                            ] as Plan[]
+                                                        ).map(plan => {
                                                             const isEditing =
                                                                 editingLimit?.name ===
                                                                     limitName &&
@@ -391,11 +403,11 @@ export default function AdminPlanLimitsPage() {
                                                                     )}
                                                                 </TableCell>
                                                             );
-                                                        }
-                                                    )}
-                                                </TableRow>
-                                            );
-                                        })}
+                                                        })}
+                                                    </TableRow>
+                                                );
+                                            }
+                                        )}
                                     </TableBody>
                                 </Table>
                             </div>
@@ -408,9 +420,10 @@ export default function AdminPlanLimitsPage() {
                     <CardContent className="p-4">
                         <p className="text-sm text-blue-800">
                             <strong>Note :</strong> Les modifications sont
-                            appliquées immédiatement après sauvegarde. Utilisez -1
-                            pour une valeur illimitée. Le cache est automatiquement
-                            mis à jour après chaque modification.
+                            appliquées immédiatement après sauvegarde. Utilisez
+                            -1 pour une valeur illimitée. Le cache est
+                            automatiquement mis à jour après chaque
+                            modification.
                         </p>
                     </CardContent>
                 </Card>
