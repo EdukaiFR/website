@@ -70,7 +70,9 @@ export function usePlanLimitsService(): PlanLimitsService {
         }
     };
 
-    const getLimit = async (limitName: LimitName): Promise<GetLimitResponse> => {
+    const getLimit = async (
+        limitName: LimitName
+    ): Promise<GetLimitResponse> => {
         try {
             const response = await axios.get<GetLimitResponse>(
                 `${baseUrl}/${limitName}`,

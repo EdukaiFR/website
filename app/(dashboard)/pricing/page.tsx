@@ -45,7 +45,9 @@ export default function PricingPage() {
                 {/* Cancellation Warning Banner */}
                 {status.hasScheduledCancellation && status.cancellationDate && (
                     <CancellationBanner
-                        cancellationDate={formatCancellationDate(status.cancellationDate)}
+                        cancellationDate={formatCancellationDate(
+                            status.cancellationDate
+                        )}
                         onReactivate={handleManageSubscription}
                         isLoading={isProcessing}
                     />

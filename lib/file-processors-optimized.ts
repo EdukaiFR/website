@@ -76,16 +76,14 @@ export class FileProcessor {
     }
 
     private static cleanText(text: string): string {
-        return (
-            text
-                .replace(/\s+/g, " ")
-                .replace(/\n\s*\n\s*\n/g, "\n\n")
-                .split("\n")
-                .map(line => line.trim())
-                .filter(Boolean)
-                .join("\n")
-                .trim()
-        );
+        return text
+            .replace(/\s+/g, " ")
+            .replace(/\n\s*\n\s*\n/g, "\n\n")
+            .split("\n")
+            .map(line => line.trim())
+            .filter(Boolean)
+            .join("\n")
+            .trim();
     }
 
     static getFileType(file: File): "text" | "image" | "pdf" {
@@ -267,8 +265,7 @@ export class FileProcessor {
 
             pageText = this.cleanText(pageText);
 
-            const charsRemaining =
-                CONFIG.MAX_TOTAL_CHARS - totalCharsExtracted;
+            const charsRemaining = CONFIG.MAX_TOTAL_CHARS - totalCharsExtracted;
             const maxCharsForThisPage = Math.min(
                 CONFIG.MAX_CHARS_PER_PAGE,
                 charsRemaining
@@ -281,8 +278,7 @@ export class FileProcessor {
                 );
                 extractedText += `\n--- Page ${pageNum} ---\n${truncatedPageText}\n`;
                 totalCharsExtracted += truncatedPageText.length;
-            }
-            else if (totalCharsExtracted < CONFIG.MAX_TOTAL_CHARS * 0.8) {
+            } else if (totalCharsExtracted < CONFIG.MAX_TOTAL_CHARS * 0.8) {
                 try {
                     const viewport = page.getViewport({ scale: 1.5 });
                     const canvas = document.createElement("canvas");

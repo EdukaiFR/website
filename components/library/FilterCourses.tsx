@@ -115,7 +115,12 @@ export const FilterCourses = ({
                             {activeFilter.value ? (
                                 <span className="flex items-center gap-1.5">
                                     <span className="text-slate-400">
-                                        {filterLabels[activeFilter.type as keyof typeof filterLabels]}:
+                                        {
+                                            filterLabels[
+                                                activeFilter.type as keyof typeof filterLabels
+                                            ]
+                                        }
+                                        :
                                     </span>
                                     <span>{activeFilter.value}</span>
                                 </span>
@@ -208,7 +213,10 @@ export const FilterCourses = ({
                                             <CommandItem
                                                 key={`${group.type}-${option}`}
                                                 value={option}
-                                                keywords={[group.label, group.type]}
+                                                keywords={[
+                                                    group.label,
+                                                    group.type,
+                                                ]}
                                                 onSelect={() => {
                                                     setActiveFilter({
                                                         type: isSelected
@@ -241,7 +249,8 @@ export const FilterCourses = ({
                                                 <span
                                                     className={cn(
                                                         "flex-1 truncate",
-                                                        isSelected && "font-medium"
+                                                        isSelected &&
+                                                            "font-medium"
                                                     )}
                                                 >
                                                     {option}

@@ -53,18 +53,18 @@ export function useSession() {
         try {
             const response = await authService.refreshToken();
             sessionStorage.setToken(response.token);
-            
+
             // Get current user ID to fetch fresh profile
             const currentUser = sessionStorage.getUser();
             // Handle both id formats
             const userId = currentUser?.id || currentUser?._id;
-            
+
             if (userId) {
                 const userProfile = await authService.getUserProfile(userId);
                 sessionStorage.setUser(userProfile);
                 setUser(userProfile);
             }
-            
+
             setLoading(false);
         } catch {
             // If refresh fails, clear session and continue
@@ -85,7 +85,9 @@ export function useSession() {
         } catch (error: unknown) {
             const err = error as ApiError;
             const errorMessage = translateApiError(
-                err.response?.data?.message || err.message || "Une erreur est survenue"
+                err.response?.data?.message ||
+                    err.message ||
+                    "Une erreur est survenue"
             );
             authToast.loginError(errorMessage);
             return {
@@ -106,7 +108,9 @@ export function useSession() {
         } catch (error: unknown) {
             const err = error as ApiError;
             const errorMessage = translateApiError(
-                err.response?.data?.message || err.message || "Une erreur est survenue"
+                err.response?.data?.message ||
+                    err.message ||
+                    "Une erreur est survenue"
             );
             authToast.registerError(errorMessage);
             return { success: false, error: errorMessage };

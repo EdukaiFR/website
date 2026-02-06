@@ -43,10 +43,17 @@ export interface PublicSheetsResponse {
 }
 
 export interface SummarySheetService {
-    generateSheet: (recognizedText: string[]) => Promise<GeneratedSheetResponse | undefined>;
+    generateSheet: (
+        recognizedText: string[]
+    ) => Promise<GeneratedSheetResponse | undefined>;
     getSheetById: (sheetId: string) => Promise<SheetByIdResponse | undefined>;
-    deleteSheetById: (sheetId: string) => Promise<DeleteSheetResponse | ApiErrorResponse>;
-    updateVisibility: (sheetId: string, visibility: Visibility) => Promise<SheetVisibilityUpdateResponse | ApiErrorResponse>;
+    deleteSheetById: (
+        sheetId: string
+    ) => Promise<DeleteSheetResponse | ApiErrorResponse>;
+    updateVisibility: (
+        sheetId: string,
+        visibility: Visibility
+    ) => Promise<SheetVisibilityUpdateResponse | ApiErrorResponse>;
     getPublicSheets: () => Promise<PublicSheetsResponse | ApiErrorResponse>;
 }
 
@@ -90,7 +97,9 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    const deleteSheetById = async (sheetId: string): Promise<DeleteSheetResponse | ApiErrorResponse> => {
+    const deleteSheetById = async (
+        sheetId: string
+    ): Promise<DeleteSheetResponse | ApiErrorResponse> => {
         try {
             const response = await axios.delete(
                 `${apiUrl}/summary-sheets/${sheetId}`,
@@ -138,7 +147,9 @@ export function useSummarySheetService(): SummarySheetService {
         }
     };
 
-    const getPublicSheets = async (): Promise<PublicSheetsResponse | ApiErrorResponse> => {
+    const getPublicSheets = async (): Promise<
+        PublicSheetsResponse | ApiErrorResponse
+    > => {
         try {
             const response = await axios.get(`${apiUrl}/summary-sheets/public`);
 

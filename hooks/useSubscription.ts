@@ -5,10 +5,7 @@ import {
     getSubscriptionStatus,
     type SubscriptionStatus,
 } from "@/lib/subscription";
-import {
-    PaymentError,
-    usePaymentService,
-} from "@/services/payment";
+import { PaymentError, usePaymentService } from "@/services/payment";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./useSession";

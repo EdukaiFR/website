@@ -91,7 +91,9 @@ export default function PaymentSuccessPage() {
                         <ul className="text-left space-y-2 max-w-md mx-auto">
                             <li className="flex items-center gap-2 text-gray-700">
                                 <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                                <span>Quiz illimités avec plus de questions</span>
+                                <span>
+                                    Quiz illimités avec plus de questions
+                                </span>
                             </li>
                             <li className="flex items-center gap-2 text-gray-700">
                                 <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />

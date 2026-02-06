@@ -138,7 +138,9 @@ export interface CourseService {
     getCourseFiles: (
         courseId: string
     ) => Promise<{ id: string; message: string } | null>;
-    getCourseSummarySheets: (courseId: string) => Promise<SummarySheetsResponse | null>;
+    getCourseSummarySheets: (
+        courseId: string
+    ) => Promise<SummarySheetsResponse | null>;
     getCourses: () => Promise<{ id: string; message: string } | null>;
     getCourseQuizzes: (courseId: string) => Promise<QuizzesResponse | null>;
     addQuizToCourse: (
@@ -413,7 +415,8 @@ export function useCourseService() {
             }
             return {
                 status: "failure",
-                message: "Une erreur est survenue lors de la suppression du cours.",
+                message:
+                    "Une erreur est survenue lors de la suppression du cours.",
             };
         }
     };
@@ -443,7 +446,9 @@ export function useCourseService() {
         }
     };
 
-    const getPublicCourses = async (): Promise<PublicCoursesResponse | ApiErrorResponse> => {
+    const getPublicCourses = async (): Promise<
+        PublicCoursesResponse | ApiErrorResponse
+    > => {
         try {
             const response = await axios.get(`${apiUrl}/courses/public`);
 
@@ -484,10 +489,7 @@ export function useCourseService() {
             );
             return response.data;
         } catch (error) {
-            logServiceError(
-                `Error fetching course ${courseId} quizzes`,
-                error
-            );
+            logServiceError(`Error fetching course ${courseId} quizzes`, error);
             return null;
         }
     };

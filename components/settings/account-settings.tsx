@@ -21,7 +21,7 @@ import { useAuthService } from "@/services";
 const API_ERROR_TRANSLATIONS: Record<string, string> = {
     "Invalid password": "Mot de passe incorrect",
     "User not found": "Utilisateur introuvable",
-    "Unauthorized": "Non autorisé",
+    Unauthorized: "Non autorisé",
 };
 
 function translateApiError(message?: string): string {
@@ -73,7 +73,9 @@ export function AccountSettings({
         setPersistentError(null);
 
         try {
-            const verificationResponse = await verifyPassword(data.currentPassword);
+            const verificationResponse = await verifyPassword(
+                data.currentPassword
+            );
 
             if (verificationResponse.status !== "success") {
                 setPersistentError(verificationResponse?.message);
@@ -85,11 +87,11 @@ export function AccountSettings({
                 onSuccess?.();
                 handleSignOut();
             } else {
-                const errorMessage = deletionResponse.message || "Une erreur est survenue";
+                const errorMessage =
+                    deletionResponse.message || "Une erreur est survenue";
                 setPersistentError(errorMessage);
                 onError?.(errorMessage);
             }
-
         } catch (error: unknown) {
             console.error("Error deleting account:", error);
             const err = error as ApiError;
@@ -251,7 +253,11 @@ export function AccountSettings({
                                     <div className="relative">
                                         <Input
                                             id="currentPassword"
-                                            type={showPassword ? "text" : "password"}
+                                            type={
+                                                showPassword
+                                                    ? "text"
+                                                    : "password"
+                                            }
                                             placeholder="Saisissez votre mot de passe"
                                             {...register("currentPassword")}
                                             className={`h-11 pr-12 border-2 transition-all duration-200 focus:border-red-500 focus:ring-4 focus:ring-red-100 ${
@@ -262,7 +268,9 @@ export function AccountSettings({
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
+                                            onClick={() =>
+                                                setShowPassword(!showPassword)
+                                            }
                                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors p-1 rounded-lg hover:bg-red-50"
                                         >
                                             {showPassword ? (

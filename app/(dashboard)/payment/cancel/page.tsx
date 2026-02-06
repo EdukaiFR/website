@@ -39,8 +39,9 @@ export default function PaymentCancelPage() {
                             Vous avez changé d'avis ?
                         </h2>
                         <p className="text-gray-700 mb-4">
-                            Pas de problème ! Vous pouvez réessayer à tout moment
-                            ou continuer à utiliser Edukai avec le plan gratuit.
+                            Pas de problème ! Vous pouvez réessayer à tout
+                            moment ou continuer à utiliser Edukai avec le plan
+                            gratuit.
                         </p>
                         <div className="bg-white/70 rounded-lg p-4 border border-blue-100">
                             <p className="text-sm text-gray-600">
