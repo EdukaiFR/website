@@ -31,11 +31,8 @@ export function useSession() {
             // Validate token and get user data
             validateSession();
         } else if (token && storedUser) {
-            // Check if token is expired
             if (isTokenExpired(token)) {
-                sessionStorage.clearSession();
-                setUser(null);
-                setLoading(false);
+                validateSession();
             } else {
                 setLoading(false);
             }
@@ -51,12 +48,7 @@ export function useSession() {
 
     const validateSession = async () => {
         try {
-            const response = await authService.refreshToken();
-            sessionStorage.setToken(response.token);
-
-            // Get current user ID to fetch fresh profile
             const currentUser = sessionStorage.getUser();
-            // Handle both id formats
             const userId = currentUser?.id || currentUser?._id;
 
             if (userId) {
@@ -67,7 +59,6 @@ export function useSession() {
 
             setLoading(false);
         } catch {
-            // If refresh fails, clear session and continue
             sessionStorage.clearSession();
             setUser(null);
             setLoading(false);

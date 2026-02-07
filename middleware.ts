@@ -28,12 +28,12 @@ export function middleware(req: NextRequest) {
             const isTokenExpired = Date.now() >= decodedToken.exp * 1000;
 
             if (isTokenExpired) {
-                return NextResponse.redirect(new URL("/auth", req.url));
+                return NextResponse.next();
             }
 
             userRole = decodedToken.role;
-        } catch (error) {
-            return NextResponse.redirect(new URL("/auth", req.url));
+        } catch {
+            return NextResponse.next();
         }
     }
 
