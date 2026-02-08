@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { EASE_OUT, REVEAL_DELAY_MS } from "@/lib/constants/quiz";
+import {
+    type AnswerIcon,
+    type RevealPhase,
+    getAnswerStyles,
+} from "@/lib/utils/answer-styles";
 import { CheckCircle, XCircle, Lightbulb, ArrowRight } from "lucide-react";
-import { type Easing, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 
-export type PossibleAnswersProps = {
+export interface PossibleAnswersProps {
     answers: string[];
     correct_answer: string;
     explanation: string;
@@ -14,12 +20,17 @@ export type PossibleAnswersProps = {
     isFinish: boolean;
     isAnswer: boolean;
     processing: boolean;
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+    correct: <CheckCircle className="w-5 h-5 text-green-600" />,
+    wrong: <XCircle className="w-5 h-5 text-red-600" />,
 };
 
-type RevealPhase = "idle" | "wrong-shown" | "all-revealed";
-
-const REVEAL_DELAY_MS = 800;
-const EASE_OUT: Easing = "easeOut";
+function renderAnswerIcon(icon: AnswerIcon): React.ReactNode {
+    if (!icon) return null;
+    return ICON_MAP[icon] ?? null;
+}
 
 export const PossibleAnswers = ({
     answers,
@@ -68,7 +79,6 @@ export const PossibleAnswers = ({
                 };
             }
 
-            // Wrong selected answer: shake
             if (
                 revealPhase === "wrong-shown" &&
                 isSelected &&
@@ -80,7 +90,6 @@ export const PossibleAnswers = ({
                 };
             }
 
-            // Correct answer popping in (user was wrong, delayed reveal)
             if (
                 revealPhase === "all-revealed" &&
                 isCorrectAnswer &&
@@ -95,7 +104,6 @@ export const PossibleAnswers = ({
                 };
             }
 
-            // Correct answer bounce (user got it right, immediate)
             if (
                 revealPhase === "all-revealed" &&
                 isCorrectAnswer &&
@@ -110,7 +118,6 @@ export const PossibleAnswers = ({
                 };
             }
 
-            // Other answers: fade out
             if (!isCorrectAnswer && !isSelected) {
                 return {
                     animate: { ...resetState, opacity: 0.5 },
@@ -125,7 +132,6 @@ export const PossibleAnswers = ({
 
     return (
         <div className="flex flex-col w-full gap-4">
-            {/* Answer Options */}
             <div className="flex flex-col gap-2">
                 {answers.map((answer, index) => {
                     const correctLetter = correct_answer.charAt(0);
@@ -141,36 +147,15 @@ export const PossibleAnswers = ({
                         !isCorrectAnswer &&
                         revealPhase !== "idle";
 
-                    // Button styles
-                    let buttonStyles =
-                        "border border-gray-200 bg-white/80 text-gray-700 hover:bg-blue-50 hover:border-blue-300";
-                    let iconElement = null;
-                    let badgeStyles =
-                        "bg-gray-100 text-gray-600";
-
-                    if (isSelected && !isAnswer) {
-                        buttonStyles =
-                            "border border-blue-600 bg-blue-50 text-blue-700";
-                        badgeStyles = "bg-blue-100 text-blue-700";
-                    } else if (shouldShowCorrect) {
-                        buttonStyles =
-                            "border-l-4 border-l-green-500 border-y border-r border-y-green-200 border-r-green-200 bg-green-100 text-green-900 font-semibold";
-                        iconElement = (
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                        );
-                        badgeStyles = "bg-green-200 text-green-800";
-                    } else if (shouldShowWrong) {
-                        buttonStyles =
-                            "border-l-4 border-l-red-500 border-y border-r border-y-red-200 border-r-red-200 bg-red-100 text-red-900 font-semibold";
-                        iconElement = (
-                            <XCircle className="w-5 h-5 text-red-600" />
-                        );
-                        badgeStyles = "bg-red-200 text-red-800";
-                    } else if (revealPhase !== "idle") {
-                        buttonStyles =
-                            "border border-gray-200 bg-gray-50 text-gray-400";
-                        badgeStyles = "bg-gray-100 text-gray-400";
-                    }
+                    const { buttonStyles, badgeStyles, icon } =
+                        getAnswerStyles({
+                            isSelected,
+                            isAnswer,
+                            isCorrectAnswer,
+                            shouldShowCorrect,
+                            shouldShowWrong,
+                            revealPhase,
+                        });
 
                     const motionProps = getMotionProps(
                         isCorrectAnswer,
@@ -198,9 +183,9 @@ export const PossibleAnswers = ({
                                     <span className="flex-1 text-sm font-medium leading-relaxed">
                                         {answer.substring(3)}
                                     </span>
-                                    {iconElement && (
+                                    {icon && (
                                         <div className="flex-shrink-0">
-                                            {iconElement}
+                                            {renderAnswerIcon(icon)}
                                         </div>
                                     )}
                                 </div>
@@ -210,7 +195,6 @@ export const PossibleAnswers = ({
                 })}
             </div>
 
-            {/* Explanation Section - Shows after all answers are revealed */}
             {revealPhase === "all-revealed" && explanation && (
                 <motion.div
                     initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
@@ -232,7 +216,6 @@ export const PossibleAnswers = ({
                 </motion.div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex flex-col gap-2 mt-4">
                 {!isAnswer && (
                     <Button
@@ -246,7 +229,7 @@ export const PossibleAnswers = ({
                                 Validation...
                             </div>
                         ) : (
-                            "Confirmer ma réponse"
+                            "Confirmer ma reponse"
                         )}
                     </Button>
                 )}
