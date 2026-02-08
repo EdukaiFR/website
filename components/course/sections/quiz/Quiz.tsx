@@ -1,7 +1,9 @@
+import { MASCOT_IDLE, MASCOT_SUCCESS, MASCOT_WRONG } from "@/lib/constants/mascot";
 import { insightsToast, quizToast } from "@/lib/toast";
 import { getPercentage } from "@/lib/utils";
 import { rankings } from "@/public/mocks/default-value";
 import type { InsightsService } from "@/services";
+import NextImage from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Ranking } from "../overview/Card/Ranking";
 import { EndQuizCard } from "./EndQuizCard";
@@ -31,6 +33,36 @@ type QuizQuestion = {
     explanation: string;
 };
 
+const CHOICE_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+
+function shuffleArray<T>(array: readonly T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function shuffleQuiz(questions: QuizQuestion[]): QuizQuestion[] {
+    const shuffledQuestions = shuffleArray(questions);
+
+    return shuffledQuestions.map(q => {
+        const correctText = q.answer.substring(3);
+        const choiceTexts = q.choices.map(c => c.substring(3));
+        const shuffledTexts = shuffleArray(choiceTexts);
+
+        const newChoices = shuffledTexts.map(
+            (text, i) => `${CHOICE_LETTERS[i]}) ${text}`
+        );
+        const correctIndex = shuffledTexts.indexOf(correctText);
+        const newAnswer = `${CHOICE_LETTERS[correctIndex]}) ${correctText}`;
+
+        return { ...q, choices: newChoices, answer: newAnswer };
+    });
+}
+
 export const Quiz = ({
     quiz_data,
     quiz_id,
@@ -39,13 +71,14 @@ export const Quiz = ({
     refreshInsights,
 }: QuizProps) => {
     const typedQuizData = quiz_data as QuizQuestion[];
+    const [shuffledData, setShuffledData] = useState<QuizQuestion[]>(() =>
+        shuffleQuiz(typedQuizData)
+    );
     const [questionIndex, setQuestionIndex] = useState<number>(1);
     const [answeredQuestionsCount, setAnsweredQuestionsCount] =
         useState<number>(0);
 
-    const [answer, setAnswer] = useState<string>(
-        typedQuizData[questionIndex - 1]?.answer || ""
-    );
+    const [answer, setAnswer] = useState<string>(shuffledData[0]?.answer || "");
     const [selectedAnswer, setSelectedAnswer] = useState<string>("");
     const [isAnswer, setIsAnswer] = useState<boolean>(false);
 
@@ -55,6 +88,22 @@ export const Quiz = ({
     const [isFinish, setIsFinish] = useState<boolean>(false);
 
     const insightCreatedRef = useRef<boolean>(false);
+
+    const userIsCorrect =
+        selectedAnswer !== "" && selectedAnswer.charAt(0) === answer.charAt(0);
+
+    const getMascotSrc = (): string => {
+        if (!isAnswer) return MASCOT_IDLE;
+        return userIsCorrect ? MASCOT_SUCCESS : MASCOT_WRONG;
+    };
+    const mascotSrc = getMascotSrc();
+
+    useEffect(() => {
+        const img1 = new Image();
+        img1.src = MASCOT_SUCCESS;
+        const img2 = new Image();
+        img2.src = MASCOT_WRONG;
+    }, []);
 
     const createQuizInsight = async () => {
         if (
@@ -118,12 +167,12 @@ export const Quiz = ({
             setProcessingSubmit(true);
             setAnsweredQuestionsCount(answeredQuestionsCount + 1);
 
-            if (questionIndex >= typedQuizData.length) {
+            if (questionIndex >= shuffledData.length) {
                 // end game
                 setIsFinish(true);
                 return;
             }
-            setAnswer(typedQuizData[questionIndex]?.answer || "");
+            setAnswer(shuffledData[questionIndex]?.answer || "");
             setSelectedAnswer("");
             setIsAnswer(false);
             setQuestionIndex(questionIndex + 1);
@@ -138,9 +187,11 @@ export const Quiz = ({
     const restartQuiz = () => {
         try {
             setProcessingSubmit(true);
+            const newShuffle = shuffleQuiz(typedQuizData);
+            setShuffledData(newShuffle);
             setQuestionIndex(1);
             setAnsweredQuestionsCount(0);
-            setAnswer(typedQuizData[0]?.answer || "");
+            setAnswer(newShuffle[0]?.answer || "");
             setSelectedAnswer("");
             setIsAnswer(false);
             setScore(0);
@@ -202,7 +253,7 @@ export const Quiz = ({
                 <div className="max-w-4xl mx-auto w-full h-full flex flex-col">
                     <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-200 flex-1 flex flex-col">
                         {/* Quiz Header */}
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center justify-between mb-6 relative">
                             <div>
                                 <h1 className="text-xl font-bold text-gray-800 mb-2">
                                     Quiz
@@ -212,6 +263,18 @@ export const Quiz = ({
                                     {typedQuizData.length}
                                 </p>
                             </div>
+
+                            <div className="absolute left-[50%] -bottom-3 -translate-x-1/2 z-10 scale-[1.6]">
+                                <NextImage
+                                    key={mascotSrc}
+                                    src={mascotSrc}
+                                    alt="Mascot"
+                                    width={80}
+                                    height={75}
+                                    unoptimized
+                                />
+                            </div>
+
                             <div className="text-right">
                                 <p className="text-xs text-gray-500 mb-1">
                                     Score actuel
@@ -253,7 +316,7 @@ export const Quiz = ({
                         {/* Question */}
                         <div className="mb-6">
                             <h2 className="text-lg font-semibold text-gray-800 leading-relaxed">
-                                {typedQuizData[questionIndex - 1]?.question}
+                                {shuffledData[questionIndex - 1]?.question}
                             </h2>
                         </div>
 
@@ -261,15 +324,15 @@ export const Quiz = ({
                         <div className="flex-1 flex flex-col">
                             <PossibleAnswers
                                 answers={
-                                    typedQuizData[questionIndex - 1]?.choices ||
+                                    shuffledData[questionIndex - 1]?.choices ||
                                     []
                                 }
                                 correct_answer={
-                                    typedQuizData[questionIndex - 1]?.answer ||
+                                    shuffledData[questionIndex - 1]?.answer ||
                                     ""
                                 }
                                 explanation={
-                                    typedQuizData[questionIndex - 1]
+                                    shuffledData[questionIndex - 1]
                                         ?.explanation || ""
                                 }
                                 setSelectedAnswer={setSelectedAnswer}

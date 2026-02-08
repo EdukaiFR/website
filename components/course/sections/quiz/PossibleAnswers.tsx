@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Lightbulb, ArrowRight } from "lucide-react";
+import { type Easing, motion, useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
 
 export type PossibleAnswersProps = {
     answers: string[];
@@ -14,6 +16,11 @@ export type PossibleAnswersProps = {
     processing: boolean;
 };
 
+type RevealPhase = "idle" | "wrong-shown" | "all-revealed";
+
+const REVEAL_DELAY_MS = 800;
+const EASE_OUT: Easing = "easeOut";
+
 export const PossibleAnswers = ({
     answers,
     correct_answer,
@@ -25,92 +32,204 @@ export const PossibleAnswers = ({
     isAnswer,
     processing,
 }: PossibleAnswersProps) => {
+    const shouldReduceMotion = useReducedMotion();
+    const [revealPhase, setRevealPhase] = useState<RevealPhase>("idle");
+
+    const userIsCorrect =
+        selectedAnswer.charAt(0) === correct_answer.charAt(0);
+
+    useEffect(() => {
+        if (!isAnswer) {
+            setRevealPhase("idle");
+            return;
+        }
+
+        if (userIsCorrect) {
+            setRevealPhase("all-revealed");
+            return;
+        }
+
+        setRevealPhase("wrong-shown");
+        const timer = setTimeout(
+            () => setRevealPhase("all-revealed"),
+            REVEAL_DELAY_MS
+        );
+        return () => clearTimeout(timer);
+    }, [isAnswer, userIsCorrect]);
+
+    const getMotionProps = useCallback(
+        (isCorrectAnswer: boolean, isSelected: boolean) => {
+            const resetState = { scale: 1, x: 0, opacity: 1 };
+
+            if (shouldReduceMotion || revealPhase === "idle") {
+                return {
+                    animate: resetState,
+                    transition: { duration: 0.15 },
+                };
+            }
+
+            // Wrong selected answer: shake
+            if (
+                revealPhase === "wrong-shown" &&
+                isSelected &&
+                !isCorrectAnswer
+            ) {
+                return {
+                    animate: { ...resetState, x: [0, -8, 7, -5, 4, -2, 0] },
+                    transition: { duration: 0.4 },
+                };
+            }
+
+            // Correct answer popping in (user was wrong, delayed reveal)
+            if (
+                revealPhase === "all-revealed" &&
+                isCorrectAnswer &&
+                !userIsCorrect
+            ) {
+                return {
+                    animate: {
+                        ...resetState,
+                        scale: [0.95, 1.05, 1],
+                    },
+                    transition: { duration: 0.45, ease: EASE_OUT },
+                };
+            }
+
+            // Correct answer bounce (user got it right, immediate)
+            if (
+                revealPhase === "all-revealed" &&
+                isCorrectAnswer &&
+                userIsCorrect
+            ) {
+                return {
+                    animate: {
+                        ...resetState,
+                        scale: [1, 1.05, 0.98, 1],
+                    },
+                    transition: { duration: 0.45, ease: EASE_OUT },
+                };
+            }
+
+            // Other answers: fade out
+            if (!isCorrectAnswer && !isSelected) {
+                return {
+                    animate: { ...resetState, opacity: 0.5 },
+                    transition: { duration: 0.3 },
+                };
+            }
+
+            return { animate: resetState, transition: { duration: 0.15 } };
+        },
+        [revealPhase, userIsCorrect, shouldReduceMotion]
+    );
+
     return (
         <div className="flex flex-col w-full gap-4">
             {/* Answer Options */}
             <div className="flex flex-col gap-2">
                 {answers.map((answer, index) => {
-                    // const selectedLetter = selectedAnswer.charAt(0);
                     const correctLetter = correct_answer.charAt(0);
                     const answerLetter = answer.charAt(0);
 
                     const isSelected = selectedAnswer === answer;
                     const isCorrectAnswer = answerLetter === correctLetter;
-                    // const userSelectedCorrect = selectedLetter === correctLetter;
 
+                    const shouldShowCorrect =
+                        isCorrectAnswer && revealPhase === "all-revealed";
+                    const shouldShowWrong =
+                        isSelected &&
+                        !isCorrectAnswer &&
+                        revealPhase !== "idle";
+
+                    // Button styles
                     let buttonStyles =
                         "border border-gray-200 bg-white/80 text-gray-700 hover:bg-blue-50 hover:border-blue-300";
                     let iconElement = null;
+                    let badgeStyles =
+                        "bg-gray-100 text-gray-600";
 
                     if (isSelected && !isAnswer) {
                         buttonStyles =
-                            "border-blue-600 bg-blue-50 text-blue-700";
-                    } else if (isAnswer) {
-                        if (isCorrectAnswer) {
-                            buttonStyles =
-                                "border-green-500 bg-green-50 text-green-700";
-                            iconElement = (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                            );
-                        } else if (isSelected) {
-                            buttonStyles =
-                                "border-red-500 bg-red-50 text-red-700";
-                            iconElement = (
-                                <XCircle className="w-4 h-4 text-red-600" />
-                            );
-                        } else {
-                            buttonStyles =
-                                "border-gray-200 bg-gray-50 text-gray-500";
-                        }
+                            "border border-blue-600 bg-blue-50 text-blue-700";
+                        badgeStyles = "bg-blue-100 text-blue-700";
+                    } else if (shouldShowCorrect) {
+                        buttonStyles =
+                            "border-l-4 border-l-green-500 border-y border-r border-y-green-200 border-r-green-200 bg-green-100 text-green-900 font-semibold";
+                        iconElement = (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                        );
+                        badgeStyles = "bg-green-200 text-green-800";
+                    } else if (shouldShowWrong) {
+                        buttonStyles =
+                            "border-l-4 border-l-red-500 border-y border-r border-y-red-200 border-r-red-200 bg-red-100 text-red-900 font-semibold";
+                        iconElement = (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                        );
+                        badgeStyles = "bg-red-200 text-red-800";
+                    } else if (revealPhase !== "idle") {
+                        buttonStyles =
+                            "border border-gray-200 bg-gray-50 text-gray-400";
+                        badgeStyles = "bg-gray-100 text-gray-400";
                     }
 
+                    const motionProps = getMotionProps(
+                        isCorrectAnswer,
+                        isSelected
+                    );
+
                     return (
-                        <Button
-                            key={index}
-                            onClick={() => {
-                                if (!isAnswer && !processing) {
-                                    setSelectedAnswer(answer);
-                                }
-                            }}
-                            variant="outline"
-                            disabled={isAnswer || processing}
-                            className={`${buttonStyles} transition-all duration-200 w-full text-left justify-start flex items-center min-h-[3rem] text-wrap px-3 py-2.5 rounded-xl shadow-sm hover:shadow-md`}
-                        >
-                            <div className="flex items-center gap-3 w-full">
-                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium">
-                                    {answer.charAt(0)}
-                                </div>
-                                <span className="flex-1 text-sm font-medium leading-relaxed">
-                                    {answer.substring(3)}
-                                </span>
-                                {iconElement && (
-                                    <div className="flex-shrink-0">
-                                        {iconElement}
+                        <motion.div key={index} {...motionProps}>
+                            <Button
+                                onClick={() => {
+                                    if (!isAnswer && !processing) {
+                                        setSelectedAnswer(answer);
+                                    }
+                                }}
+                                variant="outline"
+                                disabled={isAnswer || processing}
+                                className={`${buttonStyles} disabled:opacity-100 transition-colors duration-300 w-full text-left justify-start flex items-center min-h-[3rem] text-wrap px-3 py-2.5 rounded-xl shadow-sm`}
+                            >
+                                <div className="flex items-center gap-3 w-full">
+                                    <div
+                                        className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-300 ${badgeStyles}`}
+                                    >
+                                        {answer.charAt(0)}
                                     </div>
-                                )}
-                            </div>
-                        </Button>
+                                    <span className="flex-1 text-sm font-medium leading-relaxed">
+                                        {answer.substring(3)}
+                                    </span>
+                                    {iconElement && (
+                                        <div className="flex-shrink-0">
+                                            {iconElement}
+                                        </div>
+                                    )}
+                                </div>
+                            </Button>
+                        </motion.div>
                     );
                 })}
             </div>
 
-            {/* Explanation Section - Shows after answer is submitted */}
-            {isAnswer && explanation && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 p-1.5 bg-blue-100 rounded-xl">
+            {/* Explanation Section - Shows after all answers are revealed */}
+            {revealPhase === "all-revealed" && explanation && (
+                <motion.div
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3"
+                >
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="flex-shrink-0 p-1.5 bg-blue-100 rounded-lg">
                             <Lightbulb className="w-4 h-4 text-blue-600" />
                         </div>
-                        <div>
-                            <h4 className="font-semibold text-blue-800 mb-1 text-sm">
-                                Explication
-                            </h4>
-                            <p className="text-blue-700 text-sm leading-relaxed">
-                                {explanation}
-                            </p>
-                        </div>
+                        <h4 className="font-semibold text-blue-800 text-sm m-0">
+                            Explication
+                        </h4>
                     </div>
-                </div>
+                    <p className="text-blue-700 text-sm leading-relaxed">
+                        {explanation}
+                    </p>
+                </motion.div>
             )}
 
             {/* Action Buttons */}
@@ -132,15 +251,23 @@ export const PossibleAnswers = ({
                     </Button>
                 )}
 
-                {isAnswer && (
-                    <Button
-                        onClick={onNextQuestion}
-                        disabled={processing}
-                        className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                {revealPhase === "all-revealed" && (
+                    <motion.div
+                        initial={
+                            shouldReduceMotion ? false : { opacity: 0, y: 8 }
+                        }
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        <span className="mr-2">Question suivante</span>
-                        <ArrowRight className="w-4 h-4" />
-                    </Button>
+                        <Button
+                            onClick={onNextQuestion}
+                            disabled={processing}
+                            className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        >
+                            <span className="mr-2">Question suivante</span>
+                            <ArrowRight className="w-4 h-4" />
+                        </Button>
+                    </motion.div>
                 )}
             </div>
         </div>
