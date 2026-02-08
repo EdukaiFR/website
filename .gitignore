@@ -9,6 +9,7 @@
 # Claude
 /.claude
 CLAUDE.md
+/agent-os
 
 # testing
 /test-results
