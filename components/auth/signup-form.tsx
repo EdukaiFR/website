@@ -96,7 +96,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                             htmlFor="firstName"
                             className="text-sm font-medium text-gray-700 flex items-center gap-2"
                         >
-                            <User className="w-4 h-4" />
+                            <User className="w-4 h-4" aria-hidden="true" />
                             Prénom
                         </label>
                         <div className="relative">
@@ -126,7 +126,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                             htmlFor="lastName"
                             className="text-sm font-medium text-gray-700 flex items-center gap-2"
                         >
-                            <User className="w-4 h-4" />
+                            <User className="w-4 h-4" aria-hidden="true" />
                             Nom
                         </label>
                         <div className="relative">
@@ -158,7 +158,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                         htmlFor="email"
                         className="text-sm font-medium text-gray-700 flex items-center gap-2"
                     >
-                        <Mail className="w-4 h-4" />
+                        <Mail className="w-4 h-4" aria-hidden="true" />
                         Adresse email
                     </label>
                     <div className="relative">
@@ -189,7 +189,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                         htmlFor="password"
                         className="text-sm font-medium text-gray-700 flex items-center gap-2"
                     >
-                        <Lock className="w-4 h-4" />
+                        <Lock className="w-4 h-4" aria-hidden="true" />
                         Mot de passe
                     </label>
                     <div className="relative">
@@ -270,7 +270,7 @@ export function SignupForm({ onSuccess, onError }: SignupFormProps) {
                         htmlFor="confirmPassword"
                         className="text-sm font-medium text-gray-700 flex items-center gap-2"
                     >
-                        <Lock className="w-4 h-4" />
+                        <Lock className="w-4 h-4" aria-hidden="true" />
                         Confirmer le mot de passe
                     </label>
                     <div className="relative">
