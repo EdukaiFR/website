@@ -16,6 +16,7 @@
         "reset": "pkill -f 'next dev' 2>/dev/null || true && rm -rf .next && pnpm dev",
         "test": "vitest",
         "test:watch": "vitest --watch",
+        "test:ci": "vitest run --coverage",
         "test:coverage": "vitest --coverage",
         "test:ui": "vitest --ui",
         "test:e2e": "playwright test",
