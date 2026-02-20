@@ -19,11 +19,6 @@ vi.mock("axios", () => ({
     },
 }));
 
-// Mock auth-utils
-vi.mock("@/lib/auth-utils", () => ({
-    syncAuthCookie: vi.fn(),
-}));
-
 // Get mocked post function
 const mockedPost = axios.post as Mock;
 

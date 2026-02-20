@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/setup-interceptor";
 import React, {
     createContext,
     useContext,

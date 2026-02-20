@@ -1,4 +1,3 @@
-import { syncAuthCookie } from "@/lib/auth-utils";
 import { ApiError } from "@/lib/types/api";
 import axios from "axios";
 
@@ -122,8 +121,6 @@ export function usePaymentService(): PaymentService {
     const createCheckoutSession =
         async (): Promise<CheckoutSessionResponse> => {
             try {
-                syncAuthCookie();
-
                 const response = await axios.post(
                     `${apiUrl}/payment/checkout`,
                     {},
@@ -141,8 +138,6 @@ export function usePaymentService(): PaymentService {
 
     const createPortalSession = async (): Promise<PortalSessionResponse> => {
         try {
-            syncAuthCookie();
-
             const response = await axios.post(
                 `${apiUrl}/payment/portal`,
                 {},
