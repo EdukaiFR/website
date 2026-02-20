@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Polyfill ResizeObserver for Radix UI components in jsdom
+global.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+};
+
 // Mock Next.js router
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
