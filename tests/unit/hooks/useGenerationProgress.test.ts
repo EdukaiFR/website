@@ -1,94 +1,22 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useGenerationProgress } from "@/hooks/useGenerationProgress";
-
-// Store EventSource instances for testing
-let eventSourceInstances: MockEventSource[] = [];
-
-// Mock EventSource class
-class MockEventSource {
-    static CONNECTING = 0;
-    static OPEN = 1;
-    static CLOSED = 2;
-
-    url: string;
-    withCredentials: boolean;
-    readyState: number = MockEventSource.CONNECTING;
-    onopen: ((event: Event) => void) | null = null;
-    onerror: ((event: Event) => void) | null = null;
-    onmessage: ((event: MessageEvent) => void) | null = null;
-
-    private listeners: Map<string, ((event: MessageEvent) => void)[]> =
-        new Map();
-
-    constructor(url: string, options?: { withCredentials?: boolean }) {
-        this.url = url;
-        this.withCredentials = options?.withCredentials ?? false;
-        eventSourceInstances.push(this);
-    }
-
-    addEventListener(
-        type: string,
-        listener: (event: MessageEvent) => void
-    ): void {
-        if (!this.listeners.has(type)) {
-            this.listeners.set(type, []);
-        }
-        this.listeners.get(type)!.push(listener);
-    }
-
-    removeEventListener(
-        type: string,
-        listener: (event: MessageEvent) => void
-    ): void {
-        const listeners = this.listeners.get(type);
-        if (listeners) {
-            const index = listeners.indexOf(listener);
-            if (index !== -1) {
-                listeners.splice(index, 1);
-            }
-        }
-    }
-
-    close(): void {
-        this.readyState = MockEventSource.CLOSED;
-    }
-
-    // Helper methods for testing
-    simulateOpen(): void {
-        this.readyState = MockEventSource.OPEN;
-        this.onopen?.(new Event("open"));
-    }
-
-    simulateError(): void {
-        this.onerror?.(new Event("error"));
-    }
-
-    simulateProgressEvent(data: unknown): void {
-        const event = new MessageEvent("progress", {
-            data: JSON.stringify(data),
-        });
-        const listeners = this.listeners.get("progress");
-        if (listeners) {
-            listeners.forEach(listener => listener(event));
-        }
-    }
-}
-
-// Override global EventSource
-vi.stubGlobal("EventSource", MockEventSource);
+import {
+    MockEventSource,
+    getEventSourceInstances,
+    resetEventSourceInstances,
+} from "@/tests/setup";
 
 describe("useGenerationProgress", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        eventSourceInstances = [];
+        resetEventSourceInstances();
         vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:3000/api");
     });
 
     afterEach(() => {
         vi.unstubAllEnvs();
-        eventSourceInstances.forEach(es => es.close());
-        eventSourceInstances = [];
+        resetEventSourceInstances();
     });
 
     describe("initial state", () => {
@@ -109,7 +37,7 @@ describe("useGenerationProgress", () => {
         it("should not create EventSource when jobId is null", () => {
             renderHook(() => useGenerationProgress({ jobId: null }));
 
-            expect(eventSourceInstances.length).toBe(0);
+            expect(getEventSourceInstances().length).toBe(0);
         });
     });
 
@@ -117,11 +45,11 @@ describe("useGenerationProgress", () => {
         it("should create EventSource with correct URL when jobId is provided", () => {
             renderHook(() => useGenerationProgress({ jobId: "test-job-123" }));
 
-            expect(eventSourceInstances.length).toBe(1);
-            expect(eventSourceInstances[0].url).toBe(
+            expect(getEventSourceInstances().length).toBe(1);
+            expect(getEventSourceInstances()[0].url).toBe(
                 "http://localhost:3000/api/progress/test-job-123"
             );
-            expect(eventSourceInstances[0].withCredentials).toBe(true);
+            expect(getEventSourceInstances()[0].withCredentials).toBe(true);
         });
 
         it("should set isConnected to true when connection opens", async () => {
@@ -130,7 +58,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateOpen();
+                getEventSourceInstances()[0].simulateOpen();
             });
 
             await waitFor(() => {
@@ -144,14 +72,14 @@ describe("useGenerationProgress", () => {
                 { initialProps: { jobId: "job-1" } }
             );
 
-            expect(eventSourceInstances.length).toBe(1);
-            const firstInstance = eventSourceInstances[0];
+            expect(getEventSourceInstances().length).toBe(1);
+            const firstInstance = getEventSourceInstances()[0];
 
             rerender({ jobId: "job-2" });
 
             expect(firstInstance.readyState).toBe(MockEventSource.CLOSED);
-            expect(eventSourceInstances.length).toBe(2);
-            expect(eventSourceInstances[1].url).toContain("job-2");
+            expect(getEventSourceInstances().length).toBe(2);
+            expect(getEventSourceInstances()[1].url).toContain("job-2");
         });
     });
 
@@ -162,7 +90,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 50,
                     message: "Processing...",
                     step: "processing",
@@ -187,7 +115,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 25,
                     message: "Starting...",
                     step: "started",
@@ -214,7 +142,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 100,
                     message: "Done!",
                     step: "completed",
@@ -236,7 +164,7 @@ describe("useGenerationProgress", () => {
             renderHook(() => useGenerationProgress({ jobId: "test-job" }));
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 100,
                     message: "Done!",
                     step: "completed",
@@ -244,7 +172,7 @@ describe("useGenerationProgress", () => {
             });
 
             await waitFor(() => {
-                expect(eventSourceInstances[0].readyState).toBe(
+                expect(getEventSourceInstances()[0].readyState).toBe(
                     MockEventSource.CLOSED
                 );
             });
@@ -263,7 +191,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 30,
                     message: "Error occurred",
                     step: "error",
@@ -288,7 +216,7 @@ describe("useGenerationProgress", () => {
             );
 
             act(() => {
-                eventSourceInstances[0].simulateError();
+                getEventSourceInstances()[0].simulateError();
             });
 
             await waitFor(() => {
@@ -313,7 +241,7 @@ describe("useGenerationProgress", () => {
 
             // Simulate an event with invalid JSON
             act(() => {
-                const listeners = (eventSourceInstances[0] as MockEventSource)[
+                const listeners = (getEventSourceInstances()[0] as MockEventSource)[
                     "listeners"
                 ].get("progress");
                 if (listeners) {
@@ -339,13 +267,13 @@ describe("useGenerationProgress", () => {
                 useGenerationProgress({ jobId: "test-job" })
             );
 
-            expect(eventSourceInstances[0].readyState).toBe(
+            expect(getEventSourceInstances()[0].readyState).toBe(
                 MockEventSource.CONNECTING
             );
 
             unmount();
 
-            expect(eventSourceInstances[0].readyState).toBe(
+            expect(getEventSourceInstances()[0].readyState).toBe(
                 MockEventSource.CLOSED
             );
         });
@@ -356,11 +284,11 @@ describe("useGenerationProgress", () => {
                 { initialProps: { jobId: "test-job" as string | null } }
             );
 
-            expect(eventSourceInstances.length).toBe(1);
+            expect(getEventSourceInstances().length).toBe(1);
 
             rerender({ jobId: null });
 
-            expect(eventSourceInstances[0].readyState).toBe(
+            expect(getEventSourceInstances()[0].readyState).toBe(
                 MockEventSource.CLOSED
             );
         });
@@ -377,13 +305,13 @@ describe("useGenerationProgress", () => {
                 { initialProps: { onProgress: onProgress1 } }
             );
 
-            expect(eventSourceInstances.length).toBe(1);
+            expect(getEventSourceInstances().length).toBe(1);
 
             // Change callback - should NOT create new connection
             rerender({ onProgress: onProgress2 });
 
             // Still only one instance - no reconnection
-            expect(eventSourceInstances.length).toBe(1);
+            expect(getEventSourceInstances().length).toBe(1);
         });
 
         it("should use latest callback even after rerender", async () => {
@@ -399,7 +327,7 @@ describe("useGenerationProgress", () => {
             rerender({ onProgress: onProgress2 });
 
             act(() => {
-                eventSourceInstances[0].simulateProgressEvent({
+                getEventSourceInstances()[0].simulateProgressEvent({
                     progress: 50,
                     message: "Test",
                     step: "processing",

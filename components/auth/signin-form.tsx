@@ -98,7 +98,7 @@ export function SigninForm({
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <Mail className="w-4 h-4" />
+                                    <Mail className="w-4 h-4" aria-hidden="true" />
                                     Adresse email
                                 </FormLabel>
                                 <FormControl>
@@ -124,7 +124,7 @@ export function SigninForm({
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <Lock className="w-4 h-4" />
+                                    <Lock className="w-4 h-4" aria-hidden="true" />
                                     Mot de passe
                                 </FormLabel>
                                 <FormControl>

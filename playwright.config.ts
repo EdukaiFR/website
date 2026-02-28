@@ -15,7 +15,7 @@ export default defineConfig({
         : "html",
 
     use: {
-        baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+        baseURL: "http://localhost:3000",
         trace: "on-first-retry",
         screenshot: "only-on-failure",
     },
@@ -28,7 +28,9 @@ export default defineConfig({
     ],
 
     webServer: {
-        command: "pnpm dev",
+        command: process.env.CI
+            ? "pnpm start"
+            : "pnpm dev",
         url: "http://localhost:3000",
         reuseExistingServer: !process.env.CI,
         timeout: 120000,

@@ -78,6 +78,17 @@ Le projet Edukai vise à simplifier la création de matériel de révision perso
 
    L'application est lancée sur le port 3000 de votre machine (`http://localhost:3000`).<br>
 
+## 🧪 Tests
+
+```bash
+pnpm test              # Unit tests (watch mode)
+pnpm test:ci           # Unit tests + coverage
+pnpm test:e2e          # Playwright E2E tests
+pnpm test:e2e:headed   # E2E with visible browser
+```
+
+See [docs/TESTING.md](docs/TESTING.md) for details on test structure and patterns.
+
 ## 👥 Équipe
 
 - **Tristan Hourtoulle** - Développeur Frontend

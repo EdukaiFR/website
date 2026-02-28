@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Polyfill ResizeObserver for Radix UI components in jsdom
+global.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+};
+
 // Mock Next.js router
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
@@ -28,6 +35,8 @@ Object.defineProperty(window, "location", {
 });
 
 // Mock EventSource for SSE tests
+let eventSourceInstances: MockEventSource[] = [];
+
 class MockEventSource {
     static CONNECTING = 0;
     static OPEN = 1;
@@ -46,6 +55,7 @@ class MockEventSource {
     constructor(url: string, options?: { withCredentials?: boolean }) {
         this.url = url;
         this.withCredentials = options?.withCredentials ?? false;
+        eventSourceInstances.push(this);
     }
 
     addEventListener(
@@ -100,9 +110,21 @@ class MockEventSource {
             listeners.forEach(listener => listener(event));
         }
     }
+
+    simulateProgressEvent(data: unknown): void {
+        this.simulateMessage("progress", data);
+    }
+}
+
+function resetEventSourceInstances(): void {
+    eventSourceInstances.forEach(es => es.close());
+    eventSourceInstances = [];
+}
+
+function getEventSourceInstances(): MockEventSource[] {
+    return eventSourceInstances;
 }
 
 vi.stubGlobal("EventSource", MockEventSource);
 
-// Export for use in tests
-export { MockEventSource };
+export { MockEventSource, getEventSourceInstances, resetEventSourceInstances };
