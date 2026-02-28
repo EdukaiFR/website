@@ -65,6 +65,16 @@ const apiErrorTranslations: Record<string, string> = {
     "Invalid course data": "Données de cours invalides",
     "Course creation failed": "Échec de la création du cours",
 
+    // Ticket errors
+    "Ticket not found": "Ticket introuvable",
+    "Ticket already closed": "Ce ticket est déjà fermé",
+    "Maximum reopen count reached": "Limite de réouverture atteinte",
+    "Invalid status transition": "Transition de statut invalide",
+    "Not authorized to access this ticket":
+        "Vous n'êtes pas autorisé à accéder à ce ticket",
+    "Rate limit exceeded for ticket creation":
+        "Limite de création de tickets atteinte",
+
     // Generic errors
     "Something went wrong": "Une erreur s'est produite",
     "An error occurred": "Une erreur s'est produite",
@@ -249,38 +259,21 @@ export const toastMessages = {
 
     // Tickets
     ticket: {
-        createSuccess:
-            "Ticket créé avec succès. Nous examinerons votre demande rapidement.",
+        createSuccess: "Ticket créé avec succès.",
         createError: "Erreur lors de la création du ticket.",
-        loadError: "Erreur lors du chargement des tickets.",
-        loadAllError: "Erreur lors du chargement de la liste des tickets.",
-        updateSuccess: "Ticket mis à jour avec succès.",
-        updateError: "Erreur lors de la mise à jour du ticket.",
-        deleteSuccess: "Ticket supprimé avec succès.",
-        deleteError: "Erreur lors de la suppression du ticket.",
+        messageSuccess: "Message envoyé avec succès.",
+        messageError: "Erreur lors de l'envoi du message.",
         reopenSuccess: "Ticket rouvert avec succès.",
-        reopenError: "Erreur lors de la réouverture du ticket.",
-        commentSuccess: "Commentaire ajouté avec succès.",
-        commentError: "Erreur lors de l'ajout du commentaire.",
-        statusUpdateSuccess: "Statut du ticket mis à jour.",
-        statusUpdateError: "Erreur lors de la mise à jour du statut.",
-        priorityUpdateSuccess: "Priorité du ticket mise à jour.",
-        priorityUpdateError: "Erreur lors de la mise à jour de la priorité.",
-        fileUploadSuccess: "Fichier joint avec succès.",
-        fileUploadError: "Erreur lors de l'ajout du fichier.",
-        fileTooLargeError: "Le fichier dépasse la limite de 5 MB.",
-        fileTypeNotSupportedError: "Type de fichier non supporté.",
-        duplicateTicketWarning: "Un ticket similaire existe déjà.",
-    },
-
-    // Support
-    support: {
-        sendSuccess:
-            "Votre message a été envoyé ! Nous vous répondrons sous 24h.",
-        sendError: "Erreur lors de l'envoi du message.",
-        feedbackSuccess: "Merci pour votre retour !",
-        feedbackError: "Erreur lors de l'envoi du retour.",
-        missingFieldsError: "Veuillez remplir tous les champs obligatoires.",
+        reopenLimitReached:
+            "Limite de réouverture atteinte (3 max). Veuillez créer un nouveau ticket.",
+        assignSuccess: "Ticket assigné avec succès.",
+        statusChangeSuccess: "Statut mis à jour avec succès.",
+        closeSuccess: "Ticket fermé avec succès.",
+        bulkUpdateSuccess: "Tickets mis à jour avec succès.",
+        notFound: "Ticket introuvable.",
+        unauthorized: "Vous n'avez pas accès à ce ticket.",
+        loadError: "Erreur lors du chargement du ticket.",
+        configLoadError: "Erreur lors du chargement de la configuration.",
     },
 
     // General
@@ -420,28 +413,30 @@ export const fileToast = {
     noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
 };
 
-// Ticket toast functions
 export const ticketToast = {
-    createSuccess: () => showToast.success("Ticket créé avec succès."),
+    createSuccess: () =>
+        showToast.success(toastMessages.ticket.createSuccess),
     createError: (error?: string) =>
-        showToast.error(error || "Erreur lors de la création du ticket."),
-    updateSuccess: () => showToast.success("Ticket mis à jour avec succès."),
-    updateError: (error?: string) =>
-        showToast.error(error || "Erreur lors de la mise à jour du ticket."),
-    deleteSuccess: () => showToast.success("Ticket supprimé avec succès."),
-    deleteError: () =>
-        showToast.error("Erreur lors de la suppression du ticket."),
-    loadError: () => showToast.error("Erreur lors du chargement des tickets."),
-    assignSuccess: () => showToast.success("Ticket assigné avec succès."),
-    assignError: () =>
-        showToast.error("Erreur lors de l'assignation du ticket."),
-    closeSuccess: () => showToast.success("Ticket fermé avec succès."),
-    closeError: () => showToast.error("Erreur lors de la fermeture du ticket."),
-    reopenSuccess: () => showToast.success("Ticket rouvert avec succès."),
-    reopenError: () =>
-        showToast.error("Erreur lors de la réouverture du ticket."),
-    addCommentSuccess: () =>
-        showToast.success("Commentaire ajouté avec succès."),
-    addCommentError: () =>
-        showToast.error("Erreur lors de l'ajout du commentaire."),
+        showToast.error(error || toastMessages.ticket.createError),
+    messageSuccess: () =>
+        showToast.success(toastMessages.ticket.messageSuccess),
+    messageError: (error?: string) =>
+        showToast.error(error || toastMessages.ticket.messageError),
+    reopenSuccess: () =>
+        showToast.success(toastMessages.ticket.reopenSuccess),
+    reopenLimitReached: () =>
+        showToast.warning(toastMessages.ticket.reopenLimitReached),
+    assignSuccess: () =>
+        showToast.success(toastMessages.ticket.assignSuccess),
+    statusChangeSuccess: () =>
+        showToast.success(toastMessages.ticket.statusChangeSuccess),
+    closeSuccess: () =>
+        showToast.success(toastMessages.ticket.closeSuccess),
+    bulkUpdateSuccess: () =>
+        showToast.success(toastMessages.ticket.bulkUpdateSuccess),
+    notFound: () => showToast.error(toastMessages.ticket.notFound),
+    unauthorized: () => showToast.error(toastMessages.ticket.unauthorized),
+    loadError: () => showToast.error(toastMessages.ticket.loadError),
+    configLoadError: () =>
+        showToast.error(toastMessages.ticket.configLoadError),
 };

@@ -10,4 +10,4 @@ export * from "./useQuiz";
 export * from "./useRole";
 export * from "./useSession";
 export * from "./useSheet";
-export * from "./useTicket";
+export * from "./useTicketConfig";
