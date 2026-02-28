@@ -38,11 +38,6 @@ export default function UnauthorizedPage() {
                             </Button>
                         </Link>
 
-                        <Link href="/support" className="block">
-                            <Button variant="outline" className="w-full">
-                                Contacter le support
-                            </Button>
-                        </Link>
                     </div>
                 </CardContent>
             </Card>

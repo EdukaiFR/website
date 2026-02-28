@@ -2,11 +2,9 @@ import {
     Bell,
     Users,
     Home,
-    HelpCircle,
     Settings,
     Zap,
     GraduationCap,
-    Shield,
     BarChart3,
     User,
     Sliders,
@@ -70,11 +68,6 @@ export function useLinks() {
             Icon: Bell,
         },
         {
-            href: "/tickets",
-            label: "Support",
-            Icon: HelpCircle,
-        },
-        {
             href: "/settings",
             label: "Paramètres",
             Icon: Settings,
@@ -83,11 +76,6 @@ export function useLinks() {
 
     const adminLinks = isAdmin
         ? [
-              {
-                  href: "/admin/tickets",
-                  label: "Admin - Tickets",
-                  Icon: Shield,
-              },
               {
                   href: "/admin/plan-limits",
                   label: "Admin - Limitations",
