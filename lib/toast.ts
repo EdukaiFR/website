@@ -247,42 +247,6 @@ export const toastMessages = {
         loadError: "Erreur lors du chargement des notifications.",
     },
 
-    // Tickets
-    ticket: {
-        createSuccess:
-            "Ticket créé avec succès. Nous examinerons votre demande rapidement.",
-        createError: "Erreur lors de la création du ticket.",
-        loadError: "Erreur lors du chargement des tickets.",
-        loadAllError: "Erreur lors du chargement de la liste des tickets.",
-        updateSuccess: "Ticket mis à jour avec succès.",
-        updateError: "Erreur lors de la mise à jour du ticket.",
-        deleteSuccess: "Ticket supprimé avec succès.",
-        deleteError: "Erreur lors de la suppression du ticket.",
-        reopenSuccess: "Ticket rouvert avec succès.",
-        reopenError: "Erreur lors de la réouverture du ticket.",
-        commentSuccess: "Commentaire ajouté avec succès.",
-        commentError: "Erreur lors de l'ajout du commentaire.",
-        statusUpdateSuccess: "Statut du ticket mis à jour.",
-        statusUpdateError: "Erreur lors de la mise à jour du statut.",
-        priorityUpdateSuccess: "Priorité du ticket mise à jour.",
-        priorityUpdateError: "Erreur lors de la mise à jour de la priorité.",
-        fileUploadSuccess: "Fichier joint avec succès.",
-        fileUploadError: "Erreur lors de l'ajout du fichier.",
-        fileTooLargeError: "Le fichier dépasse la limite de 5 MB.",
-        fileTypeNotSupportedError: "Type de fichier non supporté.",
-        duplicateTicketWarning: "Un ticket similaire existe déjà.",
-    },
-
-    // Support
-    support: {
-        sendSuccess:
-            "Votre message a été envoyé ! Nous vous répondrons sous 24h.",
-        sendError: "Erreur lors de l'envoi du message.",
-        feedbackSuccess: "Merci pour votre retour !",
-        feedbackError: "Erreur lors de l'envoi du retour.",
-        missingFieldsError: "Veuillez remplir tous les champs obligatoires.",
-    },
-
     // General
     general: {
         success: "Opération réussie.",
@@ -418,30 +382,4 @@ export const fileToast = {
     recognitionError: () =>
         showToast.error(toastMessages.file.recognitionError),
     noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
-};
-
-// Ticket toast functions
-export const ticketToast = {
-    createSuccess: () => showToast.success("Ticket créé avec succès."),
-    createError: (error?: string) =>
-        showToast.error(error || "Erreur lors de la création du ticket."),
-    updateSuccess: () => showToast.success("Ticket mis à jour avec succès."),
-    updateError: (error?: string) =>
-        showToast.error(error || "Erreur lors de la mise à jour du ticket."),
-    deleteSuccess: () => showToast.success("Ticket supprimé avec succès."),
-    deleteError: () =>
-        showToast.error("Erreur lors de la suppression du ticket."),
-    loadError: () => showToast.error("Erreur lors du chargement des tickets."),
-    assignSuccess: () => showToast.success("Ticket assigné avec succès."),
-    assignError: () =>
-        showToast.error("Erreur lors de l'assignation du ticket."),
-    closeSuccess: () => showToast.success("Ticket fermé avec succès."),
-    closeError: () => showToast.error("Erreur lors de la fermeture du ticket."),
-    reopenSuccess: () => showToast.success("Ticket rouvert avec succès."),
-    reopenError: () =>
-        showToast.error("Erreur lors de la réouverture du ticket."),
-    addCommentSuccess: () =>
-        showToast.success("Commentaire ajouté avec succès."),
-    addCommentError: () =>
-        showToast.error("Erreur lors de l'ajout du commentaire."),
 };
