@@ -6,3 +6,4 @@ export * from "./course";
 export * from "./insights";
 export * from "./payment";
 export * from "./plan-limits";
+export * from "./ticket";

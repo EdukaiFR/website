@@ -65,6 +65,16 @@ const apiErrorTranslations: Record<string, string> = {
     "Invalid course data": "Données de cours invalides",
     "Course creation failed": "Échec de la création du cours",
 
+    // Ticket errors
+    "Ticket not found": "Ticket introuvable",
+    "Ticket already closed": "Ce ticket est déjà fermé",
+    "Maximum reopen count reached": "Limite de réouverture atteinte",
+    "Invalid status transition": "Transition de statut invalide",
+    "Not authorized to access this ticket":
+        "Vous n'êtes pas autorisé à accéder à ce ticket",
+    "Rate limit exceeded for ticket creation":
+        "Limite de création de tickets atteinte",
+
     // Generic errors
     "Something went wrong": "Une erreur s'est produite",
     "An error occurred": "Une erreur s'est produite",
@@ -247,6 +257,25 @@ export const toastMessages = {
         loadError: "Erreur lors du chargement des notifications.",
     },
 
+    // Tickets
+    ticket: {
+        createSuccess: "Ticket créé avec succès.",
+        createError: "Erreur lors de la création du ticket.",
+        messageSuccess: "Message envoyé avec succès.",
+        messageError: "Erreur lors de l'envoi du message.",
+        reopenSuccess: "Ticket rouvert avec succès.",
+        reopenLimitReached:
+            "Limite de réouverture atteinte (3 max). Veuillez créer un nouveau ticket.",
+        assignSuccess: "Ticket assigné avec succès.",
+        statusChangeSuccess: "Statut mis à jour avec succès.",
+        closeSuccess: "Ticket fermé avec succès.",
+        bulkUpdateSuccess: "Tickets mis à jour avec succès.",
+        notFound: "Ticket introuvable.",
+        unauthorized: "Vous n'avez pas accès à ce ticket.",
+        loadError: "Erreur lors du chargement du ticket.",
+        configLoadError: "Erreur lors du chargement de la configuration.",
+    },
+
     // General
     general: {
         success: "Opération réussie.",
@@ -382,4 +411,32 @@ export const fileToast = {
     recognitionError: () =>
         showToast.error(toastMessages.file.recognitionError),
     noFilesError: () => showToast.warning(toastMessages.file.noFilesError),
+};
+
+export const ticketToast = {
+    createSuccess: () =>
+        showToast.success(toastMessages.ticket.createSuccess),
+    createError: (error?: string) =>
+        showToast.error(error || toastMessages.ticket.createError),
+    messageSuccess: () =>
+        showToast.success(toastMessages.ticket.messageSuccess),
+    messageError: (error?: string) =>
+        showToast.error(error || toastMessages.ticket.messageError),
+    reopenSuccess: () =>
+        showToast.success(toastMessages.ticket.reopenSuccess),
+    reopenLimitReached: () =>
+        showToast.warning(toastMessages.ticket.reopenLimitReached),
+    assignSuccess: () =>
+        showToast.success(toastMessages.ticket.assignSuccess),
+    statusChangeSuccess: () =>
+        showToast.success(toastMessages.ticket.statusChangeSuccess),
+    closeSuccess: () =>
+        showToast.success(toastMessages.ticket.closeSuccess),
+    bulkUpdateSuccess: () =>
+        showToast.success(toastMessages.ticket.bulkUpdateSuccess),
+    notFound: () => showToast.error(toastMessages.ticket.notFound),
+    unauthorized: () => showToast.error(toastMessages.ticket.unauthorized),
+    loadError: () => showToast.error(toastMessages.ticket.loadError),
+    configLoadError: () =>
+        showToast.error(toastMessages.ticket.configLoadError),
 };
