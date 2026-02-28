@@ -66,9 +66,21 @@ function buildQueryParams(params?: TicketListParams): Record<string, string> {
 function logError(method: string, error: unknown): void {
   if (process.env.NODE_ENV === "development") {
     console.error(`[TicketService] ${method} failed:`, error);
+    if (axios.isAxiosError(error)) {
+      console.error("[TicketService] Details:", {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+      });
+    }
   }
 }
 
+/**
+ * Ticket service hook exposing all V2 ticketing API operations.
+ * Handles CRUD for tickets, messages, attachments, and admin bulk operations.
+ *
+ * @returns TicketService interface with typed methods for all ticket endpoints
+ */
 export function useTicketService(): TicketService {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
