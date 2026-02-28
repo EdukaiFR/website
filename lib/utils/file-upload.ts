@@ -1,202 +1,147 @@
 import {
-    MAX_FILE_SIZE,
-    ALLOWED_MIME_TYPES,
-    AllowedMimeType,
-    AttachmentKind,
-    TicketAttachment,
+  ALLOWED_MIME_TYPES,
+  MAX_FILE_SIZE,
+  type TicketAttachment,
 } from "@/lib/types/ticket";
+import { formatFileSize } from "@/lib/file-utils";
 
-export interface FileValidationResult {
-    isValid: boolean;
-    error?: string;
-}
-
-export interface FileUploadProgress {
-    file: File;
-    progress: number;
-    status: "uploading" | "completed" | "error";
-    error?: string;
+interface FileValidationResult {
+  valid: boolean;
+  error?: string;
 }
 
 /**
- * Validate a file against our constraints
+ * Validate a file against size and MIME type constraints.
+ * @param file - The file to validate
+ * @returns Validation result with an optional error message
  */
-export const validateFile = (file: File): FileValidationResult => {
-    // Check file size
-    if (file.size > MAX_FILE_SIZE) {
-        return {
-            isValid: false,
-            error: `Le fichier "${file.name}" dépasse la limite de 5 MB (${(file.size / 1024 / 1024).toFixed(1)} MB)`,
-        };
-    }
+export function validateFile(file: File): FileValidationResult {
+  if (file.size > MAX_FILE_SIZE) {
+    return {
+      valid: false,
+      error: `Le fichier "${file.name}" depasse la taille maximale de ${formatFileSize(MAX_FILE_SIZE)}`,
+    };
+  }
 
-    // Check MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.type as AllowedMimeType)) {
-        return {
-            isValid: false,
-            error: `Le type de fichier "${file.type}" n'est pas supporté pour "${file.name}"`,
-        };
-    }
+  const allowed: readonly string[] = ALLOWED_MIME_TYPES;
+  if (!allowed.includes(file.type)) {
+    return {
+      valid: false,
+      error: `Le type de fichier "${file.type || "inconnu"}" n'est pas supporte`,
+    };
+  }
 
-    return { isValid: true };
-};
+  return { valid: true };
+}
+
+const MAX_IMAGE_WIDTH = 1920;
+const JPEG_QUALITY = 0.8;
+/** 1 MB */
+const COMPRESSION_THRESHOLD = 1024 * 1024;
 
 /**
- * Convert a file to base64 string
+ * Compress an image file using OffscreenCanvas.
+ * Only compresses if the file exceeds 1 MB.
+ * Resizes to max 1920px width and outputs as JPEG at 0.8 quality.
+ * @param file - The image file to compress
+ * @returns The compressed file, or the original if below threshold
  */
-export const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+export async function compressImage(file: File): Promise<File> {
+  if (file.size <= COMPRESSION_THRESHOLD) {
+    return file;
+  }
 
-        reader.onload = () => {
-            const result = reader.result as string;
-            // Remove the data URL prefix (e.g., "data:image/png;base64,")
-            const base64Data = result.split(",")[1];
-            resolve(base64Data);
-        };
+  const bitmap = await createImageBitmap(file);
+  const ratio = Math.min(1, MAX_IMAGE_WIDTH / bitmap.width);
+  const width = Math.round(bitmap.width * ratio);
+  const height = Math.round(bitmap.height * ratio);
 
-        reader.onerror = error => {
-            reject(
-                new Error(
-                    `Erreur lors de la conversion du fichier "${file.name}": ${error}`
-                )
-            );
-        };
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return file;
+  }
 
-        reader.readAsDataURL(file);
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const blob = await canvas.convertToBlob({
+    type: "image/jpeg",
+    quality: JPEG_QUALITY,
+  });
+
+  return new File([blob], file.name, {
+    type: "image/jpeg",
+    lastModified: Date.now(),
+  });
+}
+
+/**
+ * Convert a File to a Base64 data URL string.
+ * @param file - The file to convert
+ * @returns The Base64-encoded data URL
+ */
+export function convertFileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("FileReader did not return a string"));
+      }
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Process an array of files through the full pipeline:
+ * validate -> compress (if image > 1MB) -> convert to Base64.
+ * @param files - The files to process
+ * @param uploadedBy - The user ID of the uploader
+ * @returns An array of TicketAttachment ready for the API
+ * @throws Error if any file fails validation
+ */
+export async function convertFilesToAttachments(
+  files: File[],
+  uploadedBy: string
+): Promise<TicketAttachment[]> {
+  const attachments: TicketAttachment[] = [];
+
+  for (const file of files) {
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      throw new Error(validation.error);
+    }
+
+    const isImage = file.type.startsWith("image/");
+    const processed = isImage ? await compressImage(file) : file;
+    const data = await convertFileToBase64(processed);
+
+    attachments.push({
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: processed.size,
+      data,
+      uploadedBy,
+      uploadedAt: new Date().toISOString(),
     });
-};
+  }
+
+  return attachments;
+}
 
 /**
- * Determine the attachment kind based on MIME type
+ * Return the display category for a given MIME type.
+ * @param mimeType - The MIME type to categorize
+ * @returns The attachment kind for UI rendering
  */
-export const getAttachmentKind = (mimeType: string): AttachmentKind => {
-    if (mimeType.startsWith("image/")) {
-        return AttachmentKind.IMAGE;
-    } else if (
-        mimeType === "text/plain" ||
-        mimeType === "text/csv" ||
-        mimeType === "application/json"
-    ) {
-        return AttachmentKind.DOCUMENT;
-    } else {
-        return AttachmentKind.OTHER;
-    }
-};
-
-/**
- * Convert File objects to TicketAttachment format
- */
-export const convertFilesToAttachments = async (
-    files: File[]
-): Promise<TicketAttachment[]> => {
-    const attachments: TicketAttachment[] = [];
-
-    for (const file of files) {
-        try {
-            const validation = validateFile(file);
-            if (!validation.isValid) {
-                throw new Error(validation.error);
-            }
-
-            const base64Data = await convertFileToBase64(file);
-
-            const attachment: TicketAttachment = {
-                id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                filename: file.name,
-                mimeType: file.type,
-                size: file.size,
-                kind: getAttachmentKind(file.type),
-                url: base64Data, // Using base64 data as URL for now
-                uploadedAt: new Date().toISOString(),
-            };
-
-            attachments.push(attachment);
-        } catch (error) {
-            throw new Error(
-                `Erreur lors du traitement du fichier "${file.name}": ${error instanceof Error ? error.message : error}`
-            );
-        }
-    }
-
-    return attachments;
-};
-
-/**
- * Format file size for display
- */
-export const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 B";
-
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-};
-
-/**
- * Get file extension from filename
- */
-export const getFileExtension = (filename: string): string => {
-    return filename.split(".").pop()?.toLowerCase() || "";
-};
-
-/**
- * Check if file is an image
- */
-export const isImageFile = (mimeType: string): boolean => {
-    return mimeType.startsWith("image/");
-};
-
-/**
- * Get a preview-friendly filename (truncated if too long)
- */
-export const getDisplayFilename = (
-    filename: string,
-    maxLength: number = 30
-): string => {
-    if (filename.length <= maxLength) {
-        return filename;
-    }
-
-    const extension = getFileExtension(filename);
-    const nameWithoutExt = filename.slice(0, filename.lastIndexOf("."));
-    const truncatedName =
-        nameWithoutExt.slice(0, maxLength - extension.length - 4) + "...";
-
-    return `${truncatedName}.${extension}`;
-};
-
-/**
- * Create a file preview URL for images
- */
-export const createFilePreview = (file: File): string => {
-    return URL.createObjectURL(file);
-};
-
-/**
- * Cleanup file preview URL
- */
-export const cleanupFilePreview = (url: string): void => {
-    URL.revokeObjectURL(url);
-};
-
-/**
- * Get the maximum allowed file size for display
- */
-export const getMaxFileSizeDisplay = (): string => {
-    return formatFileSize(MAX_FILE_SIZE);
-};
-
-/**
- * Get allowed file types for display
- */
-export const getAllowedFileTypesDisplay = (): string => {
-    const imageTypes = ALLOWED_MIME_TYPES.filter(type =>
-        type.startsWith("image/")
-    ).length;
-    const documentTypes = ALLOWED_MIME_TYPES.length - imageTypes;
-
-    return `Images (${imageTypes} formats), Documents (${documentTypes} formats)`;
-};
+export function getAttachmentKind(
+  mimeType: string
+): "image" | "document" | "text" {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType === "text/plain") return "text";
+  return "document";
+}

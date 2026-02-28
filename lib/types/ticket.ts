@@ -1,323 +1,149 @@
-// Ticket Status Enum
-export enum TicketStatus {
-    NEW = "NEW",
-    TRIAGED = "TRIAGED",
-    IN_PROGRESS = "IN_PROGRESS",
-    RESOLVED = "RESOLVED",
-    CLOSED = "CLOSED",
-    REOPENED = "REOPENED",
-    REJECTED = "REJECTED",
-    DUPLICATE = "DUPLICATE",
+export type TicketStatus =
+  | "open"
+  | "in_progress"
+  | "waiting_for_client"
+  | "resolved"
+  | "closed";
+
+export type TicketSenderRole = "client" | "admin" | "system";
+
+export type TicketVisibility = "public" | "internal";
+
+export type TicketConfigType =
+  | "ticket_type"
+  | "ticket_category"
+  | "urgency_level"
+  | "ticket_priority"
+  | "ticket_status";
+
+export interface TicketConfigValue {
+  key: string;
+  label: string;
+  color?: string;
+  icon?: string;
+  order: number;
+  isActive: boolean;
 }
 
-// Ticket Priority Enum
-export enum TicketPriority {
-    P0 = "P0", // Critique
-    P1 = "P1", // Élevée
-    P2 = "P2", // Normale
-    P3 = "P3", // Faible
-}
-
-// Ticket Type Enum
-export enum TicketType {
-    BUG = "BUG",
-    FEATURE = "FEATURE",
-    SUPPORT = "SUPPORT",
-    IMPROVEMENT = "IMPROVEMENT",
-    OTHER = "OTHER",
-}
-
-// Ticket Category Enum
-export enum TicketCategory {
-    TECHNICAL = "TECHNICAL",
-    BILLING = "BILLING",
-    ACCOUNT = "ACCOUNT",
-    PLATFORM = "PLATFORM",
-    OTHER = "OTHER",
-}
-
-// Ticket Severity Enum
-export enum TicketSeverity {
-    LOW = "LOW",
-    MEDIUM = "MEDIUM",
-    HIGH = "HIGH",
-    CRITICAL = "CRITICAL",
-}
-
-// Base Ticket Interface
-export interface Ticket {
-    id: string;
-    _id: string; // MongoDB ObjectId
-    publicId: string;
-    title: string;
-    description: string;
-    status: TicketStatus;
-    priority: TicketPriority;
-    type: TicketType;
-    category?: string;
-    userId: string;
-    assignedTo?: string;
-    reporter?: {
-        userId: string;
-        name: string;
-        email: string;
-    };
-    context?: {
-        pageUrl: string;
-        appVersion?: string;
-        locale?: string;
-        userAgent?: string;
-        viewport?: {
-            w: number;
-            h: number;
-        };
-    };
-    createdAt: string;
-    updatedAt: string;
-    resolvedAt?: string;
-    closedAt?: string;
-    tags?: string[];
-    attachments?: string[];
-}
-
-// Ticket Comment Interface
-export interface TicketComment {
-    id: string;
-    _id: string;
-    ticketId: string;
-    userId: string;
-    content: string;
-    body: string; // For compatibility
-    isInternal: boolean;
-    visibility: CommentVisibility;
-    author: {
-        _id: string;
-        name: string;
-        email: string;
-        role: string;
-    };
-    createdAt: string;
-    updatedAt: string;
-    at: string; // For compatibility with createdAt
-}
-
-// Ticket with Comments
-export interface TicketWithComments extends Ticket {
-    ticket: Ticket; // For compatibility
-    comments: TicketComment[];
-}
-
-// Statistics Interface
-export interface TicketStatistics {
-    total: number;
-    byStatus: Record<TicketStatus, number>;
-    byPriority: Record<TicketPriority, number>;
-    byType: Record<TicketType, number>;
-    averageResolutionTime?: number;
-    recentActivity: number;
-}
-
-// Pagination Interface
-export interface PaginationInfo {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-}
-
-// File Upload Constants
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-export const ALLOWED_MIME_TYPES = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "application/pdf",
-    "text/plain",
-] as const;
-
-export type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
-
-// Attachment Types
-export enum AttachmentKind {
-    IMAGE = "IMAGE",
-    DOCUMENT = "DOCUMENT",
-    OTHER = "OTHER",
+export interface TicketConfig {
+  _id: string;
+  type: TicketConfigType;
+  values: TicketConfigValue[];
 }
 
 export interface TicketAttachment {
-    id: string;
-    filename: string;
-    mimeType: string;
-    size: number;
-    kind: AttachmentKind;
-    url: string;
-    uploadedAt: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  /** Base64-encoded file content */
+  data: string;
+  uploadedBy: string;
+  uploadedAt: string;
 }
 
-// Comment Visibility Enum
-export enum CommentVisibility {
-    PUBLIC = "PUBLIC",
-    INTERNAL = "INTERNAL",
+export interface StatusHistoryEntry {
+  from: TicketStatus;
+  to: TicketStatus;
+  changedBy: string;
+  changedAt: string;
+  reason?: string;
 }
 
-// Constants
-export const DEFAULT_PAGE_LIMIT = 20;
+export interface ReadReceipt {
+  userId: string;
+  readAt: string;
+}
 
-// API Request/Response Types
+export interface Ticket {
+  _id: string;
+  /** Format: EK-XXXXXX */
+  reference: string;
+  author: string;
+  assignedTo?: string;
+  type: string;
+  category: string;
+  tags: string[];
+  title: string;
+  description: string;
+  attachments: TicketAttachment[];
+  clientUrgency: string;
+  internalPriority: string;
+  status: TicketStatus;
+  statusHistory: StatusHistoryEntry[];
+  reopenCount: number;
+  createdAt: string;
+  updatedAt: string;
+  firstResponseAt?: string;
+  resolvedAt?: string;
+  closedAt?: string;
+}
 
-// Create Ticket
+export interface TicketMessage {
+  _id: string;
+  ticketId: string;
+  senderId: string;
+  senderRole: TicketSenderRole;
+  visibility: TicketVisibility;
+  content: string;
+  attachments: TicketAttachment[];
+  readBy: ReadReceipt[];
+  createdAt: string;
+  editedAt?: string;
+}
+
+export interface TicketStatistics {
+  total: number;
+  byStatus: Record<TicketStatus, number>;
+  byCategory: Record<string, number>;
+}
+
 export interface CreateTicketRequest {
-    title: string;
-    description: string;
-    priority: TicketPriority;
-    type: TicketType;
-    category?: TicketCategory;
-    severityPerceived?: TicketSeverity;
-    context?: {
-        pageUrl: string;
-        appVersion?: string;
-        locale?: string;
-        userAgent?: string;
-    };
-    tags?: string[];
-    attachments?: string[];
+  title: string;
+  description: string;
+  type: string;
+  category: string;
+  clientUrgency: string;
+  tags?: string[];
+  attachments?: TicketAttachment[];
 }
 
-export interface CreateTicketResponse {
-    success: boolean;
-    data?: Ticket;
-    message?: string;
-    error?: string;
+export interface CreateMessageRequest {
+  content: string;
+  visibility?: TicketVisibility;
+  attachments?: TicketAttachment[];
 }
 
-// Get Tickets
-export interface GetTicketsParams {
-    status?: TicketStatus;
-    priority?: TicketPriority;
-    type?: TicketType;
-    assignedTo?: string;
-    userId?: string;
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
-    search?: string;
-}
-
-export interface GetTicketsResponse {
-    success: boolean;
-    data?: {
-        tickets: Ticket[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
-    };
-    message?: string;
-    error?: string;
-}
-
-// Get Single Ticket
-export interface GetTicketResponse {
-    success: boolean;
-    data?: TicketWithComments;
-    message?: string;
-    error?: string;
-}
-
-// Update Ticket
 export interface UpdateTicketRequest {
-    title?: string;
-    description?: string;
-    status?: TicketStatus;
-    priority?: TicketPriority;
-    type?: TicketType;
-    assignedTo?: string;
-    tags?: string[];
+  status?: TicketStatus;
+  internalPriority?: string;
+  assignedTo?: string;
+  tags?: string[];
 }
 
-export interface UpdateTicketResponse {
-    success: boolean;
-    data?: Ticket;
-    message?: string;
-    error?: string;
+export interface TicketListParams {
+  page?: number;
+  limit?: number;
+  status?: TicketStatus;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
-// Add Comment Response
-export interface AddCommentResponse {
-    success: boolean;
-    data?: TicketComment;
-    message?: string;
-    error?: string;
-}
+/** 5 MB */
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-// Reopen Ticket
-export interface ReopenTicketResponse {
-    success: boolean;
-    data?: Ticket;
-    message?: string;
-    error?: string;
-}
+export const MAX_REOPEN_COUNT = 3;
 
-// Admin-specific types
-export interface AdminGetTicketsParams extends GetTicketsParams {
-    userId?: string;
-    includeResolved?: boolean;
-}
+export const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "application/pdf",
+  "text/plain",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+] as const;
 
-export interface AdminGetTicketsResponse {
-    success: boolean;
-    data?: {
-        tickets: TicketWithComments[];
-        statistics: TicketStatistics;
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
-    };
-    message?: string;
-    error?: string;
-}
-
-// Add Comment Request (Updated - removed duplicate)
-export interface AddCommentRequest {
-    content: string;
-    body?: string; // For compatibility with some APIs
-    visibility?: CommentVisibility;
-    isInternal?: boolean;
-}
-
-// Filter Options for UI
-export interface TicketFilterOptions {
-    statuses: TicketStatus[];
-    priorities: TicketPriority[];
-    types: TicketType[];
-    assignees: { id: string; name: string }[];
-}
-
-// Ticket Action Types
-export type TicketAction =
-    | { type: "ASSIGN"; assignedTo: string }
-    | { type: "CHANGE_STATUS"; status: TicketStatus }
-    | { type: "CHANGE_PRIORITY"; priority: TicketPriority }
-    | { type: "ADD_TAG"; tag: string }
-    | { type: "REMOVE_TAG"; tag: string }
-    | { type: "ADD_COMMENT"; comment: AddCommentRequest };
-
-// Utility type for ticket updates
-export type TicketUpdate = Partial<
-    Pick<
-        Ticket,
-        | "title"
-        | "description"
-        | "status"
-        | "priority"
-        | "type"
-        | "assignedTo"
-        | "tags"
-    >
->;
+/** Polling interval for new messages in milliseconds */
+export const POLLING_INTERVAL_MS = 20_000;
