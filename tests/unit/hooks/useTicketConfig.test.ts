@@ -21,6 +21,7 @@ function createMockService(
     closeTicket: vi.fn(),
     adminGetTickets: vi.fn(),
     adminBulkUpdate: vi.fn(),
+    getAdminUsers: vi.fn(),
     ...overrides,
   };
 }
