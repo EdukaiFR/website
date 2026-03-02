@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Info, TicketX } from "lucide-react";
@@ -20,12 +20,8 @@ import {
   MessageInput,
   TicketSidebar,
 } from "@/components/ticket";
-import { useSession, useIsAdmin } from "@/hooks";
+import { useSession, useIsAdmin, useTicket } from "@/hooks";
 import { useTicketService } from "@/services/ticket";
-import { isApiSuccess } from "@/lib/types/api";
-import { ticketToast } from "@/lib/toast";
-import type { Ticket, TicketMessage } from "@/lib/types/ticket";
-import { POLLING_INTERVAL_MS } from "@/lib/types/ticket";
 
 export default function TicketDetailPage() {
   const params = useParams<{ id: string }>();
@@ -34,14 +30,17 @@ export default function TicketDetailPage() {
   const session = useSession();
   const isAdmin = useIsAdmin();
   const ticketService = useTicketService();
-  const serviceRef = useRef(ticketService);
-  serviceRef.current = ticketService;
 
-  const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [messages, setMessages] = useState<TicketMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [isReopening, setIsReopening] = useState(false);
+  const {
+    ticket,
+    messages,
+    isLoading,
+    notFound,
+    isReopening,
+    handleMessageSent,
+    handleTicketUpdate,
+    handleReopen,
+  } = useTicket(ticketId, ticketService);
 
   const currentUserId = session.user?._id ?? "";
 
@@ -52,86 +51,6 @@ export default function TicketDetailPage() {
     }
     return names;
   }, [session.user]);
-
-  const fetchTicket = useCallback(async () => {
-    const result = await serviceRef.current.getTicketById(ticketId);
-    if (isApiSuccess(result) && result.data) {
-      setTicket(result.data);
-      return result.data;
-    }
-    setNotFound(true);
-    return null;
-  }, [ticketId]);
-
-  const fetchMessages = useCallback(
-    async (tId: string) => {
-      const result = await serviceRef.current.getMessages(tId);
-      if (isApiSuccess(result) && result.data) {
-        setMessages(result.data);
-        // Fire-and-forget: mark all messages as read when viewing
-        serviceRef.current.markAllMessagesRead(tId);
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function init() {
-      setIsLoading(true);
-      const t = await fetchTicket();
-      if (t && !cancelled) {
-        await fetchMessages(t._id);
-      }
-      if (!cancelled) {
-        setIsLoading(false);
-      }
-    }
-
-    init();
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchTicket, fetchMessages]);
-
-  // Poll messages
-  useEffect(() => {
-    if (!ticket) return;
-    const tId = ticket._id;
-
-    const interval = setInterval(() => {
-      fetchMessages(tId);
-    }, POLLING_INTERVAL_MS);
-
-    return () => clearInterval(interval);
-  }, [ticket, fetchMessages]);
-
-  const handleMessageSent = useCallback((msg: TicketMessage) => {
-    setMessages((prev) => [...prev, msg]);
-  }, []);
-
-  const handleTicketUpdate = useCallback((updated: Ticket) => {
-    setTicket(updated);
-  }, []);
-
-  const handleReopen = useCallback(async () => {
-    if (!ticket) return;
-    setIsReopening(true);
-    try {
-      const result = await serviceRef.current.reopenTicket(ticket._id);
-      if (isApiSuccess(result) && result.data) {
-        setTicket(result.data);
-        ticketToast.reopenSuccess();
-      } else {
-        ticketToast.reopenLimitReached();
-      }
-    } catch (_error: unknown) {
-      ticketToast.reopenLimitReached();
-    } finally {
-      setIsReopening(false);
-    }
-  }, [ticket]);
 
   if (isLoading) {
     return (
