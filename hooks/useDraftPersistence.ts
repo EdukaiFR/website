@@ -53,21 +53,21 @@ export function useDraftPersistence(
     }
   }, [form]);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const watchedValues = form.watch();
+
   useEffect(() => {
-    const subscription = form.watch((values) => {
-      if (typeof window === "undefined") return;
-      if (!form.formState.isDirty) return;
+    if (typeof window === "undefined") return;
+    if (!form.formState.isDirty) return;
 
-      const timeout = setTimeout(() => {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
-        setHasDraft(true);
-      }, DEBOUNCE_MS);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(watchedValues));
+      setHasDraft(true);
+    }, DEBOUNCE_MS);
 
-      return () => clearTimeout(timeout);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form]);
+    return () => clearTimeout(debounceRef.current);
+  }, [watchedValues, form.formState.isDirty]);
 
   const clearDraft = useCallback(() => {
     if (typeof window !== "undefined") {
