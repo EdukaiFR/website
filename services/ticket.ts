@@ -10,6 +10,7 @@ import type {
   TicketMessage,
   TicketConfig,
   TicketStatistics,
+  AdminUser,
   CreateTicketRequest,
   CreateMessageRequest,
   UpdateTicketRequest,
@@ -48,6 +49,7 @@ export interface TicketService {
     ticketIds: string[],
     data: UpdateTicketRequest
   ) => Promise<ApiResult<{ updated: number }>>;
+  getAdminUsers: () => Promise<ApiResult<AdminUser[]>>;
 }
 
 function buildQueryParams(params?: TicketListParams): Record<string, string> {
@@ -221,7 +223,7 @@ export function useTicketService(): TicketService {
   ): Promise<ApiResult<Ticket>> => {
     try {
       const response = await axios.patch(
-        `${apiUrl}/admin/tickets/${ticketId}`,
+        `${apiUrl}/tickets/${ticketId}`,
         data,
         { withCredentials: true }
       );
@@ -237,7 +239,7 @@ export function useTicketService(): TicketService {
   ): Promise<ApiResult<Ticket>> => {
     try {
       const response = await axios.post(
-        `${apiUrl}/admin/tickets/${ticketId}/close`,
+        `${apiUrl}/tickets/${ticketId}/close`,
         {},
         { withCredentials: true }
       );
@@ -287,6 +289,18 @@ export function useTicketService(): TicketService {
     }
   };
 
+  const getAdminUsers = async (): Promise<ApiResult<AdminUser[]>> => {
+    try {
+      const response = await axios.get(`${apiUrl}/admin/users`, {
+        withCredentials: true,
+      });
+      return successResult(extractPayload<AdminUser[]>(response.data));
+    } catch (error: unknown) {
+      logError("getAdminUsers", error);
+      return errorToFailureResult(error, "Failed to fetch admin users");
+    }
+  };
+
   return {
     getConfigs,
     createTicket,
@@ -300,5 +314,6 @@ export function useTicketService(): TicketService {
     closeTicket,
     adminGetTickets,
     adminBulkUpdate,
+    getAdminUsers,
   };
 }

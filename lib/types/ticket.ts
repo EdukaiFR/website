@@ -59,7 +59,7 @@ export interface Ticket {
   /** Format: EK-XXXXXX */
   reference: string;
   author: string;
-  assignedTo?: string;
+  assignedTo?: string | PopulatedUser;
   type: string;
   category: string;
   tags: string[];
@@ -78,10 +78,18 @@ export interface Ticket {
   closedAt?: string;
 }
 
+export interface PopulatedUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email?: string;
+}
+
 export interface TicketMessage {
   _id: string;
   ticketId: string;
-  senderId: string;
+  senderId: string | PopulatedUser;
   senderRole: TicketSenderRole;
   visibility: TicketVisibility;
   content: string;
@@ -118,6 +126,16 @@ export interface UpdateTicketRequest {
   internalPriority?: string;
   assignedTo?: string;
   tags?: string[];
+}
+
+export interface AdminUser {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  profilePic?: string;
+  role: string;
 }
 
 export interface TicketListParams {

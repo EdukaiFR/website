@@ -109,6 +109,10 @@ export default function TicketDetailPage() {
     setMessages((prev) => [...prev, msg]);
   }, []);
 
+  const handleTicketUpdate = useCallback((updated: Ticket) => {
+    setTicket(updated);
+  }, []);
+
   const handleReopen = useCallback(async () => {
     if (!ticket) return;
     setIsReopening(true);
@@ -196,7 +200,7 @@ export default function TicketDetailPage() {
                 <SheetTitle>Détails du ticket</SheetTitle>
               </SheetHeader>
               <div className="p-4">
-                <TicketSidebar ticket={ticket} />
+                <TicketSidebar ticket={ticket} isAdmin={isAdmin} onTicketUpdate={handleTicketUpdate} />
               </div>
             </SheetContent>
           </Sheet>
@@ -246,7 +250,7 @@ export default function TicketDetailPage() {
           {/* Right column — sidebar (desktop only) */}
           <div className="hidden lg:block w-80 shrink-0">
             <div className="sticky top-6">
-              <TicketSidebar ticket={ticket} />
+              <TicketSidebar ticket={ticket} isAdmin={isAdmin} onTicketUpdate={handleTicketUpdate} />
             </div>
           </div>
         </div>

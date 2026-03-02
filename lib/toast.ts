@@ -269,6 +269,9 @@ export const toastMessages = {
         assignSuccess: "Ticket assigné avec succès.",
         statusChangeSuccess: "Statut mis à jour avec succès.",
         closeSuccess: "Ticket fermé avec succès.",
+        priorityUpdateSuccess: "Priorité mise à jour avec succès.",
+        tagsUpdateSuccess: "Tags mis à jour avec succès.",
+        updateError: "Erreur lors de la mise à jour du ticket.",
         bulkUpdateSuccess: "Tickets mis à jour avec succès.",
         notFound: "Ticket introuvable.",
         unauthorized: "Vous n'avez pas accès à ce ticket.",
@@ -432,6 +435,12 @@ export const ticketToast = {
         showToast.success(toastMessages.ticket.statusChangeSuccess),
     closeSuccess: () =>
         showToast.success(toastMessages.ticket.closeSuccess),
+    priorityUpdateSuccess: () =>
+        showToast.success(toastMessages.ticket.priorityUpdateSuccess),
+    tagsUpdateSuccess: () =>
+        showToast.success(toastMessages.ticket.tagsUpdateSuccess),
+    updateError: (error?: string) =>
+        showToast.error(error || toastMessages.ticket.updateError),
     bulkUpdateSuccess: () =>
         showToast.success(toastMessages.ticket.bulkUpdateSuccess),
     notFound: () => showToast.error(toastMessages.ticket.notFound),
