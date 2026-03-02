@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import {
-  formatTicketDate,
+  formatTicketDateFull,
   formatTicketRelativeDate,
   getStatusTransitions,
   resolveId,
@@ -287,18 +287,18 @@ export function TicketSidebar({
 
       {/* Timestamps */}
       <div className="p-4 space-y-0.5">
-        <MetadataRow label="Créé le">{formatTicketDate(ticket.createdAt)}</MetadataRow>
+        <MetadataRow label="Créé le">{formatTicketDateFull(ticket.createdAt)}</MetadataRow>
         <MetadataRow label="Mis à jour">
           {formatTicketRelativeDate(ticket.updatedAt)}
         </MetadataRow>
         <MetadataRow label="Première réponse">
-          {ticket.firstResponseAt ? formatTicketDate(ticket.firstResponseAt) : "—"}
+          {ticket.firstResponseAt ? formatTicketDateFull(ticket.firstResponseAt) : "—"}
         </MetadataRow>
         <MetadataRow label="Résolu le">
-          {ticket.resolvedAt ? formatTicketDate(ticket.resolvedAt) : "—"}
+          {ticket.resolvedAt ? formatTicketDateFull(ticket.resolvedAt) : "—"}
         </MetadataRow>
         <MetadataRow label="Fermé le">
-          {ticket.closedAt ? formatTicketDate(ticket.closedAt) : "—"}
+          {ticket.closedAt ? formatTicketDateFull(ticket.closedAt) : "—"}
         </MetadataRow>
       </div>
 
@@ -337,7 +337,7 @@ export function TicketSidebar({
                           <StatusBadge status={entry.to} />
                         </div>
                         <p className="text-xs text-gray-400 mt-1">
-                          {formatTicketDate(entry.changedAt)}
+                          {formatTicketDateFull(entry.changedAt)}
                           {entry.reason && (
                             <span className="ml-1">— {entry.reason}</span>
                           )}
