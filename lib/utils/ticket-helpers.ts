@@ -86,8 +86,8 @@ const VALID_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
   open: ["in_progress"],
   in_progress: ["waiting_for_client", "resolved"],
   waiting_for_client: ["in_progress"],
-  resolved: ["closed"],
-  closed: [],
+  resolved: ["closed", "open"],
+  closed: ["open"],
 };
 
 /** Returns the list of statuses the ticket can transition to from its current status. */

@@ -145,6 +145,10 @@ export interface TicketListParams {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  type?: string;
+  category?: string;
+  urgency?: string;
+  assignedTo?: string;
 }
 
 /** 5 MB */

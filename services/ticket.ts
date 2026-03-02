@@ -48,7 +48,7 @@ export interface TicketService {
   adminBulkUpdate: (
     ticketIds: string[],
     data: UpdateTicketRequest
-  ) => Promise<ApiResult<{ updated: number }>>;
+  ) => Promise<ApiResult<{ updated: number; failed: number; errors: string[] }>>;
   getAdminUsers: () => Promise<ApiResult<AdminUser[]>>;
 }
 
@@ -62,6 +62,10 @@ function buildQueryParams(params?: TicketListParams): Record<string, string> {
   if (params.search) query.search = params.search;
   if (params.sortBy) query.sortBy = params.sortBy;
   if (params.sortOrder) query.sortOrder = params.sortOrder;
+  if (params.type) query.type = params.type;
+  if (params.category) query.category = params.category;
+  if (params.urgency) query.urgency = params.urgency;
+  if (params.assignedTo) query.assignedTo = params.assignedTo;
   return query;
 }
 
@@ -263,7 +267,7 @@ export function useTicketService(): TicketService {
       const body = response.data;
       return successResult({
         tickets: (body.items ?? body.data ?? []) as Ticket[],
-        statistics: (body.statistics ?? {}) as TicketStatistics,
+        statistics: (body.stats ?? body.statistics ?? {}) as TicketStatistics,
         total: (body.total ?? 0) as number,
       });
     } catch (error: unknown) {
@@ -275,14 +279,19 @@ export function useTicketService(): TicketService {
   const adminBulkUpdate = async (
     ticketIds: string[],
     data: UpdateTicketRequest
-  ): Promise<ApiResult<{ updated: number }>> => {
+  ): Promise<ApiResult<{ updated: number; failed: number; errors: string[] }>> => {
     try {
       const response = await axios.patch(
         `${apiUrl}/admin/tickets/bulk`,
-        { ticketIds, ...data },
+        { ticketIds, updates: data },
         { withCredentials: true }
       );
-      return successResult(extractPayload(response.data));
+      const body = response.data;
+      return successResult({
+        updated: (body.updated ?? 0) as number,
+        failed: (body.failed ?? 0) as number,
+        errors: (body.errors ?? []) as string[],
+      });
     } catch (error: unknown) {
       logError("adminBulkUpdate", error);
       return errorToFailureResult(error, "Failed to bulk update tickets");

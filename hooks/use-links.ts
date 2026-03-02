@@ -9,6 +9,7 @@ import {
     BarChart3,
     User,
     Sliders,
+    TicketCheck,
 } from "lucide-react";
 import { useIsAdmin } from "./useRole";
 
@@ -82,6 +83,11 @@ export function useLinks() {
 
     const adminLinks = isAdmin
         ? [
+              {
+                  href: "/admin/tickets",
+                  label: "Admin - Tickets",
+                  Icon: TicketCheck,
+              },
               {
                   href: "/admin/plan-limits",
                   label: "Admin - Limitations",

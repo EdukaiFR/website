@@ -273,6 +273,7 @@ export const toastMessages = {
         tagsUpdateSuccess: "Tags mis à jour avec succès.",
         updateError: "Erreur lors de la mise à jour du ticket.",
         bulkUpdateSuccess: "Tickets mis à jour avec succès.",
+        assignToMeSuccess: "Ticket assigné à vous.",
         notFound: "Ticket introuvable.",
         unauthorized: "Vous n'avez pas accès à ce ticket.",
         loadError: "Erreur lors du chargement du ticket.",
@@ -441,8 +442,18 @@ export const ticketToast = {
         showToast.success(toastMessages.ticket.tagsUpdateSuccess),
     updateError: (error?: string) =>
         showToast.error(error || toastMessages.ticket.updateError),
-    bulkUpdateSuccess: () =>
-        showToast.success(toastMessages.ticket.bulkUpdateSuccess),
+    bulkUpdateSuccess: (count?: number) =>
+        showToast.success(
+            count
+                ? `${count} ticket${count > 1 ? "s" : ""} mis à jour avec succès.`
+                : toastMessages.ticket.bulkUpdateSuccess
+        ),
+    bulkPartialSuccess: (updated: number, failed: number) =>
+        showToast.warning(
+            `${updated} ticket${updated > 1 ? "s" : ""} mis à jour, ${failed} échoué${failed > 1 ? "s" : ""} (transition invalide).`
+        ),
+    assignToMeSuccess: () =>
+        showToast.success(toastMessages.ticket.assignToMeSuccess),
     notFound: () => showToast.error(toastMessages.ticket.notFound),
     unauthorized: () => showToast.error(toastMessages.ticket.unauthorized),
     loadError: () => showToast.error(toastMessages.ticket.loadError),
