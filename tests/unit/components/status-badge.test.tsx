@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { StatusBadge } from "@/components/ticket/status-badge";
+import type { TicketStatus } from "@/lib/types/ticket";
 
 describe("StatusBadge", () => {
   it("should render French label for known status", () => {
@@ -29,7 +30,7 @@ describe("StatusBadge", () => {
   });
 
   it("should fall back to raw status key for unknown status", () => {
-    render(<StatusBadge status="custom_status" />);
+    render(<StatusBadge status={"custom_status" as TicketStatus} />);
     expect(screen.getByText("custom_status")).toBeInTheDocument();
   });
 
@@ -41,7 +42,7 @@ describe("StatusBadge", () => {
   });
 
   it("should apply fallback gray colors for unknown status", () => {
-    const { container } = render(<StatusBadge status="unknown" />);
+    const { container } = render(<StatusBadge status={"unknown" as TicketStatus} />);
     const badge = container.firstChild as HTMLElement;
     expect(badge.className).toContain("bg-gray-100");
     expect(badge.className).toContain("text-gray-600");

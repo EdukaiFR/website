@@ -89,7 +89,7 @@ describe("TicketCard", () => {
   });
 
   it("should fall back to raw key for unknown type", () => {
-    const ticket = createMockTicket({ type: "custom_type" });
+    const ticket = createMockTicket({ type: "custom_type" as Ticket["type"] });
     render(<TicketCard ticket={ticket} onClick={vi.fn()} />);
     expect(screen.getByText("custom_type")).toBeInTheDocument();
   });

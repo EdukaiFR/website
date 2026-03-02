@@ -1,4 +1,5 @@
 import { useTicketService } from "@/services/ticket";
+import type { CreateTicketRequest } from "@/lib/types/ticket";
 import axios from "axios";
 import {
   afterEach,
@@ -87,11 +88,11 @@ describe("TicketService", () => {
 
   describe("createTicket", () => {
     it("should post ticket data and return success result", async () => {
-      const ticketData = {
+      const ticketData: CreateTicketRequest = {
         title: "Test ticket",
         description: "Test description",
         type: "bug",
-        category: "general",
+        category: "other",
         clientUrgency: "medium",
       };
       const mockTicket = { _id: "t1", ...ticketData, status: "open" };
@@ -119,9 +120,9 @@ describe("TicketService", () => {
         title: "Test",
         description: "Test",
         type: "bug",
-        category: "general",
+        category: "other",
         clientUrgency: "low",
-      });
+      } as CreateTicketRequest);
 
       expect(result.status).toBe("failure");
     });
@@ -236,7 +237,7 @@ describe("TicketService", () => {
 
       expect(result.status).toBe("success");
       expect(mockedPatch).toHaveBeenCalledWith(
-        `${API_URL}/admin/tickets/t1`,
+        `${API_URL}/tickets/t1`,
         updateData,
         { withCredentials: true }
       );
@@ -247,7 +248,7 @@ describe("TicketService", () => {
     it("should patch bulk endpoint with ticket ids and data", async () => {
       const updateData = { status: "closed" as const };
       mockedPatch.mockResolvedValueOnce({
-        data: { data: { updated: 3 } },
+        data: { updated: 3, failed: 0, errors: [] },
       });
 
       const service = useTicketService();
@@ -262,7 +263,7 @@ describe("TicketService", () => {
       }
       expect(mockedPatch).toHaveBeenCalledWith(
         `${API_URL}/admin/tickets/bulk`,
-        { ticketIds: ["t1", "t2", "t3"], status: "closed" },
+        { ticketIds: ["t1", "t2", "t3"], updates: { status: "closed" } },
         { withCredentials: true }
       );
     });
