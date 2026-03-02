@@ -84,6 +84,9 @@ export const TicketCard = memo(function TicketCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
+            {(ticket.unreadCount ?? 0) > 0 && (
+              <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
+            )}
             <span className="text-xs font-mono text-gray-400">
               {ticket.reference}
             </span>
