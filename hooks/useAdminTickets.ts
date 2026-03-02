@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { TicketService } from "@/services/ticket";
 import type {
   Ticket,
@@ -9,6 +10,7 @@ import type {
 } from "@/lib/types/ticket";
 import { isApiSuccess } from "@/lib/types/api";
 import { ticketToast } from "@/lib/toast";
+import { DEFAULT_PAGE_SIZE } from "@/components/ticket/ticket-pagination";
 
 export interface AdminTicketFilterValues {
   search: string;
@@ -61,7 +63,17 @@ function normalizeStatistics(raw: unknown): TicketStatistics | null {
   };
 }
 
-const PAGE_SIZE = 20;
+const VALID_PAGE_SIZES = [10, 20, 50];
+
+function parsePageSize(value: string | null): number {
+  const num = Number(value);
+  return VALID_PAGE_SIZES.includes(num) ? num : DEFAULT_PAGE_SIZE;
+}
+
+function parsePageNum(value: string | null): number {
+  const num = Number(value);
+  return num >= 1 ? Math.floor(num) : 1;
+}
 
 export interface UseAdminTicketsReturn {
   tickets: Ticket[];
@@ -69,6 +81,7 @@ export interface UseAdminTicketsReturn {
   adminUsers: AdminUser[];
   total: number;
   page: number;
+  pageSize: number;
   totalPages: number;
   filters: AdminTicketFilterValues;
   sortBy: string;
@@ -80,6 +93,7 @@ export interface UseAdminTicketsReturn {
   onFiltersChange: (filters: AdminTicketFilterValues) => void;
   onSortChange: (column: string) => void;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
   onSelectRow: (id: string, checked: boolean) => void;
   onSelectAll: (checked: boolean) => void;
   onRowUpdate: (ticketId: string, data: UpdateTicketRequest) => Promise<void>;
@@ -89,17 +103,34 @@ export interface UseAdminTicketsReturn {
 /**
  * Central hook for the admin tickets dashboard.
  * Manages filters, sorting, pagination, selection, data fetching, and row/bulk update actions.
+ * Syncs all state to URL search params.
  */
 export function useAdminTickets(
   ticketService: TicketService
 ): UseAdminTicketsReturn {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const serviceRef = useRef(ticketService);
   serviceRef.current = ticketService;
 
-  const [filters, setFilters] = useState<AdminTicketFilterValues>(DEFAULT_ADMIN_FILTERS);
-  const [sortBy, setSortBy] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [page, setPage] = useState(1);
+  // Initialize from URL
+  const [filters, setFilters] = useState<AdminTicketFilterValues>(() => ({
+    search: searchParams.get("search") || DEFAULT_ADMIN_FILTERS.search,
+    status: searchParams.get("status") || DEFAULT_ADMIN_FILTERS.status,
+    type: searchParams.get("type") || DEFAULT_ADMIN_FILTERS.type,
+    category: searchParams.get("category") || DEFAULT_ADMIN_FILTERS.category,
+    urgency: searchParams.get("urgency") || DEFAULT_ADMIN_FILTERS.urgency,
+    assignedTo: searchParams.get("assignedTo") || DEFAULT_ADMIN_FILTERS.assignedTo,
+  }));
+  const [sortBy, setSortBy] = useState(
+    () => searchParams.get("sortBy") || "updatedAt"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (searchParams.get("sortOrder") === "asc" ? "asc" : "desc")
+  );
+  const [page, setPage] = useState(() => parsePageNum(searchParams.get("page")));
+  const [pageSize, setPageSize] = useState(() => parsePageSize(searchParams.get("limit")));
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [total, setTotal] = useState(0);
@@ -110,6 +141,48 @@ export function useAdminTickets(
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const hasLoadedOnce = useRef(false);
+
+  // Sync state to URL
+  const updateUrl = useCallback(
+    (overrides: {
+      page?: number;
+      limit?: number;
+      filters?: AdminTicketFilterValues;
+      sortBy?: string;
+      sortOrder?: string;
+    }) => {
+      const p = overrides.page ?? page;
+      const l = overrides.limit ?? pageSize;
+      const f = overrides.filters ?? filters;
+      const sb = overrides.sortBy ?? sortBy;
+      const so = overrides.sortOrder ?? sortOrder;
+
+      const params = new URLSearchParams();
+      if (p > 1) params.set("page", String(p));
+      if (l !== DEFAULT_PAGE_SIZE) params.set("limit", String(l));
+      if (f.status) params.set("status", f.status);
+      if (f.type) params.set("type", f.type);
+      if (f.category) params.set("category", f.category);
+      if (f.urgency) params.set("urgency", f.urgency);
+      if (f.assignedTo) params.set("assignedTo", f.assignedTo);
+      if (f.search) params.set("search", f.search);
+      if (sb !== "updatedAt") params.set("sortBy", sb);
+      if (so !== "desc") params.set("sortOrder", so);
+
+      const qs = params.toString();
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [page, pageSize, filters, sortBy, sortOrder, pathname, router]
+  );
+
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    updateUrl({});
+  }, [page, pageSize, filters, sortBy, sortOrder]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch admin users once on mount
   useEffect(() => {
@@ -130,7 +203,7 @@ export function useAdminTickets(
 
     const params = {
       page,
-      limit: PAGE_SIZE,
+      limit: pageSize,
       status: (filters.status as TicketStatus) || undefined,
       search: filters.search || undefined,
       type: filters.type || undefined,
@@ -153,10 +226,13 @@ export function useAdminTickets(
 
     setIsLoading(false);
     hasLoadedOnce.current = true;
-  }, [page, filters, sortBy, sortOrder]);
+  }, [page, pageSize, filters, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchTickets();
+    if (hasLoadedOnce.current) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, [fetchTickets]);
 
   const onFiltersChange = useCallback((newFilters: AdminTicketFilterValues) => {
@@ -180,6 +256,12 @@ export function useAdminTickets(
 
   const onPageChange = useCallback((newPage: number) => {
     setPage(newPage);
+    setSelectedIds(new Set());
+  }, []);
+
+  const onPageSizeChange = useCallback((newSize: number) => {
+    setPageSize(newSize);
+    setPage(1);
     setSelectedIds(new Set());
   }, []);
 
@@ -264,7 +346,7 @@ export function useAdminTickets(
     [selectedIds, fetchTickets]
   );
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.ceil(total / pageSize);
 
   return {
     tickets,
@@ -272,6 +354,7 @@ export function useAdminTickets(
     adminUsers,
     total,
     page,
+    pageSize,
     totalPages,
     filters,
     sortBy,
@@ -283,6 +366,7 @@ export function useAdminTickets(
     onFiltersChange,
     onSortChange,
     onPageChange,
+    onPageSizeChange,
     onSelectRow,
     onSelectAll,
     onRowUpdate,

@@ -3,8 +3,8 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { TicketPagination } from "@/components/ticket/ticket-pagination";
 import {
   AdminStatsBar,
   AdminTicketFilters,
@@ -111,34 +111,15 @@ export default function AdminTicketsPage() {
           />
 
           {/* Pagination */}
-          {!admin.isLoading && admin.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  admin.onPageChange(Math.max(1, admin.page - 1))
-                }
-                disabled={admin.page <= 1}
-              >
-                Précédent
-              </Button>
-              <span className="text-sm text-gray-600">
-                Page {admin.page} sur {admin.totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  admin.onPageChange(
-                    Math.min(admin.totalPages, admin.page + 1)
-                  )
-                }
-                disabled={admin.page >= admin.totalPages}
-              >
-                Suivant
-              </Button>
-            </div>
+          {!admin.isLoading && admin.total > 0 && (
+            <TicketPagination
+              page={admin.page}
+              totalPages={admin.totalPages}
+              totalItems={admin.total}
+              pageSize={admin.pageSize}
+              onPageChange={admin.onPageChange}
+              onPageSizeChange={admin.onPageSizeChange}
+            />
           )}
 
           {/* Bulk Toolbar */}
