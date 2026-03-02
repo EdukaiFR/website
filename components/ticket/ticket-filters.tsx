@@ -36,7 +36,7 @@ export interface TicketFilterValues {
 
 export const DEFAULT_FILTERS: TicketFilterValues = {
   search: "",
-  status: "",
+  status: "open",
   type: "",
   category: "",
   urgency: "",
@@ -104,11 +104,11 @@ export function TicketFilters({
   );
 
   const hasActiveFilters =
-    filters.status !== "" ||
-    filters.type !== "" ||
-    filters.category !== "" ||
-    filters.urgency !== "" ||
-    filters.search !== "";
+    filters.status !== DEFAULT_FILTERS.status ||
+    filters.type !== DEFAULT_FILTERS.type ||
+    filters.category !== DEFAULT_FILTERS.category ||
+    filters.urgency !== DEFAULT_FILTERS.urgency ||
+    filters.search !== DEFAULT_FILTERS.search;
 
   const handleReset = useCallback(() => {
     setSearchInput("");

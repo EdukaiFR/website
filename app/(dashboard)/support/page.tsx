@@ -121,11 +121,11 @@ export default function SupportPage() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const hasActiveFilters =
-    filters.status !== "" ||
-    filters.type !== "" ||
-    filters.category !== "" ||
-    filters.urgency !== "" ||
-    filters.search !== "";
+    filters.status !== DEFAULT_FILTERS.status ||
+    filters.type !== DEFAULT_FILTERS.type ||
+    filters.category !== DEFAULT_FILTERS.category ||
+    filters.urgency !== DEFAULT_FILTERS.urgency ||
+    filters.search !== DEFAULT_FILTERS.search;
 
   return (
     <div className="flex flex-col gap-6 px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
@@ -152,7 +152,9 @@ export default function SupportPage() {
           )}
         </div>
 
-        <TicketStatsBar tickets={tickets} isLoading={isLoading && !hasLoadedOnce.current} />
+        {isAdmin && (
+          <TicketStatsBar tickets={tickets} isLoading={isLoading && !hasLoadedOnce.current} />
+        )}
 
         <TicketFilters
           filters={filters}
