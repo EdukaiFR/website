@@ -68,6 +68,8 @@ export default function TicketDetailPage() {
       const result = await serviceRef.current.getMessages(tId);
       if (isApiSuccess(result) && result.data) {
         setMessages(result.data);
+        // Fire-and-forget: mark all messages as read when viewing
+        serviceRef.current.markAllMessagesRead(tId);
       }
     },
     []
