@@ -76,6 +76,7 @@ export interface Ticket {
   firstResponseAt?: string;
   resolvedAt?: string;
   closedAt?: string;
+  unreadCount?: number;
 }
 
 export interface PopulatedUser {
