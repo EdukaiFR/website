@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   validateFile,
   convertFileToBase64,
+  convertFilesToAttachments,
   getAttachmentKind,
   compressImage,
 } from "@/lib/utils/file-upload";
@@ -101,6 +102,70 @@ describe("file-upload utilities", () => {
 
       expect(result).toBe(file);
     });
+
+    it("should compress image above threshold using canvas", async () => {
+      const file = createMockFile("large.jpg", 2 * 1024 * 1024, "image/jpeg");
+
+      const mockBitmap = { width: 3840, height: 2160, close: vi.fn() };
+      const mockCreateImageBitmap = vi.fn().mockResolvedValue(mockBitmap);
+      vi.stubGlobal("createImageBitmap", mockCreateImageBitmap);
+
+      const mockCtx = { drawImage: vi.fn() };
+      const mockBlob = new Blob(["compressed"], { type: "image/jpeg" });
+      const mockCanvas = {
+        getContext: vi.fn().mockReturnValue(mockCtx),
+        convertToBlob: vi.fn().mockResolvedValue(mockBlob),
+      };
+      vi.stubGlobal(
+        "OffscreenCanvas",
+        function OffscreenCanvas() {
+          return mockCanvas;
+        }
+      );
+
+      const result = await compressImage(file);
+
+      expect(result).not.toBe(file);
+      expect(result.type).toBe("image/jpeg");
+      expect(mockCreateImageBitmap).toHaveBeenCalledWith(file);
+      expect(mockBitmap.close).toHaveBeenCalled();
+      expect(mockCanvas.getContext).toHaveBeenCalledWith("2d");
+
+      vi.unstubAllGlobals();
+    });
+
+    it("should return original file if canvas context is null", async () => {
+      const file = createMockFile("large.jpg", 2 * 1024 * 1024, "image/jpeg");
+
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn().mockResolvedValue({ width: 1000, height: 500, close: vi.fn() })
+      );
+      vi.stubGlobal(
+        "OffscreenCanvas",
+        function OffscreenCanvas() {
+          return { getContext: vi.fn().mockReturnValue(null) };
+        }
+      );
+
+      const result = await compressImage(file);
+      expect(result).toBe(file);
+
+      vi.unstubAllGlobals();
+    });
+
+    it("should return original file if compression throws", async () => {
+      const file = createMockFile("large.jpg", 2 * 1024 * 1024, "image/jpeg");
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn().mockRejectedValue(new Error("bitmap failed"))
+      );
+
+      const result = await compressImage(file);
+      expect(result).toBe(file);
+
+      vi.unstubAllGlobals();
+    });
   });
 
   describe("convertFileToBase64", () => {
@@ -135,6 +200,59 @@ describe("file-upload utilities", () => {
       await expect(promise).rejects.toThrow();
 
       global.FileReader = originalFileReader;
+    });
+  });
+
+  describe("convertFilesToAttachments", () => {
+    it("should process multiple files into attachments", async () => {
+      const textFile = new File(["hello world content"], "doc.txt", {
+        type: "text/plain",
+      });
+      const imgFile = new File(["image data"], "photo.png", {
+        type: "image/png",
+      });
+
+      const result = await convertFilesToAttachments(
+        [textFile, imgFile],
+        "user123"
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result[0].fileName).toBe("doc.txt");
+      expect(result[0].fileType).toBe("text/plain");
+      expect(result[0].uploadedBy).toBe("user123");
+      expect(result[0].data).toMatch(/^data:text\/plain;base64,/);
+      expect(result[1].fileName).toBe("photo.png");
+      expect(result[1].fileType).toBe("image/png");
+    });
+
+    it("should throw on invalid file in batch", async () => {
+      const invalidFile = createMockFile(
+        "bad.exe",
+        1024,
+        "application/x-msdownload"
+      );
+
+      await expect(
+        convertFilesToAttachments([invalidFile], "user123")
+      ).rejects.toThrow("application/x-msdownload");
+    });
+
+    it("should return empty array for empty input", async () => {
+      const result = await convertFilesToAttachments([], "user123");
+      expect(result).toHaveLength(0);
+    });
+
+    it("should set correct uploadedAt timestamp", async () => {
+      const file = new File(["content"], "test.txt", { type: "text/plain" });
+
+      const result = await convertFilesToAttachments([file], "user123");
+
+      expect(result[0].uploadedAt).toBeDefined();
+      // Verify it parses as a valid ISO date
+      expect(new Date(result[0].uploadedAt).toISOString()).toBe(
+        result[0].uploadedAt
+      );
     });
   });
 });
