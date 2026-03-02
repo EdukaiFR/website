@@ -10,25 +10,15 @@ import type {
 } from "@/lib/types/ticket";
 import { isApiSuccess } from "@/lib/types/api";
 import { ticketToast } from "@/lib/toast";
-import { DEFAULT_PAGE_SIZE } from "@/components/ticket/ticket-pagination";
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_ADMIN_FILTERS,
+  type AdminTicketFilterValues,
+} from "@/lib/constants/ticket";
+import { parsePageSize, parsePageNum } from "@/lib/utils/pagination";
 
-export interface AdminTicketFilterValues {
-  search: string;
-  status: string;
-  type: string;
-  category: string;
-  urgency: string;
-  assignedTo: string;
-}
-
-export const DEFAULT_ADMIN_FILTERS: AdminTicketFilterValues = {
-  search: "",
-  status: "",
-  type: "",
-  category: "",
-  urgency: "",
-  assignedTo: "",
-};
+export type { AdminTicketFilterValues } from "@/lib/constants/ticket";
+export { DEFAULT_ADMIN_FILTERS } from "@/lib/constants/ticket";
 
 interface RawStatsBucket {
   _id: string;
@@ -61,18 +51,6 @@ function normalizeStatistics(raw: unknown): TicketStatistics | null {
     byStatus: byStatus as Record<TicketStatus, number>,
     byCategory,
   };
-}
-
-const VALID_PAGE_SIZES = [10, 20, 50];
-
-function parsePageSize(value: string | null): number {
-  const num = Number(value);
-  return VALID_PAGE_SIZES.includes(num) ? num : DEFAULT_PAGE_SIZE;
-}
-
-function parsePageNum(value: string | null): number {
-  const num = Number(value);
-  return num >= 1 ? Math.floor(num) : 1;
 }
 
 export interface UseAdminTicketsReturn {
@@ -130,7 +108,7 @@ export function useAdminTickets(
     () => (searchParams.get("sortOrder") === "asc" ? "asc" : "desc")
   );
   const [page, setPage] = useState(() => parsePageNum(searchParams.get("page")));
-  const [pageSize, setPageSize] = useState(() => parsePageSize(searchParams.get("limit")));
+  const [pageSize, setPageSize] = useState(() => parsePageSize(searchParams.get("limit"), DEFAULT_PAGE_SIZE));
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [total, setTotal] = useState(0);
@@ -230,9 +208,6 @@ export function useAdminTickets(
 
   useEffect(() => {
     fetchTickets();
-    if (hasLoadedOnce.current) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   }, [fetchTickets]);
 
   const onFiltersChange = useCallback((newFilters: AdminTicketFilterValues) => {

@@ -6,22 +6,12 @@ import { isApiSuccess } from "@/lib/types/api";
 import { ticketToast } from "@/lib/toast";
 import {
   DEFAULT_FILTERS,
+  DEFAULT_PAGE_SIZE,
   type TicketFilterValues,
-} from "@/components/ticket/ticket-filters";
-import { DEFAULT_PAGE_SIZE } from "@/components/ticket/ticket-pagination";
+} from "@/lib/constants/ticket";
+import { parsePageSize, parsePageNum } from "@/lib/utils/pagination";
 
 const SEARCH_DEBOUNCE_MS = 300;
-const VALID_PAGE_SIZES = [10, 20, 50];
-
-function parsePageSize(value: string | null): number {
-  const num = Number(value);
-  return VALID_PAGE_SIZES.includes(num) ? num : DEFAULT_PAGE_SIZE;
-}
-
-function parsePageNum(value: string | null): number {
-  const num = Number(value);
-  return num >= 1 ? Math.floor(num) : 1;
-}
 
 export interface UseTicketListReturn {
   tickets: Ticket[];
@@ -66,7 +56,7 @@ export function useTicketList(
     parsePageNum(searchParams.get("page"))
   );
   const [pageSize, setPageSize] = useState(() =>
-    parsePageSize(searchParams.get("limit"))
+    parsePageSize(searchParams.get("limit"), DEFAULT_PAGE_SIZE)
   );
   const [isLoading, setIsLoading] = useState(true);
   const hasLoadedOnce = useRef(false);
@@ -171,9 +161,6 @@ export function useTicketList(
 
   useEffect(() => {
     fetchTickets();
-    if (hasLoadedOnce.current) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   }, [fetchTickets]);
 
   const onFiltersChange = useCallback((newFilters: TicketFilterValues) => {

@@ -26,21 +26,9 @@ import {
   translateLabel,
 } from "@/lib/constants/ticket";
 
-export interface TicketFilterValues {
-  search: string;
-  status: string;
-  type: string;
-  category: string;
-  urgency: string;
-}
-
-export const DEFAULT_FILTERS: TicketFilterValues = {
-  search: "",
-  status: "open",
-  type: "",
-  category: "",
-  urgency: "",
-};
+export type { TicketFilterValues } from "@/lib/constants/ticket";
+export { DEFAULT_FILTERS } from "@/lib/constants/ticket";
+import { DEFAULT_FILTERS, type TicketFilterValues } from "@/lib/constants/ticket";
 
 interface TicketFiltersProps {
   filters: TicketFilterValues;

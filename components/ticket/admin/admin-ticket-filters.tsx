@@ -112,6 +112,7 @@ export function AdminTicketFilters({
         <input
           type="text"
           placeholder="Rechercher par titre ou référence..."
+          aria-label="Rechercher des tickets"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           disabled={isLoading}

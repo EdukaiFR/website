@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -42,6 +42,12 @@ export default function SupportPage() {
     onPageChange,
     onPageSizeChange,
   } = useTicketList(ticketService, isAdmin);
+
+  useEffect(() => {
+    if (hasLoadedOnce) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [page, hasLoadedOnce]);
 
   const handleTicketClick = useCallback(
     (ticket: Ticket) => {

@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import {
   formatTicketDateFull,
   formatTicketRelativeDate,
-  getStatusTransitions,
-  resolveId,
   resolveUserName,
 } from "@/lib/utils/ticket-helpers";
 import {
@@ -14,22 +12,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ticket/status-badge";
+import { AdminTicketControls } from "@/components/ticket/admin/admin-ticket-controls";
 import { cn } from "@/lib/utils";
-import { useTicketService } from "@/services/ticket";
-import { isApiSuccess } from "@/lib/types/api";
-import { ticketToast } from "@/lib/toast";
 import {
   STATUS_COLORS,
-  STATUS_LABELS,
   DEFAULT_STATUS_COLOR,
   TYPE_LABELS,
   TYPE_COLORS,
@@ -45,7 +32,12 @@ import type { Ticket, TicketStatus, AdminUser } from "@/lib/types/ticket";
 interface TicketSidebarProps {
   ticket: Ticket;
   isAdmin?: boolean;
-  onTicketUpdate?: (ticket: Ticket) => void;
+  adminUsers?: AdminUser[];
+  pendingField?: string | null;
+  onStatusChange?: (status: TicketStatus) => void;
+  onPriorityChange?: (priority: string) => void;
+  onAssigneeChange?: (userId: string) => void;
+  onTagsSave?: (tags: string[]) => void;
   className?: string;
 }
 
@@ -65,120 +57,31 @@ function MetadataRow({
 }
 
 /**
- * Sidebar displaying ticket metadata, timestamps, status history,
- * and admin controls (status, priority, assignee, tags) when isAdmin is true.
+ * Sidebar displaying ticket metadata, timestamps, and status history.
+ * When isAdmin is true and callback props are provided, renders admin controls.
+ *
+ * @param ticket - The ticket to display
+ * @param isAdmin - Whether to show admin controls
+ * @param adminUsers - List of admin users for the assignee dropdown
+ * @param pendingField - Which field is being updated (loading state)
+ * @param onStatusChange - Callback when admin changes ticket status
+ * @param onPriorityChange - Callback when admin changes priority
+ * @param onAssigneeChange - Callback when admin changes assignee
+ * @param onTagsSave - Callback when admin saves tags
+ * @param className - Optional additional CSS classes
  */
 export function TicketSidebar({
   ticket,
   isAdmin = false,
-  onTicketUpdate,
+  adminUsers = [],
+  pendingField = null,
+  onStatusChange,
+  onPriorityChange,
+  onAssigneeChange,
+  onTagsSave,
   className,
 }: TicketSidebarProps) {
-  const ticketService = useTicketService();
-  const serviceRef = useRef(ticketService);
-  serviceRef.current = ticketService;
-
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const [pendingField, setPendingField] = useState<string | null>(null);
-  const [tagsInput, setTagsInput] = useState(ticket.tags.join(", "));
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    let cancelled = false;
-    async function fetchAdmins() {
-      const result = await serviceRef.current.getAdminUsers();
-      if (isApiSuccess(result) && result.data && !cancelled) {
-        setAdminUsers(result.data);
-      }
-    }
-    fetchAdmins();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAdmin]);
-
-  useEffect(() => {
-    setTagsInput(ticket.tags.join(", "));
-  }, [ticket.tags]);
-
-  const handleUpdate = useCallback(
-    async (
-      field: string,
-      data: Parameters<typeof ticketService.updateTicket>[1],
-      successToast: () => void
-    ) => {
-      setPendingField(field);
-      try {
-        const result = await serviceRef.current.updateTicket(ticket._id, data);
-        if (isApiSuccess(result) && result.data) {
-          successToast();
-          onTicketUpdate?.(result.data);
-        } else {
-          ticketToast.updateError(result.message);
-        }
-      } catch (_error: unknown) {
-        ticketToast.updateError();
-      } finally {
-        setPendingField(null);
-      }
-    },
-    [ticket._id, onTicketUpdate]
-  );
-
-  const handleStatusChange = useCallback(
-    (value: string) => {
-      handleUpdate(
-        "status",
-        { status: value as TicketStatus },
-        ticketToast.statusChangeSuccess
-      );
-    },
-    [handleUpdate]
-  );
-
-  const handlePriorityChange = useCallback(
-    (value: string) => {
-      handleUpdate(
-        "priority",
-        { internalPriority: value },
-        ticketToast.priorityUpdateSuccess
-      );
-    },
-    [handleUpdate]
-  );
-
-  const handleAssigneeChange = useCallback(
-    (value: string) => {
-      handleUpdate(
-        "assignee",
-        { assignedTo: value === "__none__" ? "" : value },
-        ticketToast.assignSuccess
-      );
-    },
-    [handleUpdate]
-  );
-
-  const handleTagsSave = useCallback(() => {
-    const newTags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-    const currentTags = ticket.tags.join(",");
-    const newTagsStr = newTags.join(",");
-    if (currentTags === newTagsStr) return;
-    handleUpdate("tags", { tags: newTags }, ticketToast.tagsUpdateSuccess);
-  }, [tagsInput, ticket.tags, handleUpdate]);
-
-  const handleTagsKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleTagsSave();
-      }
-    },
-    [handleTagsSave]
-  );
 
   const typeColors = TYPE_COLORS[ticket.type] ?? DEFAULT_TYPE_COLOR;
   const typeLabel = translateLabel(ticket.type, TYPE_LABELS, ticket.type);
@@ -201,8 +104,6 @@ export function TicketSidebar({
     URGENCY_LABELS,
     ticket.internalPriority
   );
-
-  const statusTransitions = getStatusTransitions(ticket.status);
 
   return (
     <div
@@ -353,121 +254,16 @@ export function TicketSidebar({
       )}
 
       {/* Admin controls */}
-      {isAdmin && (
-        <div className="p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Actions admin
-          </p>
-
-          {/* Status */}
-          <div className="space-y-1">
-            <label className="text-xs text-gray-500">Changer le statut</label>
-            {statusTransitions.length > 0 ? (
-              <div className="relative">
-                <Select
-                  value={ticket.status}
-                  onValueChange={handleStatusChange}
-                  disabled={pendingField === "status"}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={ticket.status}>
-                      {STATUS_LABELS[ticket.status] ?? ticket.status} (actuel)
-                    </SelectItem>
-                    {statusTransitions.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {STATUS_LABELS[s] ?? s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {pendingField === "status" && (
-                  <Loader2 className="absolute right-8 top-2 h-4 w-4 animate-spin text-gray-400" />
-                )}
-              </div>
-            ) : (
-              <p className="text-xs text-gray-400 italic">
-                Aucune transition disponible
-              </p>
-            )}
-          </div>
-
-          {/* Priority */}
-          <div className="space-y-1">
-            <label className="text-xs text-gray-500">Priorité interne</label>
-            <div className="relative">
-              <Select
-                value={ticket.internalPriority || "medium"}
-                onValueChange={handlePriorityChange}
-                disabled={pendingField === "priority"}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(URGENCY_LABELS).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {pendingField === "priority" && (
-                <Loader2 className="absolute right-8 top-2 h-4 w-4 animate-spin text-gray-400" />
-              )}
-            </div>
-          </div>
-
-          {/* Assignee */}
-          <div className="space-y-1">
-            <label className="text-xs text-gray-500">Assigné à</label>
-            <div className="relative">
-              <Select
-                value={resolveId(ticket.assignedTo) || "__none__"}
-                onValueChange={handleAssigneeChange}
-                disabled={pendingField === "assignee"}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Non assigné" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Non assigné</SelectItem>
-                  {adminUsers.map((user) => (
-                    <SelectItem key={user._id} value={user._id}>
-                      {user.firstName} {user.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {pendingField === "assignee" && (
-                <Loader2 className="absolute right-8 top-2 h-4 w-4 animate-spin text-gray-400" />
-              )}
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="space-y-1">
-            <label className="text-xs text-gray-500">
-              Tags (séparés par des virgules)
-            </label>
-            <div className="relative">
-              <Input
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                onBlur={handleTagsSave}
-                onKeyDown={handleTagsKeyDown}
-                disabled={pendingField === "tags"}
-                placeholder="bug, urgent, ..."
-                className="h-8 text-xs"
-              />
-              {pendingField === "tags" && (
-                <Loader2 className="absolute right-8 top-2 h-4 w-4 animate-spin text-gray-400" />
-              )}
-            </div>
-          </div>
-        </div>
+      {isAdmin && onStatusChange && onPriorityChange && onAssigneeChange && onTagsSave && (
+        <AdminTicketControls
+          ticket={ticket}
+          adminUsers={adminUsers}
+          pendingField={pendingField}
+          onStatusChange={onStatusChange}
+          onPriorityChange={onPriorityChange}
+          onAssigneeChange={onAssigneeChange}
+          onTagsSave={onTagsSave}
+        />
       )}
     </div>
   );

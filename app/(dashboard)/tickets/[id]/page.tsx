@@ -37,10 +37,17 @@ export default function TicketDetailPage() {
     isLoading,
     notFound,
     isReopening,
+    adminUsers,
+    pendingField,
+    isSubmittingMessage,
     handleMessageSent,
-    handleTicketUpdate,
     handleReopen,
-  } = useTicket(ticketId, ticketService);
+    handleStatusChange,
+    handlePriorityChange,
+    handleAssigneeChange,
+    handleTagsSave,
+    handleMessageSubmit,
+  } = useTicket(ticketId, ticketService, isAdmin);
 
   const currentUserId = session.user?._id ?? "";
 
@@ -93,6 +100,17 @@ export default function TicketDetailPage() {
 
   const isTicketClosed = ticket.status === "closed";
 
+  const sidebarProps = {
+    ticket,
+    isAdmin,
+    adminUsers,
+    pendingField,
+    onStatusChange: handleStatusChange,
+    onPriorityChange: handlePriorityChange,
+    onAssigneeChange: handleAssigneeChange,
+    onTagsSave: handleTagsSave,
+  };
+
   return (
     <div className="flex flex-col px-4 lg:px-8 py-6 min-h-[calc(100vh-5rem)] w-full bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50">
       <div className="max-w-6xl mx-auto w-full flex flex-col gap-6 flex-1">
@@ -121,7 +139,7 @@ export default function TicketDetailPage() {
                 <SheetTitle>Détails du ticket</SheetTitle>
               </SheetHeader>
               <div className="p-4">
-                <TicketSidebar ticket={ticket} isAdmin={isAdmin} onTicketUpdate={handleTicketUpdate} />
+                <TicketSidebar {...sidebarProps} />
               </div>
             </SheetContent>
           </Sheet>
@@ -164,14 +182,15 @@ export default function TicketDetailPage() {
               ticketId={ticket._id}
               isTicketClosed={isTicketClosed}
               isAdmin={isAdmin}
-              onMessageSent={handleMessageSent}
+              isSubmitting={isSubmittingMessage}
+              onSubmit={handleMessageSubmit}
             />
           </div>
 
           {/* Right column — sidebar (desktop only) */}
           <div className="hidden lg:block w-80 shrink-0">
             <div className="sticky top-6">
-              <TicketSidebar ticket={ticket} isAdmin={isAdmin} onTicketUpdate={handleTicketUpdate} />
+              <TicketSidebar {...sidebarProps} />
             </div>
           </div>
         </div>

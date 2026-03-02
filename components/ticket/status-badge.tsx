@@ -1,5 +1,6 @@
 "use client";
 
+import type { TicketStatus } from "@/lib/types/ticket";
 import {
   STATUS_LABELS,
   STATUS_COLORS,
@@ -8,7 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  status: string;
+  status: TicketStatus;
   className?: string;
 }
 

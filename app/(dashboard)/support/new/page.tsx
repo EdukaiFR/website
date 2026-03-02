@@ -51,7 +51,7 @@ import { createTicketSchema } from "@/lib/schemas/ticket";
 import type { CreateTicketFormValues } from "@/lib/schemas/ticket";
 import { ticketToast } from "@/lib/toast";
 import { isApiSuccess } from "@/lib/types/api";
-import type { TicketConfigValue } from "@/lib/types/ticket";
+import type { TicketConfigValue, CreateTicketRequest } from "@/lib/types/ticket";
 import { convertFilesToAttachments } from "@/lib/utils/file-upload";
 import { useTicketService } from "@/services/ticket";
 
@@ -185,7 +185,7 @@ export default function NewTicketPage() {
         ...values,
         description: enrichedDescription,
         attachments: processedAttachments,
-      });
+      } as CreateTicketRequest);
 
       if (isApiSuccess(result)) {
         ticketToast.createSuccess();

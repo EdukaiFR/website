@@ -7,23 +7,27 @@ import { CircleX, Lock, Loader2, Paperclip, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks";
-import { useTicketService } from "@/services/ticket";
 import { createMessageSchema } from "@/lib/schemas/ticket";
 import type { CreateMessageFormValues } from "@/lib/schemas/ticket";
-import { ticketToast } from "@/lib/toast";
-import { isApiSuccess } from "@/lib/types/api";
-import type { TicketMessage, TicketVisibility } from "@/lib/types/ticket";
+import type { TicketVisibility, TicketAttachment } from "@/lib/types/ticket";
 import { validateFile } from "@/lib/utils/file-upload";
 import { convertFilesToAttachments } from "@/lib/utils/file-upload";
 import { showToast } from "@/lib/toast";
 
 const MAX_ATTACHMENT_COUNT = 5;
 
+interface MessageSubmitData {
+  content: string;
+  visibility: TicketVisibility;
+  attachments: TicketAttachment[];
+}
+
 interface MessageInputProps {
   ticketId: string;
   isTicketClosed: boolean;
   isAdmin: boolean;
-  onMessageSent: (message: TicketMessage) => void;
+  isSubmitting: boolean;
+  onSubmit: (data: MessageSubmitData) => Promise<void>;
   className?: string;
 }
 
@@ -35,17 +39,16 @@ export function MessageInput({
   ticketId,
   isTicketClosed,
   isAdmin,
-  onMessageSent,
+  isSubmitting,
+  onSubmit,
   className,
 }: MessageInputProps) {
   const session = useSession();
-  const ticketService = useTicketService();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [files, setFiles] = useState<File[]>([]);
   const [visibility, setVisibility] = useState<TicketVisibility>("public");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CreateMessageFormValues>({
     resolver: zodResolver(createMessageSchema),
@@ -89,36 +92,22 @@ export function MessageInput({
 
   const handleSubmit = useCallback(
     async (values: CreateMessageFormValues) => {
-      setIsSubmitting(true);
-      try {
-        const processedAttachments = await convertFilesToAttachments(
-          files,
-          session.user?._id ?? ""
-        );
+      const processedAttachments = await convertFilesToAttachments(
+        files,
+        session.user?._id ?? ""
+      );
 
-        const result = await ticketService.createMessage(ticketId, {
-          content: values.content,
-          visibility,
-          attachments: processedAttachments,
-        });
+      await onSubmit({
+        content: values.content,
+        visibility,
+        attachments: processedAttachments,
+      });
 
-        if (isApiSuccess(result) && result.data) {
-          ticketToast.messageSuccess();
-          form.reset();
-          setFiles([]);
-          setVisibility("public");
-          onMessageSent(result.data);
-        } else {
-          ticketToast.messageError(result.message);
-        }
-      } catch (error: unknown) {
-        const err = error as Error;
-        ticketToast.messageError(err.message);
-      } finally {
-        setIsSubmitting(false);
-      }
+      form.reset();
+      setFiles([]);
+      setVisibility("public");
     },
-    [files, session.user, ticketService, ticketId, visibility, form, onMessageSent]
+    [files, session.user, onSubmit, visibility, form]
   );
 
   const handleKeyDown = useCallback(

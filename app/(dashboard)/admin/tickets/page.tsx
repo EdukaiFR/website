@@ -37,6 +37,12 @@ export default function AdminTicketsPage() {
     }
   }, [session.loading, session.user, isAdmin, router]);
 
+  useEffect(() => {
+    if (admin.hasLoadedOnce) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [admin.page, admin.hasLoadedOnce]);
+
   const handleStatusCardClick = useCallback(
     (status: string) => {
       admin.onFiltersChange({ ...admin.filters, status });
