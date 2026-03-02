@@ -16,6 +16,7 @@ function createMockService(
     getMessages: vi.fn(),
     createMessage: vi.fn(),
     markMessageRead: vi.fn(),
+    markAllMessagesRead: vi.fn(),
     reopenTicket: vi.fn(),
     updateTicket: vi.fn(),
     closeTicket: vi.fn(),

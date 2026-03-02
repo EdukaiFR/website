@@ -46,6 +46,7 @@ describe("TicketService", () => {
       expect(typeof service.getMessages).toBe("function");
       expect(typeof service.createMessage).toBe("function");
       expect(typeof service.markMessageRead).toBe("function");
+      expect(typeof service.markAllMessagesRead).toBe("function");
       expect(typeof service.reopenTicket).toBe("function");
       expect(typeof service.updateTicket).toBe("function");
       expect(typeof service.closeTicket).toBe("function");
