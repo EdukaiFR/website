@@ -25,6 +25,24 @@ export function formatTicketRelativeDate(dateStr: string): string {
   });
 }
 
+/** Compact relative date for tables: "< 1 min", "3 min", "2 h", "1 j", "3 sem", etc. */
+export function formatCompactRelativeDate(dateStr: string): string {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const seconds = Math.floor(diffMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+
+  if (minutes < 1) return "< 1 min";
+  if (minutes < 60) return `${minutes} min`;
+  if (hours < 24) return `${hours} h`;
+  if (days < 7) return `${days} j`;
+  if (weeks < 5) return `${weeks} sem`;
+  return `${months} mois`;
+}
+
 /** Time only: "14:30" */
 export function formatMessageTime(dateStr: string): string {
   return format(new Date(dateStr), "HH:mm", { locale: fr });

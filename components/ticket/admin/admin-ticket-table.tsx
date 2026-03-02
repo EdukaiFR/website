@@ -41,7 +41,7 @@ import {
 import {
   resolveUserName,
   formatTicketDate,
-  formatTicketRelativeDate,
+  formatCompactRelativeDate,
   getStatusTransitions,
 } from "@/lib/utils/ticket-helpers";
 import type { Ticket, UpdateTicketRequest } from "@/lib/types/ticket";
@@ -358,7 +358,7 @@ function TicketRow({
 
       <TableCell>
         <span className="text-xs text-gray-500">
-          {formatTicketRelativeDate(ticket.updatedAt)}
+          {formatCompactRelativeDate(ticket.updatedAt)}
         </span>
       </TableCell>
 
