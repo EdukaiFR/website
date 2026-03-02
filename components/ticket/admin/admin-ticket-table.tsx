@@ -46,8 +46,6 @@ import {
 } from "@/lib/utils/ticket-helpers";
 import type { Ticket, UpdateTicketRequest } from "@/lib/types/ticket";
 
-type AdminTicket = Ticket & { hasUnreadAdminMessages?: boolean };
-
 interface AdminTicketTableProps {
   tickets: Ticket[];
   selectedIds: Set<string>;
@@ -195,7 +193,7 @@ export function AdminTicketTable({
           {tickets.map((ticket) => (
             <TicketRow
               key={ticket._id}
-              ticket={ticket as AdminTicket}
+              ticket={ticket}
               isSelected={selectedIds.has(ticket._id)}
               currentUserId={currentUserId}
               onRowClick={onRowClick}
@@ -258,7 +256,7 @@ function SortableHead({
 }
 
 interface TicketRowProps {
-  ticket: AdminTicket;
+  ticket: Ticket;
   isSelected: boolean;
   currentUserId: string;
   onRowClick: (reference: string) => void;
@@ -304,7 +302,7 @@ function TicketRow({
 
       <TableCell>
         <div className="flex items-center gap-2">
-          {ticket.hasUnreadAdminMessages && (
+          {(ticket.unreadCount ?? 0) > 0 && (
             <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
           )}
           <span className="font-mono text-xs text-gray-600">
