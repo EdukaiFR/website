@@ -2,14 +2,14 @@ import {
     Bell,
     Users,
     Home,
-    HelpCircle,
+    LifeBuoy,
     Settings,
     Zap,
     GraduationCap,
-    Shield,
     BarChart3,
     User,
     Sliders,
+    TicketCheck,
 } from "lucide-react";
 import { useIsAdmin } from "./useRole";
 
@@ -70,9 +70,9 @@ export function useLinks() {
             Icon: Bell,
         },
         {
-            href: "/tickets",
+            href: "/support",
             label: "Support",
-            Icon: HelpCircle,
+            Icon: LifeBuoy,
         },
         {
             href: "/settings",
@@ -86,7 +86,7 @@ export function useLinks() {
               {
                   href: "/admin/tickets",
                   label: "Admin - Tickets",
-                  Icon: Shield,
+                  Icon: TicketCheck,
               },
               {
                   href: "/admin/plan-limits",

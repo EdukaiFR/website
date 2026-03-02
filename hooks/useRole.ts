@@ -11,13 +11,7 @@ export const USER_ROLES = {
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 export interface RolePermissions {
-    canModifyAnyTicket: boolean;
-    canReopenAnyTicket: boolean;
-    canSeeInternalComments: boolean;
-    canCreateInternalComments: boolean;
     canAccessAdminEndpoints: boolean;
-    canAssignTickets: boolean;
-    canViewAllTickets: boolean;
 }
 
 export function useUserRole(): UserRole {
@@ -49,72 +43,14 @@ export function useRolePermissions(): RolePermissions {
     switch (role) {
         case USER_ROLES.ADMIN:
             return {
-                canModifyAnyTicket: true,
-                canReopenAnyTicket: true,
-                canSeeInternalComments: true,
-                canCreateInternalComments: true,
                 canAccessAdminEndpoints: true,
-                canAssignTickets: true,
-                canViewAllTickets: true,
             };
         case USER_ROLES.TRIAGE:
-            return {
-                canModifyAnyTicket: true,
-                canReopenAnyTicket: true,
-                canSeeInternalComments: true,
-                canCreateInternalComments: true,
-                canAccessAdminEndpoints: false,
-                canAssignTickets: true,
-                canViewAllTickets: true,
-            };
         case USER_ROLES.DEV:
-            return {
-                canModifyAnyTicket: false,
-                canReopenAnyTicket: false,
-                canSeeInternalComments: true,
-                canCreateInternalComments: true,
-                canAccessAdminEndpoints: false,
-                canAssignTickets: false,
-                canViewAllTickets: true,
-            };
         case USER_ROLES.USER:
         default:
             return {
-                canModifyAnyTicket: false,
-                canReopenAnyTicket: false,
-                canSeeInternalComments: false,
-                canCreateInternalComments: false,
                 canAccessAdminEndpoints: false,
-                canAssignTickets: false,
-                canViewAllTickets: false,
             };
     }
-}
-
-export function canUserModifyTicket(
-    userRole: UserRole,
-    userId: string,
-    ticketReporterId: string
-): boolean {
-    // Admins and triage can modify any ticket
-    if (userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.TRIAGE) {
-        return true;
-    }
-
-    // Users can only modify their own tickets
-    return userId === ticketReporterId;
-}
-
-export function canUserReopenTicket(
-    userRole: UserRole,
-    userId: string,
-    ticketReporterId: string
-): boolean {
-    // Admins and triage can reopen any ticket
-    if (userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.TRIAGE) {
-        return true;
-    }
-
-    // Users can only reopen their own tickets
-    return userId === ticketReporterId;
 }

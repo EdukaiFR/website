@@ -1,401 +1,308 @@
-import { useState } from "react";
-import { ticketToast } from "@/lib/toast";
-import { useSession, useRolePermissions } from "@/hooks";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { TicketService } from "@/services/ticket";
-import {
-    type Ticket,
-    type TicketComment,
-    type CreateTicketRequest,
-    type GetTicketsParams,
-    type UpdateTicketRequest,
-    type AddCommentRequest,
-    type PaginationInfo,
-    TicketStatus,
+import type {
+  Ticket,
+  TicketMessage,
+  TicketStatus,
+  AdminUser,
+  UpdateTicketRequest,
+  TicketAttachment,
+  TicketVisibility,
+  CreateMessageRequest,
 } from "@/lib/types/ticket";
+import { POLLING_INTERVAL_MS } from "@/lib/types/ticket";
+import { isApiSuccess, isApiFailure } from "@/lib/types/api";
+import { ticketToast } from "@/lib/toast";
 
-export function useTicket(ticketService: TicketService) {
-    // Hooks for user session and permissions
-    const { user } = useSession();
-    const permissions = useRolePermissions();
+export interface UseTicketReturn {
+  ticket: Ticket | null;
+  messages: TicketMessage[];
+  isLoading: boolean;
+  notFound: boolean;
+  isReopening: boolean;
+  adminUsers: AdminUser[];
+  pendingField: string | null;
+  isSubmittingMessage: boolean;
+  handleMessageSent: (msg: TicketMessage) => void;
+  handleTicketUpdate: (updated: Ticket) => void;
+  handleReopen: () => Promise<void>;
+  handleStatusChange: (status: TicketStatus) => void;
+  handlePriorityChange: (priority: string) => void;
+  handleAssigneeChange: (userId: string) => void;
+  handleTagsSave: (tags: string[]) => void;
+  handleMessageSubmit: (data: {
+    content: string;
+    visibility: TicketVisibility;
+    attachments: TicketAttachment[];
+  }) => Promise<void>;
+}
 
-    // State management
-    const [tickets, setTickets] = useState<Ticket[]>([]);
-    const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
-    const [comments, setComments] = useState<TicketComment[]>([]);
-    const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+/**
+ * Domain hook for a single ticket detail page.
+ * Manages ticket state, messages, polling, admin controls, and user actions.
+ *
+ * @param ticketId - The ID of the ticket to load
+ * @param ticketService - Injected ticket service for API calls
+ * @param isAdmin - Whether to fetch admin users and enable admin operations
+ * @returns Ticket state, messages, and action handlers
+ */
+export function useTicket(
+  ticketId: string,
+  ticketService: TicketService,
+  isAdmin = false
+): UseTicketReturn {
+  const serviceRef = useRef(ticketService);
+  serviceRef.current = ticketService;
 
-    // Loading states
-    const [isCreatingTicket, setIsCreatingTicket] = useState(false);
-    const [isLoadingTickets, setIsLoadingTickets] = useState(false);
-    const [isLoadingTicket, setIsLoadingTicket] = useState(false);
-    const [isUpdatingTicket, setIsUpdatingTicket] = useState(false);
-    const [isAddingComment, setIsAddingComment] = useState(false);
-    const [isReopeningTicket, setIsReopeningTicket] = useState(false);
+  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [messages, setMessages] = useState<TicketMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [isReopening, setIsReopening] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [pendingField, setPendingField] = useState<string | null>(null);
+  const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
 
-    // Error states
-    const [ticketError, setTicketError] = useState<string | null>(null);
+  const fetchTicket = useCallback(async () => {
+    const result = await serviceRef.current.getTicketById(ticketId);
+    if (isApiSuccess(result) && result.data) {
+      setTicket(result.data);
+      return result.data;
+    }
+    if (isApiFailure(result) && result.statusCode === 404) {
+      setNotFound(true);
+    } else {
+      ticketToast.loadError();
+    }
+    return null;
+  }, [ticketId]);
 
-    // Create a new ticket
-    const createTicket = async (ticketData: CreateTicketRequest) => {
-        try {
-            setIsCreatingTicket(true);
-            setTicketError(null);
+  const fetchMessages = useCallback(async (tId: string) => {
+    const result = await serviceRef.current.getMessages(tId);
+    if (isApiSuccess(result) && result.data) {
+      setMessages(result.data);
+      serviceRef.current.markAllMessagesRead(tId);
+    }
+  }, []);
 
-            const response = await ticketService.createTicket(ticketData);
+  // Initial load
+  useEffect(() => {
+    let cancelled = false;
 
-            if (response) {
-                ticketToast.createSuccess();
-                // Refresh tickets list to include the new ticket
-                await loadTickets();
-                return response.data;
-            } else {
-                ticketToast.createError();
-                setTicketError(
-                    "Échec de la création du ticket. Veuillez réessayer."
-                );
-                return null;
-            }
-        } catch (error) {
-            console.error("Erreur lors de la création du ticket:", error);
-            ticketToast.createError();
-            setTicketError(
-                "Échec de la création du ticket. Veuillez réessayer."
-            );
-            return null;
-        } finally {
-            setIsCreatingTicket(false);
-        }
+    async function init() {
+      setIsLoading(true);
+      const t = await fetchTicket();
+      if (t && !cancelled) {
+        await fetchMessages(t._id);
+      }
+      if (!cancelled) {
+        setIsLoading(false);
+      }
+    }
+
+    init();
+    return () => {
+      cancelled = true;
     };
+  }, [fetchTicket, fetchMessages]);
 
-    // Load tickets with optional filters
-    const loadTickets = async (params?: GetTicketsParams) => {
-        try {
-            setIsLoadingTickets(true);
-            setTicketError(null);
-
-            // Apply user-based filtering if user cannot view all tickets
-            const filteredParams = { ...params };
-            if (!permissions.canViewAllTickets && user?._id) {
-                // For regular users, only show their own tickets
-                filteredParams.userId = user._id;
-            }
-
-            const response = await ticketService.getTickets(filteredParams);
-
-            if (response && response.data) {
-                setTickets(response.data.tickets);
-                setPagination(response.data.pagination);
-                return response.data.tickets;
-            } else {
-                ticketToast.loadError();
-                setTicketError(
-                    "Échec du chargement des tickets. Veuillez réessayer."
-                );
-                return [];
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement des tickets:", error);
-            ticketToast.loadError();
-            setTicketError(
-                "Échec du chargement des tickets. Veuillez réessayer."
-            );
-            return [];
-        } finally {
-            setIsLoadingTickets(false);
-        }
+  // Fetch admin users if admin
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    async function fetchAdmins() {
+      const result = await serviceRef.current.getAdminUsers();
+      if (isApiSuccess(result) && result.data && !cancelled) {
+        setAdminUsers(result.data);
+      }
+    }
+    fetchAdmins();
+    return () => {
+      cancelled = true;
     };
+  }, [isAdmin]);
 
-    // Load a specific ticket with comments
-    const loadTicketById = async (ticketId: string) => {
-        try {
-            setIsLoadingTicket(true);
-            setTicketError(null);
+  // Poll messages with Page Visibility API
+  useEffect(() => {
+    if (!ticket) return;
+    const tId = ticket._id;
+    let interval: ReturnType<typeof setInterval> | null = null;
 
-            const response = await ticketService.getTicketById(ticketId);
+    function startPolling() {
+      if (interval) return;
+      interval = setInterval(() => {
+        fetchMessages(tId);
+      }, POLLING_INTERVAL_MS);
+    }
 
-            if (response && response.data) {
-                setCurrentTicket(response.data);
-                setComments(response.data.comments);
-                return response.data;
-            } else {
-                ticketToast.loadError();
-                setTicketError(
-                    "Échec du chargement du ticket. Veuillez réessayer."
-                );
-                return null;
-            }
-        } catch (error) {
-            console.error(
-                `Erreur lors du chargement du ticket ${ticketId}:`,
-                error
-            );
-            ticketToast.loadError();
-            setTicketError(
-                "Échec du chargement du ticket. Veuillez réessayer."
-            );
-            return null;
-        } finally {
-            setIsLoadingTicket(false);
-        }
+    function stopPolling() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchMessages(tId);
+        startPolling();
+      }
+    }
+
+    startPolling();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
+  }, [ticket, fetchMessages]);
 
-    // Update ticket properties
-    const updateTicket = async (
-        ticketId: string,
-        updates: UpdateTicketRequest
+  const handleMessageSent = useCallback((msg: TicketMessage) => {
+    setMessages((prev) => [...prev, msg]);
+  }, []);
+
+  const handleTicketUpdate = useCallback((updated: Ticket) => {
+    setTicket(updated);
+  }, []);
+
+  const handleReopen = useCallback(async () => {
+    if (!ticket) return;
+    setIsReopening(true);
+    try {
+      const result = await serviceRef.current.reopenTicket(ticket._id);
+      if (isApiSuccess(result) && result.data) {
+        setTicket(result.data);
+        ticketToast.reopenSuccess();
+      } else {
+        if (isApiFailure(result) && result.statusCode === 403) {
+          ticketToast.reopenLimitReached();
+        } else {
+          ticketToast.reopenError();
+        }
+      }
+    } catch (_error: unknown) {
+      ticketToast.reopenError();
+    } finally {
+      setIsReopening(false);
+    }
+  }, [ticket]);
+
+  // Admin update handler
+  const handleUpdate = useCallback(
+    async (
+      field: string,
+      data: UpdateTicketRequest,
+      successToast: () => void
     ) => {
-        try {
-            setIsUpdatingTicket(true);
-            setTicketError(null);
-
-            // Check if user has permission to modify this ticket
-            const ticket =
-                tickets.find(t => t.id === ticketId) || currentTicket;
-            const canModify =
-                permissions.canModifyAnyTicket ||
-                (ticket && ticket.reporter?.userId === user?._id);
-
-            if (!canModify) {
-                ticketToast.updateError(
-                    "Vous n'avez pas la permission de modifier ce ticket."
-                );
-                setTicketError("Permission refusée.");
-                return null;
-            }
-
-            const response = await ticketService.updateTicket(
-                ticketId,
-                updates
-            );
-
-            if (response && response.data) {
-                ticketToast.updateSuccess();
-                const updatedTicket = response.data;
-
-                // Update current ticket if it's the same one
-                if (currentTicket && currentTicket.id === ticketId) {
-                    setCurrentTicket(updatedTicket);
-                }
-
-                // Update ticket in the list if it exists
-                setTickets(prev =>
-                    prev.map(ticket =>
-                        ticket.id === ticketId ? updatedTicket : ticket
-                    )
-                );
-
-                return updatedTicket;
-            } else {
-                ticketToast.updateError();
-                setTicketError(
-                    "Échec de la mise à jour du ticket. Veuillez réessayer."
-                );
-                return null;
-            }
-        } catch (error) {
-            console.error(
-                `Erreur lors de la mise à jour du ticket ${ticketId}:`,
-                error
-            );
-            ticketToast.updateError();
-            setTicketError(
-                "Échec de la mise à jour du ticket. Veuillez réessayer."
-            );
-            return null;
-        } finally {
-            setIsUpdatingTicket(false);
+      if (!ticket) return;
+      setPendingField(field);
+      try {
+        const result = await serviceRef.current.updateTicket(ticket._id, data);
+        if (isApiSuccess(result) && result.data) {
+          successToast();
+          setTicket(result.data);
+        } else {
+          ticketToast.updateError(result.message);
         }
-    };
+      } catch (_error: unknown) {
+        ticketToast.updateError();
+      } finally {
+        setPendingField(null);
+      }
+    },
+    [ticket]
+  );
 
-    // Close a ticket (Admin function)
-    const closeTicket = async (ticketId: string) => {
-        return updateTicket(ticketId, { status: TicketStatus.CLOSED });
-    };
+  const handleStatusChange = useCallback(
+    (status: TicketStatus) => {
+      handleUpdate("status", { status }, ticketToast.statusChangeSuccess);
+    },
+    [handleUpdate]
+  );
 
-    // Bulk update tickets (Admin function)
-    const bulkUpdateTickets = async (
-        ticketIds: string[],
-        updates: UpdateTicketRequest
-    ) => {
-        if (!permissions.canModifyAnyTicket) {
-            ticketToast.updateError(
-                "Vous n'avez pas la permission pour cette action."
-            );
-            return false;
+  const handlePriorityChange = useCallback(
+    (priority: string) => {
+      handleUpdate(
+        "priority",
+        { internalPriority: priority },
+        ticketToast.priorityUpdateSuccess
+      );
+    },
+    [handleUpdate]
+  );
+
+  const handleAssigneeChange = useCallback(
+    (userId: string) => {
+      handleUpdate(
+        "assignee",
+        { assignedTo: userId === "__none__" ? "" : userId },
+        ticketToast.assignSuccess
+      );
+    },
+    [handleUpdate]
+  );
+
+  const handleTagsSave = useCallback(
+    (tags: string[]) => {
+      handleUpdate("tags", { tags }, ticketToast.tagsUpdateSuccess);
+    },
+    [handleUpdate]
+  );
+
+  // Message submit handler
+  const handleMessageSubmit = useCallback(
+    async (data: {
+      content: string;
+      visibility: TicketVisibility;
+      attachments: TicketAttachment[];
+    }) => {
+      if (!ticket) return;
+      setIsSubmittingMessage(true);
+      try {
+        const messageData: CreateMessageRequest = {
+          content: data.content,
+          visibility: data.visibility,
+          attachments: data.attachments,
+        };
+        const result = await serviceRef.current.createMessage(
+          ticket._id,
+          messageData
+        );
+        if (isApiSuccess(result) && result.data) {
+          ticketToast.messageSuccess();
+          setMessages((prev) => [...prev, result.data!]);
+        } else {
+          ticketToast.messageError(result.message);
         }
+      } catch (error: unknown) {
+        const err = error as Error;
+        ticketToast.messageError(err.message);
+      } finally {
+        setIsSubmittingMessage(false);
+      }
+    },
+    [ticket]
+  );
 
-        try {
-            setIsUpdatingTicket(true);
-            const promises = ticketIds.map(id => updateTicket(id, updates));
-            await Promise.all(promises);
-
-            ticketToast.updateSuccess();
-            return true;
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour groupée:", error);
-            ticketToast.updateError();
-            return false;
-        } finally {
-            setIsUpdatingTicket(false);
-        }
-    };
-
-    // Add comment to ticket
-    const addComment = async (ticketId: string, comment: AddCommentRequest) => {
-        try {
-            setIsAddingComment(true);
-            setTicketError(null);
-
-            const response = await ticketService.addComment(ticketId, comment);
-
-            if (response && response.data) {
-                ticketToast.addCommentSuccess();
-                const newComment = response.data;
-
-                // Add comment to current comments list
-                setComments(prev => [...prev, newComment]);
-
-                return newComment;
-            } else {
-                ticketToast.addCommentError();
-                setTicketError(
-                    "Échec de l'ajout du commentaire. Veuillez réessayer."
-                );
-                return null;
-            }
-        } catch (error) {
-            console.error(
-                `Erreur lors de l'ajout du commentaire au ticket ${ticketId}:`,
-                error
-            );
-            ticketToast.addCommentError();
-            setTicketError(
-                "Échec de l'ajout du commentaire. Veuillez réessayer."
-            );
-            return null;
-        } finally {
-            setIsAddingComment(false);
-        }
-    };
-
-    // Reopen a closed/resolved ticket
-    const reopenTicket = async (ticketId: string) => {
-        try {
-            setIsReopeningTicket(true);
-            setTicketError(null);
-
-            const response = await ticketService.reopenTicket(ticketId);
-
-            if (response && response.data) {
-                ticketToast.reopenSuccess();
-
-                // Update current ticket status if it's the same one
-                if (
-                    currentTicket &&
-                    currentTicket.id === ticketId &&
-                    response.data
-                ) {
-                    setCurrentTicket(prev =>
-                        prev
-                            ? {
-                                  ...prev,
-                                  status: response.data!.status,
-                                  updatedAt: response.data!.updatedAt,
-                              }
-                            : null
-                    );
-                }
-
-                // Update ticket in the list
-                setTickets(prev =>
-                    prev.map(ticket =>
-                        ticket.id === ticketId && response.data
-                            ? {
-                                  ...ticket,
-                                  status: response.data.status,
-                                  updatedAt: response.data.updatedAt,
-                              }
-                            : ticket
-                    )
-                );
-
-                return response.data;
-            } else {
-                ticketToast.reopenError();
-                setTicketError(
-                    "Échec de la réouverture du ticket. Veuillez réessayer."
-                );
-                return null;
-            }
-        } catch (error) {
-            console.error(
-                `Erreur lors de la réouverture du ticket ${ticketId}:`,
-                error
-            );
-            ticketToast.reopenError();
-            setTicketError(
-                "Échec de la réouverture du ticket. Veuillez réessayer."
-            );
-            return null;
-        } finally {
-            setIsReopeningTicket(false);
-        }
-    };
-
-    // Clear current ticket and comments
-    const clearCurrentTicket = () => {
-        setCurrentTicket(null);
-        setComments([]);
-    };
-
-    // Clear error state
-    const clearError = () => {
-        setTicketError(null);
-    };
-
-    // Refresh tickets list (useful for manual refresh)
-    const refreshTickets = async (params?: GetTicketsParams) => {
-        return await loadTickets(params);
-    };
-
-    // Refresh current ticket (useful for polling updates)
-    const refreshCurrentTicket = async () => {
-        if (currentTicket) {
-            return await loadTicketById(currentTicket.id);
-        }
-        return null;
-    };
-
-    return {
-        // State
-        tickets,
-        currentTicket,
-        comments,
-        pagination,
-        ticketError,
-
-        // Loading states
-        isCreatingTicket,
-        isLoadingTickets,
-        isLoadingTicket,
-        isUpdatingTicket,
-        isAddingComment,
-        isReopeningTicket,
-
-        // Actions
-        createTicket,
-        loadTickets,
-        loadTicketById,
-        updateTicket,
-        addComment,
-        reopenTicket,
-        clearCurrentTicket,
-        clearError,
-        refreshTickets,
-        refreshCurrentTicket,
-
-        // Admin actions
-        closeTicket,
-        bulkUpdateTickets,
-    };
+  return {
+    ticket,
+    messages,
+    isLoading,
+    notFound,
+    isReopening,
+    adminUsers,
+    pendingField,
+    isSubmittingMessage,
+    handleMessageSent,
+    handleTicketUpdate,
+    handleReopen,
+    handleStatusChange,
+    handlePriorityChange,
+    handleAssigneeChange,
+    handleTagsSave,
+    handleMessageSubmit,
+  };
 }

@@ -20,7 +20,6 @@ import {
     Users,
     Bell,
     Settings,
-    LifeBuoy,
 } from "lucide-react";
 
 export function HeaderBreadcrumb() {
@@ -48,8 +47,6 @@ export function HeaderBreadcrumb() {
             notifications: Bell,
             settings: Settings,
             paramètres: Settings,
-            support: LifeBuoy,
-            assistance: LifeBuoy,
         };
 
         const IconComponent = iconMap[segment.toLowerCase()];

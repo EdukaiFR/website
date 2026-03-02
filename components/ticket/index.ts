@@ -1,4 +1,15 @@
-// Ticket system components exports
-export { CreateTicketDialog } from "./create-ticket-dialog";
-export { AdminTicketCard } from "./admin-ticket-card";
-export { AdminStatistics } from "./admin-statistics";
+export { AttachmentPreview } from "./attachment-preview";
+export { FileDropzone } from "./file-dropzone";
+export { MessageBubble } from "./message-bubble";
+export { MessageInput } from "./message-input";
+export { MessageThread } from "./message-thread";
+export { StatusBadge } from "./status-badge";
+export { TicketCard } from "./ticket-card";
+export { TicketCardSkeleton } from "./ticket-card-skeleton";
+export { TicketEmptyState } from "./ticket-empty-state";
+export { TicketFilters, DEFAULT_FILTERS } from "./ticket-filters";
+export type { TicketFilterValues } from "./ticket-filters";
+export { TicketHeader } from "./ticket-header";
+export { TicketSidebar } from "./ticket-sidebar";
+export { TicketStatsBar } from "./ticket-stats-bar";
+export { TypeCardGrid } from "./type-card-grid";

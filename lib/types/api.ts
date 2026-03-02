@@ -52,6 +52,7 @@ export interface ApiFailureResult {
     status: "failure";
     message: string;
     error?: string;
+    statusCode?: number;
 }
 
 /**
@@ -172,5 +173,9 @@ export function errorToFailureResult(
     error: unknown,
     defaultMessage: string = "Une erreur est survenue"
 ): ApiFailureResult {
-    return failureResult(getErrorMessage(error) || defaultMessage);
+    const statusCode = (error as { response?: { status?: number } })?.response?.status;
+    return {
+        ...failureResult(getErrorMessage(error) || defaultMessage),
+        statusCode,
+    };
 }
