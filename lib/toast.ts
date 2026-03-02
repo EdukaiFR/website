@@ -264,6 +264,7 @@ export const toastMessages = {
         messageSuccess: "Message envoyé avec succès.",
         messageError: "Erreur lors de l'envoi du message.",
         reopenSuccess: "Ticket rouvert avec succès.",
+        reopenError: "Impossible de rouvrir le ticket.",
         reopenLimitReached:
             "Limite de réouverture atteinte (3 max). Veuillez créer un nouveau ticket.",
         assignSuccess: "Ticket assigné avec succès.",
@@ -428,6 +429,8 @@ export const ticketToast = {
         showToast.error(error || toastMessages.ticket.messageError),
     reopenSuccess: () =>
         showToast.success(toastMessages.ticket.reopenSuccess),
+    reopenError: () =>
+        showToast.error(toastMessages.ticket.reopenError),
     reopenLimitReached: () =>
         showToast.warning(toastMessages.ticket.reopenLimitReached),
     assignSuccess: () =>

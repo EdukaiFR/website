@@ -4,6 +4,7 @@ import type {
   Ticket,
   TicketMessage,
   TicketStatus,
+  TicketUrgency,
   PopulatedUser,
 } from "@/lib/types/ticket";
 import { MAX_REOPEN_COUNT } from "@/lib/types/ticket";
@@ -221,7 +222,7 @@ export function hasUnreadMessages(
 export function getStatusBadgeColor(
   status: string
 ): { bg: string; text: string; dot: string } {
-  return STATUS_COLORS[status] ?? DEFAULT_STATUS_COLOR;
+  return STATUS_COLORS[status as TicketStatus] ?? DEFAULT_STATUS_COLOR;
 }
 
 /**
@@ -232,5 +233,5 @@ export function getStatusBadgeColor(
 export function getPriorityBadgeColor(
   priority: string
 ): { bg: string; text: string; border: string } {
-  return URGENCY_COLORS[priority] ?? DEFAULT_URGENCY_COLOR;
+  return URGENCY_COLORS[priority as TicketUrgency] ?? DEFAULT_URGENCY_COLOR;
 }

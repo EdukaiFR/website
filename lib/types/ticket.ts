@@ -5,6 +5,28 @@ export type TicketStatus =
   | "resolved"
   | "closed";
 
+export type TicketType =
+  | "bug"
+  | "feature_request"
+  | "question"
+  | "improvement"
+  | "anomaly";
+
+export type TicketCategory =
+  | "course_generation"
+  | "quiz"
+  | "statistics"
+  | "authentication"
+  | "payments"
+  | "import_export"
+  | "ui_ux"
+  | "performance"
+  | "other";
+
+export type TicketUrgency = "low" | "medium" | "high" | "critical";
+
+export type UserRole = "user" | "admin" | "triage" | "dev";
+
 export type TicketSenderRole = "client" | "admin" | "system";
 
 export type TicketVisibility = "public" | "internal";
@@ -60,14 +82,14 @@ export interface Ticket {
   reference: string;
   author: string;
   assignedTo?: string | PopulatedUser;
-  type: string;
-  category: string;
+  type: TicketType;
+  category: TicketCategory;
   tags: string[];
   title: string;
   description: string;
   attachments: TicketAttachment[];
-  clientUrgency: string;
-  internalPriority: string;
+  clientUrgency: TicketUrgency;
+  internalPriority: TicketUrgency;
   status: TicketStatus;
   statusHistory: StatusHistoryEntry[];
   reopenCount: number;
@@ -109,9 +131,9 @@ export interface TicketStatistics {
 export interface CreateTicketRequest {
   title: string;
   description: string;
-  type: string;
-  category: string;
-  clientUrgency: string;
+  type: TicketType;
+  category: TicketCategory;
+  clientUrgency: TicketUrgency;
   tags?: string[];
   attachments?: TicketAttachment[];
 }
@@ -136,7 +158,7 @@ export interface AdminUser {
   lastName: string;
   username: string;
   profilePic?: string;
-  role: string;
+  role: UserRole;
 }
 
 export interface TicketListParams {

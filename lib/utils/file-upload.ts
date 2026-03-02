@@ -19,7 +19,7 @@ export function validateFile(file: File): FileValidationResult {
   if (file.size > MAX_FILE_SIZE) {
     return {
       valid: false,
-      error: `Le fichier "${file.name}" depasse la taille maximale de ${formatFileSize(MAX_FILE_SIZE)}`,
+      error: `Le fichier "${file.name}" dépasse la taille maximale de ${formatFileSize(MAX_FILE_SIZE)}`,
     };
   }
 
@@ -27,7 +27,7 @@ export function validateFile(file: File): FileValidationResult {
   if (!allowed.includes(file.type)) {
     return {
       valid: false,
-      error: `Le type de fichier "${file.type || "inconnu"}" n'est pas supporte`,
+      error: `Le type de fichier "${file.type || "inconnu"}" n'est pas supporté`,
     };
   }
 
@@ -75,7 +75,10 @@ export async function compressImage(file: File): Promise<File> {
       type: "image/jpeg",
       lastModified: Date.now(),
     });
-  } catch {
+  } catch (error: unknown) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[compressImage] Compression failed, using original:", error);
+    }
     return file;
   }
 }
@@ -126,7 +129,7 @@ export async function convertFilesToAttachments(
 
     attachments.push({
       fileName: file.name,
-      fileType: file.type,
+      fileType: processed.type,
       fileSize: processed.size,
       data,
       uploadedBy,

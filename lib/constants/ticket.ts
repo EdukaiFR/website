@@ -3,7 +3,14 @@
  * Used across ticket list, card, filters, and stats components.
  */
 
-export const STATUS_LABELS: Record<string, string> = {
+import type {
+  TicketStatus,
+  TicketType,
+  TicketCategory,
+  TicketUrgency,
+} from "@/lib/types/ticket";
+
+export const STATUS_LABELS: Record<TicketStatus, string> = {
   open: "Ouvert",
   in_progress: "En cours",
   waiting_for_client: "En attente",
@@ -12,7 +19,7 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const STATUS_COLORS: Record<
-  string,
+  TicketStatus,
   { bg: string; text: string; dot: string }
 > = {
   open: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
@@ -40,7 +47,7 @@ export const DEFAULT_STATUS_COLOR = {
   dot: "bg-gray-400",
 };
 
-export const TYPE_LABELS: Record<string, string> = {
+export const TYPE_LABELS: Record<TicketType, string> = {
   bug: "Bug",
   feature_request: "Nouvelle fonctionnalité",
   question: "Question",
@@ -48,7 +55,7 @@ export const TYPE_LABELS: Record<string, string> = {
   anomaly: "Anomalie",
 };
 
-export const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
+export const TYPE_COLORS: Record<TicketType, { bg: string; text: string }> = {
   bug: { bg: "bg-red-100", text: "text-red-600" },
   feature_request: { bg: "bg-violet-100", text: "text-violet-600" },
   question: { bg: "bg-sky-100", text: "text-sky-600" },
@@ -58,7 +65,7 @@ export const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
 
 export const DEFAULT_TYPE_COLOR = { bg: "bg-gray-100", text: "text-gray-600" };
 
-export const CATEGORY_LABELS: Record<string, string> = {
+export const CATEGORY_LABELS: Record<TicketCategory, string> = {
   course_generation: "Génération de cours",
   quiz: "Quiz et évaluations",
   statistics: "Statistiques et analyses",
@@ -70,7 +77,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   other: "Autre",
 };
 
-export const URGENCY_LABELS: Record<string, string> = {
+export const URGENCY_LABELS: Record<TicketUrgency, string> = {
   low: "Faible",
   medium: "Moyenne",
   high: "Élevée",
@@ -78,7 +85,7 @@ export const URGENCY_LABELS: Record<string, string> = {
 };
 
 export const URGENCY_COLORS: Record<
-  string,
+  TicketUrgency,
   { bg: string; text: string; border: string }
 > = {
   low: { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200" },
@@ -104,6 +111,54 @@ export const DEFAULT_URGENCY_COLOR = {
   text: "text-gray-600",
   border: "border-gray-200",
 };
+
+// ---------------------------------------------------------------------------
+// Pagination
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_PAGE_SIZE = 20;
+
+// ---------------------------------------------------------------------------
+// Filter types & defaults
+// ---------------------------------------------------------------------------
+
+export interface TicketFilterValues {
+  search: string;
+  status: string;
+  type: string;
+  category: string;
+  urgency: string;
+}
+
+export const DEFAULT_FILTERS: TicketFilterValues = {
+  search: "",
+  status: "open",
+  type: "",
+  category: "",
+  urgency: "",
+};
+
+export interface AdminTicketFilterValues {
+  search: string;
+  status: string;
+  type: string;
+  category: string;
+  urgency: string;
+  assignedTo: string;
+}
+
+export const DEFAULT_ADMIN_FILTERS: AdminTicketFilterValues = {
+  search: "",
+  status: "",
+  type: "",
+  category: "",
+  urgency: "",
+  assignedTo: "",
+};
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
 
 /**
  * Translate a key using a label map, falling back to a provided fallback.
