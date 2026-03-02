@@ -63,6 +63,15 @@ function buildQueryParams(params?: TicketListParams): Record<string, string> {
   return query;
 }
 
+/**
+ * Extract the payload from the API envelope.
+ * The backend uses `item` for single resources and `items` for lists,
+ * with `data` as a legacy fallback.
+ */
+function extractPayload<T>(body: Record<string, unknown>): T {
+  return (body.item ?? body.items ?? body.data) as T;
+}
+
 function logError(method: string, error: unknown): void {
   if (process.env.NODE_ENV === "development") {
     console.error(`[TicketService] ${method} failed:`, error);
@@ -89,7 +98,7 @@ export function useTicketService(): TicketService {
       const response = await axios.get(`${apiUrl}/tickets/config`, {
         withCredentials: true,
       });
-      return successResult(response.data.data);
+      return successResult(extractPayload<TicketConfig[]>(response.data));
     } catch (error: unknown) {
       logError("getConfigs", error);
       return errorToFailureResult(error, "Failed to fetch ticket configs");
@@ -103,7 +112,7 @@ export function useTicketService(): TicketService {
       const response = await axios.post(`${apiUrl}/tickets`, data, {
         withCredentials: true,
       });
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("createTicket", error);
       return errorToFailureResult(error, "Failed to create ticket");
@@ -118,7 +127,11 @@ export function useTicketService(): TicketService {
         params: buildQueryParams(params),
         withCredentials: true,
       });
-      return successResult(response.data.data);
+      const body = response.data;
+      return successResult({
+        tickets: (body.items ?? body.data ?? []) as Ticket[],
+        total: (body.total ?? 0) as number,
+      });
     } catch (error: unknown) {
       logError("getMyTickets", error);
       return errorToFailureResult(error, "Failed to fetch tickets");
@@ -130,7 +143,7 @@ export function useTicketService(): TicketService {
       const response = await axios.get(`${apiUrl}/tickets/${id}`, {
         withCredentials: true,
       });
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("getTicketById", error);
       return errorToFailureResult(error, "Failed to fetch ticket");
@@ -145,7 +158,7 @@ export function useTicketService(): TicketService {
         `${apiUrl}/tickets/${ticketId}/messages`,
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("getMessages", error);
       return errorToFailureResult(error, "Failed to fetch messages");
@@ -162,7 +175,7 @@ export function useTicketService(): TicketService {
         data,
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("createMessage", error);
       return errorToFailureResult(error, "Failed to send message");
@@ -195,7 +208,7 @@ export function useTicketService(): TicketService {
         {},
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("reopenTicket", error);
       return errorToFailureResult(error, "Failed to reopen ticket");
@@ -212,7 +225,7 @@ export function useTicketService(): TicketService {
         data,
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("updateTicket", error);
       return errorToFailureResult(error, "Failed to update ticket");
@@ -228,7 +241,7 @@ export function useTicketService(): TicketService {
         {},
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("closeTicket", error);
       return errorToFailureResult(error, "Failed to close ticket");
@@ -245,7 +258,12 @@ export function useTicketService(): TicketService {
         params: buildQueryParams(params),
         withCredentials: true,
       });
-      return successResult(response.data.data);
+      const body = response.data;
+      return successResult({
+        tickets: (body.items ?? body.data ?? []) as Ticket[],
+        statistics: (body.statistics ?? {}) as TicketStatistics,
+        total: (body.total ?? 0) as number,
+      });
     } catch (error: unknown) {
       logError("adminGetTickets", error);
       return errorToFailureResult(error, "Failed to fetch admin tickets");
@@ -262,7 +280,7 @@ export function useTicketService(): TicketService {
         { ticketIds, ...data },
         { withCredentials: true }
       );
-      return successResult(response.data.data);
+      return successResult(extractPayload(response.data));
     } catch (error: unknown) {
       logError("adminBulkUpdate", error);
       return errorToFailureResult(error, "Failed to bulk update tickets");

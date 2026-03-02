@@ -51,29 +51,33 @@ export async function compressImage(file: File): Promise<File> {
     return file;
   }
 
-  const bitmap = await createImageBitmap(file);
-  const ratio = Math.min(1, MAX_IMAGE_WIDTH / bitmap.width);
-  const width = Math.round(bitmap.width * ratio);
-  const height = Math.round(bitmap.height * ratio);
+  try {
+    const bitmap = await createImageBitmap(file);
+    const ratio = Math.min(1, MAX_IMAGE_WIDTH / bitmap.width);
+    const width = Math.round(bitmap.width * ratio);
+    const height = Math.round(bitmap.height * ratio);
 
-  const canvas = new OffscreenCanvas(width, height);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
+    const canvas = new OffscreenCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return file;
+    }
+
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+
+    const blob = await canvas.convertToBlob({
+      type: "image/jpeg",
+      quality: JPEG_QUALITY,
+    });
+
+    return new File([blob], file.name, {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } catch {
     return file;
   }
-
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
-
-  const blob = await canvas.convertToBlob({
-    type: "image/jpeg",
-    quality: JPEG_QUALITY,
-  });
-
-  return new File([blob], file.name, {
-    type: "image/jpeg",
-    lastModified: Date.now(),
-  });
 }
 
 /**

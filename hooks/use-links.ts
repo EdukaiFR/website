@@ -2,6 +2,7 @@ import {
     Bell,
     Users,
     Home,
+    LifeBuoy,
     Settings,
     Zap,
     GraduationCap,
@@ -66,6 +67,11 @@ export function useLinks() {
             href: "/notifications",
             label: "Notifications",
             Icon: Bell,
+        },
+        {
+            href: "/support",
+            label: "Support",
+            Icon: LifeBuoy,
         },
         {
             href: "/settings",

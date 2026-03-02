@@ -47,7 +47,7 @@ export function useTicketConfig(
 
     const result = await serviceRef.current.getConfigs();
 
-    if (isApiSuccess(result)) {
+    if (isApiSuccess(result) && Array.isArray(result.data)) {
       for (const config of result.data) {
         const sorted = filterAndSort(config.values);
 
