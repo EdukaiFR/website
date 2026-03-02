@@ -13,8 +13,8 @@ import {
   DEFAULT_URGENCY_COLOR,
   translateLabel,
 } from "@/lib/constants/ticket";
+import { canReopenTicket } from "@/lib/utils/ticket-helpers";
 import type { Ticket } from "@/lib/types/ticket";
-import { MAX_REOPEN_COUNT } from "@/lib/types/ticket";
 
 interface TicketHeaderProps {
   ticket: Ticket;
@@ -35,11 +35,7 @@ export function TicketHeader({
   const session = useSession();
   const [hasCopied, setHasCopied] = useState(false);
 
-  const isOwner = session.user?._id === ticket.author;
-  const canReopen =
-    ticket.status === "resolved" &&
-    ticket.reopenCount < MAX_REOPEN_COUNT &&
-    isOwner;
+  const canReopen = canReopenTicket(ticket, session.user?._id ?? "");
 
   const priorityColors =
     URGENCY_COLORS[ticket.internalPriority] ?? DEFAULT_URGENCY_COLOR;

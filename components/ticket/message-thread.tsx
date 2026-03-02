@@ -2,8 +2,12 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { MessageSquare } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import {
+  isSameDay,
+  formatDateSeparator,
+  resolveId,
+  resolveUserName,
+} from "@/lib/utils/ticket-helpers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MessageBubble } from "@/components/ticket/message-bubble";
 import type { TicketMessage } from "@/lib/types/ticket";
@@ -17,17 +21,11 @@ interface MessageThreadProps {
   className?: string;
 }
 
-function isSameDay(a: string, b: string): boolean {
-  return (
-    format(new Date(a), "yyyy-MM-dd") === format(new Date(b), "yyyy-MM-dd")
-  );
-}
-
 function DateSeparator({ date }: { date: string }) {
   return (
     <div className="flex items-center justify-center py-3">
       <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">
-        {format(new Date(date), "d MMMM yyyy", { locale: fr })}
+        {formatDateSeparator(date)}
       </span>
     </div>
   );
@@ -110,7 +108,7 @@ export function MessageThread({
               <MessageBubble
                 message={message}
                 currentUserId={currentUserId}
-                senderName={senderNames[message.senderId]}
+                senderName={senderNames[resolveId(message.senderId)] ?? resolveUserName(message.senderId)}
               />
             </div>
           );

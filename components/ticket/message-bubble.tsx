@@ -2,8 +2,7 @@
 
 import { memo } from "react";
 import { EyeOff } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { formatMessageTime, resolveId } from "@/lib/utils/ticket-helpers";
 import { cn } from "@/lib/utils";
 import { AttachmentPreview } from "@/components/ticket/attachment-preview";
 import type { TicketMessage } from "@/lib/types/ticket";
@@ -16,7 +15,7 @@ function resolveBubbleVariant(
 ): BubbleVariant {
   if (message.senderRole === "system") return "system";
   if (message.visibility === "internal") return "internal";
-  if (message.senderId === currentUserId) return "own";
+  if (resolveId(message.senderId) === currentUserId) return "own";
   return "admin";
 }
 
@@ -69,9 +68,7 @@ export const MessageBubble = memo(function MessageBubble({
 }: MessageBubbleProps) {
   const variant = resolveBubbleVariant(message, currentUserId);
   const styles = VARIANT_STYLES[variant];
-  const timestamp = format(new Date(message.createdAt), "HH:mm", {
-    locale: fr,
-  });
+  const timestamp = formatMessageTime(message.createdAt);
 
   if (variant === "system") {
     return (

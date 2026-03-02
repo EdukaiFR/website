@@ -14,8 +14,7 @@ import {
   translateLabel,
 } from "@/lib/constants/ticket";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { formatTicketRelativeDate } from "@/lib/utils/ticket-helpers";
 import {
   Bug,
   Lightbulb,
@@ -65,10 +64,7 @@ export const TicketCard = memo(function TicketCard({
     URGENCY_COLORS[ticket.clientUrgency] ?? DEFAULT_URGENCY_COLOR;
   const Icon = TYPE_ICONS[ticket.type] ?? FileText;
 
-  const relativeDate = formatDistanceToNow(new Date(ticket.createdAt), {
-    addSuffix: true,
-    locale: fr,
-  });
+  const relativeDate = formatTicketRelativeDate(ticket.createdAt);
 
   return (
     <button
