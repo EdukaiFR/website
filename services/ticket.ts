@@ -34,6 +34,9 @@ export interface TicketService {
     ticketId: string,
     messageId: string
   ) => Promise<ApiResult<void>>;
+  markAllMessagesRead: (
+    ticketId: string
+  ) => Promise<ApiResult<{ updated: number }>>;
   reopenTicket: (ticketId: string) => Promise<ApiResult<Ticket>>;
   updateTicket: (
     ticketId: string,
@@ -205,6 +208,22 @@ export function useTicketService(): TicketService {
     }
   };
 
+  const markAllMessagesRead = async (
+    ticketId: string
+  ): Promise<ApiResult<{ updated: number }>> => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/tickets/${ticketId}/messages/read-all`,
+        {},
+        { withCredentials: true }
+      );
+      return successResult(extractPayload(response.data));
+    } catch (error: unknown) {
+      logError("markAllMessagesRead", error);
+      return errorToFailureResult(error, "Failed to mark messages as read");
+    }
+  };
+
   const reopenTicket = async (
     ticketId: string
   ): Promise<ApiResult<Ticket>> => {
@@ -318,6 +337,7 @@ export function useTicketService(): TicketService {
     getMessages,
     createMessage,
     markMessageRead,
+    markAllMessagesRead,
     reopenTicket,
     updateTicket,
     closeTicket,
